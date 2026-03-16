@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Receba notificações quando seus streamers favoritos do Kick ficarem ao vivo. Abertura automática, duração da stream, histórico e mais."
+  },
+  "autoLaunch": {
+    "message": "Abertura Automática"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Alternar comportamento de abertura automática"
+  },
+  "autoLaunchSettings": {
+    "message": "Configurações de Abertura Automática"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Ativar som automaticamente ao abrir<br />(Nota: Não refletido no controle de volume)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Limpar]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Testar]"
+  },
+  "customSoundLimitNote": {
+    "message": "Envie arquivos de áudio de até $1 MB."
+  },
+  "customSoundMainLabel": {
+    "message": "Som principal"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Erro: Cota de armazenamento excedida"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Erro: Falha ao salvar o arquivo"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Erro: Arquivo de $1 MB excede o limite"
+  },
+  "customSoundStatusUnset": {
+    "message": "Não definido"
+  },
+  "customSoundSubLabel": {
+    "message": "Som secundário"
+  },
+  "duplicateTabGuard": {
+    "message": "Proteção de Abas Duplicadas"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Alternar proteção de abas duplicadas. Quando ativo, uma nova aba não será aberta se já existir uma para a stream."
+  },
+  "fetchError": {
+    "message": "Falha ao carregar canais. Verifique se você está logado no Kick e tente novamente."
+  },
+  "following": {
+    "message": "Seguindo"
+  },
+  "noLiveStreams": {
+    "message": "Nenhuma stream ao vivo."
+  },
+  "notificationSettings": {
+    "message": "Configurações de Notificação"
+  },
+  "notificationSoundVolume": {
+    "message": "Volume do som"
+  },
+  "options": {
+    "message": "Opções"
+  },
+  "optionsButtonTooltip": {
+    "message": "Abrir página de opções"
+  },
+  "refresh": {
+    "message": "Atualizar"
+  },
+  "refreshButtonTooltip": {
+    "message": "Atualizar conteúdo da aba"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Redefinir abertura automática ao reiniciar o navegador"
+  },
+  "showNotificationCheckbox": {
+    "message": "Mostrar notificações"
+  },
+  "testSoundVolume": {
+    "message": "[Testar]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Histórico de notificações"
+  },
+  "noHistoryYet": {
+    "message": "Sem histórico ainda."
+  },
+  "errorLoadingHistory": {
+    "message": "Erro ao carregar histórico."
+  },
+  "onlySwitchChannels": {
+    "message": "Notificar apenas canais ativados"
+  },
+  "silentForOthers": {
+    "message": "Notificações silenciosas para outros canais"
+  },
+  "checkInterval": {
+    "message": "Intervalo de verificação"
+  },
+  "autoLaunchTab": {
+    "message": "Abertura Automática"
+  },
+  "showOfflineChannels": {
+    "message": "Mostrar canais offline na aba Following"
+  },
+  "displaySettings": {
+    "message": "Configurações de exibição"
+  },
+  "autoRefreshPopup": {
+    "message": "Atualizar aba Seguindo automaticamente"
+  },
+  "optionsBack": {
+    "message": "Voltar"
+  },
+  "dndTitle": {
+    "message": "Não perturbe"
+  },
+  "dndStart": {
+    "message": "Início"
+  },
+  "dndEnd": {
+    "message": "Fim"
+  },
+  "dndMuteNotifications": {
+    "message": "Silenciar notificações"
+  },
+  "dndMuteSound": {
+    "message": "Silenciar sons"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Pausar abertura automática"
+  },
+  "searchChannels": {
+    "message": "Buscar canais..."
+  },
+  "clearHistory": {
+    "message": "Limpar"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 está ao vivo"
+  },
+  "soundModeExtension": {
+    "message": "Sons da extensão"
+  },
+  "soundModeWindows": {
+    "message": "Sons do Windows"
+  },
+  "bellMain": {
+    "message": "Som principal"
+  },
+  "bellSub": {
+    "message": "Som secundário"
+  },
+  "bellSilent": {
+    "message": "Notificação silenciosa"
+  },
+  "bellMuted": {
+    "message": "Sem notificação"
+  }
+}

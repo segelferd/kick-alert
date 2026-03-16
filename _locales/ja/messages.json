@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "指定した Kick ストリーマーが配信開始したときの自動入場が可能になります。"
+  },
+  "autoLaunch": {
+    "message": "自動入場"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "自動入場の On/Off を切り替えます"
+  },
+  "autoLaunchSettings": {
+    "message": "自動入場設定"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "自動入場後にミュートを自動解除する<br />(注意: 音量スライダーには表示上は反映されません)"
+  },
+  "customSoundButtonClear": {
+    "message": "[クリア]"
+  },
+  "customSoundButtonTest": {
+    "message": "[テスト]"
+  },
+  "customSoundLimitNote": {
+    "message": "1 ファイルあたり $1 MB までの音声ファイルに対応します。"
+  },
+  "customSoundMainLabel": {
+    "message": "メインサウンド"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "エラー: ストレージの容量上限を超えました"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "エラー: ファイルの保存に失敗しました"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "エラー: ファイルサイズ $1 MB は上限を超えています"
+  },
+  "customSoundStatusUnset": {
+    "message": "未設定"
+  },
+  "customSoundSubLabel": {
+    "message": "サブサウンド"
+  },
+  "duplicateTabGuard": {
+    "message": "重複タブブロック"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "自動入場時の重複タブブロックの On/Off を切り替えます。On の場合、自動入場対象の配信のタブがすでに開かれているときは、新しくタブを開きません。"
+  },
+  "fetchError": {
+    "message": "チャンネルの読み込みに失敗しました。Kick にログインしていることを確認してから、もう一度試してください。"
+  },
+  "following": {
+    "message": "フォロー中"
+  },
+  "noLiveStreams": {
+    "message": "現在ライブ中の配信はありません。"
+  },
+  "notificationSettings": {
+    "message": "通知設定"
+  },
+  "notificationSoundVolume": {
+    "message": "通知音量"
+  },
+  "options": {
+    "message": "オプション"
+  },
+  "optionsButtonTooltip": {
+    "message": "オプション画面を開きます"
+  },
+  "refresh": {
+    "message": "更新"
+  },
+  "refreshButtonTooltip": {
+    "message": "タブの内容を更新します"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "ブラウザ再起動時に自動入場設定を On に戻す"
+  },
+  "showNotificationCheckbox": {
+    "message": "通知を表示する"
+  },
+  "testSoundVolume": {
+    "message": "[テスト]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "通知履歴"
+  },
+  "noHistoryYet": {
+    "message": "まだ履歴がありません。"
+  },
+  "errorLoadingHistory": {
+    "message": "履歴の読み込みエラー。"
+  },
+  "onlySwitchChannels": {
+    "message": "オンにしたチャンネルのみ通知"
+  },
+  "silentForOthers": {
+    "message": "他のチャンネルはサイレント通知"
+  },
+  "checkInterval": {
+    "message": "チェック間隔"
+  },
+  "autoLaunchTab": {
+    "message": "自動起動"
+  },
+  "showOfflineChannels": {
+    "message": "フォロー中タブにオフラインチャンネルを表示"
+  },
+  "displaySettings": {
+    "message": "表示設定"
+  },
+  "autoRefreshPopup": {
+    "message": "フォロー中タブを自動更新"
+  },
+  "optionsBack": {
+    "message": "戻る"
+  },
+  "dndTitle": {
+    "message": "おやすみモード"
+  },
+  "dndStart": {
+    "message": "開始"
+  },
+  "dndEnd": {
+    "message": "終了"
+  },
+  "dndMuteNotifications": {
+    "message": "通知をミュート"
+  },
+  "dndMuteSound": {
+    "message": "音をミュート"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "自動起動を一時停止"
+  },
+  "searchChannels": {
+    "message": "チャンネル検索..."
+  },
+  "clearHistory": {
+    "message": "クリア"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 が配信を開始しました"
+  },
+  "soundModeExtension": {
+    "message": "拡張機能のサウンド"
+  },
+  "soundModeWindows": {
+    "message": "Windowsのサウンド"
+  },
+  "bellMain": {
+    "message": "メインサウンド"
+  },
+  "bellSub": {
+    "message": "サブサウンド"
+  },
+  "bellSilent": {
+    "message": "サイレント通知"
+  },
+  "bellMuted": {
+    "message": "通知なし"
+  }
+}

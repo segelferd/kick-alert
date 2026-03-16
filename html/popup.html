@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="../css/popup.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
+  <title>KickAlert</title>
+</head>
+<body>
+  <div class="menu-container">
+    <div class="menu-chips">
+      <button class="menu-chip" id="suspend-chip" title="">
+        <span class="material-icons" id="suspend-icon">play_arrow</span>
+        <span class="chip-label" id="suspend-label">Auto</span>
+        <span class="chip-status" id="suspend-status"></span>
+      </button>
+      <button class="menu-chip" id="dup-guard-chip" title="">
+        <span class="material-icons-outlined" id="dup-guard-icon">tab</span>
+        <span class="chip-label" id="dup-guard-label">Guard</span>
+        <span class="chip-status" id="dup-guard-status"></span>
+      </button>
+      <button class="menu-chip" id="refresh-chip" title="">
+        <span class="material-icons">refresh</span>
+        <span class="chip-label">Refresh</span>
+      </button>
+      <button class="menu-chip" id="multi-chip" title="Open Multi-Stream viewer">
+        <span class="material-icons">grid_view</span>
+        <span class="chip-label">Multi</span>
+      </button>
+      <button class="menu-chip" id="option-chip" title="">
+        <span class="material-icons">settings</span>
+        <span class="chip-label">Options</span>
+      </button>
+    </div>
+    <a class="menu-kick-link" href="https://kick.com" target="_blank" title="Open Kick.com">
+      <span class="material-icons">open_in_new</span> Kick
+    </a>
+  </div>
+
+  <div class="tabs-container">
+    <button id="following-btn" class="tab-button active" data-tab="following-panel"></button>
+    <button id="autolaunch-btn" class="tab-button" data-tab="autolaunch-panel"></button>
+    <button id="history-btn" class="tab-button" data-tab="history-panel"></button>
+  </div>
+
+  <div class="content-container">
+    <div id="following-panel" class="tab-content active">
+      <div id="following-list" class="channels-container"></div>
+    </div>
+    <div id="autolaunch-panel" class="tab-content">
+      <div class="search-container">
+        <span class="material-icons search-icon">search</span>
+        <input type="text" id="autolaunch-search" class="search-input" data-i18n-placeholder="searchChannels" placeholder="Search..." />
+      </div>
+      <div id="autolaunch-list" class="channels-container"></div>
+    </div>
+    <div id="history-panel" class="tab-content">
+      <div class="history-toolbar">
+        <button id="history-clear-btn" class="history-clear-btn">
+          <span class="material-icons" style="font-size:14px;">delete_outline</span>
+          <span data-i18n="clearHistory"></span>
+        </button>
+      </div>
+      <div id="history-list" class="history-container"></div>
+    </div>
+  </div>
+
+  <!-- Options Panel -->
+  <div id="options-panel" class="options-panel" style="display:none;">
+    <div class="options-header">
+      <button id="options-back" class="options-back-btn">
+        <span class="material-icons">arrow_back</span>
+        <span data-i18n="optionsBack">Back</span>
+      </button>
+      <span class="options-title">KickAlert Options</span>
+    </div>
+    <div class="options-body">
+      <div class="lang-selector" id="lang-selector"></div>
+      <div class="opt-section">
+        <div class="opt-section-title">
+          <span class="material-icons-outlined">play_circle</span>
+          <span data-i18n="autoLaunchSettings"></span>
+        </div>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-auto-unmute" />
+          <span data-i18n-html="autoUnmuteCheckbox"></span>
+        </label>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-reset-suspend" />
+          <span data-i18n="resetSuspendOnRestartCheckbox"></span>
+        </label>
+      </div>
+      <div class="opt-section">
+        <div class="opt-section-title">
+          <span class="material-icons-outlined">visibility</span>
+          <span data-i18n="displaySettings"></span>
+        </div>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-show-offline" />
+          <span data-i18n="showOfflineChannels"></span>
+        </label>
+      </div>
+      <div class="opt-section">
+        <div class="opt-section-title">
+          <span class="material-icons-outlined">notifications</span>
+          <span data-i18n="notificationSettings"></span>
+        </div>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-show-notification" />
+          <span data-i18n="showNotificationCheckbox"></span>
+        </label>
+        <div class="opt-divider"></div>
+        <div class="opt-sound-mode">
+          <label class="opt-radio-row">
+            <input type="radio" name="sound-mode" id="opt-sound-extension" value="extension" checked />
+            <span data-i18n="soundModeExtension"></span>
+          </label>
+          <label class="opt-radio-row">
+            <input type="radio" name="sound-mode" id="opt-sound-windows" value="windows" />
+            <span data-i18n="soundModeWindows"></span>
+          </label>
+        </div>
+        <div id="opt-extension-sound-settings">
+          <div class="opt-slider-row">
+            <span class="opt-slider-label" data-i18n="notificationSoundVolume"></span>
+            <input type="range" id="opt-volume-slider" min="0" max="100" step="5" />
+            <span id="opt-volume-value" class="opt-slider-value"></span>
+            <span class="opt-slider-unit">%</span>
+            <button id="opt-test-sound" class="opt-text-btn" data-i18n="testSoundVolume"></button>
+          </div>
+          <div class="opt-divider"></div>
+          <div class="opt-custom-sounds">
+            <div class="opt-sound-row">
+              <div class="opt-sound-info">
+                <span class="opt-sound-label" data-i18n="customSoundMainLabel"></span>
+                <span id="opt-main-sound-status" class="opt-sound-status"></span>
+              </div>
+              <div class="opt-sound-controls">
+                <input type="file" id="opt-main-sound-file" accept="audio/*" class="opt-sound-input" />
+                <button id="opt-main-sound-test" class="opt-text-btn" data-i18n="customSoundButtonTest"></button>
+                <button id="opt-main-sound-clear" class="opt-text-btn" data-i18n="customSoundButtonClear"></button>
+              </div>
+            </div>
+            <div class="opt-sound-row">
+              <div class="opt-sound-info">
+                <span class="opt-sound-label" data-i18n="customSoundSubLabel"></span>
+                <span id="opt-sub-sound-status" class="opt-sound-status"></span>
+              </div>
+              <div class="opt-sound-controls">
+                <input type="file" id="opt-sub-sound-file" accept="audio/*" class="opt-sound-input" />
+                <button id="opt-sub-sound-test" class="opt-text-btn" data-i18n="customSoundButtonTest"></button>
+                <button id="opt-sub-sound-clear" class="opt-text-btn" data-i18n="customSoundButtonClear"></button>
+              </div>
+            </div>
+            <p class="opt-sound-note" data-i18n="customSoundLimitNote" data-i18n-sub="2"></p>
+          </div>
+        </div><!-- /opt-extension-sound-settings -->
+        <div class="opt-divider"></div>
+        <div class="opt-slider-row">
+          <span class="opt-slider-label" data-i18n="checkInterval"></span>
+          <input type="range" id="opt-interval-slider" min="30" max="300" step="30" />
+          <span id="opt-interval-value" class="opt-slider-value"></span>
+          <span class="opt-slider-unit">sec</span>
+        </div>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-auto-refresh" />
+          <span data-i18n="autoRefreshPopup"></span>
+        </label>
+      </div>
+      <!-- DND Section — OUTSIDE extension-sound-settings, works with both sound modes -->
+      <div class="opt-section">
+        <div class="opt-dnd-section" id="opt-dnd-section">
+          <div class="opt-dnd-header">
+            <span class="material-icons-outlined" style="font-size:16px;">do_not_disturb_on</span>
+            <span data-i18n="dndTitle"></span>
+            <label class="toggle-switch toggle-switch-sm">
+              <input type="checkbox" id="opt-dnd-enabled" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="opt-dnd-body" id="opt-dnd-body">
+            <div class="opt-dnd-time-row">
+              <span class="opt-dnd-time-label" data-i18n="dndStart"></span>
+              <select id="opt-dnd-start" class="opt-dnd-select"></select>
+              <span class="opt-dnd-time-label" data-i18n="dndEnd"></span>
+              <select id="opt-dnd-end" class="opt-dnd-select"></select>
+            </div>
+            <label class="opt-row">
+              <input type="checkbox" id="opt-dnd-mute-notif" checked />
+              <span data-i18n="dndMuteNotifications"></span>
+            </label>
+            <label class="opt-row">
+              <input type="checkbox" id="opt-dnd-mute-sound" checked />
+              <span data-i18n="dndMuteSound"></span>
+            </label>
+            <label class="opt-row">
+              <input type="checkbox" id="opt-dnd-mute-autolaunch" />
+              <span data-i18n="dndMuteAutoLaunch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loading-overlay" class="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <script src="../src/storage.js"></script>
+  <script src="../src/utils.js"></script>
+  <script src="../src/popup.js"></script>
+</body>
+</html>

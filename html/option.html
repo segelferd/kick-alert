@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="../css/option.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
+  <title>KickAlert Options</title>
+</head>
+<body>
+  <div class="section">
+    <div class="section-title">
+      <span class="material-icons-outlined">play_circle</span>
+      <span data-i18n="autoLaunchSettings"></span>
+    </div>
+    <label class="option-row">
+      <input type="checkbox" id="auto-unmute" />
+      <span data-i18n-html="autoUnmuteCheckbox"></span>
+    </label>
+    <label class="option-row">
+      <input type="checkbox" id="reset-suspend" />
+      <span data-i18n="resetSuspendOnRestartCheckbox"></span>
+    </label>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      <span class="material-icons-outlined">visibility</span>
+      <span data-i18n="displaySettings"></span>
+    </div>
+    <label class="option-row">
+      <input type="checkbox" id="show-offline" />
+      <span data-i18n="showOfflineChannels"></span>
+    </label>
+  </div>
+
+  <div class="section">
+    <div class="section-title">
+      <span class="material-icons-outlined">notifications</span>
+      <span data-i18n="notificationSettings"></span>
+    </div>
+    <label class="option-row">
+      <input type="checkbox" id="show-notification" />
+      <span data-i18n="showNotificationCheckbox"></span>
+    </label>
+    <label class="option-row">
+      <input type="checkbox" id="only-switch" />
+      <span data-i18n="onlySwitchChannels"></span>
+    </label>
+    <label class="option-row indented" id="silent-row">
+      <input type="checkbox" id="silent-others" />
+      <span data-i18n="silentForOthers"></span>
+    </label>
+    <div class="divider"></div>
+    <div class="slider-row">
+      <span class="slider-label" data-i18n="notificationSoundVolume"></span>
+      <input type="range" id="volume-slider" min="0" max="100" step="5" />
+      <span id="volume-value" class="slider-value"></span>
+      <span class="slider-unit">%</span>
+      <button id="test-sound" class="text-btn" data-i18n="testSoundVolume"></button>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label" data-i18n="checkInterval"></span>
+      <input type="range" id="interval-slider" min="15" max="300" step="15" />
+      <span id="interval-value" class="slider-value"></span>
+      <span class="slider-unit">sec</span>
+    </div>
+    <label class="option-row">
+      <input type="checkbox" id="auto-refresh" />
+      <span data-i18n="autoRefreshPopup"></span>
+    </label>
+    <div class="divider"></div>
+    <div class="custom-sounds">
+      <div class="sound-row">
+        <div class="sound-info">
+          <span class="sound-label" data-i18n="customSoundMainLabel"></span>
+          <span id="main-sound-status" class="sound-status"></span>
+        </div>
+        <div class="sound-controls">
+          <input type="file" id="main-sound-file" accept="audio/*" class="sound-input" />
+          <button id="main-sound-test" class="text-btn" data-i18n="customSoundButtonTest"></button>
+          <button id="main-sound-clear" class="text-btn" data-i18n="customSoundButtonClear"></button>
+        </div>
+      </div>
+      <div class="sound-row">
+        <div class="sound-info">
+          <span class="sound-label" data-i18n="customSoundSubLabel"></span>
+          <span id="sub-sound-status" class="sound-status"></span>
+        </div>
+        <div class="sound-controls">
+          <input type="file" id="sub-sound-file" accept="audio/*" class="sound-input" />
+          <button id="sub-sound-test" class="text-btn" data-i18n="customSoundButtonTest"></button>
+          <button id="sub-sound-clear" class="text-btn" data-i18n="customSoundButtonClear"></button>
+        </div>
+      </div>
+      <p class="sound-note" data-i18n="customSoundLimitNote" data-i18n-sub="2"></p>
+    </div>
+  </div>
+
+  <script src="../src/storage.js"></script>
+  <script src="../src/utils.js"></script>
+  <script src="../src/option.js"></script>
+</body>
+</html>

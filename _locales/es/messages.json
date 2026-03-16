@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Recibe notificaciones cuando tus streamers favoritos de Kick estén en vivo. Apertura automática, duración del stream, historial y más."
+  },
+  "autoLaunch": {
+    "message": "Apertura Automática"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Alternar comportamiento de apertura automática"
+  },
+  "autoLaunchSettings": {
+    "message": "Configuración de Apertura Automática"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Activar sonido automáticamente al abrir<br />(Nota: No se refleja en el control de volumen)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Limpiar]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Probar]"
+  },
+  "customSoundLimitNote": {
+    "message": "Sube archivos de audio de hasta $1 MB."
+  },
+  "customSoundMainLabel": {
+    "message": "Sonido principal"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Error: Cuota de almacenamiento superada"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Error: No se pudo guardar el archivo"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Error: El archivo de $1 MB supera el límite"
+  },
+  "customSoundStatusUnset": {
+    "message": "No configurado"
+  },
+  "customSoundSubLabel": {
+    "message": "Sonido secundario"
+  },
+  "duplicateTabGuard": {
+    "message": "Protección de Pestañas Duplicadas"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Alternar protección de pestañas duplicadas. Si está activo, no se abrirá una nueva pestaña si ya existe una para el stream."
+  },
+  "fetchError": {
+    "message": "Error al cargar canales. Verifica que hayas iniciado sesión en Kick e inténtalo de nuevo."
+  },
+  "following": {
+    "message": "Siguiendo"
+  },
+  "noLiveStreams": {
+    "message": "No hay streams en vivo."
+  },
+  "notificationSettings": {
+    "message": "Configuración de Notificaciones"
+  },
+  "notificationSoundVolume": {
+    "message": "Volumen de sonido"
+  },
+  "options": {
+    "message": "Opciones"
+  },
+  "optionsButtonTooltip": {
+    "message": "Abrir página de opciones"
+  },
+  "refresh": {
+    "message": "Actualizar"
+  },
+  "refreshButtonTooltip": {
+    "message": "Actualizar contenido de la pestaña"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Restablecer apertura automática al reiniciar el navegador"
+  },
+  "showNotificationCheckbox": {
+    "message": "Mostrar notificaciones"
+  },
+  "testSoundVolume": {
+    "message": "[Probar]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Historial de notificaciones"
+  },
+  "noHistoryYet": {
+    "message": "Sin historial aún."
+  },
+  "errorLoadingHistory": {
+    "message": "Error al cargar el historial."
+  },
+  "onlySwitchChannels": {
+    "message": "Notificar solo canales activados"
+  },
+  "silentForOthers": {
+    "message": "Notificaciones silenciosas para otros canales"
+  },
+  "checkInterval": {
+    "message": "Intervalo de verificación"
+  },
+  "autoLaunchTab": {
+    "message": "Apertura Automática"
+  },
+  "showOfflineChannels": {
+    "message": "Mostrar canales sin conexión en la pestaña Following"
+  },
+  "displaySettings": {
+    "message": "Configuración de pantalla"
+  },
+  "autoRefreshPopup": {
+    "message": "Actualizar pestaña Siguiendo automáticamente"
+  },
+  "optionsBack": {
+    "message": "Volver"
+  },
+  "dndTitle": {
+    "message": "No molestar"
+  },
+  "dndStart": {
+    "message": "Inicio"
+  },
+  "dndEnd": {
+    "message": "Fin"
+  },
+  "dndMuteNotifications": {
+    "message": "Silenciar notificaciones"
+  },
+  "dndMuteSound": {
+    "message": "Silenciar sonidos"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Pausar apertura automática"
+  },
+  "searchChannels": {
+    "message": "Buscar canales..."
+  },
+  "clearHistory": {
+    "message": "Borrar"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 está en directo"
+  },
+  "soundModeExtension": {
+    "message": "Sonidos de extensión"
+  },
+  "soundModeWindows": {
+    "message": "Sonidos de Windows"
+  },
+  "bellMain": {
+    "message": "Sonido principal"
+  },
+  "bellSub": {
+    "message": "Sonido secundario"
+  },
+  "bellSilent": {
+    "message": "Notificación silenciosa"
+  },
+  "bellMuted": {
+    "message": "Sin notificación"
+  }
+}

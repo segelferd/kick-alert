@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "احصل على إشعارات عندما يبدأ بث المباشر لمفضليك على Kick. فتح تلقائي، مدة البث، سجل الإشعارات والمزيد."
+  },
+  "autoLaunch": {
+    "message": "الفتح التلقائي"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "تبديل سلوك الفتح التلقائي"
+  },
+  "autoLaunchSettings": {
+    "message": "إعدادات الفتح التلقائي"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "إلغاء كتم الصوت تلقائياً عند الفتح<br />(ملاحظة: لا ينعكس على شريط الصوت)"
+  },
+  "customSoundButtonClear": {
+    "message": "[مسح]"
+  },
+  "customSoundButtonTest": {
+    "message": "[اختبار]"
+  },
+  "customSoundLimitNote": {
+    "message": "ارفع ملفات صوتية حتى $1 ميجابايت."
+  },
+  "customSoundMainLabel": {
+    "message": "الصوت الرئيسي"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "خطأ: تجاوز حصة التخزين"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "خطأ: فشل في حفظ الملف"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "خطأ: حجم الملف $1 ميجابايت يتجاوز الحد"
+  },
+  "customSoundStatusUnset": {
+    "message": "غير محدد"
+  },
+  "customSoundSubLabel": {
+    "message": "الصوت الثانوي"
+  },
+  "duplicateTabGuard": {
+    "message": "حماية من التبويبات المكررة"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "تبديل حماية التبويبات المكررة. عند التفعيل، لن يتم فتح تبويب جديد إذا كان هناك تبويب مفتوح للبث."
+  },
+  "fetchError": {
+    "message": "فشل تحميل القنوات. تأكد من تسجيل الدخول إلى Kick وحاول مجدداً."
+  },
+  "following": {
+    "message": "المتابَعون"
+  },
+  "noLiveStreams": {
+    "message": "لا توجد بثوث مباشرة."
+  },
+  "notificationSettings": {
+    "message": "إعدادات الإشعارات"
+  },
+  "notificationSoundVolume": {
+    "message": "مستوى الصوت"
+  },
+  "options": {
+    "message": "الخيارات"
+  },
+  "optionsButtonTooltip": {
+    "message": "فتح صفحة الخيارات"
+  },
+  "refresh": {
+    "message": "تحديث"
+  },
+  "refreshButtonTooltip": {
+    "message": "تحديث محتوى التبويب"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "إعادة تعيين الفتح التلقائي عند إعادة تشغيل المتصفح"
+  },
+  "showNotificationCheckbox": {
+    "message": "إظهار الإشعارات"
+  },
+  "testSoundVolume": {
+    "message": "[اختبار]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "سجل الإشعارات"
+  },
+  "noHistoryYet": {
+    "message": "لا يوجد سجل بعد."
+  },
+  "errorLoadingHistory": {
+    "message": "خطأ في تحميل السجل."
+  },
+  "onlySwitchChannels": {
+    "message": "إشعار القنوات المفعّلة فقط"
+  },
+  "silentForOthers": {
+    "message": "إشعارات صامتة للقنوات الأخرى"
+  },
+  "checkInterval": {
+    "message": "فترة التحقق"
+  },
+  "autoLaunchTab": {
+    "message": "الفتح التلقائي"
+  },
+  "showOfflineChannels": {
+    "message": "إظهار القنوات غير المتصلة في تبويب المتابَعين"
+  },
+  "displaySettings": {
+    "message": "إعدادات العرض"
+  },
+  "autoRefreshPopup": {
+    "message": "تحديث علامة التبويب تلقائياً"
+  },
+  "optionsBack": {
+    "message": "رجوع"
+  },
+  "dndTitle": {
+    "message": "عدم الإزعاج"
+  },
+  "dndStart": {
+    "message": "البداية"
+  },
+  "dndEnd": {
+    "message": "النهاية"
+  },
+  "dndMuteNotifications": {
+    "message": "كتم الإشعارات"
+  },
+  "dndMuteSound": {
+    "message": "كتم الأصوات"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "إيقاف الفتح التلقائي"
+  },
+  "searchChannels": {
+    "message": "...البحث عن القنوات"
+  },
+  "clearHistory": {
+    "message": "مسح"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 بدأ البث المباشر"
+  },
+  "soundModeExtension": {
+    "message": "أصوات الإضافة"
+  },
+  "soundModeWindows": {
+    "message": "أصوات ويندوز"
+  },
+  "bellMain": {
+    "message": "الصوت الرئيسي"
+  },
+  "bellSub": {
+    "message": "الصوت الثانوي"
+  },
+  "bellSilent": {
+    "message": "إشعار صامت"
+  },
+  "bellMuted": {
+    "message": "بدون إشعار"
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Erhalte Benachrichtigungen, wenn deine Lieblings-Kick-Streamer live gehen. Auto-Start, Stream-Dauer, Benachrichtigungsverlauf und mehr."
+  },
+  "autoLaunch": {
+    "message": "Automatischer Start"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Automatischen Start umschalten"
+  },
+  "autoLaunchSettings": {
+    "message": "Einstellungen für automatischen Start"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Ton nach automatischem Start aktivieren<br />(Hinweis: Wird nicht im Lautstärkeregler angezeigt)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Löschen]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Testen]"
+  },
+  "customSoundLimitNote": {
+    "message": "Lade Audiodateien bis zu $1 MB hoch."
+  },
+  "customSoundMainLabel": {
+    "message": "Hauptton"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Fehler: Speicherkontingent überschritten"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Fehler: Datei konnte nicht gespeichert werden"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Fehler: Dateigröße $1 MB überschreitet das Limit"
+  },
+  "customSoundStatusUnset": {
+    "message": "Nicht festgelegt"
+  },
+  "customSoundSubLabel": {
+    "message": "Sekundärton"
+  },
+  "duplicateTabGuard": {
+    "message": "Doppelter-Tab-Schutz"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Doppelter-Tab-Schutz umschalten. Wenn aktiviert, wird kein neuer Tab geöffnet, wenn bereits ein Tab für den Stream geöffnet ist."
+  },
+  "fetchError": {
+    "message": "Kanäle konnten nicht geladen werden. Bitte prüfen Sie, ob Sie bei Kick angemeldet sind, und versuchen Sie es erneut."
+  },
+  "following": {
+    "message": "Gefolgte"
+  },
+  "noLiveStreams": {
+    "message": "Keine Live-Streams."
+  },
+  "notificationSettings": {
+    "message": "Benachrichtigungseinstellungen"
+  },
+  "notificationSoundVolume": {
+    "message": "Lautstärke"
+  },
+  "options": {
+    "message": "Optionen"
+  },
+  "optionsButtonTooltip": {
+    "message": "Optionsseite öffnen"
+  },
+  "refresh": {
+    "message": "Aktualisieren"
+  },
+  "refreshButtonTooltip": {
+    "message": "Tab-Inhalt aktualisieren"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Automatischen Start beim Neustart des Browsers zurücksetzen"
+  },
+  "showNotificationCheckbox": {
+    "message": "Benachrichtigungen anzeigen"
+  },
+  "testSoundVolume": {
+    "message": "[Testen]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Benachrichtigungsverlauf"
+  },
+  "noHistoryYet": {
+    "message": "Noch kein Verlauf."
+  },
+  "errorLoadingHistory": {
+    "message": "Fehler beim Laden des Verlaufs."
+  },
+  "onlySwitchChannels": {
+    "message": "Nur aktivierte Kanäle benachrichtigen"
+  },
+  "silentForOthers": {
+    "message": "Stille Benachrichtigungen für andere Kanäle"
+  },
+  "checkInterval": {
+    "message": "Prüfintervall"
+  },
+  "autoLaunchTab": {
+    "message": "Automatischer Start"
+  },
+  "showOfflineChannels": {
+    "message": "Offline-Kanäle im Following-Tab anzeigen"
+  },
+  "displaySettings": {
+    "message": "Anzeigeeinstellungen"
+  },
+  "autoRefreshPopup": {
+    "message": "Folgt-Tab automatisch aktualisieren"
+  },
+  "optionsBack": {
+    "message": "Zurück"
+  },
+  "dndTitle": {
+    "message": "Nicht stören"
+  },
+  "dndStart": {
+    "message": "Start"
+  },
+  "dndEnd": {
+    "message": "Ende"
+  },
+  "dndMuteNotifications": {
+    "message": "Benachrichtigungen stummschalten"
+  },
+  "dndMuteSound": {
+    "message": "Töne stummschalten"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Auto-Start pausieren"
+  },
+  "searchChannels": {
+    "message": "Kanäle suchen..."
+  },
+  "clearHistory": {
+    "message": "Löschen"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 ist jetzt live"
+  },
+  "soundModeExtension": {
+    "message": "Erweiterungstöne"
+  },
+  "soundModeWindows": {
+    "message": "Windows-Töne"
+  },
+  "bellMain": {
+    "message": "Hauptton"
+  },
+  "bellSub": {
+    "message": "Sekundärton"
+  },
+  "bellSilent": {
+    "message": "Stille Benachrichtigung"
+  },
+  "bellMuted": {
+    "message": "Keine Benachrichtigung"
+  }
+}

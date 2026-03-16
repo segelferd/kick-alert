@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Takip ettiğin Kick yayıncıları canlıya geçince bildirim al. Otomatik açma, yayın süresi, bildirim geçmişi ve daha fazlası."
+  },
+  "autoLaunch": {
+    "message": "Otomatik Aç"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Otomatik açma davranışını değiştir"
+  },
+  "autoLaunchSettings": {
+    "message": "Otomatik Açma Ayarları"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Otomatik açmadan sonra oynatıcının sesini aç<br />(Not: Ses kaydırıcısına yansımaz)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Temizle]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Test]"
+  },
+  "customSoundLimitNote": {
+    "message": "$1 MB'a kadar ses dosyası yükleyin."
+  },
+  "customSoundMainLabel": {
+    "message": "Ana ses"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Hata: Depolama kotası aşıldı"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Hata: Dosya kaydedilemedi"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Hata: Dosya boyutu $1 MB limiti aşıyor"
+  },
+  "customSoundStatusUnset": {
+    "message": "Ayarlanmadı"
+  },
+  "customSoundSubLabel": {
+    "message": "İkincil ses"
+  },
+  "duplicateTabGuard": {
+    "message": "Çift Sekme Koruması"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Otomatik açmada çift sekme korumasını değiştir. Açıkken, yayın için sekme zaten açıksa yeni sekme açılmaz."
+  },
+  "fetchError": {
+    "message": "Kanallar yüklenemedi. Kick'e giriş yaptığınızdan emin olun ve tekrar deneyin."
+  },
+  "following": {
+    "message": "Takip Edilenler"
+  },
+  "noLiveStreams": {
+    "message": "Canlı yayın yok."
+  },
+  "notificationSettings": {
+    "message": "Bildirim Ayarları"
+  },
+  "notificationSoundVolume": {
+    "message": "Ses seviyesi"
+  },
+  "options": {
+    "message": "Seçenekler"
+  },
+  "optionsButtonTooltip": {
+    "message": "Seçenekler sayfasını aç"
+  },
+  "refresh": {
+    "message": "Yenile"
+  },
+  "refreshButtonTooltip": {
+    "message": "Sekme içeriğini yenile"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Tarayıcı yeniden başlatıldığında otomatik açma ayarlarını sıfırla"
+  },
+  "showNotificationCheckbox": {
+    "message": "Bildirimleri göster"
+  },
+  "testSoundVolume": {
+    "message": "[Test]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Bildirim Geçmişi"
+  },
+  "noHistoryYet": {
+    "message": "Henüz geçmiş yok."
+  },
+  "errorLoadingHistory": {
+    "message": "Geçmiş yüklenemedi."
+  },
+  "onlySwitchChannels": {
+    "message": "Yalnızca açık kanallara bildir"
+  },
+  "silentForOthers": {
+    "message": "Diğer kanallar için sessiz bildirim"
+  },
+  "checkInterval": {
+    "message": "Kontrol aralığı"
+  },
+  "autoLaunchTab": {
+    "message": "Otomatik Aç"
+  },
+  "showOfflineChannels": {
+    "message": "Takip Edilenler'de çevrimdışı kanalları göster"
+  },
+  "displaySettings": {
+    "message": "Görüntü Ayarları"
+  },
+  "autoRefreshPopup": {
+    "message": "Takip Edilenler sekmesini otomatik yenile"
+  },
+  "optionsBack": {
+    "message": "Geri"
+  },
+  "dndTitle": {
+    "message": "Rahatsız Etme"
+  },
+  "dndStart": {
+    "message": "Başlangıç"
+  },
+  "dndEnd": {
+    "message": "Bitiş"
+  },
+  "dndMuteNotifications": {
+    "message": "Bildirimleri sustur"
+  },
+  "dndMuteSound": {
+    "message": "Sesleri sustur"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Otomatik açmayı durdur"
+  },
+  "searchChannels": {
+    "message": "Kanal ara..."
+  },
+  "clearHistory": {
+    "message": "Temizle"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 yayına başladı"
+  },
+  "soundModeExtension": {
+    "message": "Eklenti sesleri"
+  },
+  "soundModeWindows": {
+    "message": "Windows sesleri"
+  },
+  "bellMain": {
+    "message": "Ana ses"
+  },
+  "bellSub": {
+    "message": "İkincil ses"
+  },
+  "bellSilent": {
+    "message": "Sessiz bildirim"
+  },
+  "bellMuted": {
+    "message": "Bildirim yok"
+  }
+}

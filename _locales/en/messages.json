@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Get notified when your favorite Kick streamers go live with auto-launch capability."
+  },
+  "autoLaunch": {
+    "message": "Auto Launch"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Toggle auto-launch behavior"
+  },
+  "autoLaunchSettings": {
+    "message": "Auto-Launch Settings"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Automatically unmute player after auto-launch<br />(Note: Not visually reflected in the volume slider)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Clear]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Test]"
+  },
+  "customSoundLimitNote": {
+    "message": "Upload audio files up to $1 MB."
+  },
+  "customSoundMainLabel": {
+    "message": "Main sound"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Error: Storage quota exceeded"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Error: Failed to save file"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Error: File size $1 MB exceeds the limit"
+  },
+  "customSoundStatusUnset": {
+    "message": "Not set"
+  },
+  "customSoundSubLabel": {
+    "message": "Secondary sound"
+  },
+  "duplicateTabGuard": {
+    "message": "Duplicate Tab Guard"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Toggle duplicate tab guard when auto-launching. When on, a new tab will not be opened if a tab for the stream is already open."
+  },
+  "fetchError": {
+    "message": "Failed to load channels. Please check that you are logged in to Kick and try again."
+  },
+  "following": {
+    "message": "Following"
+  },
+  "noLiveStreams": {
+    "message": "No live streams."
+  },
+  "notificationSettings": {
+    "message": "Notification Settings"
+  },
+  "notificationSoundVolume": {
+    "message": "Sound volume"
+  },
+  "options": {
+    "message": "Options"
+  },
+  "optionsButtonTooltip": {
+    "message": "Open options page"
+  },
+  "refresh": {
+    "message": "Refresh"
+  },
+  "refreshButtonTooltip": {
+    "message": "Refresh tab content"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Reset auto-launch settings to On when browser restarts"
+  },
+  "showNotificationCheckbox": {
+    "message": "Show notifications"
+  },
+  "testSoundVolume": {
+    "message": "[Test]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Notification History"
+  },
+  "noHistoryYet": {
+    "message": "No history yet."
+  },
+  "errorLoadingHistory": {
+    "message": "Error loading history."
+  },
+  "onlySwitchChannels": {
+    "message": "Only notify switch-on channels"
+  },
+  "silentForOthers": {
+    "message": "Silent notifications for other channels"
+  },
+  "checkInterval": {
+    "message": "Check interval"
+  },
+  "autoLaunchTab": {
+    "message": "Auto Launch"
+  },
+  "showOfflineChannels": {
+    "message": "Show offline channels in Following tab"
+  },
+  "displaySettings": {
+    "message": "Display Settings"
+  },
+  "autoRefreshPopup": {
+    "message": "Auto-refresh Following tab"
+  },
+  "optionsBack": {
+    "message": "Back"
+  },
+  "dndTitle": {
+    "message": "Do Not Disturb"
+  },
+  "dndStart": {
+    "message": "Start"
+  },
+  "dndEnd": {
+    "message": "End"
+  },
+  "dndMuteNotifications": {
+    "message": "Mute notifications"
+  },
+  "dndMuteSound": {
+    "message": "Mute sounds"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Pause auto-launch"
+  },
+  "searchChannels": {
+    "message": "Search channels..."
+  },
+  "clearHistory": {
+    "message": "Clear"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 started streaming"
+  },
+  "soundModeExtension": {
+    "message": "Extension sounds"
+  },
+  "soundModeWindows": {
+    "message": "Windows sounds"
+  },
+  "bellMain": {
+    "message": "Main sound"
+  },
+  "bellSub": {
+    "message": "Secondary sound"
+  },
+  "bellSilent": {
+    "message": "Silent notification"
+  },
+  "bellMuted": {
+    "message": "No notification"
+  }
+}

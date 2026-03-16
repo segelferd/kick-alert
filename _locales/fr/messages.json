@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Recevez des notifications quand vos streamers Kick préférés passent en direct. Ouverture automatique, durée du stream, historique et plus."
+  },
+  "autoLaunch": {
+    "message": "Ouverture Automatique"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Activer/désactiver l'ouverture automatique"
+  },
+  "autoLaunchSettings": {
+    "message": "Paramètres d'Ouverture Automatique"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Activer le son automatiquement à l'ouverture<br />(Remarque: Non reflété dans le curseur de volume)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Effacer]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Tester]"
+  },
+  "customSoundLimitNote": {
+    "message": "Téléchargez des fichiers audio jusqu'à $1 Mo."
+  },
+  "customSoundMainLabel": {
+    "message": "Son principal"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Erreur: Quota de stockage dépassé"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Erreur: Échec de sauvegarde du fichier"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Erreur: Le fichier de $1 Mo dépasse la limite"
+  },
+  "customSoundStatusUnset": {
+    "message": "Non défini"
+  },
+  "customSoundSubLabel": {
+    "message": "Son secondaire"
+  },
+  "duplicateTabGuard": {
+    "message": "Protection contre les Onglets Dupliqués"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Activer/désactiver la protection contre les onglets dupliqués. Si activé, un nouvel onglet ne sera pas ouvert si un onglet pour le stream est déjà ouvert."
+  },
+  "fetchError": {
+    "message": "Échec du chargement des chaînes. Vérifiez que vous êtes connecté à Kick et réessayez."
+  },
+  "following": {
+    "message": "Abonnements"
+  },
+  "noLiveStreams": {
+    "message": "Aucun stream en direct."
+  },
+  "notificationSettings": {
+    "message": "Paramètres de Notification"
+  },
+  "notificationSoundVolume": {
+    "message": "Volume du son"
+  },
+  "options": {
+    "message": "Options"
+  },
+  "optionsButtonTooltip": {
+    "message": "Ouvrir la page des options"
+  },
+  "refresh": {
+    "message": "Actualiser"
+  },
+  "refreshButtonTooltip": {
+    "message": "Actualiser le contenu de l'onglet"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Réinitialiser l'ouverture automatique au redémarrage du navigateur"
+  },
+  "showNotificationCheckbox": {
+    "message": "Afficher les notifications"
+  },
+  "testSoundVolume": {
+    "message": "[Tester]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Historique des notifications"
+  },
+  "noHistoryYet": {
+    "message": "Pas encore d'historique."
+  },
+  "errorLoadingHistory": {
+    "message": "Erreur lors du chargement de l'historique."
+  },
+  "onlySwitchChannels": {
+    "message": "Notifier uniquement les chaînes activées"
+  },
+  "silentForOthers": {
+    "message": "Notifications silencieuses pour les autres chaînes"
+  },
+  "checkInterval": {
+    "message": "Intervalle de vérification"
+  },
+  "autoLaunchTab": {
+    "message": "Ouverture Automatique"
+  },
+  "showOfflineChannels": {
+    "message": "Afficher les chaînes hors ligne dans l'onglet Following"
+  },
+  "displaySettings": {
+    "message": "Paramètres d'affichage"
+  },
+  "autoRefreshPopup": {
+    "message": "Actualiser automatiquement l'onglet Suivi"
+  },
+  "optionsBack": {
+    "message": "Retour"
+  },
+  "dndTitle": {
+    "message": "Ne pas déranger"
+  },
+  "dndStart": {
+    "message": "Début"
+  },
+  "dndEnd": {
+    "message": "Fin"
+  },
+  "dndMuteNotifications": {
+    "message": "Couper les notifications"
+  },
+  "dndMuteSound": {
+    "message": "Couper les sons"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Suspendre l'ouverture auto"
+  },
+  "searchChannels": {
+    "message": "Rechercher..."
+  },
+  "clearHistory": {
+    "message": "Effacer"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 est en direct"
+  },
+  "soundModeExtension": {
+    "message": "Sons de l'extension"
+  },
+  "soundModeWindows": {
+    "message": "Sons Windows"
+  },
+  "bellMain": {
+    "message": "Son principal"
+  },
+  "bellSub": {
+    "message": "Son secondaire"
+  },
+  "bellSilent": {
+    "message": "Notification silencieuse"
+  },
+  "bellMuted": {
+    "message": "Aucune notification"
+  }
+}
