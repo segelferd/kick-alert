@@ -482,3 +482,9 @@ body {
 .lang-item.active .lang-name {
   color: var(--text-primary);
 }
+
+/* Buy Me a Coffee */
+.opt-bmc-section { text-align: center; padding: 12px 0 8px; }
+.opt-bmc-link { display: inline-block; width: 45%; transition: opacity 0.2s; }
+.opt-bmc-link:hover { opacity: 0.85; }
+.opt-bmc-img { width: 100%; height: auto; border-radius: 8px; }

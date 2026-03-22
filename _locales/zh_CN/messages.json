@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "当您喜欢的 Kick 主播开始直播时收到通知，并支持自动打开功能。"
+  },
+  "autoLaunch": {
+    "message": "自动打开"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "切换自动打开行为"
+  },
+  "autoLaunchSettings": {
+    "message": "自动打开设置"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "自动打开后自动取消静音<br />（注意：不会在音量滑块上显示）"
+  },
+  "customSoundButtonClear": {
+    "message": "[清除]"
+  },
+  "customSoundButtonTest": {
+    "message": "[测试]"
+  },
+  "customSoundLimitNote": {
+    "message": "上传不超过 $1 MB 的音频文件。"
+  },
+  "customSoundMainLabel": {
+    "message": "主提示音"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "错误：存储配额已超"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "错误：文件保存失败"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "错误：文件大小 $1 MB 超出限制"
+  },
+  "customSoundStatusUnset": {
+    "message": "未设置"
+  },
+  "customSoundSubLabel": {
+    "message": "次提示音"
+  },
+  "duplicateTabGuard": {
+    "message": "重复标签页保护"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "切换重复标签页保护。开启后，如果直播标签页已打开，则不会再打开新的标签页。"
+  },
+  "fetchError": {
+    "message": "加载频道失败。请确认您已登录 Kick 并重试。"
+  },
+  "following": {
+    "message": "关注列表"
+  },
+  "noLiveStreams": {
+    "message": "暂无直播。"
+  },
+  "notificationSettings": {
+    "message": "通知设置"
+  },
+  "notificationSoundVolume": {
+    "message": "音量"
+  },
+  "options": {
+    "message": "设置"
+  },
+  "optionsButtonTooltip": {
+    "message": "打开设置页面"
+  },
+  "refresh": {
+    "message": "刷新"
+  },
+  "refreshButtonTooltip": {
+    "message": "刷新标签页内容"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "浏览器重启时重置自动打开设置"
+  },
+  "showNotificationCheckbox": {
+    "message": "显示通知"
+  },
+  "testSoundVolume": {
+    "message": "[测试]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "通知历史"
+  },
+  "noHistoryYet": {
+    "message": "暂无历史记录。"
+  },
+  "errorLoadingHistory": {
+    "message": "加载历史记录出错。"
+  },
+  "onlySwitchChannels": {
+    "message": "仅通知已开启的频道"
+  },
+  "silentForOthers": {
+    "message": "其他频道静音通知"
+  },
+  "checkInterval": {
+    "message": "检查间隔"
+  },
+  "autoLaunchTab": {
+    "message": "自动打开"
+  },
+  "showOfflineChannels": {
+    "message": "在关注列表中显示离线频道"
+  },
+  "displaySettings": {
+    "message": "显示设置"
+  },
+  "autoRefreshPopup": {
+    "message": "自动刷新关注列表"
+  },
+  "optionsBack": {
+    "message": "返回"
+  },
+  "dndTitle": {
+    "message": "免打扰"
+  },
+  "dndStart": {
+    "message": "开始"
+  },
+  "dndEnd": {
+    "message": "结束"
+  },
+  "dndMuteNotifications": {
+    "message": "静音通知"
+  },
+  "dndMuteSound": {
+    "message": "静音提示音"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "暂停自动打开"
+  },
+  "searchChannels": {
+    "message": "搜索频道..."
+  },
+  "clearHistory": {
+    "message": "清除"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 开始了直播"
+  },
+  "soundModeExtension": {
+    "message": "扩展提示音"
+  },
+  "soundModeWindows": {
+    "message": "Windows 提示音"
+  },
+  "bellMain": {
+    "message": "主提示音"
+  },
+  "bellSub": {
+    "message": "次提示音"
+  },
+  "bellSilent": {
+    "message": "静音通知"
+  },
+  "bellMuted": {
+    "message": "无通知"
+  }
+}

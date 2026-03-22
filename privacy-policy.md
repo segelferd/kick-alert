@@ -77,6 +77,7 @@ Any changes to this privacy policy will be reflected in this document with an up
 
 If you find KickAlert useful, consider supporting the project:
 
+- **Buy Me a Coffee:** [buymeacoffee.com/segelferd](https://buymeacoffee.com/segelferd)
 - **GitHub Sponsors:** [github.com/sponsors/segelferd](https://github.com/sponsors/segelferd)
 - **Bitcoin:** `bc1q7cmtp9vd6wmztxun0702whyve53u5xld2g82qp`
 

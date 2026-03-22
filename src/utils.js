@@ -12,6 +12,10 @@ const SUPPORTED_LANGUAGES = [
   { code: 'pt_BR', label: 'PT', name: 'Português' },
   { code: 'ar',    label: 'SA', name: 'العربية' },
   { code: 'ja',    label: 'JP', name: '日本語' },
+  { code: 'ko',    label: 'KR', name: '한국어' },
+  { code: 'ru',    label: 'RU', name: 'Русский' },
+  { code: 'it',    label: 'IT', name: 'Italiano' },
+  { code: 'zh_CN', label: 'CN', name: '中文' },
 ];
 
 // Cache for loaded locale messages

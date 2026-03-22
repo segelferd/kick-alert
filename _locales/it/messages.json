@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Ricevi notifiche quando i tuoi streamer Kick preferiti vanno in diretta, con apertura automatica."
+  },
+  "autoLaunch": {
+    "message": "Apertura automatica"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Attiva/disattiva il comportamento di apertura automatica"
+  },
+  "autoLaunchSettings": {
+    "message": "Impostazioni apertura automatica"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Riattiva automaticamente l'audio del player dopo l'apertura automatica<br />(Nota: non si riflette visivamente nel cursore del volume)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Cancella]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Test]"
+  },
+  "customSoundLimitNote": {
+    "message": "Carica file audio fino a $1 MB."
+  },
+  "customSoundMainLabel": {
+    "message": "Suono principale"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Errore: quota di archiviazione superata"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Errore: impossibile salvare il file"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Errore: dimensione file $1 MB supera il limite"
+  },
+  "customSoundStatusUnset": {
+    "message": "Non impostato"
+  },
+  "customSoundSubLabel": {
+    "message": "Suono secondario"
+  },
+  "duplicateTabGuard": {
+    "message": "Protezione schede duplicate"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Attiva/disattiva la protezione schede duplicate. Quando attivo, non verrà aperta una nuova scheda se lo stream è già aperto."
+  },
+  "fetchError": {
+    "message": "Impossibile caricare i canali. Verifica di aver effettuato l'accesso a Kick e riprova."
+  },
+  "following": {
+    "message": "Seguiti"
+  },
+  "noLiveStreams": {
+    "message": "Nessuna diretta in corso."
+  },
+  "notificationSettings": {
+    "message": "Impostazioni notifiche"
+  },
+  "notificationSoundVolume": {
+    "message": "Volume suono"
+  },
+  "options": {
+    "message": "Opzioni"
+  },
+  "optionsButtonTooltip": {
+    "message": "Apri la pagina delle opzioni"
+  },
+  "refresh": {
+    "message": "Aggiorna"
+  },
+  "refreshButtonTooltip": {
+    "message": "Aggiorna il contenuto della scheda"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Ripristina le impostazioni di apertura automatica al riavvio del browser"
+  },
+  "showNotificationCheckbox": {
+    "message": "Mostra notifiche"
+  },
+  "testSoundVolume": {
+    "message": "[Test]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "Cronologia notifiche"
+  },
+  "noHistoryYet": {
+    "message": "Nessuna cronologia."
+  },
+  "errorLoadingHistory": {
+    "message": "Errore nel caricamento della cronologia."
+  },
+  "onlySwitchChannels": {
+    "message": "Notifica solo i canali attivati"
+  },
+  "silentForOthers": {
+    "message": "Notifiche silenziose per gli altri canali"
+  },
+  "checkInterval": {
+    "message": "Intervallo di controllo"
+  },
+  "autoLaunchTab": {
+    "message": "Apertura automatica"
+  },
+  "showOfflineChannels": {
+    "message": "Mostra canali offline nella scheda Seguiti"
+  },
+  "displaySettings": {
+    "message": "Impostazioni visualizzazione"
+  },
+  "autoRefreshPopup": {
+    "message": "Aggiornamento automatico scheda Seguiti"
+  },
+  "optionsBack": {
+    "message": "Indietro"
+  },
+  "dndTitle": {
+    "message": "Non disturbare"
+  },
+  "dndStart": {
+    "message": "Inizio"
+  },
+  "dndEnd": {
+    "message": "Fine"
+  },
+  "dndMuteNotifications": {
+    "message": "Silenzia notifiche"
+  },
+  "dndMuteSound": {
+    "message": "Silenzia suoni"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Sospendi apertura automatica"
+  },
+  "searchChannels": {
+    "message": "Cerca canali..."
+  },
+  "clearHistory": {
+    "message": "Cancella"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 ha iniziato la diretta"
+  },
+  "soundModeExtension": {
+    "message": "Suoni estensione"
+  },
+  "soundModeWindows": {
+    "message": "Suoni Windows"
+  },
+  "bellMain": {
+    "message": "Suono principale"
+  },
+  "bellSub": {
+    "message": "Suono secondario"
+  },
+  "bellSilent": {
+    "message": "Notifica silenziosa"
+  },
+  "bellMuted": {
+    "message": "Nessuna notifica"
+  }
+}

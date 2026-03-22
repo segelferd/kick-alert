@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "Получайте уведомления, когда ваши любимые стримеры Kick начинают трансляцию, с функцией автоматического открытия."
+  },
+  "autoLaunch": {
+    "message": "Автозапуск"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Переключить поведение автозапуска"
+  },
+  "autoLaunchSettings": {
+    "message": "Настройки автозапуска"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Автоматически включать звук после автозапуска<br />(Примечание: не отображается на ползунке громкости)"
+  },
+  "customSoundButtonClear": {
+    "message": "[Очистить]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Тест]"
+  },
+  "customSoundLimitNote": {
+    "message": "Загружайте аудиофайлы размером до $1 МБ."
+  },
+  "customSoundMainLabel": {
+    "message": "Основной звук"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Ошибка: превышена квота хранилища"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Ошибка: не удалось сохранить файл"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Ошибка: размер файла $1 МБ превышает лимит"
+  },
+  "customSoundStatusUnset": {
+    "message": "Не задан"
+  },
+  "customSoundSubLabel": {
+    "message": "Дополнительный звук"
+  },
+  "duplicateTabGuard": {
+    "message": "Защита от дублей"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Переключить защиту от дублирования вкладок. При включении новая вкладка не откроется, если стрим уже открыт."
+  },
+  "fetchError": {
+    "message": "Не удалось загрузить каналы. Убедитесь, что вы вошли в Kick, и попробуйте снова."
+  },
+  "following": {
+    "message": "Подписки"
+  },
+  "noLiveStreams": {
+    "message": "Нет прямых трансляций."
+  },
+  "notificationSettings": {
+    "message": "Настройки уведомлений"
+  },
+  "notificationSoundVolume": {
+    "message": "Громкость звука"
+  },
+  "options": {
+    "message": "Настройки"
+  },
+  "optionsButtonTooltip": {
+    "message": "Открыть страницу настроек"
+  },
+  "refresh": {
+    "message": "Обновить"
+  },
+  "refreshButtonTooltip": {
+    "message": "Обновить содержимое вкладки"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Сбросить настройки автозапуска при перезагрузке браузера"
+  },
+  "showNotificationCheckbox": {
+    "message": "Показывать уведомления"
+  },
+  "testSoundVolume": {
+    "message": "[Тест]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "История уведомлений"
+  },
+  "noHistoryYet": {
+    "message": "Пока нет записей."
+  },
+  "errorLoadingHistory": {
+    "message": "Ошибка загрузки истории."
+  },
+  "onlySwitchChannels": {
+    "message": "Уведомлять только включённые каналы"
+  },
+  "silentForOthers": {
+    "message": "Тихие уведомления для остальных каналов"
+  },
+  "checkInterval": {
+    "message": "Интервал проверки"
+  },
+  "autoLaunchTab": {
+    "message": "Автозапуск"
+  },
+  "showOfflineChannels": {
+    "message": "Показывать офлайн-каналы во вкладке Подписки"
+  },
+  "displaySettings": {
+    "message": "Настройки отображения"
+  },
+  "autoRefreshPopup": {
+    "message": "Автообновление вкладки Подписки"
+  },
+  "optionsBack": {
+    "message": "Назад"
+  },
+  "dndTitle": {
+    "message": "Не беспокоить"
+  },
+  "dndStart": {
+    "message": "Начало"
+  },
+  "dndEnd": {
+    "message": "Конец"
+  },
+  "dndMuteNotifications": {
+    "message": "Отключить уведомления"
+  },
+  "dndMuteSound": {
+    "message": "Отключить звуки"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Приостановить автозапуск"
+  },
+  "searchChannels": {
+    "message": "Поиск каналов..."
+  },
+  "clearHistory": {
+    "message": "Очистить"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 начал трансляцию"
+  },
+  "soundModeExtension": {
+    "message": "Звуки расширения"
+  },
+  "soundModeWindows": {
+    "message": "Звуки Windows"
+  },
+  "bellMain": {
+    "message": "Основной звук"
+  },
+  "bellSub": {
+    "message": "Дополнительный звук"
+  },
+  "bellSilent": {
+    "message": "Тихое уведомление"
+  },
+  "bellMuted": {
+    "message": "Без уведомления"
+  }
+}

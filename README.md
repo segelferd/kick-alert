@@ -17,14 +17,14 @@ Get notified when your favorite Kick streamers go live. Auto-launch streams, con
 - **Custom Sounds** — Upload your own notification sounds for main and secondary alerts (up to 2 MB each)
 - **Adjustable Check Interval** — 30–300 seconds
 - **Auto-Unmute** — Automatically unmute player after auto-launch
-- **8 Languages** — EN, TR, DE, FR, ES, PT-BR, AR, JA (runtime switchable)
+- **12 Languages** — EN, TR, DE, FR, ES, PT-BR, AR, JA, KO, RU, IT, ZH-CN (runtime switchable)
 - **Suspend Mode** — Temporarily pause all auto-launches
 - **Stream Duration & Viewer Count** — Live time counter with K/M formatted viewer counts and category tags
 
 ## Installation
 
 ### Chrome Web Store
-Install from the [Chrome Web Store](https://chromewebstore.google.com/) (search "KickAlert").
+Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/kickalert/dlchkgjgcmbgpbdiiipibnpjfhipkbac).
 
 ### Manual Install (Developer Mode)
 1. Download or clone this repository
@@ -56,12 +56,14 @@ kickalert/
 │   └── offscreen.html     # Offscreen document for audio
 ├── css/
 │   ├── popup.css          # Popup styles — Kick-themed dark UI
-│   ├── multistream.css    # Multi-stream viewer styles
-│   └── option.css         # Options styles (legacy)
+│   └── multistream.css    # Multi-stream viewer styles
 ├── icons/                 # Extension icons (48px, 128px)
+├── images/
+│   ├── bmc/               # Buy Me a Coffee button
+│   ├── default-profile-pictures/
+│   └── no_stream/
 ├── sounds/                # Default notification sounds (main + sub)
-├── images/                # Default profile pictures
-└── _locales/              # i18n messages (8 languages)
+└── _locales/              # i18n messages (12 languages)
     ├── en/
     ├── tr/
     ├── de/
@@ -69,7 +71,11 @@ kickalert/
     ├── es/
     ├── pt_BR/
     ├── ar/
-    └── ja/
+    ├── ja/
+    ├── ko/
+    ├── ru/
+    ├── it/
+    └── zh_CN/
 ```
 
 ## Permissions
@@ -90,7 +96,7 @@ kickalert/
 - **Manifest V3** — Modern Chrome extension architecture
 - **chrome.alarms** — Reliable scheduling that survives service worker sleep cycles
 - **Persisted state** — Live channel tracking and notification click URLs survive worker restarts
-- **Custom i18n** — Runtime language switching (Chrome's built-in i18n doesn't support this)
+- **Custom i18n** — Runtime language switching with notification language matching user selection
 - **Smart rendering** — Multi-stream iframe management without reload on reorder
 
 ## Privacy
@@ -101,6 +107,7 @@ KickAlert does not collect, transmit, or store any personal data externally. All
 
 If you find KickAlert useful, consider supporting the project:
 
+- **Buy Me a Coffee:** [buymeacoffee.com/segelferd](https://buymeacoffee.com/segelferd)
 - **GitHub Sponsors:** [github.com/sponsors/segelferd](https://github.com/sponsors/segelferd)
 - **Bitcoin:** `bc1q7cmtp9vd6wmztxun0702whyve53u5xld2g82qp`
 

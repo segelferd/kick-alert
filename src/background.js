@@ -22,6 +22,8 @@ let cachedChannels = [];
 async function initialize() {
   console.log('[KickAlert] Initializing...');
 
+  await Utils.initI18n();
+
   const resetOnRestart = await Storage.getResetSuspendOnRestart();
   if (resetOnRestart) await Storage.remove(StorageKeys.SUSPEND_FROM_DATE);
 
@@ -143,6 +145,13 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
       changes[StorageKeys.DND_END] || changes[StorageKeys.SUSPEND_FROM_DATE]) {
     await updateBadgeColor();
   }
+  if (changes[StorageKeys.USER_LANGUAGE]) {
+    const newLang = changes[StorageKeys.USER_LANGUAGE].newValue;
+    if (newLang) {
+      console.log(`[KickAlert] Language changed to ${newLang} — reloading locale`);
+      await Utils.loadLocale(newLang);
+    }
+  }
 });
 
 // ─── Channel Check ───
@@ -239,7 +248,7 @@ async function checkChannels() {
 
 async function sendNotification(ch, notifiedLives, isSilent) {
   const id = `kickalert-${ch.channelSlug}-${Date.now()}`;
-  const title = chrome.i18n.getMessage('notifStartedStreaming', [ch.userUsername])
+  const title = Utils.i18n('notifStartedStreaming', [ch.userUsername])
     || `${ch.userUsername} started streaming`;
 
   chrome.notifications.create(id, {

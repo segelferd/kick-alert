@@ -1,0 +1,167 @@
+{
+  "appDescription": {
+    "message": "좋아하는 Kick 스트리머가 방송을 시작하면 알림을 받고 자동으로 열기 기능을 사용하세요."
+  },
+  "autoLaunch": {
+    "message": "자동 열기"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "자동 열기 동작 전환"
+  },
+  "autoLaunchSettings": {
+    "message": "자동 열기 설정"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "자동 열기 후 플레이어 음소거 자동 해제<br />(참고: 볼륨 슬라이더에 시각적으로 반영되지 않음)"
+  },
+  "customSoundButtonClear": {
+    "message": "[지우기]"
+  },
+  "customSoundButtonTest": {
+    "message": "[테스트]"
+  },
+  "customSoundLimitNote": {
+    "message": "최대 $1 MB 오디오 파일을 업로드하세요."
+  },
+  "customSoundMainLabel": {
+    "message": "메인 소리"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "오류: 저장 용량 초과"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "오류: 파일 저장 실패"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "오류: 파일 크기 $1 MB 제한 초과"
+  },
+  "customSoundStatusUnset": {
+    "message": "미설정"
+  },
+  "customSoundSubLabel": {
+    "message": "보조 소리"
+  },
+  "duplicateTabGuard": {
+    "message": "중복 탭 방지"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "자동 열기 시 중복 탭 방지를 전환합니다. 활성화하면 이미 열린 스트림 탭이 있을 경우 새 탭을 열지 않습니다."
+  },
+  "fetchError": {
+    "message": "채널 로드에 실패했습니다. Kick에 로그인되어 있는지 확인 후 다시 시도하세요."
+  },
+  "following": {
+    "message": "팔로잉"
+  },
+  "noLiveStreams": {
+    "message": "현재 라이브 스트림이 없습니다."
+  },
+  "notificationSettings": {
+    "message": "알림 설정"
+  },
+  "notificationSoundVolume": {
+    "message": "소리 볼륨"
+  },
+  "options": {
+    "message": "옵션"
+  },
+  "optionsButtonTooltip": {
+    "message": "옵션 페이지 열기"
+  },
+  "refresh": {
+    "message": "새로고침"
+  },
+  "refreshButtonTooltip": {
+    "message": "탭 내용 새로고침"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "브라우저 재시작 시 자동 열기 설정 초기화"
+  },
+  "showNotificationCheckbox": {
+    "message": "알림 표시"
+  },
+  "testSoundVolume": {
+    "message": "[테스트]"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "history": {
+    "message": "알림 기록"
+  },
+  "noHistoryYet": {
+    "message": "아직 기록이 없습니다."
+  },
+  "errorLoadingHistory": {
+    "message": "기록 로드 오류."
+  },
+  "onlySwitchChannels": {
+    "message": "활성화된 채널만 알림"
+  },
+  "silentForOthers": {
+    "message": "다른 채널은 무음 알림"
+  },
+  "checkInterval": {
+    "message": "확인 간격"
+  },
+  "autoLaunchTab": {
+    "message": "자동 열기"
+  },
+  "showOfflineChannels": {
+    "message": "팔로잉 탭에서 오프라인 채널 표시"
+  },
+  "displaySettings": {
+    "message": "화면 설정"
+  },
+  "autoRefreshPopup": {
+    "message": "팔로잉 탭 자동 새로고침"
+  },
+  "optionsBack": {
+    "message": "뒤로"
+  },
+  "dndTitle": {
+    "message": "방해 금지"
+  },
+  "dndStart": {
+    "message": "시작"
+  },
+  "dndEnd": {
+    "message": "종료"
+  },
+  "dndMuteNotifications": {
+    "message": "알림 끄기"
+  },
+  "dndMuteSound": {
+    "message": "소리 끄기"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "자동 열기 일시정지"
+  },
+  "searchChannels": {
+    "message": "채널 검색..."
+  },
+  "clearHistory": {
+    "message": "지우기"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 방송을 시작했습니다"
+  },
+  "soundModeExtension": {
+    "message": "확장 프로그램 소리"
+  },
+  "soundModeWindows": {
+    "message": "Windows 소리"
+  },
+  "bellMain": {
+    "message": "메인 소리"
+  },
+  "bellSub": {
+    "message": "보조 소리"
+  },
+  "bellSilent": {
+    "message": "무음 알림"
+  },
+  "bellMuted": {
+    "message": "알림 없음"
+  }
+}
