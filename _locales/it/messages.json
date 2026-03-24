@@ -78,7 +78,7 @@
     "message": "Ripristina le impostazioni di apertura automatica al riavvio del browser"
   },
   "showNotificationCheckbox": {
-    "message": "Mostra notifiche"
+    "message": "Mostra notifiche desktop"
   },
   "testSoundVolume": {
     "message": "[Test]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "Nessuna notifica"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Avvisi personalizzati evidenti — difficili da perdere"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Suono di sistema standard — può passare inosservato"
+  },
+  "cloudSyncTitle": {
+    "message": "Sincronizzazione cloud"
+  },
+  "cloudSyncNote": {
+    "message": "Sincronizza le impostazioni tra i dispositivi tramite il tuo account Google. I suoni personalizzati e la cronologia delle notifiche non vengono sincronizzati."
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "themeDark": {
+    "message": "Scuro"
+  },
+  "themeLight": {
+    "message": "Chiaro"
+  },
+  "groupAll": {
+    "message": "Tutti"
+  },
+  "groupsTitle": {
+    "message": "Gruppi canali"
+  },
+  "groupAddPlaceholder": {
+    "message": "Nuovo gruppo..."
+  },
+  "groupAssign": {
+    "message": "Assegna gruppo"
   }
 }

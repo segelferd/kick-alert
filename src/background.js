@@ -5,7 +5,10 @@
  * © 2025 Segelferd. All rights reserved.
  */
 
-importScripts('./storage.js', './kickapi.js', './utils.js');
+// Chrome uses service_worker (needs importScripts), Firefox uses background.scripts (auto-loaded)
+if (typeof importScripts === 'function') {
+  importScripts('./storage.js', './kickapi.js', './utils.js');
+}
 
 const BADGE_ACTIVE = '#53FC18';
 const BADGE_SUSPENDED = '#606060';
@@ -16,6 +19,36 @@ const MIN_ALARM_PERIOD = 0.5;
 const NOTIFIED_LIVES_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
 let cachedChannels = [];
+const avatarCache = {}; // slug → dataUrl
+const AVATAR_CACHE_MAX = 50;
+
+// ─── Avatar Helper ───
+
+async function getAvatarDataUrl(ch) {
+  if (!ch.profilePic) return chrome.runtime.getURL('icons/icon128.png');
+  const slug = ch.channelSlug;
+  if (avatarCache[slug]) return avatarCache[slug];
+  try {
+    const resp = await fetch(ch.profilePic);
+    if (!resp.ok) throw new Error(resp.status);
+    const blob = await resp.blob();
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    // Evict oldest entries if cache is full
+    const keys = Object.keys(avatarCache);
+    if (keys.length >= AVATAR_CACHE_MAX) {
+      delete avatarCache[keys[0]];
+    }
+    avatarCache[slug] = dataUrl;
+    return dataUrl;
+  } catch {
+    return chrome.runtime.getURL('icons/icon128.png');
+  }
+}
 
 // ─── Init ───
 
@@ -23,6 +56,8 @@ async function initialize() {
   console.log('[KickAlert] Initializing...');
 
   await Utils.initI18n();
+  await Storage.initSyncState();
+  await Storage.pullFromSync();
 
   const resetOnRestart = await Storage.getResetSuspendOnRestart();
   if (resetOnRestart) await Storage.remove(StorageKeys.SUSPEND_FROM_DATE);
@@ -250,10 +285,11 @@ async function sendNotification(ch, notifiedLives, isSilent) {
   const id = `kickalert-${ch.channelSlug}-${Date.now()}`;
   const title = Utils.i18n('notifStartedStreaming', [ch.userUsername])
     || `${ch.userUsername} started streaming`;
+  const iconUrl = await getAvatarDataUrl(ch);
 
   chrome.notifications.create(id, {
     type: 'basic',
-    iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+    iconUrl: iconUrl,
     title: title,
     message: ch.sessionTitle || '-',
     silent: isSilent,
@@ -282,8 +318,10 @@ async function shouldAutoOpen(ch) {
 // ─── Sound via Offscreen ───
 
 async function startOffscreen() {
+  // Firefox doesn't support offscreen API — skip silently
+  if (!chrome.offscreen) return;
   try {
-    const hasDoc = await chrome.offscreen?.hasDocument?.();
+    const hasDoc = await chrome.offscreen.hasDocument?.();
     if (hasDoc) return;
     await chrome.offscreen.createDocument({
       url: chrome.runtime.getURL('html/offscreen.html'),
@@ -296,20 +334,37 @@ async function startOffscreen() {
 }
 
 async function playSound(type) {
-  // Don't play extension sound if user chose Windows notification sounds
   const soundMode = await Storage.getSoundMode();
   if (soundMode === 'windows') return;
 
-  await startOffscreen();
   const volume = (await Storage.getSoundVolume()) / 100;
   const customFile = await Storage.getCustomSoundFile(type === 'NEW_LIVE_MAIN' ? 'main' : 'sub');
-  try {
-    await chrome.runtime.sendMessage({
-      messageType: 'PLAY_SOUND',
-      options: { sound: type, volume, customSoundFile: customFile?.dataUrl || null },
-    });
-  } catch (e) {
-    console.warn('[KickAlert] Sound send error:', e.message);
+
+  if (chrome.offscreen) {
+    // Chrome: use offscreen document for audio
+    await startOffscreen();
+    try {
+      await chrome.runtime.sendMessage({
+        messageType: 'PLAY_SOUND',
+        options: { sound: type, volume, customSoundFile: customFile?.dataUrl || null },
+      });
+    } catch (e) {
+      console.warn('[KickAlert] Sound send error:', e.message);
+    }
+  } else {
+    // Firefox: play audio directly in background script
+    try {
+      const SoundPaths = {
+        NEW_LIVE_MAIN: chrome.runtime.getURL('sounds/new_live_main.mp3'),
+        NEW_LIVE_SUB: chrome.runtime.getURL('sounds/new_live_sub.mp3'),
+      };
+      const src = customFile?.dataUrl || SoundPaths[type] || SoundPaths.NEW_LIVE_SUB;
+      const audio = new Audio(src);
+      audio.volume = volume;
+      await audio.play();
+    } catch (e) {
+      console.warn('[KickAlert] Firefox audio error:', e.message);
+    }
   }
 }
 
@@ -331,6 +386,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   await initialize();
 });
 chrome.runtime.onStartup.addListener(() => initialize());
+
+// Fallback: if neither onInstalled nor onStartup fired (e.g. worker woke from alarm),
+// initialize only if alarm doesn't exist yet (means init hasn't run)
+chrome.alarms.get(ALARM_NAME).then(alarm => {
+  if (!alarm) initialize();
+});
 
 chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   if (msg.type === 'GET_CHANNELS') {
@@ -356,7 +417,12 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       .catch(() => respond({ success: false }));
     return true;
   }
+  if (msg.type === 'GET_CHANNEL_LIVE_DETAILS') {
+    KickAPI.getChannelLiveDetails(msg.slug)
+      .then(details => respond({ success: true, details }))
+      .catch(() => respond({ success: false }));
+    return true;
+  }
 });
 
 self.onmessage = () => {};
-initialize();

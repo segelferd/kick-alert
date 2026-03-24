@@ -47,6 +47,9 @@
 
   <div class="content-container">
     <div id="following-panel" class="tab-content active">
+      <div id="group-filter-bar" class="group-filter-bar" style="display:none;">
+        <button class="group-chip active" data-group="__all__" data-i18n="groupAll"></button>
+      </div>
       <div id="following-list" class="channels-container"></div>
     </div>
     <div id="autolaunch-panel" class="tab-content">
@@ -101,6 +104,27 @@
           <input type="checkbox" id="opt-show-offline" />
           <span data-i18n="showOfflineChannels"></span>
         </label>
+        <div class="opt-divider"></div>
+        <div class="opt-theme-row">
+          <span class="material-icons-outlined" style="font-size:16px;">dark_mode</span>
+          <span data-i18n="themeLabel"></span>
+          <div class="opt-theme-btns">
+            <button class="opt-theme-btn" id="opt-theme-dark" data-theme="dark" data-i18n="themeDark"></button>
+            <button class="opt-theme-btn" id="opt-theme-light" data-theme="light" data-i18n="themeLight"></button>
+          </div>
+        </div>
+        <div class="opt-divider"></div>
+        <div class="opt-groups-section">
+          <div class="opt-groups-header">
+            <span class="material-icons-outlined" style="font-size:16px;">label</span>
+            <span data-i18n="groupsTitle"></span>
+          </div>
+          <div id="opt-groups-list" class="opt-groups-list"></div>
+          <div class="opt-groups-add">
+            <input type="text" id="opt-group-input" class="opt-group-input" data-i18n-placeholder="groupAddPlaceholder" placeholder="New group..." maxlength="20" />
+            <button id="opt-group-add-btn" class="opt-text-btn">+</button>
+          </div>
+        </div>
       </div>
       <div class="opt-section">
         <div class="opt-section-title">
@@ -113,11 +137,11 @@
         </label>
         <div class="opt-divider"></div>
         <div class="opt-sound-mode">
-          <label class="opt-radio-row">
+          <label class="opt-radio-row" data-i18n-title="soundModeExtensionTooltip">
             <input type="radio" name="sound-mode" id="opt-sound-extension" value="extension" checked />
             <span data-i18n="soundModeExtension"></span>
           </label>
-          <label class="opt-radio-row">
+          <label class="opt-radio-row" data-i18n-title="soundModeWindowsTooltip">
             <input type="radio" name="sound-mode" id="opt-sound-windows" value="windows" />
             <span data-i18n="soundModeWindows"></span>
           </label>
@@ -202,10 +226,23 @@
           </div>
         </div>
       </div>
+      <!-- Cloud Sync Section -->
+      <div class="opt-section">
+        <div class="opt-dnd-header">
+          <span class="material-icons-outlined" style="font-size:16px;">cloud_sync</span>
+          <span data-i18n="cloudSyncTitle"></span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-cloud-sync" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="opt-cloud-sync-note" id="opt-cloud-sync-note" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;" data-i18n="cloudSyncNote"></div>
+      </div>
       <!-- Buy Me a Coffee -->
       <div class="opt-section opt-bmc-section">
         <a href="https://buymeacoffee.com/segelferd" target="_blank" id="bmc-link" class="opt-bmc-link">
-          <img src="../images/bmc/bmc-button.png" alt="Buy me a coffee" class="opt-bmc-img" />
+          <img src="../images/bmc/bmc-button.png" alt="Buy me a coffee" class="opt-bmc-img bmc-dark" />
+          <img src="../images/bmc/bmc-button-dark.png" alt="Buy me a coffee" class="opt-bmc-img bmc-light" />
         </a>
       </div>
     </div>

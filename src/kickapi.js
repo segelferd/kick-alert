@@ -71,6 +71,49 @@ const KickAPI = {
   },
 
   /**
+   * Get extra details for a live channel (thumbnail, startTime) in one call
+   */
+  async getChannelLiveDetails(slug) {
+    try {
+      const response = await this.fetchKick(`https://kick.com/api/v2/channels/${slug}`);
+      const data = await response.json();
+      const ls = data?.livestream;
+      if (!ls) return null;
+
+      let thumbnailUrl = '';
+
+      // Strategy 1: Try thumbnail object from API (images.kick.com URLs work)
+      const thumb = ls.thumbnail;
+      if (thumb) {
+        if (typeof thumb === 'string') {
+          if (!thumb.includes('stream.kick.com')) thumbnailUrl = thumb;
+        } else {
+          // Try srcset first — it uses images.kick.com which is accessible
+          if (thumb.srcset) thumbnailUrl = thumb.srcset.split(' ')[0];
+          else if (thumb.responsive) thumbnailUrl = thumb.responsive.split(' ')[0];
+          // url/src fields use stream.kick.com which is blocked — skip
+          if (!thumbnailUrl && thumb.src && !thumb.src.includes('stream.kick.com')) thumbnailUrl = thumb.src;
+          if (!thumbnailUrl && thumb.url && !thumb.url.includes('stream.kick.com')) thumbnailUrl = thumb.url;
+        }
+      }
+
+      // Strategy 2: Construct from IVS source URL
+      if (!thumbnailUrl && ls.source) {
+        const m = ls.source.match(/\/([A-Za-z0-9]{6,})\/\d{4}\/\d+\/\d+\/\d+\/\d+\/([A-Za-z0-9]+)\/media/);
+        if (m) thumbnailUrl = `https://images.kick.com/video_thumbnails/${m[1]}/${m[2]}/720.webp`;
+      }
+
+      return {
+        startTime: ls.created_at || ls.start_time || null,
+        thumbnailUrl,
+      };
+    } catch (e) {
+      console.warn('[KickAlert] getChannelLiveDetails error:', e.message);
+      return null;
+    }
+  },
+
+  /**
    * Map API response to our domain model
    */
   toDomainChannel(ch) {
@@ -83,7 +126,7 @@ const KickAPI = {
       categoryName: ch.categories?.[0]?.name || ch.category_name || '',
       viewerCount: ch.viewer_count || 0,
       startedAt: ch.start_time || ch.started_at || ch.livestream?.start_time || null,
-      thumbnailUrl: ch.thumbnail || '',
+      thumbnailUrl: (typeof ch.thumbnail === 'object' ? (ch.thumbnail?.url || ch.thumbnail?.src) : ch.thumbnail) || '',
     };
   },
 };

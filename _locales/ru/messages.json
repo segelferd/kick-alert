@@ -78,7 +78,7 @@
     "message": "Сбросить настройки автозапуска при перезагрузке браузера"
   },
   "showNotificationCheckbox": {
-    "message": "Показывать уведомления"
+    "message": "Показывать уведомления на рабочем столе"
   },
   "testSoundVolume": {
     "message": "[Тест]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "Без уведомления"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Заметные пользовательские оповещения — сложно пропустить"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Стандартный системный звук — может затеряться"
+  },
+  "cloudSyncTitle": {
+    "message": "Облачная синхронизация"
+  },
+  "cloudSyncNote": {
+    "message": "Синхронизируйте настройки между устройствами через аккаунт Google. Пользовательские звуки и история уведомлений не синхронизируются."
+  },
+  "themeLabel": {
+    "message": "Тема"
+  },
+  "themeDark": {
+    "message": "Тёмная"
+  },
+  "themeLight": {
+    "message": "Светлая"
+  },
+  "groupAll": {
+    "message": "Все"
+  },
+  "groupsTitle": {
+    "message": "Группы каналов"
+  },
+  "groupAddPlaceholder": {
+    "message": "Новая группа..."
+  },
+  "groupAssign": {
+    "message": "Назначить группу"
   }
 }

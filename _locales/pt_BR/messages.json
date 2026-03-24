@@ -78,7 +78,7 @@
     "message": "Redefinir abertura automática ao reiniciar o navegador"
   },
   "showNotificationCheckbox": {
-    "message": "Mostrar notificações"
+    "message": "Mostrar notificações na área de trabalho"
   },
   "testSoundVolume": {
     "message": "[Testar]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "Sem notificação"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Alertas personalizados marcantes — difíceis de perder"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Som padrão do sistema — pode passar despercebido"
+  },
+  "cloudSyncTitle": {
+    "message": "Sincronização na nuvem"
+  },
+  "cloudSyncNote": {
+    "message": "Sincronize configurações entre dispositivos pela sua conta Google. Sons personalizados e histórico de notificações não são sincronizados."
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "themeDark": {
+    "message": "Escuro"
+  },
+  "themeLight": {
+    "message": "Claro"
+  },
+  "groupAll": {
+    "message": "Todos"
+  },
+  "groupsTitle": {
+    "message": "Grupos de canais"
+  },
+  "groupAddPlaceholder": {
+    "message": "Novo grupo..."
+  },
+  "groupAssign": {
+    "message": "Atribuir grupo"
   }
 }

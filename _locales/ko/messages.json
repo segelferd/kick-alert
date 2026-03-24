@@ -78,7 +78,7 @@
     "message": "브라우저 재시작 시 자동 열기 설정 초기화"
   },
   "showNotificationCheckbox": {
-    "message": "알림 표시"
+    "message": "데스크톱 알림 표시"
   },
   "testSoundVolume": {
     "message": "[테스트]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "알림 없음"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "눈에 띄는 맞춤 알림 — 놓치기 어려움"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "기본 시스템 소리 — 일상에 묻힐 수 있음"
+  },
+  "cloudSyncTitle": {
+    "message": "클라우드 동기화"
+  },
+  "cloudSyncNote": {
+    "message": "Google 계정을 통해 기기 간 설정을 동기화합니다. 맞춤 소리와 알림 기록은 동기화되지 않습니다."
+  },
+  "themeLabel": {
+    "message": "테마"
+  },
+  "themeDark": {
+    "message": "다크"
+  },
+  "themeLight": {
+    "message": "라이트"
+  },
+  "groupAll": {
+    "message": "전체"
+  },
+  "groupsTitle": {
+    "message": "채널 그룹"
+  },
+  "groupAddPlaceholder": {
+    "message": "새 그룹..."
+  },
+  "groupAssign": {
+    "message": "그룹 지정"
   }
 }

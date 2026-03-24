@@ -1,35 +1,40 @@
 # KickAlert
 
-**Chrome Extension — Kick.com Live Stream Notification & Auto-Launch**
+**Chrome & Firefox Extension — Kick.com Live Stream Notification & Auto-Launch**
 
 Get notified when your favorite Kick streamers go live. Auto-launch streams, control notifications per channel, watch multiple streams simultaneously, and never miss a broadcast.
 
 ## Features
 
-- **Live Notifications** — Desktop alerts when followed channels go live
+- **Live Notifications** — Desktop alerts with streamer's avatar when followed channels go live
 - **Auto-Launch** — Automatically open streams in a new tab (per-channel toggle)
-- **Per-Channel Sound Control** — 4-state bell icon for each channel: main sound, secondary sound, silent notification, or fully muted
-- **Multi-Stream Viewer** — Watch multiple Kick channels simultaneously with 5 layout options (Solo, Side-by-Side, Triple, 2×2 Grid, Focus) and drag-drop reorder
-- **Do Not Disturb** — Schedule quiet hours with granular control — mute notifications, sounds, and auto-launch independently
-- **Sound Mode Selection** — Choose between extension sounds (custom audio + volume control) or Windows notification sounds
+- **Per-Channel Sound Control** — 4-state bell icon: main sound, secondary sound, silent notification, or fully muted
+- **Favorite Channels** — Star your top channels, they appear first in the list
+- **Channel Groups** — Create custom groups and filter your following list with one click
+- **Multi-Stream Viewer** — Watch up to 4 Kick channels simultaneously with 5 layouts and drag-drop reorder
+- **Do Not Disturb** — Schedule quiet hours — mute notifications, sounds, and auto-launch independently
+- **Cloud Sync** — Sync settings across devices via your Google account
+- **Dark & Light Theme** — Choose your preferred appearance
+- **Sound Mode Selection** — Extension sounds (custom audio + volume) or Windows notification sounds
 - **Duplicate Tab Guard** — Prevents opening the same stream twice
-- **Notification History** — Browse past live events with timestamps
-- **Custom Sounds** — Upload your own notification sounds for main and secondary alerts (up to 2 MB each)
+- **Notification History** — Browse past live events with timestamps (last 100)
+- **Custom Sounds** — Upload your own notification sounds (up to 2 MB each)
 - **Adjustable Check Interval** — 30–300 seconds
 - **Auto-Unmute** — Automatically unmute player after auto-launch
 - **12 Languages** — EN, TR, DE, FR, ES, PT-BR, AR, JA, KO, RU, IT, ZH-CN (runtime switchable)
-- **Suspend Mode** — Temporarily pause all auto-launches
-- **Stream Duration & Viewer Count** — Live time counter with K/M formatted viewer counts and category tags
 
 ## Installation
 
 ### Chrome Web Store
 Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/kickalert/dlchkgjgcmbgpbdiiipibnpjfhipkbac).
 
+### Firefox Add-ons
+Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickalert/) (coming soon).
+
 ### Manual Install (Developer Mode)
 1. Download or clone this repository
-2. Go to `chrome://extensions/`
-3. Enable **Developer mode** (top right)
+2. Go to `chrome://extensions/` (or `about:debugging` in Firefox)
+3. Enable **Developer mode**
 4. Click **Load unpacked** and select the project folder
 5. Log in to [kick.com](https://kick.com) and follow some channels
 
@@ -37,67 +42,57 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/kic
 
 ```
 kickalert/
-├── manifest.json          # Extension manifest (MV3)
-├── rules.json             # Declarative net request rules
-├── LICENSE                # MIT License
-├── privacy-policy.md      # Privacy policy
+├── manifest.json              # Chrome manifest (MV3)
+├── manifest.firefox.json      # Firefox manifest (MV3)
+├── rules.json                 # Declarative net request rules
+├── LICENSE                    # MIT License
+├── privacy-policy.md          # Privacy policy
 ├── src/
-│   ├── background.js      # Service worker — chrome.alarms monitoring, notifications, auto-launch
-│   ├── popup.js           # Popup UI — tabs, channel cards, bell buttons, options panel
-│   ├── storage.js         # Chrome storage abstraction — all get/set operations
-│   ├── kickapi.js         # Kick.com API client — Bearer auth, cursor pagination
-│   ├── utils.js           # Utility functions — i18n, formatters, slug extraction
-│   ├── content.js         # Content script — auto-unmute on kick.com
-│   ├── offscreen.js       # Audio playback & service worker keep-alive
-│   └── multistream.js     # Multi-stream viewer — layouts, drag-drop, session management
+│   ├── background.js          # Service worker — alarms, notifications, auto-launch
+│   ├── popup.js               # Popup UI — tabs, cards, bells, groups, favorites, options
+│   ├── storage.js             # Storage abstraction — local + optional cloud sync
+│   ├── kickapi.js             # Kick.com API client — auth, pagination, channel details
+│   ├── utils.js               # Utilities — i18n, formatters, slug extraction
+│   ├── content.js             # Content script — auto-unmute on kick.com
+│   ├── offscreen.js           # Audio playback & worker keep-alive (Chrome only)
+│   └── multistream.js         # Multi-stream viewer — layouts, drag-drop
 ├── html/
-│   ├── popup.html         # Popup UI
-│   ├── multistream.html   # Multi-stream viewer page
-│   └── offscreen.html     # Offscreen document for audio
+│   ├── popup.html             # Popup UI
+│   ├── multistream.html       # Multi-stream viewer
+│   └── offscreen.html         # Offscreen document (Chrome only)
 ├── css/
-│   ├── popup.css          # Popup styles — Kick-themed dark UI
-│   └── multistream.css    # Multi-stream viewer styles
-├── icons/                 # Extension icons (48px, 128px)
+│   ├── popup.css              # Popup styles — dark/light theme, Kick-themed
+│   └── multistream.css        # Multi-stream viewer styles
+├── icons/                     # Extension icons (48px, 128px)
 ├── images/
-│   ├── bmc/               # Buy Me a Coffee button
+│   ├── bmc/                   # Buy Me a Coffee buttons (white + dark)
 │   ├── default-profile-pictures/
 │   └── no_stream/
-├── sounds/                # Default notification sounds (main + sub)
-└── _locales/              # i18n messages (12 languages)
-    ├── en/
-    ├── tr/
-    ├── de/
-    ├── fr/
-    ├── es/
-    ├── pt_BR/
-    ├── ar/
-    ├── ja/
-    ├── ko/
-    ├── ru/
-    ├── it/
-    └── zh_CN/
+├── sounds/                    # Default notification sounds (main + sub)
+└── _locales/                  # i18n messages (12 languages)
+    ├── en/ tr/ de/ fr/ es/ pt_BR/ ar/ ja/ ko/ ru/ it/ zh_CN/
 ```
 
 ## Permissions
 
 | Permission | Reason |
 |---|---|
-| `storage` | Save preferences, per-channel sound settings, DND schedule, and notification history |
-| `notifications` | Show desktop notifications when streamers go live |
-| `tabs` | Auto-launch streams, duplicate tab detection, and multi-stream management |
-| `cookies` | Read Kick.com session cookie for API authentication (never sent elsewhere) |
-| `offscreen` | Play custom notification sounds in background |
-| `alarms` | Reliably schedule periodic channel checks (MV3 service workers sleep after ~30s) |
-| `declarativeNetRequestWithHostAccess` | Set referer header for Kick.com API requests |
+| `storage` | Preferences, per-channel sound, favorites, groups, DND, cloud sync, history |
+| `notifications` | Desktop notifications when streamers go live |
+| `tabs` | Auto-launch, duplicate tab detection, multi-stream management |
+| `cookies` | Read Kick.com session cookie for API auth (never sent elsewhere) |
+| `offscreen` | Play custom notification sounds in background (Chrome only) |
+| `alarms` | Reliable periodic channel checks (MV3 workers sleep after ~30s) |
+| `declarativeNetRequestWithHostAccess` | Set referer header for Kick.com API |
 
 ## Technical Highlights
 
-- **Zero dependencies** — Pure vanilla JavaScript, no build step required
-- **Manifest V3** — Modern Chrome extension architecture
-- **chrome.alarms** — Reliable scheduling that survives service worker sleep cycles
-- **Persisted state** — Live channel tracking and notification click URLs survive worker restarts
-- **Custom i18n** — Runtime language switching with notification language matching user selection
-- **Smart rendering** — Multi-stream iframe management without reload on reorder
+- **Zero dependencies** — Pure vanilla JS, no build step
+- **Manifest V3** — Modern extension architecture
+- **Cross-browser** — Chrome + Firefox from single codebase
+- **chrome.alarms** — Reliable scheduling surviving worker sleep
+- **Cloud sync** — Optional chrome.storage.sync with smart exclusion (audio files, history excluded)
+- **Custom i18n** — Runtime language switching, notifications follow user's selected language
 
 ## Privacy
 
@@ -105,10 +100,7 @@ KickAlert does not collect, transmit, or store any personal data externally. All
 
 ## Support
 
-If you find KickAlert useful, consider supporting the project:
-
 - **Buy Me a Coffee:** [buymeacoffee.com/segelferd](https://buymeacoffee.com/segelferd)
-- **GitHub Sponsors:** [github.com/sponsors/segelferd](https://github.com/sponsors/segelferd)
 - **Bitcoin:** `bc1q7cmtp9vd6wmztxun0702whyve53u5xld2g82qp`
 
 ## License

@@ -17,6 +17,7 @@ const BELL_TITLES = { main: 'bellMain', sub: 'bellSub', silent: 'bellSilent', mu
 // ─── Init ───
 
 document.addEventListener('DOMContentLoaded', async () => {
+  await applyTheme();
   await Utils.initI18n();
   setupI18n();
   setupTabs();
@@ -28,6 +29,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   await updateMenuState();
   await startAutoRefresh();
 });
+
+async function applyTheme() {
+  const theme = await Storage.getTheme();
+  document.documentElement.setAttribute('data-theme', theme);
+}
 
 function setupI18n() {
   setText('following-btn', Utils.i18n('following'));
@@ -142,7 +148,18 @@ async function renderFollowing() {
   if (!el) return;
 
   const showOffline = await Storage.getShowOfflineChannels();
+  const favs = await Storage.getFavoriteChannels();
+  const groupMap = await Storage.getChannelGroupMap();
   let list = showOffline ? allChannels : allChannels.filter(c => c.isLive);
+
+  // Group filter
+  const activeGroup = document.querySelector('.group-chip.active')?.dataset.group || '__all__';
+  if (activeGroup !== '__all__') {
+    list = list.filter(c => groupMap[c.channelSlug] === activeGroup);
+  }
+
+  // Build group filter bar
+  await buildGroupFilterBar();
 
   if (list.length === 0) {
     el.innerHTML = `<div class="empty-state">${Utils.i18n('noLiveStreams')}</div>`;
@@ -150,12 +167,51 @@ async function renderFollowing() {
   }
 
   list.sort((a, b) => {
+    const aFav = favs[a.channelSlug] ? 1 : 0;
+    const bFav = favs[b.channelSlug] ? 1 : 0;
     if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
+    if (aFav !== bFav) return bFav - aFav;
     return a.userUsername.localeCompare(b.userUsername);
   });
 
   el.innerHTML = '';
   for (const ch of list) el.appendChild(await channelCard(ch));
+}
+
+async function buildGroupFilterBar() {
+  const bar = document.getElementById('group-filter-bar');
+  if (!bar) return;
+  const groups = await Storage.getChannelGroups();
+  if (groups.length === 0) {
+    bar.style.display = 'none';
+    return;
+  }
+  bar.style.display = 'flex';
+  const activeGroup = bar.querySelector('.group-chip.active')?.dataset.group || '__all__';
+
+  bar.innerHTML = '';
+  // "All" chip
+  const allChip = document.createElement('button');
+  allChip.className = `group-chip ${activeGroup === '__all__' ? 'active' : ''}`;
+  allChip.dataset.group = '__all__';
+  allChip.textContent = Utils.i18n('groupAll');
+  allChip.addEventListener('click', () => { setActiveGroup('__all__'); });
+  bar.appendChild(allChip);
+
+  for (const g of groups) {
+    const chip = document.createElement('button');
+    chip.className = `group-chip ${activeGroup === g ? 'active' : ''}`;
+    chip.dataset.group = g;
+    chip.textContent = g;
+    chip.addEventListener('click', () => { setActiveGroup(g); });
+    bar.appendChild(chip);
+  }
+}
+
+function setActiveGroup(group) {
+  document.querySelectorAll('.group-chip').forEach(c => c.classList.remove('active'));
+  document.querySelector(`.group-chip[data-group="${group}"]`)?.classList.add('active');
+  renderFollowing();
 }
 
 // ─── Auto Launch Tab ───
@@ -221,6 +277,9 @@ function syncBellButtons(slug, mode) {
 async function channelCard(ch) {
   const card = document.createElement('div');
   card.className = `channel-card ${ch.isLive ? 'live' : 'offline'}`;
+  const isFav = await Storage.isFavoriteChannel(ch.channelSlug);
+  const chGroup = await Storage.getChannelGroup(ch.channelSlug);
+  const groupBadge = chGroup ? `<span class="channel-group-badge">${esc(chGroup)}</span>` : '';
 
   const pic = ch.profilePic || '../images/default-profile-pictures/default.jpeg';
   let meta = '';
@@ -240,16 +299,18 @@ async function channelCard(ch) {
     <div class="card-top">
       <img class="channel-avatar" src="${esc(pic)}" alt="" onerror="this.src='../images/default-profile-pictures/default.jpeg'" />
       <div class="channel-info">
-        <div class="channel-name" title="${esc(ch.userUsername)}">${esc(ch.userUsername)}</div>
+        <div class="channel-name" title="${esc(ch.userUsername)}">${esc(ch.userUsername)}${groupBadge}</div>
         ${ch.isLive ? `<div class="channel-title" title="${esc(ch.sessionTitle || '-')}">${esc(ch.sessionTitle || '-')}</div>` : ''}
         ${meta}
       </div>
-    </div>`;
+    </div>
+    ${ch.isLive && ch.thumbnailUrl ? `<img class="channel-thumbnail" src="${esc(ch.thumbnailUrl)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}`;
+
+  // Actions row — always show (live and offline both get star)
+  const actions = document.createElement('div');
+  actions.className = 'card-actions-row';
 
   if (ch.isLive) {
-    const actions = document.createElement('div');
-    actions.className = 'card-actions-row';
-
     // Open button
     const openBtn = document.createElement('button');
     openBtn.className = 'card-action-btn open-btn';
@@ -275,10 +336,65 @@ async function channelCard(ch) {
     actions.appendChild(openBtn);
     actions.appendChild(multiBtn);
     actions.appendChild(bellBtn);
-    card.appendChild(actions);
   }
 
-  // Fetch start time if missing
+  // Group assign button — always visible (only if groups exist)
+  const groups = await Storage.getChannelGroups();
+  if (groups.length > 0) {
+    const groupBtn = document.createElement('button');
+    groupBtn.className = 'card-action-btn group-btn';
+    groupBtn.title = chGroup || Utils.i18n('groupAssign');
+    groupBtn.innerHTML = `<span class="material-icons" style="font-size:16px;${chGroup ? 'color:var(--accent)' : ''}">label</span>`;
+    groupBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const currentGroup = await Storage.getChannelGroup(ch.channelSlug);
+      // Cycle: no group → group1 → group2 → ... → no group
+      const idx = currentGroup ? groups.indexOf(currentGroup) : -1;
+      const nextIdx = idx + 1;
+      const nextGroup = nextIdx < groups.length ? groups[nextIdx] : null;
+      await Storage.setChannelGroup(ch.channelSlug, nextGroup);
+      // Update badge in card
+      const nameEl = card.querySelector('.channel-name');
+      const oldBadge = nameEl.querySelector('.channel-group-badge');
+      if (oldBadge) oldBadge.remove();
+      if (nextGroup) {
+        const badge = document.createElement('span');
+        badge.className = 'channel-group-badge';
+        badge.textContent = nextGroup;
+        nameEl.appendChild(badge);
+      }
+      groupBtn.title = nextGroup || Utils.i18n('groupAssign');
+      groupBtn.querySelector('.material-icons').style.color = nextGroup ? 'var(--accent)' : '';
+    });
+    actions.appendChild(groupBtn);
+  }
+
+  // Star/favorite button — always visible
+  const starBtn = document.createElement('button');
+  starBtn.className = 'card-action-btn star-btn';
+  starBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+  starBtn.innerHTML = `<span class="material-icons">${isFav ? 'star' : 'star_border'}</span>`;
+  starBtn.querySelector('.material-icons').style.color = isFav ? '#f0c040' : '';
+  starBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const nowFav = await Storage.toggleFavoriteChannel(ch.channelSlug);
+    const icon = starBtn.querySelector('.material-icons');
+    icon.textContent = nowFav ? 'star' : 'star_border';
+    icon.style.color = nowFav ? '#f0c040' : '';
+    starBtn.title = nowFav ? 'Remove from favorites' : 'Add to favorites';
+    // Sync star buttons across tabs
+    document.querySelectorAll(`.star-btn[data-slug="${ch.channelSlug}"]`).forEach(b => {
+      const ic = b.querySelector('.material-icons');
+      ic.textContent = nowFav ? 'star' : 'star_border';
+      ic.style.color = nowFav ? '#f0c040' : '';
+    });
+  });
+  starBtn.dataset.slug = ch.channelSlug;
+  actions.appendChild(starBtn);
+
+  card.appendChild(actions);
+
+  // Lazy fetch live details (startTime)
   if (ch.isLive && !ch.startedAt) {
     chrome.runtime.sendMessage({ type: 'GET_CHANNEL_START_TIME', slug: ch.channelSlug }, (res) => {
       if (res?.success && res.startTime) {
@@ -379,6 +495,7 @@ async function loadHistory() {
 // ─── Auto Refresh ───
 
 async function startAutoRefresh() {
+  if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
   if (!(await Storage.getAutoRefreshPopup())) return;
   const secs = await Storage.getCheckInterval();
   autoRefreshTimer = setInterval(() => loadChannels(), secs * 1000);
@@ -498,6 +615,14 @@ function applyOptionsI18n() {
     const key = el.getAttribute('data-i18n-html');
     el.innerHTML = Utils.i18n(key);
   });
+  document.querySelectorAll('#options-panel [data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    el.title = Utils.i18n(key);
+  });
+  document.querySelectorAll('#options-panel [data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    el.placeholder = Utils.i18n(key);
+  });
 }
 
 async function loadOptionsSettings() {
@@ -535,6 +660,15 @@ async function loadOptionsSettings() {
   optEl('opt-dnd-mute-sound').checked = await Storage.getDndMuteSound();
   optEl('opt-dnd-mute-autolaunch').checked = await Storage.getDndMuteAutolaunch();
   optUpdateDndVisibility();
+
+  // Cloud Sync
+  optEl('opt-cloud-sync').checked = await Storage.getCloudSyncEnabled();
+
+  // Theme
+  const theme = await Storage.getTheme();
+  document.querySelectorAll('.opt-theme-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.theme === theme);
+  });
 }
 
 function optPopulateDndSelects() {
@@ -592,6 +726,20 @@ function setupOptionsListeners() {
   optBind('opt-dnd-mute-sound', v => Storage.setDndMuteSound(v));
   optBind('opt-dnd-mute-autolaunch', v => Storage.setDndMuteAutolaunch(v));
 
+  // Cloud Sync listener
+  optBind('opt-cloud-sync', v => Storage.setCloudSyncEnabled(v));
+
+  // Theme buttons
+  document.querySelectorAll('.opt-theme-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const theme = btn.dataset.theme;
+      await Storage.setTheme(theme);
+      document.documentElement.setAttribute('data-theme', theme);
+      document.querySelectorAll('.opt-theme-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+
   const volSlider = optEl('opt-volume-slider');
   volSlider.addEventListener('input', () => {
     optEl('opt-volume-value').textContent = volSlider.value;
@@ -612,6 +760,39 @@ function setupOptionsListeners() {
 
   optSetupSound('main');
   optSetupSound('sub');
+
+  // Groups management
+  optEl('opt-group-add-btn').addEventListener('click', async () => {
+    const input = optEl('opt-group-input');
+    const name = input.value.trim();
+    if (!name) return;
+    await Storage.addChannelGroup(name);
+    input.value = '';
+    await optRenderGroups();
+    await buildGroupFilterBar();
+  });
+  optEl('opt-group-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') optEl('opt-group-add-btn').click();
+  });
+  optRenderGroups();
+}
+
+async function optRenderGroups() {
+  const list = document.getElementById('opt-groups-list');
+  if (!list) return;
+  const groups = await Storage.getChannelGroups();
+  list.innerHTML = '';
+  for (const g of groups) {
+    const tag = document.createElement('span');
+    tag.className = 'opt-group-tag';
+    tag.innerHTML = `${esc(g)}<button class="remove-group" title="Remove">&times;</button>`;
+    tag.querySelector('.remove-group').addEventListener('click', async () => {
+      await Storage.removeChannelGroup(g);
+      await optRenderGroups();
+      await buildGroupFilterBar();
+    });
+    list.appendChild(tag);
+  }
 }
 
 function optBind(id, fn) {

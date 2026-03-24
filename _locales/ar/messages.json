@@ -78,7 +78,7 @@
     "message": "إعادة تعيين الفتح التلقائي عند إعادة تشغيل المتصفح"
   },
   "showNotificationCheckbox": {
-    "message": "إظهار الإشعارات"
+    "message": "إظهار إشعارات سطح المكتب"
   },
   "testSoundVolume": {
     "message": "[اختبار]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "بدون إشعار"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "تنبيهات مخصصة لافتة — يصعب تفويتها"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "صوت النظام العادي — قد يمر دون ملاحظة"
+  },
+  "cloudSyncTitle": {
+    "message": "المزامنة السحابية"
+  },
+  "cloudSyncNote": {
+    "message": "مزامنة الإعدادات عبر الأجهزة من خلال حساب Google. الأصوات المخصصة وسجل الإشعارات لا تتم مزامنتها."
+  },
+  "themeLabel": {
+    "message": "المظهر"
+  },
+  "themeDark": {
+    "message": "داكن"
+  },
+  "themeLight": {
+    "message": "فاتح"
+  },
+  "groupAll": {
+    "message": "الكل"
+  },
+  "groupsTitle": {
+    "message": "مجموعات القنوات"
+  },
+  "groupAddPlaceholder": {
+    "message": "مجموعة جديدة..."
+  },
+  "groupAssign": {
+    "message": "تعيين مجموعة"
   }
 }

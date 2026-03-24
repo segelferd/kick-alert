@@ -78,7 +78,7 @@
     "message": "Reset auto-launch settings to On when browser restarts"
   },
   "showNotificationCheckbox": {
-    "message": "Show notifications"
+    "message": "Show desktop notifications"
   },
   "testSoundVolume": {
     "message": "[Test]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "No notification"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Eye-catching custom alerts — hard to miss"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Standard system sound — may blend into background"
+  },
+  "cloudSyncTitle": {
+    "message": "Cloud Sync"
+  },
+  "cloudSyncNote": {
+    "message": "Sync settings across devices via your Google account. Custom sounds and notification history are not synced."
+  },
+  "themeLabel": {
+    "message": "Theme"
+  },
+  "themeDark": {
+    "message": "Dark"
+  },
+  "themeLight": {
+    "message": "Light"
+  },
+  "groupAll": {
+    "message": "All"
+  },
+  "groupsTitle": {
+    "message": "Channel groups"
+  },
+  "groupAddPlaceholder": {
+    "message": "New group..."
+  },
+  "groupAssign": {
+    "message": "Assign group"
   }
 }

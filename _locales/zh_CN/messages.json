@@ -78,7 +78,7 @@
     "message": "浏览器重启时重置自动打开设置"
   },
   "showNotificationCheckbox": {
-    "message": "显示通知"
+    "message": "显示桌面通知"
   },
   "testSoundVolume": {
     "message": "[测试]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "无通知"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "醒目的自定义提示音 — 不容易错过"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "标准系统提示音 — 日常中可能被忽略"
+  },
+  "cloudSyncTitle": {
+    "message": "云同步"
+  },
+  "cloudSyncNote": {
+    "message": "通过 Google 账户在设备间同步设置。自定义提示音和通知历史不会同步。"
+  },
+  "themeLabel": {
+    "message": "主题"
+  },
+  "themeDark": {
+    "message": "深色"
+  },
+  "themeLight": {
+    "message": "浅色"
+  },
+  "groupAll": {
+    "message": "全部"
+  },
+  "groupsTitle": {
+    "message": "频道分组"
+  },
+  "groupAddPlaceholder": {
+    "message": "新分组..."
+  },
+  "groupAssign": {
+    "message": "分配分组"
   }
 }

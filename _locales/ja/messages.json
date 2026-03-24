@@ -78,7 +78,7 @@
     "message": "ブラウザ再起動時に自動入場設定を On に戻す"
   },
   "showNotificationCheckbox": {
-    "message": "通知を表示する"
+    "message": "デスクトップ通知を表示"
   },
   "testSoundVolume": {
     "message": "[テスト]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "通知なし"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "目立つカスタムアラート — 見逃しにくい"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "標準システム音 — 日常に紛れやすい"
+  },
+  "cloudSyncTitle": {
+    "message": "クラウド同期"
+  },
+  "cloudSyncNote": {
+    "message": "Googleアカウントを通じてデバイス間で設定を同期します。カスタムサウンドと通知履歴は同期されません。"
+  },
+  "themeLabel": {
+    "message": "テーマ"
+  },
+  "themeDark": {
+    "message": "ダーク"
+  },
+  "themeLight": {
+    "message": "ライト"
+  },
+  "groupAll": {
+    "message": "すべて"
+  },
+  "groupsTitle": {
+    "message": "チャンネルグループ"
+  },
+  "groupAddPlaceholder": {
+    "message": "新しいグループ..."
+  },
+  "groupAssign": {
+    "message": "グループを割り当て"
   }
 }

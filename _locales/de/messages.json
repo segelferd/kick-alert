@@ -78,7 +78,7 @@
     "message": "Automatischen Start beim Neustart des Browsers zurücksetzen"
   },
   "showNotificationCheckbox": {
-    "message": "Benachrichtigungen anzeigen"
+    "message": "Desktop-Benachrichtigungen anzeigen"
   },
   "testSoundVolume": {
     "message": "[Testen]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "Keine Benachrichtigung"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Auffällige eigene Töne — kaum zu übersehen"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Standard-Systemton — kann im Alltag untergehen"
+  },
+  "cloudSyncTitle": {
+    "message": "Cloud-Synchronisierung"
+  },
+  "cloudSyncNote": {
+    "message": "Einstellungen über Ihr Google-Konto geräteübergreifend synchronisieren. Benutzerdefinierte Töne und Benachrichtigungsverlauf werden nicht synchronisiert."
+  },
+  "themeLabel": {
+    "message": "Design"
+  },
+  "themeDark": {
+    "message": "Dunkel"
+  },
+  "themeLight": {
+    "message": "Hell"
+  },
+  "groupAll": {
+    "message": "Alle"
+  },
+  "groupsTitle": {
+    "message": "Kanalgruppen"
+  },
+  "groupAddPlaceholder": {
+    "message": "Neue Gruppe..."
+  },
+  "groupAssign": {
+    "message": "Gruppe zuweisen"
   }
 }

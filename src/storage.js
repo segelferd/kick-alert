@@ -1,7 +1,7 @@
 /**
  * KickAlert - Storage Module
- * Handles all chrome.storage.local operations.
- * © 2025 Segelferd. All rights reserved.
+ * Handles all chrome.storage.local operations with optional cloud sync.
+ * © 2025–2026 Segelferd. All rights reserved.
  */
 
 const StorageKeys = {
@@ -12,10 +12,8 @@ const StorageKeys = {
   DUPLICATE_TAB_GUARD: 'duplicateTabGuard',
   AUTO_OPEN_CHANNELS: 'autoOpenChannels',
   AUTO_UNMUTE: 'autoUnmute',
-  ONLY_SWITCH_CHANNELS: 'onlySwitchChannels',
   CHECK_INTERVAL: 'checkInterval',
   NOTIFICATION_HISTORY: 'notificationHistory',
-  SILENT_FOR_OTHERS: 'silentForOthers',
   SHOW_OFFLINE_CHANNELS: 'showOfflineChannels',
   AUTO_REFRESH_POPUP: 'autoRefreshPopup',
   CUSTOM_SOUND_MAIN: 'customSoundMain',
@@ -27,9 +25,24 @@ const StorageKeys = {
   DND_MUTE_NOTIF: 'dndMuteNotif',
   DND_MUTE_SOUND: 'dndMuteSound',
   DND_MUTE_AUTOLAUNCH: 'dndMuteAutolaunch',
-  SOUND_MODE: 'soundMode', // 'extension' or 'windows'
-  CHANNEL_SOUND_MODE: 'channelSoundMode', // { slug: 'main'|'sub'|'silent' }
+  SOUND_MODE: 'soundMode',
+  CHANNEL_SOUND_MODE: 'channelSoundMode',
+  FAVORITE_CHANNELS: 'favoriteChannels',
+  CLOUD_SYNC_ENABLED: 'cloudSyncEnabled',
+  THEME: 'theme', // 'dark' or 'light'
+  CHANNEL_GROUPS: 'channelGroups', // ['Türk yayıncılar', 'FPS', ...]
+  CHANNEL_GROUP_MAP: 'channelGroupMap', // { slug: 'groupName' }
 };
+
+// Keys that should NOT be synced (too large, device-specific, or internal)
+const SYNC_EXCLUDE_KEYS = new Set([
+  StorageKeys.CUSTOM_SOUND_MAIN,       // base64 audio, MB size
+  StorageKeys.CUSTOM_SOUND_SUB,        // base64 audio, MB size
+  StorageKeys.NOTIFICATION_HISTORY,     // grows large, device-specific
+  StorageKeys.SUSPEND_FROM_DATE,        // device-specific runtime state
+  StorageKeys.CLOUD_SYNC_ENABLED,      // meta — each device decides independently
+  '_liveSlugs', '_notifiedLives', '_lastCheckDone', // internal state
+]);
 
 const StorageDefaults = {
   [StorageKeys.SHOW_NOTIFICATION]: true,
@@ -38,13 +51,14 @@ const StorageDefaults = {
   [StorageKeys.DUPLICATE_TAB_GUARD]: true,
   [StorageKeys.AUTO_OPEN_CHANNELS]: {},
   [StorageKeys.AUTO_UNMUTE]: false,
-  [StorageKeys.ONLY_SWITCH_CHANNELS]: false,
   [StorageKeys.CHECK_INTERVAL]: 60,
   [StorageKeys.NOTIFICATION_HISTORY]: [],
-  [StorageKeys.SILENT_FOR_OTHERS]: false,
   [StorageKeys.SHOW_OFFLINE_CHANNELS]: false,
   [StorageKeys.AUTO_REFRESH_POPUP]: false,
 };
+
+let _syncEnabled = false;
+let _syncListenerAttached = false;
 
 const Storage = {
   async get(key) {
@@ -55,10 +69,97 @@ const Storage = {
 
   async set(key, value) {
     await chrome.storage.local.set({ [key]: value });
+    // Mirror to sync if enabled and key is syncable
+    if (_syncEnabled && !SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
+      try { await chrome.storage.sync.set({ [key]: value }); }
+      catch (e) { console.warn('[KickAlert] Sync write failed:', key, e.message); }
+    }
   },
 
   async remove(key) {
     await chrome.storage.local.remove(key);
+    if (_syncEnabled && !SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
+      try { await chrome.storage.sync.remove(key); }
+      catch (e) { console.warn('[KickAlert] Sync remove failed:', key, e.message); }
+    }
+  },
+
+  // ─── Cloud Sync ───
+
+  async getCloudSyncEnabled() {
+    return (await this.get(StorageKeys.CLOUD_SYNC_ENABLED)) || false;
+  },
+
+  async setCloudSyncEnabled(enabled) {
+    _syncEnabled = enabled;
+    await chrome.storage.local.set({ [StorageKeys.CLOUD_SYNC_ENABLED]: enabled });
+    if (enabled) {
+      this._listenForSyncChanges();
+      await this._pushAllToSync();
+    }
+  },
+
+  async initSyncState() {
+    _syncEnabled = await this.getCloudSyncEnabled();
+    if (_syncEnabled) {
+      this._listenForSyncChanges();
+    }
+  },
+
+  /** Push all syncable local settings to chrome.storage.sync */
+  async _pushAllToSync() {
+    const allLocal = await chrome.storage.local.get(null);
+    const toSync = {};
+    for (const [key, value] of Object.entries(allLocal)) {
+      if (!SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
+        toSync[key] = value;
+      }
+    }
+    try {
+      await chrome.storage.sync.set(toSync);
+      console.log('[KickAlert] Cloud sync: pushed', Object.keys(toSync).length, 'keys');
+    } catch (e) {
+      console.warn('[KickAlert] Cloud sync push failed:', e.message);
+    }
+  },
+
+  /** Pull all sync data and apply to local (for initial sync on new device) */
+  async pullFromSync() {
+    if (!_syncEnabled) return;
+    try {
+      const syncData = await chrome.storage.sync.get(null);
+      const toLocal = {};
+      for (const [key, value] of Object.entries(syncData)) {
+        if (!SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
+          toLocal[key] = value;
+        }
+      }
+      if (Object.keys(toLocal).length > 0) {
+        await chrome.storage.local.set(toLocal);
+        console.log('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys');
+      }
+    } catch (e) {
+      console.warn('[KickAlert] Cloud sync pull failed:', e.message);
+    }
+  },
+
+  /** Listen for changes from other devices via chrome.storage.sync */
+  _listenForSyncChanges() {
+    if (_syncListenerAttached) return;
+    _syncListenerAttached = true;
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'sync' || !_syncEnabled) return;
+      const toLocal = {};
+      for (const [key, { newValue }] of Object.entries(changes)) {
+        if (!SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_') && newValue !== undefined) {
+          toLocal[key] = newValue;
+        }
+      }
+      if (Object.keys(toLocal).length > 0) {
+        chrome.storage.local.set(toLocal);
+        console.log('[KickAlert] Cloud sync: received', Object.keys(toLocal).length, 'keys from another device');
+      }
+    });
   },
 
   async getShowNotification() { return this.get(StorageKeys.SHOW_NOTIFICATION); },
@@ -94,9 +195,6 @@ const Storage = {
   async getAutoUnmute() { return this.get(StorageKeys.AUTO_UNMUTE); },
   async setAutoUnmute(v) { return this.set(StorageKeys.AUTO_UNMUTE, v); },
 
-  async getOnlySwitchChannels() { return this.get(StorageKeys.ONLY_SWITCH_CHANNELS); },
-  async setOnlySwitchChannels(v) { return this.set(StorageKeys.ONLY_SWITCH_CHANNELS, v); },
-
   async getCheckInterval() { return this.get(StorageKeys.CHECK_INTERVAL); },
   async setCheckInterval(v) { return this.set(StorageKeys.CHECK_INTERVAL, v); },
 
@@ -107,9 +205,6 @@ const Storage = {
     if (history.length > 100) history.length = 100;
     return this.set(StorageKeys.NOTIFICATION_HISTORY, history);
   },
-
-  async getSilentForOthers() { return this.get(StorageKeys.SILENT_FOR_OTHERS); },
-  async setSilentForOthers(v) { return this.set(StorageKeys.SILENT_FOR_OTHERS, v); },
 
   async getShowOfflineChannels() { return this.get(StorageKeys.SHOW_OFFLINE_CHANNELS); },
   async setShowOfflineChannels(v) { return this.set(StorageKeys.SHOW_OFFLINE_CHANNELS, v); },
@@ -160,6 +255,61 @@ const Storage = {
       modes[slug] = mode;
     }
     return this.set(StorageKeys.CHANNEL_SOUND_MODE, modes);
+  },
+
+  async getFavoriteChannels() {
+    return (await this.get(StorageKeys.FAVORITE_CHANNELS)) || {};
+  },
+  async isFavoriteChannel(slug) {
+    const favs = await this.getFavoriteChannels();
+    return favs[slug] === true;
+  },
+  async toggleFavoriteChannel(slug) {
+    const favs = await this.getFavoriteChannels();
+    if (favs[slug]) {
+      delete favs[slug];
+    } else {
+      favs[slug] = true;
+    }
+    await this.set(StorageKeys.FAVORITE_CHANNELS, favs);
+    return !!favs[slug];
+  },
+
+  async getTheme() { return (await this.get(StorageKeys.THEME)) || 'dark'; },
+  async setTheme(v) { return this.set(StorageKeys.THEME, v); },
+
+  // ─── Channel Groups ───
+  async getChannelGroups() { return (await this.get(StorageKeys.CHANNEL_GROUPS)) || []; },
+  async setChannelGroups(groups) { return this.set(StorageKeys.CHANNEL_GROUPS, groups); },
+  async addChannelGroup(name) {
+    const groups = await this.getChannelGroups();
+    if (!groups.includes(name)) groups.push(name);
+    return this.setChannelGroups(groups);
+  },
+  async removeChannelGroup(name) {
+    let groups = await this.getChannelGroups();
+    groups = groups.filter(g => g !== name);
+    await this.setChannelGroups(groups);
+    // Also unassign channels from deleted group
+    const map = await this.getChannelGroupMap();
+    for (const slug of Object.keys(map)) {
+      if (map[slug] === name) delete map[slug];
+    }
+    return this.set(StorageKeys.CHANNEL_GROUP_MAP, map);
+  },
+  async getChannelGroupMap() { return (await this.get(StorageKeys.CHANNEL_GROUP_MAP)) || {}; },
+  async getChannelGroup(slug) {
+    const map = await this.getChannelGroupMap();
+    return map[slug] || null;
+  },
+  async setChannelGroup(slug, groupName) {
+    const map = await this.getChannelGroupMap();
+    if (groupName) {
+      map[slug] = groupName;
+    } else {
+      delete map[slug];
+    }
+    return this.set(StorageKeys.CHANNEL_GROUP_MAP, map);
   },
 
   /**

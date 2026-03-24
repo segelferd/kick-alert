@@ -6,6 +6,12 @@
   "author": "segelferd",
   "homepage_url": "https://github.com/segelferd/kick-alert",
   "default_locale": "en",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "kickalert@segelferd",
+      "strict_min_version": "109.0"
+    }
+  },
   "icons": {
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
@@ -14,7 +20,7 @@
     "default_popup": "html/popup.html"
   },
   "background": {
-    "service_worker": "src/background.js"
+    "scripts": ["src/storage.js", "src/kickapi.js", "src/utils.js", "src/background.js"]
   },
   "content_scripts": [
     {
@@ -22,12 +28,10 @@
       "matches": ["https://kick.com/*"]
     }
   ],
-
   "permissions": [
     "storage",
-    "offscreen",
     "notifications",
-    "declarativeNetRequestWithHostAccess",
+    "declarativeNetRequest",
     "cookies",
     "tabs",
     "alarms"

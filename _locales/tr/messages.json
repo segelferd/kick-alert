@@ -78,7 +78,7 @@
     "message": "Tarayıcı yeniden başlatıldığında otomatik açma ayarlarını sıfırla"
   },
   "showNotificationCheckbox": {
-    "message": "Bildirimleri göster"
+    "message": "Masaüstü bildirimlerini göster"
   },
   "testSoundVolume": {
     "message": "[Test]"
@@ -163,5 +163,38 @@
   },
   "bellMuted": {
     "message": "Bildirim yok"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Dikkat çekici özel sesler — gözden kaçmaz"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Standart sistem sesi — gün içinde gözden kaçabilir"
+  },
+  "cloudSyncTitle": {
+    "message": "Bulut Senkronizasyonu"
+  },
+  "cloudSyncNote": {
+    "message": "Google hesabınız ile ayarları cihazlar arası senkronize edin. Özel sesler ve bildirim geçmişi senkronize edilmez."
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "themeDark": {
+    "message": "Koyu"
+  },
+  "themeLight": {
+    "message": "Açık"
+  },
+  "groupAll": {
+    "message": "Tümü"
+  },
+  "groupsTitle": {
+    "message": "Kanal grupları"
+  },
+  "groupAddPlaceholder": {
+    "message": "Yeni grup..."
+  },
+  "groupAssign": {
+    "message": "Grup ata"
   }
 }
