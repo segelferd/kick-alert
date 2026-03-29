@@ -65,7 +65,8 @@ kickalert/
 │   └── multistream.css        # Multi-stream viewer styles
 ├── icons/                     # Extension icons (48px, 128px)
 ├── images/
-│   ├── bmc/                   # Buy Me a Coffee buttons (white + dark)
+│   ├── bmc/                   # Buy Me a Coffee button
+│   ├── kofi/                  # Ko-fi button
 │   ├── default-profile-pictures/
 │   └── no_stream/
 ├── sounds/                    # Default notification sounds (main + sub)
@@ -101,6 +102,7 @@ KickAlert does not collect, transmit, or store any personal data externally. All
 ## Support
 
 - **Buy Me a Coffee:** [buymeacoffee.com/segelferd](https://buymeacoffee.com/segelferd)
+- **Ko-fi:** [ko-fi.com/segelferd](https://ko-fi.com/segelferd)
 - **Bitcoin:** `bc1q7cmtp9vd6wmztxun0702whyve53u5xld2g82qp`
 
 ## License

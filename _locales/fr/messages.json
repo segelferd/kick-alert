@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "Recevez des notifications quand vos streamers Kick préférés passent en direct. Ouverture automatique, durée du stream, historique et plus."
+    "message": "Fini les streams ninja à 3h du matin — KickAlert attrape chaque diffusion surprise ;)"
   },
   "autoLaunch": {
     "message": "Ouverture Automatique"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "Assigner un groupe"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Aucun stream en direct"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 en direct"
+  },
+  "tooltipMore": {
+    "message": "+$1 de plus"
+  },
+  "notifButtonOpen": {
+    "message": "Ouvrir"
+  },
+  "notifButtonMute": {
+    "message": "Muet"
   }
 }

@@ -124,11 +124,27 @@ async function loadChannels() {
       allChannels = res.channels;
       await renderFollowing();
       await renderAutoLaunch();
+      showLoading(false);
+
+      // If we got stale cache, fetch fresh data in background
+      if (res.fromCache) {
+        try {
+          const freshRes = await chrome.runtime.sendMessage({ type: 'GET_CHANNELS_FRESH' });
+          if (freshRes?.success && freshRes.channels) {
+            allChannels = freshRes.channels;
+            await renderFollowing();
+            await renderAutoLaunch();
+          }
+        } catch {}
+      }
     } else {
       showMsg('following-list', Utils.i18n('fetchError'));
+      showLoading(false);
     }
-  } catch { showMsg('following-list', Utils.i18n('fetchError')); }
-  showLoading(false);
+  } catch {
+    showMsg('following-list', Utils.i18n('fetchError'));
+    showLoading(false);
+  }
 }
 
 function showLoading(v) {
@@ -479,13 +495,17 @@ async function loadHistory() {
     history.forEach(entry => {
       const item = document.createElement('div');
       item.className = 'history-item';
+      const pic = entry.profilePic || '../images/default-profile-pictures/default.jpeg';
       item.innerHTML = `
-        <div class="history-header">
-          <span class="history-username">${esc(entry.username)}</span>
-          <span class="history-time">${esc(Utils.formatTimestamp(entry.timestamp))}</span>
-        </div>
-        <div class="history-title">${esc(entry.title)}</div>
-        <div class="history-category">${esc(entry.category)}</div>`;
+        <img class="history-avatar" src="${esc(pic)}" alt="" onerror="this.src='../images/default-profile-pictures/default.jpeg'" />
+        <div class="history-body">
+          <div class="history-header">
+            <span class="history-username">${esc(entry.username)}</span>
+            <span class="history-time">${esc(Utils.formatTimestamp(entry.timestamp))}</span>
+          </div>
+          <div class="history-title">${esc(entry.title)}</div>
+          <div class="history-category">${esc(entry.category)}</div>
+        </div>`;
       item.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${entry.channelSlug}` }));
       el.appendChild(item);
     });

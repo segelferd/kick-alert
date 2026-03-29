@@ -262,8 +262,10 @@ body {
   gap: 2px;
   padding: 5px;
 }
-.history-item { padding: 9px 11px; border-radius: 6px; cursor: pointer; transition: background .15s; min-width: 0; overflow: hidden; }
+.history-item { padding: 9px 11px; border-radius: 6px; cursor: pointer; transition: background .15s; min-width: 0; overflow: hidden; display: flex; align-items: center; gap: 10px; }
 .history-item:hover { background: var(--bg-hover); }
+.history-avatar { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+.history-body { flex: 1; min-width: 0; overflow: hidden; }
 .history-header { display: flex; justify-content: space-between; align-items: center; }
 .history-username { font-size: 14px; font-weight: 600; color: var(--text-primary); }
 .history-time { font-size: 12px; color: var(--text-muted); }
@@ -496,11 +498,11 @@ body {
   color: var(--text-primary);
 }
 
-/* Buy Me a Coffee */
-.opt-bmc-section { text-align: center; padding: 12px 0 8px; }
-.opt-bmc-link { display: inline-block; width: 45%; transition: opacity 0.2s; }
+/* Support buttons */
+.opt-bmc-section { text-align: center; padding: 12px 0 8px; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px; }
+.opt-bmc-link { display: inline-block; width: 45%; transition: opacity 0.2s; border-radius: 10px; overflow: hidden; }
 .opt-bmc-link:hover { opacity: 0.85; }
-.opt-bmc-img { width: 100%; height: auto; border-radius: 8px; }
+.opt-bmc-img { width: 100%; height: auto; display: block; }
 
 /* Theme Selector */
 .opt-theme-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
@@ -515,11 +517,6 @@ body {
   background: var(--accent); color: #0e0e10; border-color: var(--accent); font-weight: 600;
 }
 .opt-theme-btn:hover:not(.active) { background: var(--bg-hover); }
-
-/* BMC button theme switching */
-.bmc-light { display: none; }
-[data-theme="light"] .bmc-dark { display: none; }
-[data-theme="light"] .bmc-light { display: inline; }
 
 /* Channel Groups */
 .group-filter-bar {

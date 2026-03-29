@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "Получайте уведомления, когда ваши любимые стримеры Kick начинают трансляцию, с функцией автоматического открытия."
+    "message": "Никаких ниндзя-стримов в 3 часа ночи — KickAlert ловит каждую внезапную трансляцию ;)"
   },
   "autoLaunch": {
     "message": "Автозапуск"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "Назначить группу"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Нет прямых трансляций"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 в эфире"
+  },
+  "tooltipMore": {
+    "message": "ещё $1"
+  },
+  "notifButtonOpen": {
+    "message": "Открыть"
+  },
+  "notifButtonMute": {
+    "message": "Отключить"
   }
 }

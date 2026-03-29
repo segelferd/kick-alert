@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "指定した Kick ストリーマーが配信開始したときの自動入場が可能になります。"
+    "message": "午前3時のニンジャ配信ももう見逃さない — KickAlertがすべてのサプライズ配信をキャッチ ;)"
   },
   "autoLaunch": {
     "message": "自動入場"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "グループを割り当て"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — ライブ配信なし"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 ライブ中"
+  },
+  "tooltipMore": {
+    "message": "他$1件"
+  },
+  "notifButtonOpen": {
+    "message": "開く"
+  },
+  "notifButtonMute": {
+    "message": "ミュート"
   }
 }

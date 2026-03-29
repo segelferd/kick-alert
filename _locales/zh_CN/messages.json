@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "当您喜欢的 Kick 主播开始直播时收到通知，并支持自动打开功能。"
+    "message": "凌晨3点的忍者直播再也逃不掉 — KickAlert捕捉每一个惊喜直播 ;)"
   },
   "autoLaunch": {
     "message": "自动打开"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "分配分组"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — 没有直播"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 个直播"
+  },
+  "tooltipMore": {
+    "message": "还有$1个"
+  },
+  "notifButtonOpen": {
+    "message": "打开"
+  },
+  "notifButtonMute": {
+    "message": "静音"
   }
 }

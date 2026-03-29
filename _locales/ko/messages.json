@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "좋아하는 Kick 스트리머가 방송을 시작하면 알림을 받고 자동으로 열기 기능을 사용하세요."
+    "message": "새벽 3시 닌자 방송도 놓치지 마세요 — KickAlert이 모든 깜짝 방송을 잡아냅니다 ;)"
   },
   "autoLaunch": {
     "message": "자동 열기"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "그룹 지정"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — 라이브 방송 없음"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 라이브"
+  },
+  "tooltipMore": {
+    "message": "+$1 더"
+  },
+  "notifButtonOpen": {
+    "message": "열기"
+  },
+  "notifButtonMute": {
+    "message": "음소거"
   }
 }

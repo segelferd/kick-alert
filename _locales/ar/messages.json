@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "احصل على إشعارات عندما يبدأ بث المباشر لمفضليك على Kick. فتح تلقائي، مدة البث، سجل الإشعارات والمزيد."
+    "message": "لا مزيد من البثوث المفاجئة في الثالثة صباحاً — KickAlert يلتقط كل بث مفاجئ ;)"
   },
   "autoLaunch": {
     "message": "الفتح التلقائي"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "تعيين مجموعة"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — لا توجد بثوث مباشرة"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 مباشر"
+  },
+  "tooltipMore": {
+    "message": "+$1 المزيد"
+  },
+  "notifButtonOpen": {
+    "message": "فتح"
+  },
+  "notifButtonMute": {
+    "message": "كتم"
   }
 }

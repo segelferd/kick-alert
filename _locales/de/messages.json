@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "Erhalte Benachrichtigungen, wenn deine Lieblings-Kick-Streamer live gehen. Auto-Start, Stream-Dauer, Benachrichtigungsverlauf und mehr."
+    "message": "Keine Ninja-Streams mehr um 3 Uhr nachts — KickAlert fängt jede Überraschungs-Übertragung ab ;)"
   },
   "autoLaunch": {
     "message": "Automatischer Start"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "Gruppe zuweisen"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Keine Live-Streams"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 live"
+  },
+  "tooltipMore": {
+    "message": "+$1 weitere"
+  },
+  "notifButtonOpen": {
+    "message": "Öffnen"
+  },
+  "notifButtonMute": {
+    "message": "Stumm"
   }
 }

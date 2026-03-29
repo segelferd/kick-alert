@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "Get notified when your favorite Kick streamers go live with auto-launch capability."
+    "message": "No more ninja streams at 3 AM — KickAlert catches every surprise broadcast, even the sneakiest ones ;)"
   },
   "autoLaunch": {
     "message": "Auto Launch"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "Assign group"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — No live streams"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 live"
+  },
+  "tooltipMore": {
+    "message": "+$1 more"
+  },
+  "notifButtonOpen": {
+    "message": "Open"
+  },
+  "notifButtonMute": {
+    "message": "Mute"
   }
 }

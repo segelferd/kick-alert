@@ -1,6 +1,6 @@
 {
   "appDescription": {
-    "message": "Takip ettiğin Kick yayıncıları canlıya geçince bildirim al. Otomatik açma, yayın süresi, bildirim geçmişi ve daha fazlası."
+    "message": "Gece 3'te habersiz açılan ninja yayınlar artık senden kaçamaz — KickAlert her sürpriz yayını yakalar ;)"
   },
   "autoLaunch": {
     "message": "Otomatik Aç"
@@ -196,5 +196,20 @@
   },
   "groupAssign": {
     "message": "Grup ata"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Canlı yayın yok"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 canlı"
+  },
+  "tooltipMore": {
+    "message": "+$1 daha"
+  },
+  "notifButtonOpen": {
+    "message": "Aç"
+  },
+  "notifButtonMute": {
+    "message": "Sustur"
   }
 }

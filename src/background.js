@@ -199,9 +199,12 @@ async function checkSafe() {
 async function checkChannels() {
   const channels = await KickAPI.getAllFollowingChannels();
   cachedChannels = channels;
+  // Persist channel data so popup can load instantly even if SW sleeps
+  try { await chrome.storage.local.set({ _cachedChannels: channels }); } catch {}
   const liveCount = channels.filter(c => c.isLive).length;
   await chrome.action.setBadgeText({ text: liveCount > 0 ? String(liveCount) : '' });
   await updateBadgeColor();
+  await updateDynamicTooltip(channels);
 
   const state = await getPersistedState();
   const liveChannelSlugs = state.liveSlugs;
@@ -238,6 +241,7 @@ async function checkChannels() {
     Storage.addNotificationHistory({
       username: ch.userUsername,
       channelSlug: ch.channelSlug,
+      profilePic: ch.profilePic || '',
       title: ch.sessionTitle || '-',
       category: ch.categoryName || '-',
       timestamp: new Date().toISOString(),
@@ -277,6 +281,29 @@ async function checkChannels() {
   await setPersistedNotifiedLives(notifiedLives);
 }
 
+// ─── Dynamic Tooltip ───
+
+async function updateDynamicTooltip(channels) {
+  const liveChannels = channels.filter(c => c.isLive);
+  let tooltip = 'KickAlert';
+  if (liveChannels.length === 0) {
+    tooltip = Utils.i18n('tooltipNoLive') || 'KickAlert — No live streams';
+  } else {
+    const count = Utils.i18n('tooltipLiveCount', [String(liveChannels.length)])
+      || `${liveChannels.length} live`;
+    const lines = liveChannels
+      .slice(0, 10)
+      .map(c => `• ${c.userUsername}`);
+    if (liveChannels.length > 10) {
+      const more = Utils.i18n('tooltipMore', [String(liveChannels.length - 10)])
+        || `+${liveChannels.length - 10} more`;
+      lines.push(more);
+    }
+    tooltip = `KickAlert — ${count}\n\n${lines.join('\n')}`;
+  }
+  try { await chrome.action.setTitle({ title: tooltip }); } catch {}
+}
+
 // ─── Notification ───
 // BUG 13 FIX: No longer writes to history (handled in checkChannels)
 // Windows notification sound fix: silent: true — our own sound plays via offscreen
@@ -287,14 +314,21 @@ async function sendNotification(ch, notifiedLives, isSilent) {
     || `${ch.userUsername} started streaming`;
   const iconUrl = await getAvatarDataUrl(ch);
 
+  const btnOpen = Utils.i18n('notifButtonOpen') || 'Open';
+  const btnMute = Utils.i18n('notifButtonMute') || 'Mute';
+
   chrome.notifications.create(id, {
     type: 'basic',
     iconUrl: iconUrl,
     title: title,
     message: ch.sessionTitle || '-',
     silent: isSilent,
+    buttons: [
+      { title: btnOpen },
+      { title: btnMute },
+    ],
   });
-  notifiedLives[id] = `https://kick.com/${ch.channelSlug}`;
+  notifiedLives[id] = { url: `https://kick.com/${ch.channelSlug}`, slug: ch.channelSlug };
 }
 
 // ─── Auto Open ───
@@ -321,7 +355,9 @@ async function startOffscreen() {
   // Firefox doesn't support offscreen API — skip silently
   if (!chrome.offscreen) return;
   try {
-    const hasDoc = await chrome.offscreen.hasDocument?.();
+    // hasDocument may throw "No SW" if service worker isn't fully ready
+    let hasDoc = false;
+    try { hasDoc = await chrome.offscreen.hasDocument(); } catch { return; }
     if (hasDoc) return;
     await chrome.offscreen.createDocument({
       url: chrome.runtime.getURL('html/offscreen.html'),
@@ -329,7 +365,10 @@ async function startOffscreen() {
       justification: 'Notification sounds and service worker keep-alive',
     });
   } catch (e) {
-    console.warn('[KickAlert] Offscreen create error:', e.message);
+    // "Only a single offscreen document may be created" is harmless — already exists
+    if (!e.message?.includes('single offscreen')) {
+      console.warn('[KickAlert] Offscreen create error:', e.message);
+    }
   }
 }
 
@@ -372,12 +411,39 @@ async function playSound(type) {
 
 chrome.notifications.onClicked.addListener(async (id) => {
   const state = await getPersistedState();
-  const url = state.notifiedLives[id];
-  if (url) {
+  const entry = state.notifiedLives[id];
+  if (entry) {
+    const url = typeof entry === 'string' ? entry : entry.url;
     await chrome.tabs.create({ url });
     delete state.notifiedLives[id];
     await setPersistedNotifiedLives(state.notifiedLives);
   }
+});
+
+chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
+  const state = await getPersistedState();
+  const entry = state.notifiedLives[id];
+  if (!entry) return;
+
+  const url = typeof entry === 'string' ? entry : entry.url;
+  const slug = typeof entry === 'string'
+    ? id.replace('kickalert-', '').replace(/-\d+$/, '')
+    : entry.slug;
+
+  if (buttonIndex === 0) {
+    // "Open" button — open the channel
+    await chrome.tabs.create({ url });
+    console.log(`[KickAlert] Notification button: Open ${slug}`);
+  } else if (buttonIndex === 1) {
+    // "Mute" button — fully mute channel (no notifications at all)
+    await Storage.setChannelSoundMode(slug, 'muted');
+    console.log(`[KickAlert] Notification button: Muted ${slug} — bell should show block icon`);
+  }
+
+  // Clean up notification
+  chrome.notifications.clear(id);
+  delete state.notifiedLives[id];
+  await setPersistedNotifiedLives(state.notifiedLives);
 });
 
 // BUG 14 FIX: Reset persisted state on install/update to avoid stale data
@@ -399,8 +465,33 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       respond({ success: true, channels: cachedChannels });
       return false;
     }
+    // RAM cache empty (SW slept) — try storage cache first, then fetch fresh
+    chrome.storage.local.get(['_cachedChannels']).then(async (result) => {
+      const stored = result._cachedChannels;
+      if (stored?.length) {
+        cachedChannels = stored;
+        respond({ success: true, channels: stored, fromCache: true });
+      } else {
+        try {
+          const channels = await KickAPI.getAllFollowingChannels();
+          cachedChannels = channels;
+          try { await chrome.storage.local.set({ _cachedChannels: channels }); } catch {}
+          respond({ success: true, channels });
+        } catch (err) {
+          respond({ success: false, error: err.message });
+        }
+      }
+    });
+    return true;
+  }
+  if (msg.type === 'GET_CHANNELS_FRESH') {
+    // Always fetch from API, update cache
     KickAPI.getAllFollowingChannels()
-      .then(channels => { cachedChannels = channels; respond({ success: true, channels }); })
+      .then(async (channels) => {
+        cachedChannels = channels;
+        try { await chrome.storage.local.set({ _cachedChannels: channels }); } catch {}
+        respond({ success: true, channels });
+      })
       .catch(err => respond({ success: false, error: err.message }));
     return true;
   }
@@ -423,6 +514,38 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       .catch(() => respond({ success: false }));
     return true;
   }
+  if (msg.type === 'TEST_NOTIFICATION') {
+    // Test notification with buttons — uses first live channel or a fake one
+    const testCh = cachedChannels.find(c => c.isLive) || {
+      channelSlug: 'test-channel',
+      userUsername: 'TestChannel',
+      sessionTitle: 'Test notification — try Open & Mute buttons',
+      profilePic: '',
+    };
+    const testNotifiedLives = {};
+    sendNotification(testCh, testNotifiedLives, true);
+    // Merge test entries into persisted state
+    getPersistedState().then(async (state) => {
+      Object.assign(state.notifiedLives, testNotifiedLives);
+      await setPersistedNotifiedLives(state.notifiedLives);
+    });
+    respond({ success: true, channel: testCh.userUsername });
+    return false;
+  }
 });
 
 self.onmessage = () => {};
+
+// Debug helper — call testNotification() from Service Worker console
+self.testNotification = async function() {
+  const testCh = cachedChannels.find(c => c.isLive) || {
+    channelSlug: 'test-channel',
+    userUsername: 'TestChannel',
+    sessionTitle: 'Test notification — try Open & Mute buttons',
+    profilePic: '',
+  };
+  const state = await getPersistedState();
+  await sendNotification(testCh, state.notifiedLives, true);
+  await setPersistedNotifiedLives(state.notifiedLives);
+  console.log(`[KickAlert] Test notification sent for: ${testCh.userUsername}`);
+};
