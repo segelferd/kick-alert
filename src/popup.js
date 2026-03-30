@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupMenu();
   setupSearch();
   setupHistoryClear();
+  setupRateLink();
   await loadChannels();
   await loadHistory();
   await updateMenuState();
@@ -569,6 +570,17 @@ function setupHistoryClear() {
     await Storage.set(StorageKeys.NOTIFICATION_HISTORY, []);
     await loadHistory();
   });
+}
+
+// ─── Rate Link (Chrome vs Firefox) ───
+
+function setupRateLink() {
+  const link = document.getElementById('rate-link');
+  if (!link) return;
+  const isFirefox = typeof browser !== 'undefined' || !chrome.offscreen;
+  if (isFirefox) {
+    link.href = 'https://addons.mozilla.org/firefox/addon/kickalert/';
+  }
 }
 
 // ─── Helpers ───

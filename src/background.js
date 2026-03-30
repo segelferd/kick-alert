@@ -410,37 +410,46 @@ async function playSound(type) {
 // ─── Events ───
 
 chrome.notifications.onClicked.addListener(async (id) => {
+  if (!id.startsWith('kickalert-')) return;
+  console.log(`[KickAlert] Notification body clicked: ${id}`);
   const state = await getPersistedState();
   const entry = state.notifiedLives[id];
   if (entry) {
     const url = typeof entry === 'string' ? entry : entry.url;
     await chrome.tabs.create({ url });
+    chrome.notifications.clear(id);
     delete state.notifiedLives[id];
     await setPersistedNotifiedLives(state.notifiedLives);
   }
 });
 
 chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
+  if (!id.startsWith('kickalert-')) return;
+  console.log(`[KickAlert] Notification BUTTON ${buttonIndex} clicked: ${id}`);
   const state = await getPersistedState();
   const entry = state.notifiedLives[id];
-  if (!entry) return;
+
+  if (!entry) {
+    console.warn(`[KickAlert] No entry found for ${id} — already cleared?`);
+    return;
+  }
 
   const url = typeof entry === 'string' ? entry : entry.url;
   const slug = typeof entry === 'string'
     ? id.replace('kickalert-', '').replace(/-\d+$/, '')
     : entry.slug;
 
+  console.log(`[KickAlert] Button action — slug: "${slug}", index: ${buttonIndex}`);
+
   if (buttonIndex === 0) {
-    // "Open" button — open the channel
     await chrome.tabs.create({ url });
-    console.log(`[KickAlert] Notification button: Open ${slug}`);
+    console.log(`[KickAlert] Opened: ${slug}`);
   } else if (buttonIndex === 1) {
-    // "Mute" button — fully mute channel (no notifications at all)
     await Storage.setChannelSoundMode(slug, 'muted');
-    console.log(`[KickAlert] Notification button: Muted ${slug} — bell should show block icon`);
+    const verify = await Storage.getChannelSoundMode(slug);
+    console.log(`[KickAlert] Muted: ${slug} — verified mode: ${verify}`);
   }
 
-  // Clean up notification
   chrome.notifications.clear(id);
   delete state.notifiedLives[id];
   await setPersistedNotifiedLives(state.notifiedLives);

@@ -498,11 +498,17 @@ body {
   color: var(--text-primary);
 }
 
-/* Support buttons */
-.opt-bmc-section { text-align: center; padding: 12px 0 8px; display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 8px; }
-.opt-bmc-link { display: inline-block; width: 45%; transition: opacity 0.2s; border-radius: 10px; overflow: hidden; }
+/* Support & Info */
+.opt-support-section { display: flex; flex-direction: column; align-items: center; padding: 14px 14px 12px; gap: 10px; }
+.opt-bmc-link { display: inline-block; width: 160px; transition: opacity 0.2s; border-radius: 8px; overflow: hidden; }
 .opt-bmc-link:hover { opacity: 0.85; }
 .opt-bmc-img { width: 100%; height: auto; display: block; }
+.opt-app-info { text-align: center; }
+.opt-app-version { font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px; }
+.opt-app-links { font-size: 11px; }
+.opt-app-links a { color: var(--accent); text-decoration: none; }
+.opt-app-links a:hover { text-decoration: underline; }
+.opt-link-sep { color: var(--text-muted); margin: 0 4px; }
 
 /* Theme Selector */
 .opt-theme-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
