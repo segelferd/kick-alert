@@ -577,7 +577,8 @@ function setupHistoryClear() {
 function setupRateLink() {
   const link = document.getElementById('rate-link');
   if (!link) return;
-  const isFirefox = typeof browser !== 'undefined' || !chrome.offscreen;
+  const manifest = chrome.runtime.getManifest();
+  const isFirefox = !manifest.background?.service_worker;
   if (isFirefox) {
     link.href = 'https://addons.mozilla.org/firefox/addon/kickalert/';
   }
