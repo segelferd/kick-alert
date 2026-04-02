@@ -122,6 +122,14 @@ const Utils = {
     return lang;
   },
 
+  /**
+   * Ensure i18n is loaded — call before using i18n() if SW may have slept.
+   */
+  async ensureI18n() {
+    if (_localeMessages) return;
+    await this.initI18n();
+  },
+
   getCurrentLang() {
     return _currentLang || 'en';
   },

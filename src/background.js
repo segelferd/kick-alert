@@ -52,21 +52,43 @@ async function getAvatarDataUrl(ch) {
 
 // ─── Init ───
 
+let _initRunning = false;
+
 async function initialize() {
+  if (_initRunning) return;
+  _initRunning = true;
+
+  // Storage-based lock: prevent duplicate init within 10s across SW restarts
+  try {
+    const lockData = await chrome.storage.local.get('_initLock');
+    const lock = lockData._initLock || 0;
+    if (Date.now() - lock < 10000) {
+      console.log('[KickAlert] Init skipped — lock active');
+      _initRunning = false;
+      return;
+    }
+    await chrome.storage.local.set({ _initLock: Date.now() });
+  } catch {}
+
   console.log('[KickAlert] Initializing...');
 
-  await Utils.initI18n();
-  await Storage.initSyncState();
-  await Storage.pullFromSync();
+  try {
+    await Utils.initI18n();
+    await Storage.initSyncState();
+    await Storage.pullFromSync();
 
-  const resetOnRestart = await Storage.getResetSuspendOnRestart();
-  if (resetOnRestart) await Storage.remove(StorageKeys.SUSPEND_FROM_DATE);
+    const resetOnRestart = await Storage.getResetSuspendOnRestart();
+    if (resetOnRestart) await Storage.remove(StorageKeys.SUSPEND_FROM_DATE);
 
-  await updateBadgeColor();
-  await migrateAutoOpenChannels();
-  await startOffscreen();
-  await checkSafe();
-  await scheduleAlarm();
+    await updateBadgeColor();
+    await migrateAutoOpenChannels();
+    await startOffscreen();
+    await checkSafe();
+    await scheduleAlarm();
+  } catch (e) {
+    console.warn('[KickAlert] Init error:', e.message);
+  }
+  _initRunning = false;
 }
 
 async function updateBadgeColor() {
@@ -120,7 +142,7 @@ async function setLastCheckDone() {
 
 // BUG 14 FIX: Reset persisted state on install/update
 async function resetPersistedState() {
-  await chrome.storage.local.remove(['_liveSlugs', '_notifiedLives', '_lastCheckDone']);
+  await chrome.storage.local.remove(['_liveSlugs', '_notifiedLives', '_lastCheckDone', '_initLock']);
 }
 
 // BUG 15 FIX: Clean up old notifiedLives entries (>24h)
@@ -159,6 +181,7 @@ async function scheduleAlarm() {
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
     console.log(`[KickAlert] Alarm fired at ${new Date().toLocaleTimeString()}`);
+    await Utils.ensureI18n();
     await cleanupNotifiedLives(); // BUG 15 FIX
     await checkSafe();
   }
@@ -210,12 +233,13 @@ async function checkChannels() {
   const liveChannelSlugs = state.liveSlugs;
   let notifiedLives = state.notifiedLives;
 
-  // First run — just record, don't notify
-  if (!state.lastCheckDone) {
+  // First run OR fresh startup with empty state — record current live, don't notify
+  // Prevents duplicate notifications when browser starts with streams already live
+  if (!state.lastCheckDone || state.liveSlugs.size === 0) {
     const currentLive = new Set(channels.filter(c => c.isLive).map(c => c.channelSlug));
     await setPersistedLiveSlugs(currentLive);
-    await setLastCheckDone();
-    console.log(`[KickAlert] First check — ${liveCount} live channels recorded`);
+    if (!state.lastCheckDone) await setLastCheckDone();
+    console.log(`[KickAlert] Startup check — ${liveCount} live channels recorded, no notifications`);
     return;
   }
 
@@ -258,7 +282,7 @@ async function checkChannels() {
       if (notified) await Utils.delay(5000);
       // silent flag: true when extension mode (we play our own), false when windows mode
       const isSilentNotif = soundMode === 'extension' || chSoundPref === 'silent';
-      sendNotification(ch, notifiedLives, isSilentNotif);
+      await sendNotification(ch, notifiedLives, isSilentNotif);
       notified = true;
     }
 
@@ -456,16 +480,24 @@ chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
 });
 
 // BUG 14 FIX: Reset persisted state on install/update to avoid stale data
-chrome.runtime.onInstalled.addListener(async () => {
-  await resetPersistedState();
+chrome.runtime.onInstalled.addListener(async (details) => {
+  // Reset state only on fresh install or extension update, not on every browser start
+  if (details.reason === 'install' || details.reason === 'update') {
+    await resetPersistedState();
+  }
   await initialize();
 });
+
 chrome.runtime.onStartup.addListener(() => initialize());
 
-// Fallback: if neither onInstalled nor onStartup fired (e.g. worker woke from alarm),
-// initialize only if alarm doesn't exist yet (means init hasn't run)
+// Fallback: SW woke from alarm. Only run if alarm already exists (was previously set up).
+// Delay 200ms so onInstalled/onStartup can run first if they are also firing.
 chrome.alarms.get(ALARM_NAME).then(alarm => {
-  if (!alarm) initialize();
+  if (alarm) {
+    setTimeout(() => {
+      if (!_initRunning) initialize();
+    }, 200);
+  }
 });
 
 chrome.runtime.onMessage.addListener((msg, sender, respond) => {

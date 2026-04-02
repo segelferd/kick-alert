@@ -26,13 +26,48 @@ const KickAPI = {
     return { 'Authorization': 'Bearer ' + token };
   },
 
+  // Retry config
+  _retryDelays: [1000, 2000, 4000, 8000], // exponential backoff
+  _lastBackoffUntil: 0, // timestamp — skip API calls until this time
+
   async fetchKick(url) {
-    const response = await fetch(url, {
-      headers: await this.makeHeaders(),
-      redirect: 'error',
-    });
-    if (!response.ok) throw new Error(`API error: ${response.status}`);
-    return response;
+    // If in backoff period, throw immediately
+    if (Date.now() < this._lastBackoffUntil) {
+      throw new Error(`API backoff — retry after ${Math.ceil((this._lastBackoffUntil - Date.now()) / 1000)}s`);
+    }
+
+    let lastError;
+    for (let attempt = 0; attempt <= this._retryDelays.length; attempt++) {
+      try {
+        const response = await fetch(url, {
+          headers: await this.makeHeaders(),
+          redirect: 'error',
+        });
+
+        if (response.status === 429) {
+          // Rate limited — enter backoff
+          const retryAfter = parseInt(response.headers.get('Retry-After') || '30', 10);
+          this._lastBackoffUntil = Date.now() + (retryAfter * 1000);
+          console.warn(`[KickAlert] Rate limited (429) — backing off ${retryAfter}s`);
+          throw new Error(`Rate limited: retry after ${retryAfter}s`);
+        }
+
+        if (!response.ok) throw new Error(`API error: ${response.status}`);
+
+        // Success — reset backoff
+        this._lastBackoffUntil = 0;
+        return response;
+      } catch (e) {
+        lastError = e;
+        if (attempt < this._retryDelays.length) {
+          const delay = this._retryDelays[attempt];
+          console.warn(`[KickAlert] API attempt ${attempt + 1} failed: ${e.message} — retrying in ${delay}ms`);
+          await new Promise(r => setTimeout(r, delay));
+        }
+      }
+    }
+    console.error(`[KickAlert] API failed after ${this._retryDelays.length + 1} attempts: ${lastError.message}`);
+    throw lastError;
   },
 
   /**

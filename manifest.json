@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "description": "__MSG_appDescription__",
-  "version": "1.6.1",
+  "version": "1.6.3",
   "author": "segelferd",
   "homepage_url": "https://github.com/segelferd/kick-alert",
   "default_locale": "en",
@@ -18,11 +18,14 @@
   },
   "content_scripts": [
     {
-      "js": ["src/content.js"],
-      "matches": ["https://kick.com/*"]
+      "js": [
+        "src/content.js"
+      ],
+      "matches": [
+        "https://kick.com/*"
+      ]
     }
   ],
-
   "permissions": [
     "storage",
     "offscreen",
