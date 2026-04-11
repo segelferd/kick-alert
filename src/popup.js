@@ -368,8 +368,13 @@ async function channelCard(ch, cardMode, batch) {
   if (ch.isLive) {
     const dur = Utils.formatDuration(ch.startedAt);
     const viewers = Utils.formatViewers(ch.viewerCount);
-    const anomaly = await getViewerAnomaly(ch.channelSlug, ch.viewerCount, ch.startedAt);
-    const drop = await getViewerDrop(ch.channelSlug, ch.viewerCount, ch.startedAt);
+    const anomalySettings = await Storage.getAnomalySettings();
+    const anomaly = anomalySettings.enabled
+      ? await getViewerAnomaly(ch.channelSlug, ch.viewerCount, ch.startedAt)
+      : null;
+    const drop = (anomalySettings.enabled && anomalySettings.dropEnabled)
+      ? await getViewerDrop(ch.channelSlug, ch.viewerCount, ch.startedAt)
+      : null;
 
     const anomalyBadge = (anomaly && cardMode !== 'compact')
       ? `<span class="viewer-anomaly viewer-anomaly-${anomaly.level}">↑+${anomaly.pct}%</span>`

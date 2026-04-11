@@ -101,7 +101,10 @@ const KickAPI = {
     try {
       const response = await this.fetchKick(`https://kick.com/api/v2/channels/${slug}`);
       const data = await response.json();
-      return data?.livestream?.created_at ?? null;
+      const raw = data?.livestream?.created_at ?? null;
+      if (!raw) return null;
+      // Kick API created_at UTC döndürür ama Z suffix yok — manuel ekle
+      return raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z';
     } catch { return null; }
   },
 
@@ -148,7 +151,11 @@ const KickAPI = {
       }
 
       return {
-        startTime: ls.created_at || ls.start_time || null,
+        startTime: (() => {
+          const t = ls.created_at || ls.start_time || null;
+          if (!t) return null;
+          return t.endsWith('Z') || t.includes('+') ? t : t + 'Z';
+        })(),
         thumbnailUrl,
       };
     } catch (e) {

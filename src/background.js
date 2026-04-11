@@ -555,29 +555,41 @@ async function checkChannels() {
 
     // Yayın eklenti session başlamadan önce mi başladı?
     if (ch.startedAt) {
-      // startedAt varsa: kesin zaman kontrolü — session başlamadan önce başlamışsa atla
+      // startedAt varsa: yayın 10 dk+ önce başlamışsa atla — zaten yayındaydı
       const streamStart = new Date(ch.startedAt).getTime();
-      if (streamStart < sessionStart - 60000) {
-        console.log(`[KickAlert] Skipping pre-session live: ${ch.channelSlug}`);
-        liveChannelSlugs.add(ch.channelSlug); // _liveSlugs'a ekle — bir sonraki check doğru çalışsın
+      const streamAgeMs = Date.now() - streamStart;
+      if (streamAgeMs > 10 * 60 * 1000) {
+        console.log(`[KickAlert] Skipping long-running live (${Math.round(streamAgeMs/60000)} min): ${ch.channelSlug}`);
+        liveChannelSlugs.add(ch.channelSlug);
         continue;
       }
     } else {
       // startedAt null — yayın ne zaman başladı bilinmiyor.
       // viewerHistory kaydı varsa bu kanal daha önce görülmüştü — zaten yayındaydı, atla.
-      // viewerHistory kaydı yoksa bu kanal yeni takip edilmiş olabilir.
-      // Güvenli davranış: ilk kez görüldüğünde _liveSlugs'a ekle ama bildirim gönderme.
-      // Bir sonraki check'te liveChannelSlugs.has() true döner, döngü atlanır — bildirim gitmez.
       if (vh[ch.channelSlug] && (vh[ch.channelSlug].current?.length > 0 || vh[ch.channelSlug].pastAvgs?.length > 0)) {
         console.log(`[KickAlert] Skipping known live (no startedAt, has history): ${ch.channelSlug}`);
         liveChannelSlugs.add(ch.channelSlug);
         continue;
       }
-      // viewerHistory yoksa → yeni takip edilmiş kanal olabilir, startedAt bilinmiyor.
-      // Bu check'te sessizce _liveSlugs'a ekle, bildirim gönderme.
-      console.log(`[KickAlert] First sight, no startedAt, no history — silently registering: ${ch.channelSlug}`);
-      liveChannelSlugs.add(ch.channelSlug);
-      continue;
+      // startedAt null + viewerHistory yok: API'den yayın başlangıcını sorgula
+      const apiStartTime = await KickAPI.getChannelStartTime(ch.channelSlug);
+      if (apiStartTime) {
+        const streamStart = new Date(apiStartTime).getTime();
+        const streamAgeMs = Date.now() - streamStart;
+        if (streamAgeMs > 10 * 60 * 1000) {
+          // Yayın 10 dk+ önce başlamış — zaten yayındaydı, atla
+          console.log(`[KickAlert] Skipping long-running live API (${Math.round(streamAgeMs/60000)} min): ${ch.channelSlug}`);
+          liveChannelSlugs.add(ch.channelSlug);
+          continue;
+        }
+        // Yayın 10 dk içinde başlamış — yeni yayın, devam et
+        console.log(`[KickAlert] New live confirmed via API startTime (${Math.round(streamAgeMs/60000)} min): ${ch.channelSlug}`);
+      } else {
+        // API'den de bilgi gelmedi — sessizce kayıt et, yanlış bildirim riskini al
+        console.log(`[KickAlert] No startedAt, no history, no API time — silently registering: ${ch.channelSlug}`);
+        liveChannelSlugs.add(ch.channelSlug);
+        continue;
+      }
     }
 
     // Bildirim gecikmesi kontrolü

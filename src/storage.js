@@ -45,6 +45,8 @@ const SYNC_EXCLUDE_KEYS = new Set([
   StorageKeys.NOTIFICATION_HISTORY,     // grows large, device-specific
   StorageKeys.SUSPEND_FROM_DATE,        // device-specific runtime state
   StorageKeys.CLOUD_SYNC_ENABLED,      // meta — each device decides independently
+  StorageKeys.VIEWER_HISTORY,          // grows very large (60 entries × N channels)
+  StorageKeys.ANOMALY_SETTINGS,        // device-specific sensitivity prefs
   '_liveSlugs', '_notifiedLives', '_lastCheckDone', // internal state
 ]);
 
