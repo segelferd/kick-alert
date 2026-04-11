@@ -414,7 +414,7 @@ function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
         ? now - new Date(streamStartedAt).getTime()
         : now - current[0].t;
       const streamAgeMin = Math.round(streamAge / 60000);
-      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)} (+${roc.pct}%)`;
+      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)}`;
       return { pct: roc.pct, level, label };
     }
 
@@ -431,7 +431,7 @@ function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
       : now - current[0].t;
     const streamAgeMin = Math.round(streamAge / 60000);
     return { pct: totalPct, level,
-      label: `${streamAgeMin} dk yayında · ${formatK(baseValue)} → ${formatK(currentCount)} (+${totalPct}%)` };
+      label: `${streamAgeMin} dk yayında · ${formatK(baseValue)} → ${formatK(currentCount)}` };
   } catch { return null; }
 }
 
@@ -469,7 +469,7 @@ function getViewerDropSync(rec, currentCount, streamStartedAt, now, anomalySetti
       // İlk 15 dk'da düşüş alarmı verme — yayın başında organik dalgalanma olabilir
       if (streamAge < STREAM_SETTLE_MS) return null;
       const streamAgeMin = Math.round(streamAge / 60000);
-      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)} (-${absPct}%)`;
+      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)}`;
       return { pct: absPct, level, label };
     }
 
@@ -488,7 +488,7 @@ function getViewerDropSync(rec, currentCount, streamStartedAt, now, anomalySetti
     const level = dropPct >= alertThreshold ? 'alert' : 'warn';
     const streamAgeMin = Math.round(streamAge / 60000);
     return { pct: dropPct, level,
-      label: `${streamAgeMin} dk yayında · ${formatK(peak)} → ${formatK(currentCount)} (-${dropPct}%)` };
+      label: `${streamAgeMin} dk yayında · ${formatK(peak)} → ${formatK(currentCount)}` };
   } catch { return null; }
 }
 
@@ -499,7 +499,10 @@ async function getViewerDrop(slug, currentCount, streamStartedAt, anomalySetting
   } catch { return null; }
 }
 
+let _autoLaunchTabOpened = false; // Her check döngüsünde sıfırlanır
+
 async function checkChannels() {
+  _autoLaunchTabOpened = false; // Her check başında sıfırla — ilk sekme öne gelsin
   const channels = await KickAPI.getAllFollowingChannels();
   cachedChannels = channels;
   // Persist channel data so popup can load instantly even if SW sleeps
@@ -622,7 +625,10 @@ async function checkChannels() {
     // Auto-open tab (independent of sound)
     if (!suspended && !dndMuteAutolaunch) {
       if (await shouldAutoOpen(ch)) {
-        await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: false });
+        // İlk açılan sekmeyi öne getir — Cloudflare otomatik onayı için gerekli
+        // Sonraki kanallar arka planda — kullanıcı kendi geçer
+        await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: !_autoLaunchTabOpened });
+        _autoLaunchTabOpened = true;
       }
     }
   }
@@ -852,7 +858,8 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         respond({ success: true, channels: stored, fromCache: true });
       } else {
         try {
-          const channels = await KickAPI.getAllFollowingChannels();
+          _autoLaunchTabOpened = false; // Her check başında sıfırla — ilk sekme öne gelsin
+  const channels = await KickAPI.getAllFollowingChannels();
           cachedChannels = channels;
           try { await chrome.storage.local.set({ _cachedChannels: channels }); } catch {}
           respond({ success: true, channels });

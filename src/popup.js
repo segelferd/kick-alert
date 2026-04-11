@@ -377,16 +377,15 @@ async function channelCard(ch, cardMode, batch) {
       ? `<span class="viewer-anomaly viewer-anomaly-drop-${drop.level}">↓-${drop.pct}%</span>`
       : '';
     const anomalyNote = (anomaly && cardMode !== 'compact')
-      ? `<div class="anomaly-row ${anomaly.level}">↑ ${anomaly.label}</div>`
+      ? `<div class="anomaly-row ${anomaly.level}">↑ ${anomaly.label} ${anomalyBadge}</div>`
       : (drop && cardMode !== 'compact')
-      ? `<div class="anomaly-row drop-${drop.level}">↓ ${drop.label}</div>`
+      ? `<div class="anomaly-row drop-${drop.level}">↓ ${drop.label} ${anomalyBadge}</div>`
       : '';
     meta = `<div class="channel-meta">
       <span class="rec-indicator"><span class="rec-dot"></span></span>
       <span class="stream-duration" data-slug="${esc(ch.channelSlug)}">${esc(dur)}</span>
       <span class="meta-separator">·</span>
       <span class="viewer-count">${esc(viewers)}</span>
-      ${anomalyBadge}
       ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name" title="${esc(ch.categoryName)}">${esc(ch.categoryName)}</span>` : ''}
     </div>${anomalyNote}`;
   }
