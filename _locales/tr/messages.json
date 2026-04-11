@@ -211,5 +211,98 @@
   },
   "notifButtonMute": {
     "message": "Sustur"
+  },
+  "anomalyTitle": {
+    "message": "İzleyici anomali tespiti"
+  },
+  "anomalyDesc": {
+    "message": "Anormal izleyici artışlarını tespit eder. Yeni yayınlarda geçmiş ortalamaya, devam eden yayınlarda artış hızına bakar. Geçmiş olmadan uyarı üretmez."
+  },
+  "anomalyThreshold": {
+    "message": "Uyarı eşiği"
+  },
+  "anomalyNotifyMode": {
+    "message": "Bildirim modu"
+  },
+  "anomalyModeBoth": {
+    "message": "Masaüstü bildirimi + popup badge"
+  },
+  "anomalyModeNotif": {
+    "message": "Sadece masaüstü bildirimi"
+  },
+  "anomalyModeBadge": {
+    "message": "Sadece popup badge"
+  },
+  "anomalyNote": {
+    "message": "Yeni yayın (< 10 dk): önceki yayın ortalamasıyla kıyaslar. Devam eden yayın: artış hızına bakar. Geçmiş olmadan uyarı üretmez."
+  },
+  "cardModeLabel": {
+    "message": "Kart görünümü"
+  },
+  "cardModeCompact": {
+    "message": "Kompakt"
+  },
+  "cardModeDetail": {
+    "message": "Detay"
+  },
+  "historyGroupToday": {
+    "message": "Bugün"
+  },
+  "historyGroupYesterday": {
+    "message": "Dün"
+  },
+  "historyGroupThisWeek": {
+    "message": "Bu hafta"
+  },
+  "historyGroupOlder": {
+    "message": "Daha önce"
+  },
+  "lastStream": {
+    "message": "Son yayın"
+  },
+  "notifDelayLabel": {
+    "message": "Yayın başladıktan sonra bildir"
+  },
+  "notifDelayNow": {
+    "message": "Hemen"
+  },
+  "viewerTrendTitle": {
+    "message": "İzleyici Trendi"
+  },
+  "noDataYet": {
+    "message": "Henüz yeterli veri yok"
+  },
+  "anomalyDropEnabled": {
+    "message": "Anormal izleyici düşüşünü bildir"
+  },
+  "anomalySpikeTitle": {
+    "message": "Şüpheli İzleyici Artışı"
+  },
+  "anomalyDropTitle": {
+    "message": "Şüpheli İzleyici Düşüşü"
+  },
+  "anomalySpikeSettings": {
+    "message": "Artış tespit eşikleri"
+  },
+  "anomalyWarnLabel": {
+    "message": "Uyarı"
+  },
+  "anomalyAlertLabel": {
+    "message": "Alarm"
+  },
+  "anomalyDropSettings": {
+    "message": "Düşüş tespiti"
+  },
+  "anomalySensitivity": {
+    "message": "Hassasiyet"
+  },
+  "sensitivityMin": {
+    "message": "Hassas"
+  },
+  "sensitivityAvg": {
+    "message": "Dengeli"
+  },
+  "sensitivityMax": {
+    "message": "Katı"
   }
 }

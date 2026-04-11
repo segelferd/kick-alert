@@ -211,5 +211,98 @@
   },
   "notifButtonMute": {
     "message": "음소거"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "anomalyDropEnabled": {
+    "message": "비정상적인 시청자 감소 알림"
+  },
+  "anomalySpikeTitle": {
+    "message": "의심스러운 시청자 급증"
+  },
+  "anomalyDropTitle": {
+    "message": "의심스러운 시청자 급감"
+  },
+  "anomalySpikeSettings": {
+    "message": "급증 감지 임계값"
+  },
+  "anomalyWarnLabel": {
+    "message": "경고"
+  },
+  "anomalyAlertLabel": {
+    "message": "알림"
+  },
+  "anomalyDropSettings": {
+    "message": "급감 감지"
+  },
+  "anomalySensitivity": {
+    "message": "감도"
+  },
+  "sensitivityMin": {
+    "message": "민감"
+  },
+  "sensitivityAvg": {
+    "message": "균형"
+  },
+  "sensitivityMax": {
+    "message": "엄격"
   }
 }

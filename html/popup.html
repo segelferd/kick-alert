@@ -100,14 +100,14 @@
           <span class="material-icons-outlined">visibility</span>
           <span data-i18n="displaySettings"></span>
         </div>
+
         <label class="opt-row">
           <input type="checkbox" id="opt-show-offline" />
           <span data-i18n="showOfflineChannels"></span>
         </label>
         <div class="opt-divider"></div>
-        <div class="opt-theme-row">
-          <span class="material-icons-outlined" style="font-size:16px;">dark_mode</span>
-          <span data-i18n="themeLabel"></span>
+        <div class="opt-row" style="justify-content:space-between;margin-top:6px">
+          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="themeLabel"></span>
           <div class="opt-theme-btns">
             <button class="opt-theme-btn" id="opt-theme-dark" data-theme="dark" data-i18n="themeDark"></button>
             <button class="opt-theme-btn" id="opt-theme-light" data-theme="light" data-i18n="themeLight"></button>
@@ -135,6 +135,15 @@
           <input type="checkbox" id="opt-show-notification" />
           <span data-i18n="showNotificationCheckbox"></span>
         </label>
+        <div class="opt-row" style="justify-content:space-between;margin-top:6px">
+          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="notifDelayLabel"></span>
+          <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden">
+            <button class="card-mode-btn notif-delay-btn" data-delay="0" data-i18n="notifDelayNow"></button>
+            <button class="card-mode-btn notif-delay-btn" data-delay="5">5m</button>
+            <button class="card-mode-btn notif-delay-btn" data-delay="10">10m</button>
+            <button class="card-mode-btn notif-delay-btn" data-delay="15">15m</button>
+          </div>
+        </div>
         <div class="opt-divider"></div>
         <div class="opt-sound-mode">
           <label class="opt-radio-row" data-i18n-title="soundModeExtensionTooltip">
@@ -226,6 +235,72 @@
           </div>
         </div>
       </div>
+      <!-- Viewer Anomaly Section -->
+      <div class="opt-section">
+        <div class="opt-dnd-section" id="opt-anomaly-section">
+          <div class="opt-dnd-header">
+            <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">monitoring</span>
+            <span data-i18n="anomalyTitle"></span>
+            <label class="toggle-switch toggle-switch-sm">
+              <input type="checkbox" id="opt-anomaly-enabled" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div id="opt-anomaly-body" class="opt-section-body">
+            <div style="font-size:11px;color:var(--text-muted);padding:4px 0 8px 22px;line-height:1.5;" data-i18n="anomalyDesc"></div>
+            <label class="opt-radio-row">
+              <input type="radio" name="anomaly-mode" id="opt-anomaly-mode-both" value="both" checked>
+              <span data-i18n="anomalyModeBoth"></span>
+            </label>
+            <label class="opt-radio-row">
+              <input type="radio" name="anomaly-mode" id="opt-anomaly-mode-badge" value="badge">
+              <span data-i18n="anomalyModeBadge"></span>
+            </label>
+            <div style="height:1px;background:var(--border);margin:10px 0 8px;"></div>
+            <div class="opt-dnd-header" style="padding:0 0 6px 0;">
+              <span style="font-size:12px;font-weight:500;color:var(--text-secondary);" data-i18n="anomalySpikeSettings"></span>
+              <label class="toggle-switch toggle-switch-sm">
+                <input type="checkbox" id="opt-anomaly-spike-enabled" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div id="opt-spike-sensitivity-body">
+              <div class="sens-row">
+                <div class="sens-bar-col">
+                  <input type="range" id="opt-spike-sensitivity-slider" min="0" max="2" step="1" value="1" class="sens-range" />
+                  <div class="sens-ticks">
+                    <span data-i18n="sensitivityMin"></span>
+                    <span data-i18n="sensitivityAvg"></span>
+                    <span data-i18n="sensitivityMax"></span>
+                  </div>
+                </div>
+                <span class="sens-val" id="opt-spike-sensitivity-val"></span>
+              </div>
+            </div>
+            <div style="height:1px;background:var(--border);margin:10px 0 8px;"></div>
+            <div class="opt-dnd-header" style="padding:0 0 6px 0;">
+              <span style="font-size:12px;font-weight:500;color:var(--text-secondary);" data-i18n="anomalyDropSettings"></span>
+              <label class="toggle-switch toggle-switch-sm">
+                <input type="checkbox" id="opt-anomaly-drop-enabled" />
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div id="opt-drop-sensitivity-body">
+              <div class="sens-row">
+                <div class="sens-bar-col">
+                  <input type="range" id="opt-drop-sensitivity-slider" min="0" max="2" step="1" value="1" class="sens-range" />
+                  <div class="sens-ticks">
+                    <span data-i18n="sensitivityMin"></span>
+                    <span data-i18n="sensitivityAvg"></span>
+                    <span data-i18n="sensitivityMax"></span>
+                  </div>
+                </div>
+                <span class="sens-val" id="opt-drop-sensitivity-val"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <!-- Cloud Sync Section -->
       <div class="opt-section">
         <div class="opt-dnd-header">
@@ -244,7 +319,7 @@
           <img src="../images/bmc/bmc-button.png" alt="Buy me a coffee" class="opt-bmc-img" />
         </a>
         <div class="opt-app-info">
-          <span class="opt-app-version">KickAlert v1.6.3</span>
+          <span class="opt-app-version" id="opt-app-version">KickAlert v1.7.0</span>
           <div class="opt-app-links">
             <a href="https://github.com/segelferd/kick-alert" target="_blank">Source Code</a>
             <span class="opt-link-sep">·</span>
@@ -262,5 +337,20 @@
   <script src="../src/storage.js"></script>
   <script src="../src/utils.js"></script>
   <script src="../src/popup.js"></script>
+  <!-- Viewer History Modal -->
+  <div id="viewer-history-modal" class="vh-modal" style="display:none">
+    <div class="vh-modal-backdrop"></div>
+    <div class="vh-modal-box">
+      <div class="vh-modal-header">
+        <span id="vh-modal-title">İzleyici Geçmişi</span>
+        <button id="vh-modal-close" class="vh-close-btn"><span class="material-icons">close</span></button>
+      </div>
+      <div class="vh-chart-wrap">
+        <svg id="vh-chart-svg" width="100%" height="120" viewBox="0 0 400 120" preserveAspectRatio="none"></svg>
+      </div>
+      <div id="vh-chart-labels" class="vh-chart-labels"></div>
+      <div id="vh-no-data" class="vh-no-data" style="display:none">Henüz yeterli veri yok</div>
+    </div>
+  </div>
 </body>
 </html>

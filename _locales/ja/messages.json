@@ -211,5 +211,98 @@
   },
   "notifButtonMute": {
     "message": "ミュート"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "anomalyDropEnabled": {
+    "message": "異常な視聴者数の減少を通知"
+  },
+  "anomalySpikeTitle": {
+    "message": "不審な視聴者急増"
+  },
+  "anomalyDropTitle": {
+    "message": "不審な視聴者急減"
+  },
+  "anomalySpikeSettings": {
+    "message": "スパイク検知のしきい値"
+  },
+  "anomalyWarnLabel": {
+    "message": "警告"
+  },
+  "anomalyAlertLabel": {
+    "message": "アラート"
+  },
+  "anomalyDropSettings": {
+    "message": "急減検知"
+  },
+  "anomalySensitivity": {
+    "message": "感度"
+  },
+  "sensitivityMin": {
+    "message": "敏感"
+  },
+  "sensitivityAvg": {
+    "message": "バランス"
+  },
+  "sensitivityMax": {
+    "message": "厳格"
   }
 }

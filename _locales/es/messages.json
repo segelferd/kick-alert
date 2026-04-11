@@ -211,5 +211,98 @@
   },
   "notifButtonMute": {
     "message": "Silenciar"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "anomalyDropEnabled": {
+    "message": "Notificar caída anormal de espectadores"
+  },
+  "anomalySpikeTitle": {
+    "message": "Pico sospechoso de espectadores"
+  },
+  "anomalyDropTitle": {
+    "message": "Caída sospechosa de espectadores"
+  },
+  "anomalySpikeSettings": {
+    "message": "Umbrales de detección de pico"
+  },
+  "anomalyWarnLabel": {
+    "message": "Aviso"
+  },
+  "anomalyAlertLabel": {
+    "message": "Alerta"
+  },
+  "anomalyDropSettings": {
+    "message": "Detección de caída"
+  },
+  "anomalySensitivity": {
+    "message": "Sensibilidad"
+  },
+  "sensitivityMin": {
+    "message": "Sensible"
+  },
+  "sensitivityAvg": {
+    "message": "Equilibrado"
+  },
+  "sensitivityMax": {
+    "message": "Estricto"
   }
 }

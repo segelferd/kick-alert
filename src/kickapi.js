@@ -117,22 +117,31 @@ const KickAPI = {
 
       let thumbnailUrl = '';
 
-      // Strategy 1: Try thumbnail object from API (images.kick.com URLs work)
+      // stream.kick.com → images.kick.com dönüşüm fonksiyonu
+      const convertStreamUrl = (url) => {
+        if (!url || !url.includes('stream.kick.com')) return url || '';
+        const m = url.match(/stream\.kick\.com\/thumbnails\/livestream\/(\d+)\/(thumb\d+)\//);
+        if (m) return `https://images.kick.com/video_thumbnails/${m[1]}/${m[2]}/720.webp`;
+        // Fallback: sadece stream ID ile dene
+        const m2 = url.match(/livestream\/(\d+)\//);
+        if (m2) return `https://images.kick.com/video_thumbnails/${m2[1]}/thumb0/720.webp`;
+        return '';
+      };
+
+      // Strategy 1: thumbnail objesi — stream.kick.com URL'lerini dönüştür
       const thumb = ls.thumbnail;
       if (thumb) {
         if (typeof thumb === 'string') {
-          if (!thumb.includes('stream.kick.com')) thumbnailUrl = thumb;
+          thumbnailUrl = convertStreamUrl(thumb);
         } else {
-          // Try srcset first — it uses images.kick.com which is accessible
-          if (thumb.srcset) thumbnailUrl = thumb.srcset.split(' ')[0];
-          else if (thumb.responsive) thumbnailUrl = thumb.responsive.split(' ')[0];
-          // url/src fields use stream.kick.com which is blocked — skip
-          if (!thumbnailUrl && thumb.src && !thumb.src.includes('stream.kick.com')) thumbnailUrl = thumb.src;
-          if (!thumbnailUrl && thumb.url && !thumb.url.includes('stream.kick.com')) thumbnailUrl = thumb.url;
+          if (thumb.srcset) thumbnailUrl = convertStreamUrl(thumb.srcset.split(' ')[0]);
+          else if (thumb.responsive) thumbnailUrl = convertStreamUrl(thumb.responsive.split(' ')[0]);
+          if (!thumbnailUrl && thumb.src)  thumbnailUrl = convertStreamUrl(thumb.src);
+          if (!thumbnailUrl && thumb.url)  thumbnailUrl = convertStreamUrl(thumb.url);
         }
       }
 
-      // Strategy 2: Construct from IVS source URL
+      // Strategy 2: IVS source URL'den oluştur
       if (!thumbnailUrl && ls.source) {
         const m = ls.source.match(/\/([A-Za-z0-9]{6,})\/\d{4}\/\d+\/\d+\/\d+\/\d+\/([A-Za-z0-9]+)\/media/);
         if (m) thumbnailUrl = `https://images.kick.com/video_thumbnails/${m[1]}/${m[2]}/720.webp`;

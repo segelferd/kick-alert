@@ -32,6 +32,9 @@ const StorageKeys = {
   THEME: 'theme', // 'dark' or 'light'
   CHANNEL_GROUPS: 'channelGroups', // ['Türk yayıncılar', 'FPS', ...]
   CHANNEL_GROUP_MAP: 'channelGroupMap', // { slug: 'groupName' }
+  VIEWER_HISTORY: 'viewerHistory',   // { slug: [{v, t}, ...] }
+  ANOMALY_SETTINGS: 'anomalySettings',
+  NOTIF_DELAY: 'notifDelay',            // dakika: 0,5,10,15
 };
 
 // Keys that should NOT be synced (too large, device-specific, or internal)
@@ -247,6 +250,11 @@ const Storage = {
     const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
     return modes[slug] || 'silent'; // default: silent notification
   },
+  async getAllChannelSoundModes() {
+    // channelSoundMode key'inde { slug: mode } formatında saklanıyor
+    return (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
+  },
+
   async setChannelSoundMode(slug, mode) {
     const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
     if (mode === 'silent') {
@@ -315,6 +323,26 @@ const Storage = {
   /**
    * Check if current time is within DND hours.
    */
+  // ─── Viewer Anomaly History ───
+  async getNotifDelay() {
+    return (await this.get(StorageKeys.NOTIF_DELAY)) || 0;
+  },
+  async setNotifDelay(v) { return this.set(StorageKeys.NOTIF_DELAY, v); },
+
+
+  async getAnomalySettings() {
+    const stored = await this.get(StorageKeys.ANOMALY_SETTINGS);
+    return Object.assign({ enabled: false, spikeEnabled: true, spikeSensitivity: 'avg', notifyMode: 'both', dropEnabled: false, dropSensitivity: 'avg' }, stored || {});
+  },
+  async setAnomalySettings(obj) { return this.set(StorageKeys.ANOMALY_SETTINGS, obj); },
+
+  async getViewerHistory() {
+    return (await this.get('viewerHistory')) || {};
+  },
+  async setViewerHistory(obj) {
+    return this.set('viewerHistory', obj);
+  },
+
   async isDndActive() {
     const enabled = await this.getDndEnabled();
     if (!enabled) return false;

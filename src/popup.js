@@ -160,7 +160,7 @@ function showMsg(id, msg) {
 
 // ─── Following Tab ───
 
-async function renderFollowing() {
+async function renderFollowing(categoryFilter) {
   const el = document.getElementById('following-list');
   if (!el) return;
 
@@ -169,10 +169,15 @@ async function renderFollowing() {
   const groupMap = await Storage.getChannelGroupMap();
   let list = showOffline ? allChannels : allChannels.filter(c => c.isLive);
 
-  // Group filter
-  const activeGroup = document.querySelector('.group-chip.active')?.dataset.group || '__all__';
-  if (activeGroup !== '__all__') {
-    list = list.filter(c => groupMap[c.channelSlug] === activeGroup);
+  // Kategori filtresi
+  if (categoryFilter) {
+    list = list.filter(c => c.categoryName === categoryFilter);
+  } else {
+    // Grup filtresi
+    const activeGroup = document.querySelector('.group-chip.active')?.dataset.group || '__all__';
+    if (activeGroup !== '__all__' && !activeGroup.startsWith('__cat__')) {
+      list = list.filter(c => groupMap[c.channelSlug] === activeGroup);
+    }
   }
 
   // Build group filter bar
@@ -192,14 +197,33 @@ async function renderFollowing() {
   });
 
   el.innerHTML = '';
-  for (const ch of list) el.appendChild(await channelCard(ch));
+  const cardMode = 'detail'; // Compact mod kaldırıldı
+
+  // Batch yükle — her kart için ayrı storage.get yerine tek seferde
+  const [favMap, groupMap2, bellMap, groupList] = await Promise.all([
+    Storage.getFavoriteChannels(),
+    Storage.getChannelGroupMap(),
+    Storage.getAllChannelSoundModes(),
+    Storage.getChannelGroups(),
+  ]);
+  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList };
+
+  for (const ch of list) el.appendChild(await channelCard(ch, cardMode, batchData));
 }
 
 async function buildGroupFilterBar() {
   const bar = document.getElementById('group-filter-bar');
   if (!bar) return;
   const groups = await Storage.getChannelGroups();
-  if (groups.length === 0) {
+
+  // Canlı kanallardan benzersiz kategorileri topla
+  const liveCategories = [...new Set(
+    allChannels
+      .filter(c => c.isLive && c.categoryName)
+      .map(c => c.categoryName)
+  )].slice(0, 5); // Max 5 kategori chip
+
+  if (groups.length === 0 && liveCategories.length === 0) {
     bar.style.display = 'none';
     return;
   }
@@ -223,12 +247,30 @@ async function buildGroupFilterBar() {
     chip.addEventListener('click', () => { setActiveGroup(g); });
     bar.appendChild(chip);
   }
+
+  // Kategori chip'leri — ayırıcı + canlı kategoriler
+  if (liveCategories.length > 0) {
+    if (groups.length > 0) {
+      const sep = document.createElement('span');
+      sep.className = 'group-chip-sep';
+      bar.appendChild(sep);
+    }
+    for (const cat of liveCategories) {
+      const chip = document.createElement('button');
+      chip.className = `group-chip category-chip ${activeGroup === '__cat__' + cat ? 'active' : ''}`;
+      chip.dataset.group = '__cat__' + cat;
+      chip.dataset.category = cat;
+      chip.textContent = cat;
+      chip.addEventListener('click', () => { setActiveGroup('__cat__' + cat); });
+      bar.appendChild(chip);
+    }
+  }
 }
 
 function setActiveGroup(group) {
   document.querySelectorAll('.group-chip').forEach(c => c.classList.remove('active'));
   document.querySelector(`.group-chip[data-group="${group}"]`)?.classList.add('active');
-  renderFollowing();
+  renderFollowing(group.startsWith('__cat__') ? group.replace('__cat__', '') : null);
 }
 
 // ─── Auto Launch Tab ───
@@ -248,7 +290,15 @@ async function renderAutoLaunch() {
   });
 
   el.innerHTML = '';
-  for (const ch of sorted) el.appendChild(await autoLaunchCard(ch));
+  const alCardMode = 'detail';
+  const [alFavMap, alGroupMap, alBellMap, alGroupList] = await Promise.all([
+    Storage.getFavoriteChannels(),
+    Storage.getChannelGroupMap(),
+    Storage.getAllChannelSoundModes(),
+    Storage.getChannelGroups(),
+  ]);
+  const alBatch = { favMap: alFavMap, groupMap: alGroupMap, bellMap: alBellMap, groupList: alGroupList };
+  for (const ch of sorted) el.appendChild(await autoLaunchCard(ch, alCardMode, alBatch));
 }
 
 // ─── Bell Button Helper ───
@@ -291,25 +341,54 @@ function syncBellButtons(slug, mode) {
 
 // ─── Channel Card (Following Tab) ───
 
-async function channelCard(ch) {
+async function channelCard(ch, cardMode, batch) {
+  cardMode = cardMode || 'detail';
   const card = document.createElement('div');
-  card.className = `channel-card ${ch.isLive ? 'live' : 'offline'}`;
-  const isFav = await Storage.isFavoriteChannel(ch.channelSlug);
-  const chGroup = await Storage.getChannelGroup(ch.channelSlug);
+  card.className = `channel-card ${ch.isLive ? 'live' : 'offline'} ${cardMode}-card`;
+  const isFav = batch ? !!(batch.favMap?.[ch.channelSlug]) : await Storage.isFavoriteChannel(ch.channelSlug);
+  const chGroup = batch ? (batch.groupMap?.[ch.channelSlug] || null) : await Storage.getChannelGroup(ch.channelSlug);
   const groupBadge = chGroup ? `<span class="channel-group-badge">${esc(chGroup)}</span>` : '';
 
   const pic = ch.profilePic || '../images/default-profile-pictures/default.jpeg';
   let meta = '';
+
+  // Offline kart için son yayın bilgisi
+  let lastSeenLabel = '';
+  if (!ch.isLive) {
+    try {
+      const hist = await Storage.getNotificationHistory();
+      const last = hist?.find(e => e.channelSlug === ch.channelSlug);
+      if (last) lastSeenLabel = Utils.formatTimestamp(last.timestamp);
+    } catch {}
+  }
+
+  // Sparkline — isLive bloğu dışında tanımla, offline kartlarda da scope'da olsun
+  const sparkline = ch.isLive ? await buildSparkline(ch.channelSlug) : '';
+
   if (ch.isLive) {
     const dur = Utils.formatDuration(ch.startedAt);
     const viewers = Utils.formatViewers(ch.viewerCount);
+    const anomaly = await getViewerAnomaly(ch.channelSlug, ch.viewerCount, ch.startedAt);
+    const drop = await getViewerDrop(ch.channelSlug, ch.viewerCount, ch.startedAt);
+
+    const anomalyBadge = (anomaly && cardMode !== 'compact')
+      ? `<span class="viewer-anomaly viewer-anomaly-${anomaly.level}">↑+${anomaly.pct}%</span>`
+      : (drop && cardMode !== 'compact')
+      ? `<span class="viewer-anomaly viewer-anomaly-drop-${drop.level}">↓-${drop.pct}%</span>`
+      : '';
+    const anomalyNote = (anomaly && cardMode !== 'compact')
+      ? `<div class="anomaly-row ${anomaly.level}">↑ ${anomaly.label}</div>`
+      : (drop && cardMode !== 'compact')
+      ? `<div class="anomaly-row drop-${drop.level}">↓ ${drop.label}</div>`
+      : '';
     meta = `<div class="channel-meta">
       <span class="rec-indicator"><span class="rec-dot"></span></span>
       <span class="stream-duration" data-slug="${esc(ch.channelSlug)}">${esc(dur)}</span>
       <span class="meta-separator">·</span>
       <span class="viewer-count">${esc(viewers)}</span>
+      ${anomalyBadge}
       ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name" title="${esc(ch.categoryName)}">${esc(ch.categoryName)}</span>` : ''}
-    </div>`;
+    </div>${anomalyNote}`;
   }
 
   card.innerHTML = `
@@ -317,25 +396,35 @@ async function channelCard(ch) {
       <img class="channel-avatar" src="${esc(pic)}" alt="" onerror="this.src='../images/default-profile-pictures/default.jpeg'" />
       <div class="channel-info">
         <div class="channel-name" title="${esc(ch.userUsername)}">${esc(ch.userUsername)}${groupBadge}</div>
-        ${ch.isLive ? `<div class="channel-title" title="${esc(ch.sessionTitle || '-')}">${esc(ch.sessionTitle || '-')}</div>` : ''}
+        ${ch.isLive ? `<div class="channel-title" title="${esc(ch.sessionTitle || '-')}">${esc(ch.sessionTitle || '-')}</div>` : (lastSeenLabel ? `<div class="offline-last-seen">${Utils.i18n('lastStream') || 'Son yayın'}: ${esc(lastSeenLabel)}</div>` : '')}
         ${meta}
       </div>
     </div>
     ${ch.isLive && ch.thumbnailUrl ? `<img class="channel-thumbnail" src="${esc(ch.thumbnailUrl)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}`;
 
+  // Thumbnail overlay lazy fetch sonrası kurulacak — aşağıda
   // Actions row — always show (live and offline both get star)
   const actions = document.createElement('div');
   actions.className = 'card-actions-row';
 
-  if (ch.isLive) {
-    // Open button
-    const openBtn = document.createElement('button');
-    openBtn.className = 'card-action-btn open-btn';
-    openBtn.title = 'Open channel';
-    openBtn.innerHTML = '<span class="material-icons">open_in_new</span>';
-    openBtn.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}` }));
+  // Sparkline — butonların yanında, sadece live + detail
+  if (ch.isLive && cardMode !== 'compact' && sparkline) {
+    const sparkWrap = document.createElement('span');
+    sparkWrap.className = 'card-sparkline-wrap';
+    sparkWrap.innerHTML = sparkline;
+    actions.appendChild(sparkWrap);
+  }
 
-    // Multi button
+  // Open button — her zaman (live ve offline)
+  const openBtn = document.createElement('button');
+  openBtn.className = 'card-action-btn open-btn';
+  openBtn.title = 'Open channel';
+  openBtn.innerHTML = '<span class="material-icons">open_in_new</span>';
+  openBtn.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}` }));
+  actions.appendChild(openBtn);
+
+  if (ch.isLive) {
+    // Multi button — sadece live
     const multiBtn = document.createElement('button');
     multiBtn.className = 'card-action-btn multi-btn';
     multiBtn.title = 'Add to Multi-Stream';
@@ -346,17 +435,16 @@ async function channelCard(ch) {
       multiBtn.querySelector('.material-icons').style.color = '#f0883e';
     });
 
-    // Bell button
-    const bellMode = await Storage.getChannelSoundMode(ch.channelSlug);
-    const bellBtn = createBellButton(ch.channelSlug, bellMode);
-
-    actions.appendChild(openBtn);
     actions.appendChild(multiBtn);
-    actions.appendChild(bellBtn);
   }
 
+  // Bell button — her zaman (live ve offline)
+  const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
+  const bellBtn = createBellButton(ch.channelSlug, bellMode);
+  actions.appendChild(bellBtn);
+
   // Group assign button — always visible (only if groups exist)
-  const groups = await Storage.getChannelGroups();
+  const groups = batch ? (batch.groupList || []) : await Storage.getChannelGroups();
   if (groups.length > 0) {
     const groupBtn = document.createElement('button');
     groupBtn.className = 'card-action-btn group-btn';
@@ -411,9 +499,19 @@ async function channelCard(ch) {
 
   card.appendChild(actions);
 
-  // Lazy fetch live details (startTime)
+  // Karta tıklayınca viewer history modal aç (butonlara tıklama hariç)
+  if (ch.isLive) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card-actions-row')) return;
+      showViewerHistoryModal(ch);
+    });
+  }
+
+  // Lazy fetch — startTime
   if (ch.isLive && !ch.startedAt) {
     chrome.runtime.sendMessage({ type: 'GET_CHANNEL_START_TIME', slug: ch.channelSlug }, (res) => {
+      if (chrome.runtime.lastError) return;
       if (res?.success && res.startTime) {
         const durEl = card.querySelector('.stream-duration');
         if (durEl) durEl.textContent = Utils.formatDuration(res.startTime);
@@ -426,9 +524,9 @@ async function channelCard(ch) {
 
 // ─── Auto Launch Card ───
 
-async function autoLaunchCard(ch) {
+async function autoLaunchCard(ch, cardMode, batch) {
   const card = document.createElement('div');
-  card.className = `channel-card autolaunch-card ${ch.isLive ? 'live' : 'offline'}`;
+  card.className = `channel-card autolaunch-card ${ch.isLive ? 'live' : 'offline'} ${cardMode || 'detail'}-card`;
   const pic = ch.profilePic || '../images/default-profile-pictures/default.jpeg';
   const isAuto = await Storage.isAutoOpenChannel(ch.channelSlug);
 
@@ -447,7 +545,7 @@ async function autoLaunchCard(ch) {
     </div>`;
 
   // Bell button
-  const bellMode = await Storage.getChannelSoundMode(ch.channelSlug);
+  const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
   const bellBtn = createBellButton(ch.channelSlug, bellMode);
   card.appendChild(bellBtn);
 
@@ -493,7 +591,31 @@ async function loadHistory() {
       return;
     }
     el.innerHTML = '';
+
+    // Tarih gruplaması
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const yesterday = today - 86400000;
+    const thisWeek = today - 6 * 86400000;
+
+    function getGroup(ts) {
+      const t = new Date(ts).getTime();
+      if (t >= today) return Utils.i18n('historyGroupToday') || 'Bugün';
+      if (t >= yesterday) return Utils.i18n('historyGroupYesterday') || 'Dün';
+      if (t >= thisWeek) return Utils.i18n('historyGroupThisWeek') || 'Bu Hafta';
+      return Utils.i18n('historyGroupOlder') || 'Daha Önce';
+    }
+
+    let lastGroup = null;
     history.forEach(entry => {
+      const group = getGroup(entry.timestamp);
+      if (group !== lastGroup) {
+        const header = document.createElement('div');
+        header.className = 'history-group-header';
+        header.textContent = group;
+        el.appendChild(header);
+        lastGroup = group;
+      }
       const item = document.createElement('div');
       item.className = 'history-item';
       const pic = entry.profilePic || '../images/default-profile-pictures/default.jpeg';
@@ -549,14 +671,16 @@ async function addToMultiStream(slug) {
 // ─── Search ───
 
 function setupSearch() {
-  const input = document.getElementById('autolaunch-search');
+  const input = document.getElementById('search-input') || document.getElementById('autolaunch-search');
   if (!input) return;
   input.addEventListener('input', () => {
-    const query = input.value.toLowerCase().trim();
-    const cards = document.querySelectorAll('#autolaunch-list .channel-card');
-    cards.forEach(card => {
-      const name = card.querySelector('.channel-name')?.textContent?.toLowerCase() || '';
-      card.style.display = name.includes(query) ? '' : 'none';
+    const q = input.value.toLowerCase().trim();
+    ['following-list', 'autolaunch-list'].forEach(listId => {
+      document.querySelectorAll(`#${listId} .channel-card`).forEach(card => {
+        const name = card.querySelector('.channel-name')?.textContent?.toLowerCase() || '';
+        const cat = card.querySelector('.category-name')?.textContent?.toLowerCase() || '';
+        card.style.display = (!q || name.includes(q) || cat.includes(q)) ? '' : 'none';
+      });
     });
   });
 }
@@ -639,6 +763,13 @@ function hideOptionsPanel() {
 }
 
 function applyOptionsI18n() {
+  // Versiyon bilgisini manifest'ten dinamik oku
+  const verEl = document.getElementById('opt-app-version');
+  if (verEl) {
+    const v = chrome.runtime.getManifest().version;
+    verEl.textContent = 'KickAlert v' + v;
+  }
+
   document.querySelectorAll('#options-panel [data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const sub = el.getAttribute('data-i18n-sub');
@@ -695,6 +826,37 @@ async function loadOptionsSettings() {
   optUpdateDndVisibility();
 
   // Cloud Sync
+  // Anomaly settings
+  const anomalySettings = await Storage.getAnomalySettings();
+  optEl('opt-anomaly-enabled').checked = anomalySettings.enabled;
+  optUpdateAnomalyVisibility(anomalySettings.enabled);
+  const anomalyMode = anomalySettings.notifyMode || 'both';
+  const anomalyModeEl = document.querySelector(`input[name="anomaly-mode"][value="${anomalyMode}"]`);
+  if (anomalyModeEl) anomalyModeEl.checked = true;
+  const spikeEnabledEl = optEl('opt-anomaly-spike-enabled');
+  if (spikeEnabledEl) {
+    spikeEnabledEl.checked = anomalySettings.spikeEnabled !== false;
+    setSensitivityDisabled('opt-spike-sensitivity-body', !spikeEnabledEl.checked);
+  }
+
+  const dropEl = optEl('opt-anomaly-drop-enabled');
+  if (dropEl) {
+    dropEl.checked = !!anomalySettings.dropEnabled;
+    setSensitivityDisabled('opt-drop-sensitivity-body', !dropEl.checked);
+  }
+
+  const spikeSlider = optEl('opt-spike-sensitivity-slider');
+  if (spikeSlider) { spikeSlider.value = ['min','avg','max'].indexOf(anomalySettings.spikeSensitivity || 'avg'); updateSensitivityFill(spikeSlider, SPIKE_LABELS); }
+
+  const dropSlider = optEl('opt-drop-sensitivity-slider');
+  if (dropSlider) { dropSlider.value = ['min','avg','max'].indexOf(anomalySettings.dropSensitivity || 'avg'); updateSensitivityFill(dropSlider, DROP_LABELS); }
+
+  // Bildirim gecikmesi
+  const notifDelay = await Storage.getNotifDelay();
+  document.querySelectorAll('.notif-delay-btn').forEach(btn => {
+    btn.classList.toggle('active', +btn.dataset.delay === notifDelay);
+  });
+
   optEl('opt-cloud-sync').checked = await Storage.getCloudSyncEnabled();
 
   // Theme
@@ -758,6 +920,63 @@ function setupOptionsListeners() {
   optBind('opt-dnd-mute-notif', v => Storage.setDndMuteNotif(v));
   optBind('opt-dnd-mute-sound', v => Storage.setDndMuteSound(v));
   optBind('opt-dnd-mute-autolaunch', v => Storage.setDndMuteAutolaunch(v));
+
+  // Anomaly listeners
+  optEl('opt-anomaly-enabled').addEventListener('change', async e => {
+    const s = await Storage.getAnomalySettings();
+    s.enabled = e.target.checked;
+    await Storage.setAnomalySettings(s);
+    optUpdateAnomalyVisibility(e.target.checked);
+    // Background threshold güncelle
+    chrome.runtime.sendMessage({ type: 'SET_ANOMALY_SETTINGS', settings: s }).catch(()=>{});
+  });
+  document.querySelectorAll('input[name="anomaly-mode"]').forEach(radio => {
+    radio.addEventListener("change", async () => {
+      const s = await Storage.getAnomalySettings();
+      s.notifyMode = radio.value;
+      await Storage.setAnomalySettings(s);
+      chrome.runtime.sendMessage({ type: 'SET_ANOMALY_SETTINGS', settings: s }).catch(()=>{});
+    });
+  });
+
+  // Düşüş tespiti toggle
+  const dropToggleEl = optEl('opt-anomaly-drop-enabled');
+  if (dropToggleEl) {
+    dropToggleEl.addEventListener('change', async e => {
+      setSensitivityDisabled('opt-drop-sensitivity-body', !e.target.checked);
+      const s = await Storage.getAnomalySettings();
+      s.dropEnabled = e.target.checked;
+      await Storage.setAnomalySettings(s);
+      chrome.runtime.sendMessage({ type: 'SET_ANOMALY_SETTINGS', settings: s }).catch(()=>{});
+    });
+  }
+
+  // Spike switch
+  const spikeSwEl = optEl('opt-anomaly-spike-enabled');
+  if (spikeSwEl) {
+    spikeSwEl.addEventListener('change', async e => {
+      setSensitivityDisabled('opt-spike-sensitivity-body', !e.target.checked);
+      const s = await Storage.getAnomalySettings();
+      s.spikeEnabled = e.target.checked;
+      await Storage.setAnomalySettings(s);
+      chrome.runtime.sendMessage({ type: 'SET_ANOMALY_SETTINGS', settings: s }).catch(()=>{});
+    });
+  }
+
+  // Sensitivity slider'ları
+  setupSensitivitySlider('opt-spike-sensitivity-slider', 'spikeSensitivity');
+  setupSensitivitySlider('opt-drop-sensitivity-slider', 'dropSensitivity');
+
+  // Bildirim gecikmesi
+  document.querySelectorAll('.notif-delay-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const delay = +btn.dataset.delay;
+      await Storage.setNotifDelay(delay);
+      document.querySelectorAll('.notif-delay-btn').forEach(b =>
+        b.classList.toggle('active', +b.dataset.delay === delay)
+      );
+    });
+  });
 
   // Cloud Sync listener
   optBind('opt-cloud-sync', v => Storage.setCloudSyncEnabled(v));
@@ -887,3 +1106,277 @@ function optToDataUrl(file) {
 }
 
 function optEl(id) { return document.getElementById(id); }
+
+// Segment buton yardımcıları
+function setSegActive(groupId, val) {
+  const group = optEl(groupId);
+  if (!group) return;
+  group.querySelectorAll('.anomaly-seg-btn').forEach(btn => {
+    btn.classList.toggle('active', +btn.dataset.val === +val);
+  });
+}
+
+const SPIKE_LABELS = {
+  min: 'Warn +25% · Alert +75%',
+  avg: 'Warn +50% · Alert +150%',
+  max: 'Warn +75% · Alert +250%',
+};
+const DROP_LABELS = {
+  min: 'Warn -10% · Alert -20%',
+  avg: 'Warn -20% · Alert -35%',
+  max: 'Warn -30% · Alert -50%',
+};
+
+function setSensitivityDisabled(bodyId, disabled) {
+  const el = optEl(bodyId);
+  if (el) el.classList.toggle('disabled', disabled);
+}
+
+function updateSensitivityFill(slider, labels) {
+  if (!slider) return;
+  // min=0 max=2 step=1 — sabit 3 pozisyon, fill hesabı doğrudan
+  const pct = (+slider.value / 2) * 100;
+  slider.style.background = `linear-gradient(to right, #53FC18 0%, #53FC18 ${pct}%, #3a3a3e ${pct}%, #3a3a3e 100%)`;
+  const valEl = optEl(slider.id.replace('-slider', '-val'));
+  if (valEl && labels) {
+    const key = ['min','avg','max'][+slider.value];
+    valEl.textContent = labels[key] || '';
+  }
+}
+
+function setupSensitivitySlider(sliderId, storageKey) {
+  const slider = optEl(sliderId);
+  if (!slider) return;
+  const labels = sliderId.includes('spike') ? SPIKE_LABELS : DROP_LABELS;
+  slider.addEventListener('input', () => updateSensitivityFill(slider, labels));
+  slider.addEventListener('change', async () => {
+    const val = ['min', 'avg', 'max'][+slider.value];
+    const s = await Storage.getAnomalySettings();
+    s[storageKey] = val;
+    await Storage.setAnomalySettings(s);
+    chrome.runtime.sendMessage({ type: 'SET_ANOMALY_SETTINGS', settings: s }).catch(()=>{});
+  });
+}
+
+function setupSensitivityGroup(groupId, storageKey) {}
+function setupSegGroup(groupId, storageKey) {}
+
+// Viewer anomaly — background'a sorar
+async function getViewerAnomaly(slug, viewerCount, startedAt) {
+  try {
+    const res = await chrome.runtime.sendMessage({
+      type: 'GET_VIEWER_ANOMALY',
+      slug,
+      viewerCount,
+      startedAt: startedAt || null,
+    });
+    return res?.anomaly || null;
+  } catch { return null; }
+}
+
+// Viewer drop — background'a sorar
+async function getViewerDrop(slug, viewerCount, startedAt) {
+  try {
+    const res = await chrome.runtime.sendMessage({
+      type: 'GET_VIEWER_DROP',
+      slug,
+      viewerCount,
+      startedAt: startedAt || null,
+    });
+    return res?.drop || null;
+  } catch { return null; }
+}
+
+function optUpdateAnomalyVisibility(enabled) {
+  const body = document.getElementById('opt-anomaly-body');
+  if (body) body.classList.toggle('disabled', !enabled);
+}
+
+function optUpdateAnomalyForCardMode() {
+  // Compact mod kaldırıldı — anomaly section her zaman aktif
+  const section = document.getElementById('opt-anomaly-section');
+  if (section) section.classList.remove('disabled');
+}
+
+// Sparkline — smooth curve + son nokta, yukarı=yeşil aşağı=kırmızı
+async function buildSparkline(slug) {
+  try {
+    const res = await chrome.runtime.sendMessage({ type: 'GET_VIEWER_HISTORY', slug });
+    const entries = res?.history?.current;
+    if (!entries || entries.length < 2) return '';
+
+    const vals = entries.map(e => e.v);
+    const min = Math.min(...vals);
+    const max = Math.max(...vals);
+    if (max === min) return '';
+
+    const W = 32, H = 10;
+
+    // Trend yönü: ilk yarı ort vs ikinci yarı ort
+    const mid = Math.floor(vals.length / 2);
+    const firstHalfAvg = vals.slice(0, mid).reduce((s, v) => s + v, 0) / mid;
+    const secondHalfAvg = vals.slice(mid).reduce((s, v) => s + v, 0) / (vals.length - mid);
+    const color = secondHalfAvg >= firstHalfAvg ? '#53FC18' : '#E24B4A';
+
+    // %5'ten az değişimde yapay dalga önle — görsel aralığı genişlet
+    const changeRatio = (max - min) / (max || 1);
+    const pad = changeRatio < 0.05 ? (max - min) * 2 : 0;
+    const visMin = min - pad;
+    const visMax = max + pad;
+    const range = visMax - visMin || 1;
+
+    const pts = vals.map((v, i) => ({
+      x: (i / (vals.length - 1)) * (W - 6) + 2,
+      y: H - 2 - ((v - visMin) / range) * (H - 5),
+    }));
+
+    // Bezier path
+    let d = `M${pts[0].x.toFixed(1)},${pts[0].y.toFixed(1)}`;
+    for (let i = 1; i < pts.length; i++) {
+      const cp1x = (pts[i-1].x + pts[i].x) / 2;
+      const cp2x = cp1x;
+      d += ` C${cp1x.toFixed(1)},${pts[i-1].y.toFixed(1)} ${cp2x.toFixed(1)},${pts[i].y.toFixed(1)} ${pts[i].x.toFixed(1)},${pts[i].y.toFixed(1)}`;
+    }
+
+    const last = pts[pts.length - 1];
+
+    return `<svg class="sparkline" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}">
+      <path d="${d}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+      <circle cx="${last.x.toFixed(1)}" cy="${last.y.toFixed(1)}" r="2.5" fill="${color}"/>
+    </svg>`;
+  } catch { return ''; }
+}
+
+
+// ─── Viewer History Modal ───
+
+async function showViewerHistoryModal(ch) {
+  const modal = document.getElementById('viewer-history-modal');
+  const title = document.getElementById('vh-modal-title');
+  const svg = document.getElementById('vh-chart-svg');
+  const labels = document.getElementById('vh-chart-labels');
+  const noData = document.getElementById('vh-no-data');
+  const closeBtn = document.getElementById('vh-modal-close');
+  const backdrop = modal.querySelector('.vh-modal-backdrop');
+
+  if (!modal) return;
+
+  title.textContent = ch.userUsername + ' — İzleyici Trendi';
+
+  // Navigasyon — canlı kanallar arasında geçiş
+  const liveChannels = allChannels.filter(c => c.isLive);
+  const currentIdx = liveChannels.findIndex(c => c.channelSlug === ch.channelSlug);
+
+  let prevBtn = document.getElementById('vh-prev-btn');
+  let nextBtn = document.getElementById('vh-next-btn');
+  const header = modal.querySelector('.vh-modal-header');
+
+  if (!prevBtn) {
+    prevBtn = document.createElement('button');
+    prevBtn.id = 'vh-prev-btn';
+    prevBtn.className = 'vh-close-btn';
+    prevBtn.innerHTML = '<span class="material-icons">chevron_left</span>';
+    nextBtn = document.createElement('button');
+    nextBtn.id = 'vh-next-btn';
+    nextBtn.className = 'vh-close-btn';
+    nextBtn.innerHTML = '<span class="material-icons">chevron_right</span>';
+    header.insertBefore(prevBtn, header.firstChild);
+    header.appendChild(nextBtn);
+  }
+
+  prevBtn.style.visibility = currentIdx > 0 ? 'visible' : 'hidden';
+  nextBtn.style.visibility = currentIdx < liveChannels.length - 1 ? 'visible' : 'hidden';
+  prevBtn.onclick = () => showViewerHistoryModal(liveChannels[currentIdx - 1]);
+  nextBtn.onclick = () => showViewerHistoryModal(liveChannels[currentIdx + 1]);
+  svg.innerHTML = '';
+  labels.innerHTML = '';
+  noData.style.display = 'none';
+  modal.style.display = 'flex';
+
+  // Veri çek
+  const res = await chrome.runtime.sendMessage({ type: 'GET_VIEWER_HISTORY', slug: ch.channelSlug });
+  const entries = res?.history?.current || [];
+
+  if (entries.length < 2) {
+    noData.style.display = 'block';
+  } else {
+    drawViewerChart(svg, labels, entries, ch);
+  }
+
+  // Kapat
+  const close = () => {
+    modal.style.display = 'none';
+    document.removeEventListener('keydown', escHandler);
+  };
+  const escHandler = (e) => { if (e.key === 'Escape') close(); };
+  document.addEventListener('keydown', escHandler);
+  closeBtn.onclick = close;
+  backdrop.onclick = close;
+}
+
+function drawViewerChart(svg, labels, entries, ch) {
+  const W = 400, H = 120, padX = 8, padY = 10;
+  const vals = entries.map(e => e.v);
+  const times = entries.map(e => e.t);
+  const minV = Math.min(...vals);
+  const maxV = Math.max(...vals);
+  const range = maxV - minV || 1;
+
+  // Trend rengi
+  const mid = Math.floor(vals.length / 2);
+  const firstAvg = vals.slice(0, mid).reduce((s, v) => s + v, 0) / mid;
+  const secondAvg = vals.slice(mid).reduce((s, v) => s + v, 0) / (vals.length - mid);
+  const color = secondAvg >= firstAvg ? '#53FC18' : '#E24B4A';
+
+  // Nokta koordinatları
+  const pts = vals.map((v, i) => ({
+    x: padX + (i / (vals.length - 1)) * (W - padX * 2),
+    y: padY + (1 - (v - minV) / range) * (H - padY * 2),
+  }));
+
+  // Fill path
+  let fillD = `M${pts[0].x},${H - padY}`;
+  for (let i = 0; i < pts.length; i++) {
+    if (i === 0) fillD += ` L${pts[0].x},${pts[0].y}`;
+    else {
+      const cp1x = (pts[i-1].x + pts[i].x) / 2;
+      fillD += ` C${cp1x},${pts[i-1].y} ${cp1x},${pts[i].y} ${pts[i].x},${pts[i].y}`;
+    }
+  }
+  fillD += ` L${pts[pts.length-1].x},${H - padY} Z`;
+
+  // Line path
+  let lineD = `M${pts[0].x},${pts[0].y}`;
+  for (let i = 1; i < pts.length; i++) {
+    const cp1x = (pts[i-1].x + pts[i].x) / 2;
+    lineD += ` C${cp1x},${pts[i-1].y} ${cp1x},${pts[i].y} ${pts[i].x},${pts[i].y}`;
+  }
+
+  // Tüm dots
+  const dotsHtml = pts.map((pt, i) =>
+    i === pts.length - 1
+      ? `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="4.5" fill="${color}"/>`
+      : `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="3" fill="${color}" opacity="0.8"/>`
+  ).join('');
+
+  // Tek seferde set et — innerHTML += yerine
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="vh-grad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${fillD}" fill="url(#vh-grad)"/>
+    <path d="${lineD}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
+    ${dotsHtml}
+    <text x="${padX}" y="${padY + 4}" font-size="9" fill="#6e7681">${Utils.formatViewers(maxV)}</text>
+    <text x="${padX}" y="${H - padY + 1}" font-size="9" fill="#6e7681">${Utils.formatViewers(minV)}</text>`;
+
+  // X ekseni — ilk ve son zaman
+  const fmt = (t) => {
+    const d = new Date(t);
+    return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+  };
+  labels.innerHTML = `<span>${fmt(times[0])}</span><span>${Utils.formatViewers(vals[vals.length-1])} izleyici</span><span>${fmt(times[times.length-1])}</span>`;
+}

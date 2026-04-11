@@ -211,5 +211,98 @@
   },
   "notifButtonMute": {
     "message": "Silenzia"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "anomalyDropEnabled": {
+    "message": "Notifica calo anomalo degli spettatori"
+  },
+  "anomalySpikeTitle": {
+    "message": "Picco sospetto di spettatori"
+  },
+  "anomalyDropTitle": {
+    "message": "Calo sospetto di spettatori"
+  },
+  "anomalySpikeSettings": {
+    "message": "Soglie di rilevamento picco"
+  },
+  "anomalyWarnLabel": {
+    "message": "Avviso"
+  },
+  "anomalyAlertLabel": {
+    "message": "Allerta"
+  },
+  "anomalyDropSettings": {
+    "message": "Rilevamento calo"
+  },
+  "anomalySensitivity": {
+    "message": "Sensibilità"
+  },
+  "sensitivityMin": {
+    "message": "Sensibile"
+  },
+  "sensitivityAvg": {
+    "message": "Bilanciato"
+  },
+  "sensitivityMax": {
+    "message": "Rigoroso"
   }
 }

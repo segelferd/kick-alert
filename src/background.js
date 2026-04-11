@@ -52,6 +52,21 @@ async function getAvatarDataUrl(ch) {
 
 // ─── Init ───
 
+// _sessionStart storage'da tutulur — SW uyanınca sıfırlanmasın
+// Sensitivity → eşik mapping
+const SPIKE_THRESHOLDS = {
+  min: { warn: 25,  alert: 75  },
+  avg: { warn: 50,  alert: 150 },
+  max: { warn: 75,  alert: 250 },
+};
+const DROP_THRESHOLDS = {
+  min: { warn: 10, alert: 20 },
+  avg: { warn: 20, alert: 35 },
+  max: { warn: 30, alert: 50 },
+};
+let _spikeEnabled     = true;
+let _spikeSensitivity = 'avg';
+let _dropSensitivity  = 'avg';
 let _initRunning = false;
 
 async function initialize() {
@@ -219,6 +234,271 @@ async function checkSafe() {
   catch (e) { console.error('[KickAlert] Check failed:', e); }
 }
 
+// ─── Viewer Anomaly Detection ───
+// ─── Viewer Anomaly Sabitleri ───
+// Artış eşikleri storage'dan okunur — sabit değerler kaldırıldı
+// NEW_STREAM_WINDOW kaldırıldı — STREAM_SETTLE_MS getViewerAnomaly içinde tek eşik olarak tanımlı
+const PAST_AVG_MULTIPLIER_WARN  = 3;
+const PAST_AVG_MULTIPLIER_ALERT = 8;
+const HISTORY_CURRENT_MAX = 60;  // 30 sn aralıklı × 60 = 30 dk pencere
+const HISTORY_PAST_MAX    = 10;
+const ANOMALY_COOLDOWN_MS = 15 * 60 * 1000; // 15 dk cooldown
+const ANOMALY_RESET_MS    = 15 * 60 * 1000; // cooldown sonrası peak/valley sıfırla
+const ANOMALY_MIN_VIEWERS = 1000;            // 1K altı kanallar için anomali yok
+
+async function updateViewerHistory(channels) {
+  try {
+    const history = await Storage.getViewerHistory();
+    const now = Date.now();
+    const liveSlugs = new Set(channels.filter(c => c.isLive).map(c => c.channelSlug));
+
+    // Yayın biten kanallar: current -> past avg'e çevir
+    for (const slug of Object.keys(history)) {
+      if (!liveSlugs.has(slug)) {
+        const rec = history[slug];
+        if (rec && rec.current && rec.current.length >= 2) {
+          const avg = Math.round(
+            rec.current.reduce((s, e) => s + e.v, 0) / rec.current.length
+          );
+          const pastAvgs = rec.pastAvgs || [];
+          pastAvgs.push(avg);
+          if (pastAvgs.length > HISTORY_PAST_MAX) pastAvgs.shift();
+          // Sadece pastAvgs'i koru, current + peak/valley sıfırla
+          history[slug] = { current: [], pastAvgs, streamPeak: null, streamValley: null };
+        } else if (rec) {
+          // Yeterli veri birikmeden yayın bitti — current'ı temizle
+          history[slug] = { current: [], pastAvgs: rec.pastAvgs || [], streamPeak: null, streamValley: null };
+        }
+      }
+    }
+
+    // Canlı kanallar: current'a yeni kayıt ekle
+    for (const ch of channels) {
+      if (!ch.isLive) continue;
+      const slug = ch.channelSlug;
+      const rec = history[slug] || { current: [], pastAvgs: [] };
+      rec.current = rec.current || [];
+      rec.current.push({ v: ch.viewerCount, t: now });
+      if (rec.current.length > HISTORY_CURRENT_MAX) rec.current.shift();
+
+      // Cooldown sona erdikten sonra peak/valley sıfırla — her "bölüm" kendi referansıyla değerlendirilir
+      const lastRiseAlert = rec._lastRiseAlert || 0;
+      const lastDropAlert = rec._lastDropAlert || 0;
+      const lastAlertTime = Math.max(lastRiseAlert, lastDropAlert);
+      if (lastAlertTime > 0 && now - lastAlertTime >= ANOMALY_RESET_MS) {
+        // Cooldown bitti: peak ve valley bu anki değere sıfırla
+        rec.streamPeak = ch.viewerCount;
+        rec.streamValley = ch.viewerCount;
+        rec._lastRiseAlert = 0;
+        rec._lastDropAlert = 0;
+      } else {
+        // Yayın boyunca peak/valley güncelle
+        rec.streamPeak = rec.streamPeak ? Math.max(rec.streamPeak, ch.viewerCount) : ch.viewerCount;
+        rec.streamValley = rec.streamValley ? Math.min(rec.streamValley, ch.viewerCount) : ch.viewerCount;
+      }
+      history[slug] = rec;
+    }
+
+    await Storage.setViewerHistory(history);
+
+    // Her check sonrası anomali tespiti — popup kapalıyken de çalışır
+    await checkViewerAnomalies(channels, history);
+  } catch (e) {
+    console.warn('[KickAlert] viewerHistory error:', e.message);
+  }
+}
+
+async function checkViewerAnomalies(channels, history) {
+  try {
+    const anomalySettings = await Storage.getAnomalySettings();
+    if (!anomalySettings.enabled) return;
+
+    const now = Date.now();
+    let historyDirty = false;
+
+    for (const ch of channels) {
+      if (!ch.isLive || !ch.viewerCount) continue;
+      if (ch.viewerCount < ANOMALY_MIN_VIEWERS) continue; // 1K altı — sus
+
+      const chSoundPref = await Storage.getChannelSoundMode(ch.channelSlug);
+      if (chSoundPref === 'muted') continue;
+
+      const rec = history[ch.channelSlug];
+      if (!rec) continue;
+
+      // ── Artış tespiti ──
+      const anomaly = _spikeEnabled ? getViewerAnomalySync(rec, ch.viewerCount, ch.startedAt, now) : null;
+      if (anomaly) {
+        const lastRise = rec._lastRiseAlert || 0;
+        if (now - lastRise >= ANOMALY_COOLDOWN_MS) {
+          console.log(`[KickAlert] Spike: ${ch.channelSlug} — ${anomaly.label}`);
+          const mode = anomalySettings.notifyMode || 'both';
+          if (mode === 'notif' || mode === 'both') {
+            const icon = await getAvatarDataUrl(ch);
+            const spikeTitle = Utils.i18n('anomalySpikeTitle') || 'Şüpheli İzleyici Artışı';
+            chrome.notifications.create('ka-anomaly-' + ch.channelSlug + '-' + now, {
+              type: 'basic', iconUrl: icon,
+              title: ch.userUsername + ' — ' + spikeTitle,
+              message: anomaly.label, silent: false,
+            });
+          }
+          rec._lastRiseAlert = now;
+          historyDirty = true;
+        }
+      }
+
+      // ── Düşüş tespiti ──
+      if (anomalySettings.dropEnabled) {
+        const drop = getViewerDropSync(rec, ch.viewerCount, ch.startedAt, now, anomalySettings);
+        if (drop) {
+          const lastDrop = rec._lastDropAlert || 0;
+          if (now - lastDrop >= ANOMALY_COOLDOWN_MS) {
+            console.log(`[KickAlert] Drop: ${ch.channelSlug} — ${drop.label}`);
+            const mode = anomalySettings.notifyMode || 'both';
+            if (mode === 'notif' || mode === 'both') {
+              const icon = await getAvatarDataUrl(ch);
+              const dropTitle = Utils.i18n('anomalyDropTitle') || 'Şüpheli İzleyici Düşüşü';
+              chrome.notifications.create('ka-drop-' + ch.channelSlug + '-' + now, {
+                type: 'basic', iconUrl: icon,
+                title: ch.userUsername + ' — ' + dropTitle,
+                message: drop.label, silent: false,
+              });
+            }
+            rec._lastDropAlert = now;
+            historyDirty = true;
+          }
+        }
+      }
+    }
+
+    if (historyDirty) await Storage.setViewerHistory(history);
+  } catch (e) {
+    console.warn('[KickAlert] anomaly check error:', e.message);
+  }
+}
+
+const STREAM_SETTLE_MS = 15 * 60 * 1000;
+const ROC_WINDOW = 4; // Rate of change: son 4 entry vs önceki 4 entry (her biri ~2 dk)
+const ROC_MIN_ENTRIES = 8; // En az 8 entry gerekli (~4 dk veri)
+
+// Ani sıçrama tespiti — sliding window rate of change
+// Son ROC_WINDOW entry ortalaması vs önceki ROC_WINDOW entry ortalaması
+// Hem yayın başında hem ortasında çalışır — 15 dk sınırı yok
+function getRateOfChange(current) {
+  if (!current || current.length < ROC_MIN_ENTRIES) return null;
+  const recent = current.slice(-ROC_WINDOW);
+  const prev   = current.slice(-ROC_WINDOW * 2, -ROC_WINDOW);
+  const avgRecent = recent.reduce((s, e) => s + e.v, 0) / recent.length;
+  const avgPrev   = prev.reduce((s, e) => s + e.v, 0) / prev.length;
+  if (!avgPrev || avgPrev < 1000) return null;
+  const pct = Math.round(((avgRecent - avgPrev) / avgPrev) * 100);
+  const windowMin = Math.round((recent[recent.length-1].t - prev[0].t) / 60000);
+  return { pct, avgRecent: Math.round(avgRecent), avgPrev: Math.round(avgPrev), windowMin };
+}
+
+// Sync versiyon — checkViewerAnomalies'de history zaten yüklü
+function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
+  try {
+    if (!rec) return null;
+
+    const current = rec.current || [];
+    if (current.length < ROC_MIN_ENTRIES) return null; // yeterli veri yok — sus
+
+    const { warn: warnThreshold, alert: alertThreshold } = SPIKE_THRESHOLDS[_spikeSensitivity] || SPIKE_THRESHOLDS.avg;
+
+    // ── Rate of change — her zaman aktif (ilk dk'dan itibaren) ──
+    const roc = getRateOfChange(current);
+    if (roc && roc.pct >= warnThreshold) {
+      const level = roc.pct >= alertThreshold ? 'alert' : 'warn';
+      let streamAge = streamStartedAt
+        ? now - new Date(streamStartedAt).getTime()
+        : now - current[0].t;
+      const streamAgeMin = Math.round(streamAge / 60000);
+      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)} (+${roc.pct}%)`;
+      return { pct: roc.pct, level, label };
+    }
+
+    // ── Geniş pencere: streamValley'den bu yana toplam artış ──
+    // Ani değil ama çok büyük toplam fark varsa da yakala
+    const baseValue = rec.streamValley || Math.min(...current.map(e => e.v));
+    if (!baseValue || baseValue < 1000) return null;
+    const totalPct = Math.round(((currentCount - baseValue) / baseValue) * 100);
+    if (totalPct < warnThreshold * 2) return null;
+
+    const level = totalPct >= alertThreshold ? 'alert' : 'warn';
+    let streamAge = streamStartedAt
+      ? now - new Date(streamStartedAt).getTime()
+      : now - current[0].t;
+    const streamAgeMin = Math.round(streamAge / 60000);
+    return { pct: totalPct, level,
+      label: `${streamAgeMin} dk yayında · ${formatK(baseValue)} → ${formatK(currentCount)} (+${totalPct}%)` };
+  } catch { return null; }
+}
+
+// Async wrapper — popup mesaj handler için
+async function getViewerAnomaly(slug, currentCount, streamStartedAt) {
+  try {
+    const history = await Storage.getViewerHistory();
+    return getViewerAnomalySync(history[slug], currentCount, streamStartedAt, Date.now());
+  } catch { return null; }
+}
+
+function formatK(n) {
+  if (n >= 10000) return Math.round(n / 1000) + 'K';
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';  // 3.6K — hassas gösterim
+  return String(n);
+}
+
+function getViewerDropSync(rec, currentCount, streamStartedAt, now, anomalySettings) {
+  try {
+    if (!rec) return null;
+
+    const current = rec.current || [];
+    if (current.length < ROC_MIN_ENTRIES) return null;
+
+    const { warn: warnThreshold, alert: alertThreshold } = DROP_THRESHOLDS[_dropSensitivity] || DROP_THRESHOLDS.avg;
+
+    // ── Rate of change — ani düşüş tespiti ──
+    const roc = getRateOfChange(current);
+    if (roc && roc.pct <= -warnThreshold) {
+      const absPct = Math.abs(roc.pct);
+      const level = absPct >= alertThreshold ? 'alert' : 'warn';
+      let streamAge = streamStartedAt
+        ? now - new Date(streamStartedAt).getTime()
+        : now - current[0].t;
+      // İlk 15 dk'da düşüş alarmı verme — yayın başında organik dalgalanma olabilir
+      if (streamAge < STREAM_SETTLE_MS) return null;
+      const streamAgeMin = Math.round(streamAge / 60000);
+      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)} (-${absPct}%)`;
+      return { pct: absPct, level, label };
+    }
+
+    // ── Geniş pencere: streamPeak'ten toplam düşüş ──
+    const peak = rec.streamPeak || Math.max(...current.map(e => e.v));
+    if (!peak || peak < 1000) return null;
+
+    let streamAge = streamStartedAt
+      ? now - new Date(streamStartedAt).getTime()
+      : now - current[0].t;
+    if (streamAge < STREAM_SETTLE_MS) return null;
+
+    const dropPct = Math.round(((peak - currentCount) / peak) * 100);
+    if (dropPct < warnThreshold * 1.5) return null; // geniş pencere için daha yüksek eşik
+
+    const level = dropPct >= alertThreshold ? 'alert' : 'warn';
+    const streamAgeMin = Math.round(streamAge / 60000);
+    return { pct: dropPct, level,
+      label: `${streamAgeMin} dk yayında · ${formatK(peak)} → ${formatK(currentCount)} (-${dropPct}%)` };
+  } catch { return null; }
+}
+
+async function getViewerDrop(slug, currentCount, streamStartedAt, anomalySettings) {
+  try {
+    const history = await Storage.getViewerHistory();
+    return getViewerDropSync(history[slug], currentCount, streamStartedAt, Date.now(), anomalySettings);
+  } catch { return null; }
+}
+
 async function checkChannels() {
   const channels = await KickAPI.getAllFollowingChannels();
   cachedChannels = channels;
@@ -256,8 +536,55 @@ async function checkChannels() {
 
   let notified = false;
 
+  // Session başlangıcını storage'dan oku — SW uyanınca sıfırlanmaz
+  const sessionData = await chrome.storage.local.get('_sessionStart');
+  const sessionStart = sessionData._sessionStart || Date.now();
+
+  // Bildirim gecikmesi — loop dışında tek seferde oku
+  const notifDelay = await Storage.getNotifDelay();
+
+  // startedAt null olan kanallar için viewerHistory tek seferlik yüklenir
+  const vhData = await chrome.storage.local.get('viewerHistory');
+  const vh = vhData.viewerHistory || {};
+
   for (const ch of channels) {
     if (liveChannelSlugs.has(ch.channelSlug) || !ch.isLive) continue;
+
+    // Yayın eklenti session başlamadan önce mi başladı?
+    if (ch.startedAt) {
+      // startedAt varsa: kesin zaman kontrolü — session başlamadan önce başlamışsa atla
+      const streamStart = new Date(ch.startedAt).getTime();
+      if (streamStart < sessionStart - 60000) {
+        console.log(`[KickAlert] Skipping pre-session live: ${ch.channelSlug}`);
+        liveChannelSlugs.add(ch.channelSlug); // _liveSlugs'a ekle — bir sonraki check doğru çalışsın
+        continue;
+      }
+    } else {
+      // startedAt null — yayın ne zaman başladı bilinmiyor.
+      // viewerHistory kaydı varsa bu kanal daha önce görülmüştü — zaten yayındaydı, atla.
+      // viewerHistory kaydı yoksa bu kanal yeni takip edilmiş olabilir.
+      // Güvenli davranış: ilk kez görüldüğünde _liveSlugs'a ekle ama bildirim gönderme.
+      // Bir sonraki check'te liveChannelSlugs.has() true döner, döngü atlanır — bildirim gitmez.
+      if (vh[ch.channelSlug] && (vh[ch.channelSlug].current?.length > 0 || vh[ch.channelSlug].pastAvgs?.length > 0)) {
+        console.log(`[KickAlert] Skipping known live (no startedAt, has history): ${ch.channelSlug}`);
+        liveChannelSlugs.add(ch.channelSlug);
+        continue;
+      }
+      // viewerHistory yoksa → yeni takip edilmiş kanal olabilir, startedAt bilinmiyor.
+      // Bu check'te sessizce _liveSlugs'a ekle, bildirim gönderme.
+      console.log(`[KickAlert] First sight, no startedAt, no history — silently registering: ${ch.channelSlug}`);
+      liveChannelSlugs.add(ch.channelSlug);
+      continue;
+    }
+
+    // Bildirim gecikmesi kontrolü
+    if (notifDelay > 0 && ch.startedAt) {
+      const streamAgeMin = (Date.now() - new Date(ch.startedAt).getTime()) / 60000;
+      if (streamAgeMin < notifDelay) {
+        console.log(`[KickAlert] Delay pending: ${ch.channelSlug} (${Math.round(streamAgeMin)}/${notifDelay}min)`);
+        continue;
+      }
+    }
 
     console.log(`[KickAlert] New live: ${ch.userUsername} (${ch.channelSlug})`);
 
@@ -303,6 +630,10 @@ async function checkChannels() {
   const newLiveSlugs = new Set(channels.filter(c => c.isLive).map(c => c.channelSlug));
   await setPersistedLiveSlugs(newLiveSlugs);
   await setPersistedNotifiedLives(notifiedLives);
+
+  // viewerHistory'yi bildirim kararından SONRA güncelle
+  // Önceden güncellenirse startedAt=null olan yeni kanallar skip edilir
+  await updateViewerHistory(channels);
 }
 
 // ─── Dynamic Tooltip ───
@@ -481,6 +812,7 @@ chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
 
 // BUG 14 FIX: Reset persisted state on install/update to avoid stale data
 chrome.runtime.onInstalled.addListener(async (details) => {
+  await chrome.storage.local.set({ _sessionStart: Date.now() });
   // Reset state only on fresh install or extension update, not on every browser start
   if (details.reason === 'install' || details.reason === 'update') {
     await resetPersistedState();
@@ -488,7 +820,13 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   await initialize();
 });
 
-chrome.runtime.onStartup.addListener(() => initialize());
+chrome.runtime.onStartup.addListener(async () => {
+  // Tarayıcı yeniden açıldı — liveSlugs ve sessionStart sıfırla
+  const now = Date.now();
+  await chrome.storage.local.remove(['_liveSlugs', '_lastCheckDone', '_initLock']);
+  await chrome.storage.local.set({ _sessionStart: now });
+  initialize();
+});
 
 // Fallback: SW woke from alarm. Only run if alarm already exists (was previously set up).
 // Delay 200ms so onInstalled/onStartup can run first if they are also firing.
@@ -555,6 +893,36 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       .catch(() => respond({ success: false }));
     return true;
   }
+  if (msg.type === 'SET_ANOMALY_SETTINGS') {
+    _spikeEnabled     = msg.settings?.spikeEnabled !== false;
+    _spikeSensitivity = msg.settings?.spikeSensitivity || 'avg';
+    _dropSensitivity  = msg.settings?.dropSensitivity  || 'avg';
+    respond({ success: true });
+    return false;
+  }
+
+  if (msg.type === 'GET_VIEWER_HISTORY') {
+    Storage.getViewerHistory()
+      .then(history => respond({ success: true, history: history[msg.slug] || null }))
+      .catch(() => respond({ success: true, history: null }));
+    return true;
+  }
+
+  if (msg.type === 'GET_VIEWER_ANOMALY') {
+    getViewerAnomaly(msg.slug, msg.viewerCount, msg.startedAt)
+      .then(anomaly => respond({ success: true, anomaly }))
+      .catch(() => respond({ success: true, anomaly: null }));
+    return true;
+  }
+
+  if (msg.type === 'GET_VIEWER_DROP') {
+    Storage.getAnomalySettings()
+      .then(settings => getViewerDrop(msg.slug, msg.viewerCount, msg.startedAt, settings))
+      .then(drop => respond({ success: true, drop }))
+      .catch(() => respond({ success: true, drop: null }));
+    return true;
+  }
+
   if (msg.type === 'TEST_NOTIFICATION') {
     // Test notification with buttons — uses first live channel or a fake one
     const testCh = cachedChannels.find(c => c.isLive) || {
