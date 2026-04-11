@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "엄격"
+  },
+  "langSectionTitle": {
+    "message": "언어"
+  },
+  "langBrowserNoteSupported": {
+    "message": "브라우저 언어 사용 중: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "브라우저 언어 미지원 — 영어 사용"
   }
 }

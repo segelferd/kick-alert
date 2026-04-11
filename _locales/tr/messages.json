@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "Katı"
+  },
+  "langSectionTitle": {
+    "message": "Dil"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Tarayıcı dili kullanılıyor: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Tarayıcı dili desteklenmiyor — İngilizce kullanılıyor"
   }
 }

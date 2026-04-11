@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "严格"
+  },
+  "langSectionTitle": {
+    "message": "语言"
+  },
+  "langBrowserNoteSupported": {
+    "message": "正在使用浏览器语言：$1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "不支持浏览器语言 — 使用英语"
   }
 }

@@ -80,7 +80,18 @@
       <span class="options-title">KickAlert Options</span>
     </div>
     <div class="options-body">
-      <div class="lang-selector" id="lang-selector"></div>
+      <div class="opt-section" id="lang-section">
+        <div class="opt-dnd-header">
+          <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">language</span>
+          <span data-i18n="langSectionTitle"></span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-use-browser-lang" checked />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div id="lang-browser-note" style="font-size:11px;color:var(--text-muted);padding:4px 0 0 22px;line-height:1.5;" data-i18n="langBrowserNote"></div>
+        <div class="lang-selector" id="lang-selector" style="display:none;margin-top:8px;"></div>
+      </div>
       <div class="opt-section">
         <div class="opt-section-title">
           <span class="material-icons-outlined">play_circle</span>

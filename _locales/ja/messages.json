@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "厳格"
+  },
+  "langSectionTitle": {
+    "message": "言語"
+  },
+  "langBrowserNoteSupported": {
+    "message": "ブラウザの言語を使用中: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "ブラウザの言語は未対応 — 英語を使用"
   }
 }

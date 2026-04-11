@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "Строго"
+  },
+  "langSectionTitle": {
+    "message": "Язык"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Используется язык браузера: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Язык браузера не поддерживается — используется английский"
   }
 }

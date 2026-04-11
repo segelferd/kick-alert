@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "Streng"
+  },
+  "langSectionTitle": {
+    "message": "Sprache"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Browsersprache wird verwendet: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Browsersprache nicht unterstützt — Englisch wird verwendet"
   }
 }

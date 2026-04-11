@@ -732,9 +732,35 @@ function showOptionsPanel() {
   setupOptionsListeners();
 }
 
-function renderLangSelector() {
+async function renderLangSelector() {
   const container = document.getElementById('lang-selector');
+  const note = document.getElementById('lang-browser-note');
+  const sw = document.getElementById('opt-use-browser-lang');
   if (!container) return;
+
+  const useBrowser = await Storage.getUseBrowserLanguage();
+
+  // Switch durumu
+  if (sw) sw.checked = useBrowser;
+
+  // Grid görünürlüğü
+  container.style.display = useBrowser ? 'none' : 'grid';
+
+  // Not: sadece switch açıkken göster
+  if (note) {
+    if (useBrowser) {
+      const browserLangName = Utils.getBrowserLangName();
+      const noteKey = browserLangName ? 'langBrowserNoteSupported' : 'langBrowserNoteUnsupported';
+      const tpl = Utils.i18n(noteKey) || '';
+      note.textContent = tpl.replace('$1', browserLangName || '');
+      note.style.display = '';
+    } else {
+      note.style.display = 'none';
+    }
+  }
+
+  if (useBrowser) return; // grid'e gerek yok
+
   container.innerHTML = '';
   const currentLang = Utils.getCurrentLang();
 
@@ -963,6 +989,23 @@ function setupOptionsListeners() {
     });
   }
 
+  // Tarayıcı dili switch
+  const browserLangSw = optEl('opt-use-browser-lang');
+  if (browserLangSw) {
+    browserLangSw.addEventListener('change', async e => {
+      await Storage.setUseBrowserLanguage(e.target.checked);
+      if (e.target.checked) {
+        // Otomatik moda dönünce kullanıcı tercihini temizle
+        await Storage.setUserLanguage(null);
+        const lang = await Utils.detectLanguage();
+        await Utils.loadLocale(lang);
+        applyOptionsI18n();
+        setupI18n();
+      }
+      renderLangSelector();
+    });
+  }
+
   // Sensitivity slider'ları
   setupSensitivitySlider('opt-spike-sensitivity-slider', 'spikeSensitivity');
   setupSensitivitySlider('opt-drop-sensitivity-slider', 'dropSensitivity');
@@ -1006,8 +1049,8 @@ function setupOptionsListeners() {
   });
   intSlider.addEventListener('change', () => Storage.setCheckInterval(+intSlider.value));
 
-  optEl('opt-test-sound').addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'PLAY_TEST_SOUND', soundType: 'NEW_LIVE_MAIN' });
+  optEl('opt-test-sound').addEventListener('click', async () => {
+    await popupPlaySound('NEW_LIVE_MAIN');
   });
 
   optSetupSound('main');
@@ -1070,8 +1113,8 @@ function optSetupSound(type) {
     } catch { optSetSoundStatus(type, Utils.i18n('customSoundStatusErrorSave')); }
   });
 
-  test.addEventListener('click', () => {
-    chrome.runtime.sendMessage({ type: 'PLAY_TEST_SOUND', soundType: type === 'main' ? 'NEW_LIVE_MAIN' : 'NEW_LIVE_SUB' });
+  test.addEventListener('click', async () => {
+    await popupPlaySound(type === 'main' ? 'NEW_LIVE_MAIN' : 'NEW_LIVE_SUB');
   });
 
   clear.addEventListener('click', async () => {
@@ -1079,6 +1122,39 @@ function optSetupSound(type) {
     file.value = '';
     await optUpdateSoundStatus(type);
   });
+}
+
+// Popup context'inde ses çal — Chrome ve Firefox uyumlu
+// Chrome'da background offscreen'e ilet, Firefox'ta doğrudan Audio() kullan
+async function popupPlaySound(soundType) {
+  try {
+    const soundMode = await Storage.getSoundMode();
+    if (soundMode === 'windows') {
+      // Windows sesi — background'a bırak
+      chrome.runtime.sendMessage({ type: 'PLAY_TEST_SOUND', soundType });
+      return;
+    }
+    const volume = (await Storage.getSoundVolume()) / 100;
+    const key = soundType === 'NEW_LIVE_MAIN' ? 'main' : 'sub';
+    const customFile = await Storage.getCustomSoundFile(key);
+
+    if (chrome.offscreen) {
+      // Chrome: offscreen üzerinden çal
+      chrome.runtime.sendMessage({ type: 'PLAY_TEST_SOUND', soundType });
+    } else {
+      // Firefox: popup context'inde doğrudan Audio() — çalışır
+      const SoundPaths = {
+        NEW_LIVE_MAIN: chrome.runtime.getURL('sounds/new_live_main.mp3'),
+        NEW_LIVE_SUB:  chrome.runtime.getURL('sounds/new_live_sub.mp3'),
+      };
+      const src = customFile?.dataUrl || SoundPaths[soundType] || SoundPaths.NEW_LIVE_MAIN;
+      const audio = new Audio(src);
+      audio.volume = volume;
+      await audio.play();
+    }
+  } catch (e) {
+    console.warn('[KickAlert] popupPlaySound error:', e.message);
+  }
 }
 
 async function optUpdateSoundStatus(type) {

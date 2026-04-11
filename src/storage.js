@@ -19,6 +19,7 @@ const StorageKeys = {
   CUSTOM_SOUND_MAIN: 'customSoundMain',
   CUSTOM_SOUND_SUB: 'customSoundSub',
   USER_LANGUAGE: 'userLanguage',
+  USE_BROWSER_LANGUAGE: 'useBrowserLanguage',
   DND_ENABLED: 'dndEnabled',
   DND_START: 'dndStart',
   DND_END: 'dndEnd',
@@ -229,6 +230,8 @@ const Storage = {
 
   async getUserLanguage() { return this.get(StorageKeys.USER_LANGUAGE); },
   async setUserLanguage(v) { return this.set(StorageKeys.USER_LANGUAGE, v); },
+  async getUseBrowserLanguage() { const v = await this.get(StorageKeys.USE_BROWSER_LANGUAGE); return v !== false; }, // default true
+  async setUseBrowserLanguage(v) { return this.set(StorageKeys.USE_BROWSER_LANGUAGE, v); },
 
   async getDndEnabled() { return this.get(StorageKeys.DND_ENABLED); },
   async setDndEnabled(v) { return this.set(StorageKeys.DND_ENABLED, v); },

@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "Strict"
+  },
+  "langSectionTitle": {
+    "message": "Langue"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Langue du navigateur utilisée : $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Langue du navigateur non prise en charge — Anglais utilisé"
   }
 }

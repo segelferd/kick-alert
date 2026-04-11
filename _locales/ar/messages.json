@@ -304,5 +304,14 @@
   },
   "sensitivityMax": {
     "message": "صارم"
+  },
+  "langSectionTitle": {
+    "message": "اللغة"
+  },
+  "langBrowserNoteSupported": {
+    "message": "يتم استخدام لغة المتصفح: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "لغة المتصفح غير مدعومة — يتم استخدام الإنجليزية"
   }
 }

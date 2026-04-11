@@ -16,6 +16,7 @@ const SUPPORTED_LANGUAGES = [
   { code: 'ru',    label: 'RU', name: 'Русский' },
   { code: 'it',    label: 'IT', name: 'Italiano' },
   { code: 'zh_CN', label: 'CN', name: '中文' },
+  { code: 'cs',    label: 'CZ', name: 'Čeština' },
 ];
 
 // Cache for loaded locale messages
@@ -81,17 +82,30 @@ const Utils = {
    * Detect best language: user preference > browser UI language > 'en'
    */
   async detectLanguage() {
-    const saved = await Storage.getUserLanguage();
-    if (saved && SUPPORTED_LANGUAGES.some(l => l.code === saved)) return saved;
+    const useBrowser = await Storage.getUseBrowserLanguage();
 
-    // Try browser's UI language
+    if (!useBrowser) {
+      // Manuel mod: kayıtlı kullanıcı tercihi varsa kullan
+      const saved = await Storage.getUserLanguage();
+      if (saved && SUPPORTED_LANGUAGES.some(l => l.code === saved)) return saved;
+    }
+
+    // Tarayıcı dili (default davranış)
     const uiLang = chrome.i18n.getUILanguage();
-    // Match exact (e.g. 'tr') or prefix (e.g. 'pt-BR' → 'pt_BR')
     const normalized = uiLang.replace('-', '_');
     const match = SUPPORTED_LANGUAGES.find(l =>
       l.code === normalized || l.code === uiLang.split('-')[0]
     );
     return match ? match.code : 'en';
+  },
+
+  getBrowserLangName() {
+    const uiLang = chrome.i18n.getUILanguage();
+    const normalized = uiLang.replace('-', '_');
+    const match = SUPPORTED_LANGUAGES.find(l =>
+      l.code === normalized || l.code === uiLang.split('-')[0]
+    );
+    return match ? match.name : null; // null = desteklenmiyor, EN fallback
   },
 
   /**
