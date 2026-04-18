@@ -43,19 +43,20 @@
     <button id="following-btn" class="tab-button active" data-tab="following-panel"></button>
     <button id="autolaunch-btn" class="tab-button" data-tab="autolaunch-panel"></button>
     <button id="history-btn" class="tab-button" data-tab="history-panel"></button>
+    <button id="chat-btn" class="tab-button" data-tab="chat-panel" style="display:none;" data-i18n="chatTab">Chat</button>
   </div>
 
   <div class="content-container">
     <div id="following-panel" class="tab-content active">
       <div id="group-filter-bar" class="group-filter-bar" style="display:none;">
-        <button class="group-chip active" data-group="__all__" data-i18n="groupAll"></button>
+        <button class="group-chip active" data-group="__all__" data-i18n="groupAll">All</button>
       </div>
       <div id="following-list" class="channels-container"></div>
     </div>
     <div id="autolaunch-panel" class="tab-content">
       <div class="search-container">
         <span class="material-icons search-icon">search</span>
-        <input type="text" id="autolaunch-search" class="search-input" data-i18n-placeholder="searchChannels" placeholder="Search..." />
+        <input type="text" id="autolaunch-search" class="search-input" data-i18n-placeholder="searchChannels" placeholder="Search channels..." />
       </div>
       <div id="autolaunch-list" class="channels-container"></div>
     </div>
@@ -63,10 +64,183 @@
       <div class="history-toolbar">
         <button id="history-clear-btn" class="history-clear-btn">
           <span class="material-icons" style="font-size:14px;">delete_outline</span>
-          <span data-i18n="clearHistory"></span>
+          <span data-i18n="clearHistory">Clear</span>
         </button>
       </div>
       <div id="history-list" class="history-container"></div>
+    </div>
+    <div id="chat-panel" class="tab-content">
+      <div id="chat-status" style="font-size:11px;color:var(--text-muted);padding:8px 12px;">
+        <span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">info</span>
+        <span data-i18n="chatNoChannel">No active Kick channel</span>
+      </div>
+      <!-- Filter Mode -->
+      <div class="chat-section">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">tune</span>
+          <span data-i18n="chatFilterMode">Filter mode</span>
+        </div>
+        <div class="opt-sound-mode">
+          <label class="opt-radio-row">
+            <input type="radio" name="chat-filter-mode" id="chat-mode-hide" value="hide" checked />
+            <span data-i18n="chatFilterHide">Hide</span>
+          </label>
+          <label class="opt-radio-row">
+            <input type="radio" name="chat-filter-mode" id="chat-mode-blur" value="blur" />
+            <span data-i18n="chatFilterBlur">Blur</span>
+          </label>
+          <input type="checkbox" id="chat-filter-blur" style="display:none;" />
+        </div>
+        <div class="chat-section-desc" data-i18n="chatFilterModeDesc">Hide removes the message. Blur fades it — hover to see.</div>
+      </div>
+      <!-- Bot Filter -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="botFilter">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">smart_toy</span>
+          <span data-i18n="chatBotFilter">Bot filter</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-bot-filter" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatBotFilterDesc">Hide bot messages. Click a chip to remove.</div>
+        <div class="chat-section-body">
+          <div id="chat-bot-chips" class="chat-chips"></div>
+          <div class="chat-input-row">
+            <input type="text" id="chat-bot-input" class="chat-input" placeholder="Add bot name..." data-i18n-placeholder="chatBotPlaceholder" />
+            <button id="chat-bot-add" class="chat-add-btn">+</button>
+          </div>
+        </div>
+      </div>
+      <!-- Emoji Spam Filter -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="emojiFilter">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">emoji_emotions</span>
+          <span data-i18n="chatEmojiSpam">Emoji spam filter</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-emoji-filter" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatEmojiSpamDesc">Dims messages with excessive emojis (hover to reveal).</div>
+      </div>
+      <!-- Repeat Message Filter -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="repeatFilter">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">repeat</span>
+          <span data-i18n="chatRepeatFilter">Repeated message filter</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-repeat-filter" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatRepeatDesc">Hides when the same user sends the same message 3+ times.</div>
+      </div>
+      <!-- Word Filter -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="wordFilterEnabled">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">block</span>
+          <span data-i18n="chatWordFilter">Word filter</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-word-enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatWordFilterDesc">Messages containing these words are hidden or blurred.</div>
+        <div class="chat-section-body">
+          <div class="chat-input-row">
+            <input type="text" id="chat-word-input" class="chat-input" placeholder="Add word..." data-i18n-placeholder="chatWordPlaceholder" />
+            <button id="chat-word-add" class="chat-add-btn">+</button>
+          </div>
+          <div id="chat-word-chips" class="chat-chips"></div>
+        </div>
+      </div>
+      <!-- User Filter -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="userFilterEnabled">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">person_off</span>
+          <span data-i18n="chatUserFilter">User filter</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-user-enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatUserFilterDesc">Messages from listed users are hidden or blurred.</div>
+        <div class="chat-section-body">
+          <div class="chat-input-row">
+            <input type="text" id="chat-user-input" class="chat-input" placeholder="Add username..." data-i18n-placeholder="chatUserPlaceholder" />
+            <button id="chat-user-add" class="chat-add-btn">+</button>
+          </div>
+          <div id="chat-user-chips" class="chat-chips"></div>
+        </div>
+      </div>
+      <!-- Keyword Highlight -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="keywordEnabled">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">highlight</span>
+          <span data-i18n="chatKeywordHighlight">Keyword highlight</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-keyword-enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatKeywordDesc">Messages containing these words are highlighted in green.</div>
+        <div class="chat-section-body">
+          <div class="chat-input-row">
+            <input type="text" id="chat-keyword-input" class="chat-input" placeholder="Add word..." data-i18n-placeholder="chatKeywordPlaceholder" />
+            <button id="chat-keyword-add" class="chat-add-btn">+</button>
+          </div>
+          <div id="chat-keyword-chips" class="chat-chips"></div>
+        </div>
+      </div>
+      <!-- Favorite Users -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="favEnabled">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">star</span>
+          <span data-i18n="chatFavoriteUsers">Favorite users</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-fav-enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatFavoriteDesc">Favorites' messages are highlighted with their own Kick color.</div>
+        <div class="chat-section-body">
+          <div class="chat-input-row">
+            <input type="text" id="chat-fav-input" class="chat-input" placeholder="Add username..." data-i18n-placeholder="chatFavPlaceholder" />
+            <button id="chat-fav-add" class="chat-add-btn">+</button>
+          </div>
+          <div id="chat-fav-chips" class="chat-chips"></div>
+        </div>
+      </div>
+      <!-- Tag Notification -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="tagEnabled">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">alternate_email</span>
+          <span data-i18n="chatTagNotif">Tag notification</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-tag-enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatTagDesc">Get notified when someone tags your username.</div>
+        <div class="chat-section-body">
+          <div class="chat-input-row">
+            <input type="text" id="chat-tag-username" class="chat-input" placeholder="Your Kick username..." data-i18n-placeholder="chatTagPlaceholder" />
+          </div>
+        </div>
+      </div>
+      <!-- Broadcaster Message Notification -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="broadcasterNotif">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">campaign</span>
+          <span data-i18n="chatBroadcasterNotif">Streamer message notification</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-broadcaster-notif" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="chatBroadcasterDesc">Get notified when the streamer writes in chat. Max 1 notification per minute.</div>
+      </div>
     </div>
   </div>
 
@@ -83,7 +257,7 @@
       <div class="opt-section" id="lang-section">
         <div class="opt-dnd-header">
           <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">language</span>
-          <span data-i18n="langSectionTitle"></span>
+          <span data-i18n="langSectionTitle">Language</span>
           <label class="toggle-switch toggle-switch-sm">
             <input type="checkbox" id="opt-use-browser-lang" checked />
             <span class="toggle-slider"></span>
@@ -95,7 +269,7 @@
       <div class="opt-section">
         <div class="opt-section-title">
           <span class="material-icons-outlined">play_circle</span>
-          <span data-i18n="autoLaunchSettings"></span>
+          <span data-i18n="autoLaunchSettings">Auto-Launch Settings</span>
         </div>
         <label class="opt-row">
           <input type="checkbox" id="opt-auto-unmute" />
@@ -103,32 +277,32 @@
         </label>
         <label class="opt-row">
           <input type="checkbox" id="opt-reset-suspend" />
-          <span data-i18n="resetSuspendOnRestartCheckbox"></span>
+          <span data-i18n="resetSuspendOnRestartCheckbox">Reset auto-launch settings to On when browser restarts</span>
         </label>
       </div>
       <div class="opt-section">
         <div class="opt-section-title">
           <span class="material-icons-outlined">visibility</span>
-          <span data-i18n="displaySettings"></span>
+          <span data-i18n="displaySettings">Display Settings</span>
         </div>
 
         <label class="opt-row">
           <input type="checkbox" id="opt-show-offline" />
-          <span data-i18n="showOfflineChannels"></span>
+          <span data-i18n="showOfflineChannels">Show offline channels in Following tab</span>
         </label>
         <div class="opt-divider"></div>
         <div class="opt-row" style="justify-content:space-between;margin-top:6px">
-          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="themeLabel"></span>
+          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="themeLabel">Theme</span>
           <div class="opt-theme-btns">
-            <button class="opt-theme-btn" id="opt-theme-dark" data-theme="dark" data-i18n="themeDark"></button>
-            <button class="opt-theme-btn" id="opt-theme-light" data-theme="light" data-i18n="themeLight"></button>
+            <button class="opt-theme-btn" id="opt-theme-dark" data-theme="dark" data-i18n="themeDark">Dark</button>
+            <button class="opt-theme-btn" id="opt-theme-light" data-theme="light" data-i18n="themeLight">Light</button>
           </div>
         </div>
         <div class="opt-divider"></div>
         <div class="opt-groups-section">
           <div class="opt-groups-header">
             <span class="material-icons-outlined" style="font-size:16px;">label</span>
-            <span data-i18n="groupsTitle"></span>
+            <span data-i18n="groupsTitle">Channel groups</span>
           </div>
           <div id="opt-groups-list" class="opt-groups-list"></div>
           <div class="opt-groups-add">
@@ -140,16 +314,16 @@
       <div class="opt-section">
         <div class="opt-section-title">
           <span class="material-icons-outlined">notifications</span>
-          <span data-i18n="notificationSettings"></span>
+          <span data-i18n="notificationSettings">Notification Settings</span>
         </div>
         <label class="opt-row">
           <input type="checkbox" id="opt-show-notification" />
-          <span data-i18n="showNotificationCheckbox"></span>
+          <span data-i18n="showNotificationCheckbox">Show desktop notifications</span>
         </label>
         <div class="opt-row" style="justify-content:space-between;margin-top:6px">
-          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="notifDelayLabel"></span>
+          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="notifDelayLabel">Notify after stream starts</span>
           <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden">
-            <button class="card-mode-btn notif-delay-btn" data-delay="0" data-i18n="notifDelayNow"></button>
+            <button class="card-mode-btn notif-delay-btn" data-delay="0" data-i18n="notifDelayNow">Now</button>
             <button class="card-mode-btn notif-delay-btn" data-delay="5">5m</button>
             <button class="card-mode-btn notif-delay-btn" data-delay="10">10m</button>
             <button class="card-mode-btn notif-delay-btn" data-delay="15">15m</button>
@@ -159,58 +333,58 @@
         <div class="opt-sound-mode">
           <label class="opt-radio-row" data-i18n-title="soundModeExtensionTooltip">
             <input type="radio" name="sound-mode" id="opt-sound-extension" value="extension" checked />
-            <span data-i18n="soundModeExtension"></span>
+            <span data-i18n="soundModeExtension">Extension sounds</span>
           </label>
           <label class="opt-radio-row" data-i18n-title="soundModeWindowsTooltip">
             <input type="radio" name="sound-mode" id="opt-sound-windows" value="windows" />
-            <span data-i18n="soundModeWindows"></span>
+            <span data-i18n="soundModeWindows">Windows sounds</span>
           </label>
         </div>
         <div id="opt-extension-sound-settings">
           <div class="opt-slider-row">
-            <span class="opt-slider-label" data-i18n="notificationSoundVolume"></span>
+            <span class="opt-slider-label" data-i18n="notificationSoundVolume">Sound volume</span>
             <input type="range" id="opt-volume-slider" min="0" max="100" step="5" />
             <span id="opt-volume-value" class="opt-slider-value"></span>
             <span class="opt-slider-unit">%</span>
-            <button id="opt-test-sound" class="opt-text-btn" data-i18n="testSoundVolume"></button>
+            <button id="opt-test-sound" class="opt-text-btn" data-i18n="testSoundVolume">[Test]</button>
           </div>
           <div class="opt-divider"></div>
           <div class="opt-custom-sounds">
             <div class="opt-sound-row">
               <div class="opt-sound-info">
-                <span class="opt-sound-label" data-i18n="customSoundMainLabel"></span>
+                <span class="opt-sound-label" data-i18n="customSoundMainLabel">Main sound</span>
                 <span id="opt-main-sound-status" class="opt-sound-status"></span>
               </div>
               <div class="opt-sound-controls">
                 <input type="file" id="opt-main-sound-file" accept="audio/*" class="opt-sound-input" />
-                <button id="opt-main-sound-test" class="opt-text-btn" data-i18n="customSoundButtonTest"></button>
-                <button id="opt-main-sound-clear" class="opt-text-btn" data-i18n="customSoundButtonClear"></button>
+                <button id="opt-main-sound-test" class="opt-text-btn" data-i18n="customSoundButtonTest">[Test]</button>
+                <button id="opt-main-sound-clear" class="opt-text-btn" data-i18n="customSoundButtonClear">[Clear]</button>
               </div>
             </div>
             <div class="opt-sound-row">
               <div class="opt-sound-info">
-                <span class="opt-sound-label" data-i18n="customSoundSubLabel"></span>
+                <span class="opt-sound-label" data-i18n="customSoundSubLabel">Secondary sound</span>
                 <span id="opt-sub-sound-status" class="opt-sound-status"></span>
               </div>
               <div class="opt-sound-controls">
                 <input type="file" id="opt-sub-sound-file" accept="audio/*" class="opt-sound-input" />
-                <button id="opt-sub-sound-test" class="opt-text-btn" data-i18n="customSoundButtonTest"></button>
-                <button id="opt-sub-sound-clear" class="opt-text-btn" data-i18n="customSoundButtonClear"></button>
+                <button id="opt-sub-sound-test" class="opt-text-btn" data-i18n="customSoundButtonTest">[Test]</button>
+                <button id="opt-sub-sound-clear" class="opt-text-btn" data-i18n="customSoundButtonClear">[Clear]</button>
               </div>
             </div>
-            <p class="opt-sound-note" data-i18n="customSoundLimitNote" data-i18n-sub="2"></p>
+            <p class="opt-sound-note" data-i18n="customSoundLimitNote" data-i18n-sub="2">Upload audio files up to $1 MB.</p>
           </div>
         </div><!-- /opt-extension-sound-settings -->
         <div class="opt-divider"></div>
         <div class="opt-slider-row">
-          <span class="opt-slider-label" data-i18n="checkInterval"></span>
+          <span class="opt-slider-label" data-i18n="checkInterval">Check interval</span>
           <input type="range" id="opt-interval-slider" min="30" max="300" step="30" />
           <span id="opt-interval-value" class="opt-slider-value"></span>
           <span class="opt-slider-unit">sec</span>
         </div>
         <label class="opt-row">
           <input type="checkbox" id="opt-auto-refresh" />
-          <span data-i18n="autoRefreshPopup"></span>
+          <span data-i18n="autoRefreshPopup">Auto-refresh Following tab</span>
         </label>
       </div>
       <!-- DND Section — OUTSIDE extension-sound-settings, works with both sound modes -->
@@ -218,7 +392,7 @@
         <div class="opt-dnd-section" id="opt-dnd-section">
           <div class="opt-dnd-header">
             <span class="material-icons-outlined" style="font-size:16px;">do_not_disturb_on</span>
-            <span data-i18n="dndTitle"></span>
+            <span data-i18n="dndTitle">Do Not Disturb</span>
             <label class="toggle-switch toggle-switch-sm">
               <input type="checkbox" id="opt-dnd-enabled" />
               <span class="toggle-slider"></span>
@@ -226,22 +400,22 @@
           </div>
           <div class="opt-dnd-body" id="opt-dnd-body">
             <div class="opt-dnd-time-row">
-              <span class="opt-dnd-time-label" data-i18n="dndStart"></span>
+              <span class="opt-dnd-time-label" data-i18n="dndStart">Start</span>
               <select id="opt-dnd-start" class="opt-dnd-select"></select>
-              <span class="opt-dnd-time-label" data-i18n="dndEnd"></span>
+              <span class="opt-dnd-time-label" data-i18n="dndEnd">End</span>
               <select id="opt-dnd-end" class="opt-dnd-select"></select>
             </div>
             <label class="opt-row">
               <input type="checkbox" id="opt-dnd-mute-notif" checked />
-              <span data-i18n="dndMuteNotifications"></span>
+              <span data-i18n="dndMuteNotifications">Mute notifications</span>
             </label>
             <label class="opt-row">
               <input type="checkbox" id="opt-dnd-mute-sound" checked />
-              <span data-i18n="dndMuteSound"></span>
+              <span data-i18n="dndMuteSound">Mute sounds</span>
             </label>
             <label class="opt-row">
               <input type="checkbox" id="opt-dnd-mute-autolaunch" />
-              <span data-i18n="dndMuteAutoLaunch"></span>
+              <span data-i18n="dndMuteAutoLaunch">Pause auto-launch</span>
             </label>
           </div>
         </div>
@@ -251,25 +425,25 @@
         <div class="opt-dnd-section" id="opt-anomaly-section">
           <div class="opt-dnd-header">
             <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">monitoring</span>
-            <span data-i18n="anomalyTitle"></span>
+            <span data-i18n="anomalyTitle">Viewer anomaly detection</span>
             <label class="toggle-switch toggle-switch-sm">
               <input type="checkbox" id="opt-anomaly-enabled" />
               <span class="toggle-slider"></span>
             </label>
           </div>
           <div id="opt-anomaly-body" class="opt-section-body">
-            <div style="font-size:11px;color:var(--text-muted);padding:4px 0 8px 22px;line-height:1.5;" data-i18n="anomalyDesc"></div>
+            <div style="font-size:11px;color:var(--text-muted);padding:4px 0 8px 22px;line-height:1.5;" data-i18n="anomalyDesc">Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history.</div>
             <label class="opt-radio-row">
               <input type="radio" name="anomaly-mode" id="opt-anomaly-mode-both" value="both" checked>
-              <span data-i18n="anomalyModeBoth"></span>
+              <span data-i18n="anomalyModeBoth">Desktop notification + badge in popup</span>
             </label>
             <label class="opt-radio-row">
               <input type="radio" name="anomaly-mode" id="opt-anomaly-mode-badge" value="badge">
-              <span data-i18n="anomalyModeBadge"></span>
+              <span data-i18n="anomalyModeBadge">Badge in popup only</span>
             </label>
             <div style="height:1px;background:var(--border);margin:10px 0 8px;"></div>
             <div class="opt-dnd-header" style="padding:0 0 6px 0;">
-              <span style="font-size:12px;font-weight:500;color:var(--text-secondary);" data-i18n="anomalySpikeSettings"></span>
+              <span style="font-size:12px;font-weight:500;color:var(--text-secondary);" data-i18n="anomalySpikeSettings">Spike detection thresholds</span>
               <label class="toggle-switch toggle-switch-sm">
                 <input type="checkbox" id="opt-anomaly-spike-enabled" />
                 <span class="toggle-slider"></span>
@@ -280,9 +454,9 @@
                 <div class="sens-bar-col">
                   <input type="range" id="opt-spike-sensitivity-slider" min="0" max="2" step="1" value="1" class="sens-range" />
                   <div class="sens-ticks">
-                    <span data-i18n="sensitivityMin"></span>
-                    <span data-i18n="sensitivityAvg"></span>
-                    <span data-i18n="sensitivityMax"></span>
+                    <span data-i18n="sensitivityMin">Sensitive</span>
+                    <span data-i18n="sensitivityAvg">Balanced</span>
+                    <span data-i18n="sensitivityMax">Strict</span>
                   </div>
                 </div>
                 <span class="sens-val" id="opt-spike-sensitivity-val"></span>
@@ -290,7 +464,7 @@
             </div>
             <div style="height:1px;background:var(--border);margin:10px 0 8px;"></div>
             <div class="opt-dnd-header" style="padding:0 0 6px 0;">
-              <span style="font-size:12px;font-weight:500;color:var(--text-secondary);" data-i18n="anomalyDropSettings"></span>
+              <span style="font-size:12px;font-weight:500;color:var(--text-secondary);" data-i18n="anomalyDropSettings">Drop detection</span>
               <label class="toggle-switch toggle-switch-sm">
                 <input type="checkbox" id="opt-anomaly-drop-enabled" />
                 <span class="toggle-slider"></span>
@@ -301,9 +475,9 @@
                 <div class="sens-bar-col">
                   <input type="range" id="opt-drop-sensitivity-slider" min="0" max="2" step="1" value="1" class="sens-range" />
                   <div class="sens-ticks">
-                    <span data-i18n="sensitivityMin"></span>
-                    <span data-i18n="sensitivityAvg"></span>
-                    <span data-i18n="sensitivityMax"></span>
+                    <span data-i18n="sensitivityMin">Sensitive</span>
+                    <span data-i18n="sensitivityAvg">Balanced</span>
+                    <span data-i18n="sensitivityMax">Strict</span>
                   </div>
                 </div>
                 <span class="sens-val" id="opt-drop-sensitivity-val"></span>
@@ -312,17 +486,29 @@
           </div>
         </div>
       </div>
+      <!-- Chat Integration Section -->
+      <div class="opt-section">
+        <div class="opt-dnd-header">
+          <span class="material-icons-outlined" style="font-size:16px;">chat</span>
+          <span data-i18n="chatIntegrationTitle">Chat Integration</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-chat-integration" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);padding:4px 0 0 22px;line-height:1.5;" data-i18n="chatIntegrationDesc">When on, Chat tab appears above. After first install, refresh any open Kick tabs.</div>
+      </div>
       <!-- Cloud Sync Section -->
       <div class="opt-section">
         <div class="opt-dnd-header">
           <span class="material-icons-outlined" style="font-size:16px;">cloud_sync</span>
-          <span data-i18n="cloudSyncTitle"></span>
+          <span data-i18n="cloudSyncTitle">Cloud Sync</span>
           <label class="toggle-switch toggle-switch-sm">
             <input type="checkbox" id="opt-cloud-sync" />
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="opt-cloud-sync-note" id="opt-cloud-sync-note" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;" data-i18n="cloudSyncNote"></div>
+        <div class="opt-cloud-sync-note" id="opt-cloud-sync-note" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;" data-i18n="cloudSyncNote">Sync settings across devices via your browser account. Custom sounds and notification history are not synced.</div>
       </div>
       <!-- Support & Info -->
       <div class="opt-section opt-support-section">
@@ -335,6 +521,7 @@
             <a href="https://github.com/segelferd/kick-alert" target="_blank">Source Code</a>
             <span class="opt-link-sep">·</span>
             <a href="https://chromewebstore.google.com/detail/kickalert/dlchkgjgcmbgpbdiiipibnpjfhipkbac" target="_blank" id="rate-link">Rate Extension</a>
+
           </div>
         </div>
       </div>
@@ -353,14 +540,14 @@
     <div class="vh-modal-backdrop"></div>
     <div class="vh-modal-box">
       <div class="vh-modal-header">
-        <span id="vh-modal-title">İzleyici Geçmişi</span>
+        <span id="vh-modal-title" data-i18n="viewerTrendTitle">Viewer Trend</span>
         <button id="vh-modal-close" class="vh-close-btn"><span class="material-icons">close</span></button>
       </div>
       <div class="vh-chart-wrap">
         <svg id="vh-chart-svg" width="100%" height="120" viewBox="0 0 400 120" preserveAspectRatio="none"></svg>
       </div>
       <div id="vh-chart-labels" class="vh-chart-labels"></div>
-      <div id="vh-no-data" class="vh-no-data" style="display:none">Henüz yeterli veri yok</div>
+      <div id="vh-no-data" class="vh-no-data" style="display:none" data-i18n="viewerHistoryNoData">Not enough data yet</div>
     </div>
   </div>
 </body>

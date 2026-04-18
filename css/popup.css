@@ -752,6 +752,16 @@ body {
   margin-bottom: 6px;
   overflow: hidden;
 }
+.vh-minmax-row {
+  display: flex; justify-content: center; gap: 12px;
+  padding: 0 4px 4px; font-size: 10px;
+}
+.vh-minmax-label {
+  font-weight: 500; color: var(--text-muted);
+}
+.vh-minmax-label.vh-max {
+  color: var(--text-muted);
+}
 .vh-chart-labels {
   display: flex; justify-content: space-between;
   font-size: 10px; color: var(--text-muted);
@@ -829,4 +839,85 @@ body {
 #opt-drop-sensitivity-body.disabled {
   opacity: 0.35;
   pointer-events: none;
+}
+
+/* ─── Chat Panel ─── */
+.chat-section {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.chat-section:last-child { border-bottom: none; }
+.chat-section-header {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600; color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.chat-section-header .toggle-switch { margin-left: auto; }
+.chat-input-row {
+  display: flex; gap: 6px; margin-bottom: 4px;
+}
+.chat-input {
+  flex: 1; background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: 6px; color: var(--text-primary); font-size: 12px;
+  padding: 5px 10px; outline: none;
+}
+.chat-input:focus { border-color: #53FC18; }
+.chat-add-btn {
+  background: var(--bg-secondary); border: 1px solid var(--border);
+  border-radius: 6px; color: #53FC18; font-size: 16px; font-weight: 600;
+  width: 32px; cursor: pointer;
+}
+.chat-add-btn:hover { background: var(--bg-hover); }
+.chat-chips {
+  display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 4px;
+}
+.chat-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: 12px; padding: 2px 8px; font-size: 11px;
+  color: var(--accent); cursor: pointer;
+  font-weight: 500;
+}
+.chat-chip:hover {
+  background: color-mix(in srgb, var(--red) 15%, transparent);
+  border-color: var(--red);
+  color: var(--red);
+}
+.chat-chip::after { content: '×'; margin-left: 2px; font-size: 13px; }
+
+/* Light theme: boost chip contrast — accent on white is too soft */
+[data-theme="light"] .chat-chip {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  color: #1a6b07;
+}
+[data-theme="light"] .chat-chip:hover {
+  background: color-mix(in srgb, var(--red) 12%, transparent);
+  border-color: var(--red);
+  color: var(--red);
+}
+.chat-filter-mode-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: var(--text-secondary); padding: 3px 0;
+}
+
+/* Collapsible chat sections (v1.9.10): when section has data-collapsible="true"
+   and is NOT marked data-enabled="true", hide the body (inputs/lists).
+   Description + header stays visible so user knows what the section is. */
+.chat-section[data-collapsible="true"] .chat-section-body {
+  max-height: 500px;
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.15s ease, margin 0.15s ease;
+  opacity: 1;
+}
+.chat-section[data-collapsible="true"][data-enabled="false"] .chat-section-body {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+/* Description row always stays visible, even when collapsed */
+.chat-section-desc {
+  font-size: 10px; color: var(--text-muted); padding: 0 0 4px;
 }

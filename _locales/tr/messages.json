@@ -1,6 +1,57 @@
 {
+  "anomalyAlertLabel": {
+    "message": "Alarm"
+  },
+  "anomalyDesc": {
+    "message": "Anormal izleyici artışlarını tespit eder. Yeni yayınlarda geçmiş ortalamaya, devam eden yayınlarda artış hızına bakar. Geçmiş olmadan uyarı üretmez."
+  },
+  "anomalyDropEnabled": {
+    "message": "Anormal izleyici düşüşünü bildir"
+  },
+  "anomalyDropSettings": {
+    "message": "Düşüş tespiti"
+  },
+  "anomalyDropTitle": {
+    "message": "Şüpheli İzleyici Düşüşü"
+  },
+  "anomalyModeBadge": {
+    "message": "Sadece popup badge"
+  },
+  "anomalyModeBoth": {
+    "message": "Masaüstü bildirimi + popup badge"
+  },
+  "anomalyModeNotif": {
+    "message": "Sadece masaüstü bildirimi"
+  },
+  "anomalyNote": {
+    "message": "Yeni yayın (< 10 dk): önceki yayın ortalamasıyla kıyaslar. Devam eden yayın: artış hızına bakar. Geçmiş olmadan uyarı üretmez."
+  },
+  "anomalyNotifyMode": {
+    "message": "Bildirim modu"
+  },
+  "anomalySensitivity": {
+    "message": "Hassasiyet"
+  },
+  "anomalySpikeSettings": {
+    "message": "Artış tespit eşikleri"
+  },
+  "anomalySpikeTitle": {
+    "message": "Şüpheli İzleyici Artışı"
+  },
+  "anomalyThreshold": {
+    "message": "Uyarı eşiği"
+  },
+  "anomalyTitle": {
+    "message": "İzleyici anomali tespiti"
+  },
+  "anomalyWarnLabel": {
+    "message": "Uyarı"
+  },
   "appDescription": {
     "message": "Gece 3'te habersiz açılan ninja yayınlar artık senden kaçamaz — KickAlert her sürpriz yayını yakalar ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
   },
   "autoLaunch": {
     "message": "Otomatik Aç"
@@ -11,8 +62,134 @@
   "autoLaunchSettings": {
     "message": "Otomatik Açma Ayarları"
   },
+  "autoLaunchTab": {
+    "message": "Otomatik Aç"
+  },
+  "autoRefreshPopup": {
+    "message": "Takip Edilenler sekmesini otomatik yenile"
+  },
   "autoUnmuteCheckbox": {
     "message": "Otomatik açmadan sonra oynatıcının sesini aç<br />(Not: Ses kaydırıcısına yansımaz)"
+  },
+  "bellMain": {
+    "message": "Ana ses"
+  },
+  "bellMuted": {
+    "message": "Bildirim yok"
+  },
+  "bellSilent": {
+    "message": "Sessiz bildirim"
+  },
+  "bellSub": {
+    "message": "İkincil ses"
+  },
+  "cardModeCompact": {
+    "message": "Kompakt"
+  },
+  "cardModeDetail": {
+    "message": "Detay"
+  },
+  "cardModeLabel": {
+    "message": "Kart görünümü"
+  },
+  "chatActiveChannel": {
+    "message": "Aktif kanal"
+  },
+  "chatBotFilter": {
+    "message": "Bot filtresi"
+  },
+  "chatBotFilterDesc": {
+    "message": "Bot mesajlarını gizle. Kaldırmak için chip'e tıkla."
+  },
+  "chatBotPlaceholder": {
+    "message": "Bot adı ekle..."
+  },
+  "chatEmojiSpam": {
+    "message": "Emoji spam filtresi"
+  },
+  "chatFavPlaceholder": {
+    "message": "Kullanıcı adı ekle..."
+  },
+  "chatFavoriteDesc": {
+    "message": "Favorilerin mesajları kendi Kick rengiyle vurgulanır."
+  },
+  "chatFavoriteUsers": {
+    "message": "Favori kullanıcılar"
+  },
+  "chatFilterBlur": {
+    "message": "Bulanıklaştır"
+  },
+  "chatFilterHide": {
+    "message": "Gizle"
+  },
+  "chatFilterMode": {
+    "message": "Filtre modu"
+  },
+  "chatFilterModeDesc": {
+    "message": "Gizle mesajı kaldırır. Bulanıklaştır soldurur — üzerine gel görmek için."
+  },
+  "chatIntegrationDesc": {
+    "message": "Açıkken yukarıda Chat sekmesi görünür. İlk kurulum sonrası Kick sekmelerini yenileyin."
+  },
+  "chatIntegrationTitle": {
+    "message": "Chat Entegrasyonu"
+  },
+  "chatKeywordDesc": {
+    "message": "Bu kelimeleri içeren mesajlar yeşil vurgulanır."
+  },
+  "chatKeywordHighlight": {
+    "message": "Kelime vurgusu"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "Kelime ekle..."
+  },
+  "chatNoChannel": {
+    "message": "Aktif Kick kanalı yok"
+  },
+  "chatRepeatDesc": {
+    "message": "Aynı kullanıcının aynı mesajı 3+ kez atmasını gizler."
+  },
+  "chatRepeatFilter": {
+    "message": "Tekrar eden mesaj filtresi"
+  },
+  "chatTab": {
+    "message": "Chat"
+  },
+  "chatTagDesc": {
+    "message": "Birisi kullanıcı adınızı etiketlediğinde bildirim alın."
+  },
+  "chatTagNotif": {
+    "message": "Tag bildirimi"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 sizi etiketledi"
+  },
+  "chatTagPlaceholder": {
+    "message": "Kick kullanıcı adınız..."
+  },
+  "chatUserFilter": {
+    "message": "Kullanıcı filtresi"
+  },
+  "chatUserPlaceholder": {
+    "message": "Kullanıcı adı ekle..."
+  },
+  "chatWordFilter": {
+    "message": "Kelime filtresi"
+  },
+  "chatWordPlaceholder": {
+    "message": "Kelime ekle..."
+  },
+  "checkInterval": {
+    "message": "Kontrol aralığı"
+  },
+  "clearHistory": {
+    "message": "Temizle"
+  },
+  "cloudSyncNote": {
+    "message": "Ayarları tarayıcı hesabınız üzerinden cihazlar arasında senkronize edin. Özel sesler ve bildirim geçmişi senkronize edilmez."
+  },
+  "cloudSyncTitle": {
+    "message": "Bulut Senkronizasyonu"
   },
   "customSoundButtonClear": {
     "message": "[Temizle]"
@@ -41,11 +218,35 @@
   "customSoundSubLabel": {
     "message": "İkincil ses"
   },
+  "displaySettings": {
+    "message": "Görüntü Ayarları"
+  },
+  "dndEnd": {
+    "message": "Bitiş"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Otomatik açmayı durdur"
+  },
+  "dndMuteNotifications": {
+    "message": "Bildirimleri sustur"
+  },
+  "dndMuteSound": {
+    "message": "Sesleri sustur"
+  },
+  "dndStart": {
+    "message": "Başlangıç"
+  },
+  "dndTitle": {
+    "message": "Rahatsız Etme"
+  },
   "duplicateTabGuard": {
     "message": "Çift Sekme Koruması"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "Otomatik açmada çift sekme korumasını değiştir. Açıkken, yayın için sekme zaten açıksa yeni sekme açılmaz."
+  },
+  "errorLoadingHistory": {
+    "message": "Geçmiş yüklenemedi."
   },
   "fetchError": {
     "message": "Kanallar yüklenemedi. Kick'e giriş yaptığınızdan emin olun ve tekrar deneyin."
@@ -53,8 +254,68 @@
   "following": {
     "message": "Takip Edilenler"
   },
+  "groupAddPlaceholder": {
+    "message": "Yeni grup..."
+  },
+  "groupAll": {
+    "message": "Tümü"
+  },
+  "groupAssign": {
+    "message": "Grup ata"
+  },
+  "groupsTitle": {
+    "message": "Kanal grupları"
+  },
+  "history": {
+    "message": "Bildirim Geçmişi"
+  },
+  "historyGroupOlder": {
+    "message": "Daha önce"
+  },
+  "historyGroupThisWeek": {
+    "message": "Bu hafta"
+  },
+  "historyGroupToday": {
+    "message": "Bugün"
+  },
+  "historyGroupYesterday": {
+    "message": "Dün"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Tarayıcı dili kullanılıyor: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Tarayıcı dili desteklenmiyor — İngilizce kullanılıyor"
+  },
+  "langSectionTitle": {
+    "message": "Dil"
+  },
+  "lastStream": {
+    "message": "Son yayın"
+  },
+  "noDataYet": {
+    "message": "Henüz yeterli veri yok"
+  },
+  "noHistoryYet": {
+    "message": "Henüz geçmiş yok."
+  },
   "noLiveStreams": {
     "message": "Canlı yayın yok."
+  },
+  "notifButtonMute": {
+    "message": "Sustur"
+  },
+  "notifButtonOpen": {
+    "message": "Aç"
+  },
+  "notifDelayLabel": {
+    "message": "Yayın başladıktan sonra bildir"
+  },
+  "notifDelayNow": {
+    "message": "Hemen"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 yayına başladı"
   },
   "notificationSettings": {
     "message": "Bildirim Ayarları"
@@ -62,8 +323,14 @@
   "notificationSoundVolume": {
     "message": "Ses seviyesi"
   },
+  "onlySwitchChannels": {
+    "message": "Yalnızca açık kanallara bildir"
+  },
   "options": {
     "message": "Seçenekler"
+  },
+  "optionsBack": {
+    "message": "Geri"
   },
   "optionsButtonTooltip": {
     "message": "Seçenekler sayfasını aç"
@@ -77,227 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Tarayıcı yeniden başlatıldığında otomatik açma ayarlarını sıfırla"
   },
-  "showNotificationCheckbox": {
-    "message": "Masaüstü bildirimlerini göster"
-  },
-  "testSoundVolume": {
-    "message": "[Test]"
-  },
-  "appName": {
-    "message": "KickAlert"
-  },
-  "history": {
-    "message": "Bildirim Geçmişi"
-  },
-  "noHistoryYet": {
-    "message": "Henüz geçmiş yok."
-  },
-  "errorLoadingHistory": {
-    "message": "Geçmiş yüklenemedi."
-  },
-  "onlySwitchChannels": {
-    "message": "Yalnızca açık kanallara bildir"
-  },
-  "silentForOthers": {
-    "message": "Diğer kanallar için sessiz bildirim"
-  },
-  "checkInterval": {
-    "message": "Kontrol aralığı"
-  },
-  "autoLaunchTab": {
-    "message": "Otomatik Aç"
-  },
-  "showOfflineChannels": {
-    "message": "Takip Edilenler'de çevrimdışı kanalları göster"
-  },
-  "displaySettings": {
-    "message": "Görüntü Ayarları"
-  },
-  "autoRefreshPopup": {
-    "message": "Takip Edilenler sekmesini otomatik yenile"
-  },
-  "optionsBack": {
-    "message": "Geri"
-  },
-  "dndTitle": {
-    "message": "Rahatsız Etme"
-  },
-  "dndStart": {
-    "message": "Başlangıç"
-  },
-  "dndEnd": {
-    "message": "Bitiş"
-  },
-  "dndMuteNotifications": {
-    "message": "Bildirimleri sustur"
-  },
-  "dndMuteSound": {
-    "message": "Sesleri sustur"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "Otomatik açmayı durdur"
-  },
   "searchChannels": {
     "message": "Kanal ara..."
-  },
-  "clearHistory": {
-    "message": "Temizle"
-  },
-  "notifStartedStreaming": {
-    "message": "$1 yayına başladı"
-  },
-  "soundModeExtension": {
-    "message": "Eklenti sesleri"
-  },
-  "soundModeWindows": {
-    "message": "Windows sesleri"
-  },
-  "bellMain": {
-    "message": "Ana ses"
-  },
-  "bellSub": {
-    "message": "İkincil ses"
-  },
-  "bellSilent": {
-    "message": "Sessiz bildirim"
-  },
-  "bellMuted": {
-    "message": "Bildirim yok"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "Dikkat çekici özel sesler — gözden kaçmaz"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "Standart sistem sesi — gün içinde gözden kaçabilir"
-  },
-  "cloudSyncTitle": {
-    "message": "Bulut Senkronizasyonu"
-  },
-  "cloudSyncNote": {
-    "message": "Google hesabınız ile ayarları cihazlar arası senkronize edin. Özel sesler ve bildirim geçmişi senkronize edilmez."
-  },
-  "themeLabel": {
-    "message": "Tema"
-  },
-  "themeDark": {
-    "message": "Koyu"
-  },
-  "themeLight": {
-    "message": "Açık"
-  },
-  "groupAll": {
-    "message": "Tümü"
-  },
-  "groupsTitle": {
-    "message": "Kanal grupları"
-  },
-  "groupAddPlaceholder": {
-    "message": "Yeni grup..."
-  },
-  "groupAssign": {
-    "message": "Grup ata"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — Canlı yayın yok"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 canlı"
-  },
-  "tooltipMore": {
-    "message": "+$1 daha"
-  },
-  "notifButtonOpen": {
-    "message": "Aç"
-  },
-  "notifButtonMute": {
-    "message": "Sustur"
-  },
-  "anomalyTitle": {
-    "message": "İzleyici anomali tespiti"
-  },
-  "anomalyDesc": {
-    "message": "Anormal izleyici artışlarını tespit eder. Yeni yayınlarda geçmiş ortalamaya, devam eden yayınlarda artış hızına bakar. Geçmiş olmadan uyarı üretmez."
-  },
-  "anomalyThreshold": {
-    "message": "Uyarı eşiği"
-  },
-  "anomalyNotifyMode": {
-    "message": "Bildirim modu"
-  },
-  "anomalyModeBoth": {
-    "message": "Masaüstü bildirimi + popup badge"
-  },
-  "anomalyModeNotif": {
-    "message": "Sadece masaüstü bildirimi"
-  },
-  "anomalyModeBadge": {
-    "message": "Sadece popup badge"
-  },
-  "anomalyNote": {
-    "message": "Yeni yayın (< 10 dk): önceki yayın ortalamasıyla kıyaslar. Devam eden yayın: artış hızına bakar. Geçmiş olmadan uyarı üretmez."
-  },
-  "cardModeLabel": {
-    "message": "Kart görünümü"
-  },
-  "cardModeCompact": {
-    "message": "Kompakt"
-  },
-  "cardModeDetail": {
-    "message": "Detay"
-  },
-  "historyGroupToday": {
-    "message": "Bugün"
-  },
-  "historyGroupYesterday": {
-    "message": "Dün"
-  },
-  "historyGroupThisWeek": {
-    "message": "Bu hafta"
-  },
-  "historyGroupOlder": {
-    "message": "Daha önce"
-  },
-  "lastStream": {
-    "message": "Son yayın"
-  },
-  "notifDelayLabel": {
-    "message": "Yayın başladıktan sonra bildir"
-  },
-  "notifDelayNow": {
-    "message": "Hemen"
-  },
-  "viewerTrendTitle": {
-    "message": "İzleyici Trendi"
-  },
-  "noDataYet": {
-    "message": "Henüz yeterli veri yok"
-  },
-  "anomalyDropEnabled": {
-    "message": "Anormal izleyici düşüşünü bildir"
-  },
-  "anomalySpikeTitle": {
-    "message": "Şüpheli İzleyici Artışı"
-  },
-  "anomalyDropTitle": {
-    "message": "Şüpheli İzleyici Düşüşü"
-  },
-  "anomalySpikeSettings": {
-    "message": "Artış tespit eşikleri"
-  },
-  "anomalyWarnLabel": {
-    "message": "Uyarı"
-  },
-  "anomalyAlertLabel": {
-    "message": "Alarm"
-  },
-  "anomalyDropSettings": {
-    "message": "Düşüş tespiti"
-  },
-  "anomalySensitivity": {
-    "message": "Hassasiyet"
-  },
-  "sensitivityMin": {
-    "message": "Hassas"
   },
   "sensitivityAvg": {
     "message": "Dengeli"
@@ -305,13 +353,104 @@
   "sensitivityMax": {
     "message": "Katı"
   },
-  "langSectionTitle": {
-    "message": "Dil"
+  "sensitivityMin": {
+    "message": "Hassas"
   },
-  "langBrowserNoteSupported": {
-    "message": "Tarayıcı dili kullanılıyor: $1"
+  "showNotificationCheckbox": {
+    "message": "Masaüstü bildirimlerini göster"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "Tarayıcı dili desteklenmiyor — İngilizce kullanılıyor"
+  "showOfflineChannels": {
+    "message": "Takip Edilenler'de çevrimdışı kanalları göster"
+  },
+  "silentForOthers": {
+    "message": "Diğer kanallar için sessiz bildirim"
+  },
+  "soundModeExtension": {
+    "message": "Eklenti sesleri"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Dikkat çekici özel sesler — gözden kaçmaz"
+  },
+  "soundModeWindows": {
+    "message": "Windows sesleri"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Standart sistem sesi — gün içinde gözden kaçabilir"
+  },
+  "testSoundVolume": {
+    "message": "[Test]"
+  },
+  "themeDark": {
+    "message": "Koyu"
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "themeLight": {
+    "message": "Açık"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 canlı"
+  },
+  "tooltipMore": {
+    "message": "+$1 daha"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Canlı yayın yok"
+  },
+  "viewerTrendTitle": {
+    "message": "İzleyici Trendi"
+  },
+  "chatBroadcasterNotif": {
+    "message": "Yayıncı mesaj bildirimi",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "Yayıncı sohbete yazdığında bildirim alın. Dakikada en fazla 1 bildirim.",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1 sohbete yazdı",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "Bu kelimeleri içeren mesajlar gizlenir veya bulanıklaştırılır.",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "Listedeki kullanıcıların mesajları gizlenir veya bulanıklaştırılır.",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "Aşırı emoji içeren mesajları soldurur (hover ile görünür).",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "$1 dk yayında",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "Kaldırmak için tıkla",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "$1 gün önce",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "$1 saat önce",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "$1 dk önce",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "Şimdi",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "Henüz yeterli veri yok",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

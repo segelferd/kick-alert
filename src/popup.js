@@ -20,16 +20,29 @@ document.addEventListener('DOMContentLoaded', async () => {
   await applyTheme();
   await Utils.initI18n();
   setupI18n();
+  applyOptionsI18n();   // Translate #options-panel + #chat-panel + tab buttons on first load (v2.0.1)
   setupTabs();
   setupMenu();
   setupSearch();
   setupHistoryClear();
   setupRateLink();
+  await updateChatTabVisibility();
+  await loadChatSettings();
+  setupChatHandlers();
   await loadChannels();
   await loadHistory();
   await updateMenuState();
   await startAutoRefresh();
 });
+
+async function updateChatTabVisibility() {
+  const chatEnabled = await Storage.getChatIntegrationEnabled();
+  const chatBtn = document.getElementById('chat-btn');
+  if (chatBtn) {
+    chatBtn.style.display = chatEnabled ? '' : 'none';
+    if (chatEnabled) chatBtn.textContent = Utils.i18n('chatTab') || 'Chat';
+  }
+}
 
 async function applyTheme() {
   const theme = await Storage.getTheme();
@@ -60,8 +73,41 @@ function setupTabs() {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab)?.classList.add('active');
+
+      // Chat tab: detect active channel from browser tabs
+      if (btn.dataset.tab === 'chat-panel') {
+        detectActiveChannel();
+        loadChatSettings();
+      }
     });
   });
+}
+
+async function detectActiveChannel() {
+  const statusEl = document.getElementById('chat-status');
+  if (!statusEl) return;
+  try {
+    const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+    const activeTab = tabs[0];
+    if (!activeTab || !activeTab.url) {
+      statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;">info</span> <span>${Utils.i18n('chatNoChannel') || 'No active Kick channel'}</span>`;
+      return;
+    }
+    // Parse Kick URL
+    const match = activeTab.url.match(/^https:\/\/kick\.com\/([a-zA-Z0-9_-]+)(?:\/|$|\?)/);
+    const excluded = ['browse', 'categories', 'following', 'dashboard', 'signup',
+                      'login', 'help', 'community-guidelines', 'terms', 'privacy',
+                      'subscriptions', 'wallet', 'settings', 'search', 'vods',
+                      'clips', 'channels', 'home', 'api', 'events', 'watch'];
+    if (!match || excluded.includes(match[1].toLowerCase())) {
+      statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#f0a500;">warning</span> <span>${Utils.i18n('chatNoChannel') || 'No active Kick channel'}</span>`;
+      return;
+    }
+    const slug = match[1];
+    statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#53FC18;">check_circle</span> <span>${Utils.i18n('chatActiveChannel') || 'Active channel'}: <b style="color:#53FC18">${esc(slug)}</b></span>`;
+  } catch (e) {
+    console.warn('[KickAlert] detectActiveChannel error:', e);
+  }
 }
 
 // ─── Menu ───
@@ -645,7 +691,9 @@ async function startAutoRefresh() {
   if (autoRefreshTimer) { clearInterval(autoRefreshTimer); autoRefreshTimer = null; }
   if (!(await Storage.getAutoRefreshPopup())) return;
   const secs = await Storage.getCheckInterval();
-  autoRefreshTimer = setInterval(() => loadChannels(), secs * 1000);
+  // Guard: refuse to set interval faster than 10s or invalid values
+  const safeSecs = Math.max(10, parseInt(secs, 10) || 60);
+  autoRefreshTimer = setInterval(() => loadChannels(), safeSecs * 1000);
 }
 
 // ─── Multi-Stream Helper ───
@@ -800,20 +848,20 @@ function applyOptionsI18n() {
     verEl.textContent = 'KickAlert v' + v;
   }
 
-  document.querySelectorAll('#options-panel [data-i18n]').forEach(el => {
+  document.querySelectorAll('#options-panel [data-i18n], #chat-panel [data-i18n], .tab-buttons [data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
     const sub = el.getAttribute('data-i18n-sub');
     el.textContent = Utils.i18n(key, sub ? [sub] : undefined);
   });
-  document.querySelectorAll('#options-panel [data-i18n-html]').forEach(el => {
+  document.querySelectorAll('#options-panel [data-i18n-html], #chat-panel [data-i18n-html]').forEach(el => {
     const key = el.getAttribute('data-i18n-html');
     el.innerHTML = Utils.i18n(key);
   });
-  document.querySelectorAll('#options-panel [data-i18n-title]').forEach(el => {
+  document.querySelectorAll('#options-panel [data-i18n-title], #chat-panel [data-i18n-title]').forEach(el => {
     const key = el.getAttribute('data-i18n-title');
     el.title = Utils.i18n(key);
   });
-  document.querySelectorAll('#options-panel [data-i18n-placeholder]').forEach(el => {
+  document.querySelectorAll('#options-panel [data-i18n-placeholder], #chat-panel [data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     el.placeholder = Utils.i18n(key);
   });
@@ -888,6 +936,12 @@ async function loadOptionsSettings() {
   });
 
   optEl('opt-cloud-sync').checked = await Storage.getCloudSyncEnabled();
+
+  // Chat Integration
+  const chatEnabled = await Storage.getChatIntegrationEnabled();
+  optEl('opt-chat-integration').checked = chatEnabled;
+  document.getElementById('chat-btn').style.display = chatEnabled ? '' : 'none';
+  await loadChatSettings();
 
   // Theme
   const theme = await Storage.getTheme();
@@ -1027,6 +1081,19 @@ function setupOptionsListeners() {
 
   // Cloud Sync listener
   optBind('opt-cloud-sync', v => Storage.setCloudSyncEnabled(v));
+
+  // Chat Integration master switch
+  optBind('opt-chat-integration', async v => {
+    await Storage.setChatIntegrationEnabled(v);
+    document.getElementById('chat-btn').style.display = v ? '' : 'none';
+    if (!v && document.querySelector('.tab-button[data-tab="chat-panel"].active')) {
+      // If chat tab was active, switch back to following
+      document.getElementById('following-btn').click();
+    }
+  });
+
+  // Chat sub-settings
+  setupChatHandlers();
 
   // Theme buttons
   document.querySelectorAll('.opt-theme-btn').forEach(btn => {
@@ -1341,7 +1408,7 @@ async function showViewerHistoryModal(ch) {
 
   if (!modal) return;
 
-  title.textContent = ch.userUsername + ' — İzleyici Trendi';
+  title.textContent = ch.userUsername + ' — ' + (Utils.i18n('viewerTrendTitle') || 'İzleyici Trendi');
 
   // Navigasyon — canlı kanallar arasında geçiş
   const liveChannels = allChannels.filter(c => c.isLive);
@@ -1439,7 +1506,7 @@ function drawViewerChart(svg, labels, entries, ch) {
       : `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="3" fill="${color}" opacity="0.8"/>`
   ).join('');
 
-  // Tek seferde set et — innerHTML += yerine
+  // SVG — min/max label'ları dışarıda, chart temiz
   svg.innerHTML = `
     <defs>
       <linearGradient id="vh-grad" x1="0" y1="0" x2="0" y2="1">
@@ -1449,9 +1516,20 @@ function drawViewerChart(svg, labels, entries, ch) {
     </defs>
     <path d="${fillD}" fill="url(#vh-grad)"/>
     <path d="${lineD}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
-    ${dotsHtml}
-    <text x="${padX}" y="${padY + 4}" font-size="9" fill="#6e7681">${Utils.formatViewers(maxV)}</text>
-    <text x="${padX}" y="${H - padY + 1}" font-size="9" fill="#6e7681">${Utils.formatViewers(minV)}</text>`;
+    ${dotsHtml}`;
+
+  // Min/Max label'ları chart wrap'ın dışında göster
+  const chartWrap = svg.closest('.vh-chart-wrap');
+  let minMaxRow = chartWrap.parentElement.querySelector('.vh-minmax-row');
+  if (!minMaxRow) {
+    minMaxRow = document.createElement('div');
+    minMaxRow.className = 'vh-minmax-row';
+    chartWrap.parentElement.insertBefore(minMaxRow, chartWrap);
+  }
+  minMaxRow.innerHTML =
+    `<span class="vh-minmax-label">min. <b style="color:#E24B4A">${Utils.formatViewers(minV)}</b></span>` +
+    `<span class="vh-minmax-label" style="color:var(--text-muted)">/</span>` +
+    `<span class="vh-minmax-label vh-max">max. <b style="color:#53FC18">${Utils.formatViewers(maxV)}</b></span>`;
 
   // X ekseni — ilk ve son zaman
   const fmt = (t) => {
@@ -1459,4 +1537,163 @@ function drawViewerChart(svg, labels, entries, ch) {
     return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
   };
   labels.innerHTML = `<span>${fmt(times[0])}</span><span>${Utils.formatViewers(vals[vals.length-1])} izleyici</span><span>${fmt(times[times.length-1])}</span>`;
+}
+
+// ─── Chat Settings ───
+
+/**
+ * Sync data-enabled attribute for all collapsible chat sections
+ * based on their data-flag value in settings.
+ * Must run on load AND whenever any flag checkbox changes.
+ */
+function syncChatSectionStates(s) {
+  document.querySelectorAll('#chat-panel .chat-section[data-collapsible="true"]').forEach(section => {
+    const flag = section.dataset.flag;
+    if (!flag) return;
+    const on = !!s[flag];
+    section.setAttribute('data-enabled', on ? 'true' : 'false');
+  });
+}
+
+async function loadChatSettings() {
+  const s = await Storage.getChatSettings();
+
+  const set = (id, prop, val) => { const el = document.getElementById(id); if (el) el[prop] = val; };
+
+  // Filter mode
+  set('chat-filter-blur', 'checked', !!s.filterBlur);
+  // Radio buttons: sync with filterBlur value
+  const modeHide = document.getElementById('chat-mode-hide');
+  const modeBlur = document.getElementById('chat-mode-blur');
+  if (modeHide && modeBlur) {
+    modeHide.checked = !s.filterBlur;
+    modeBlur.checked = !!s.filterBlur;
+  }
+
+  // Section enable switches (9 total)
+  set('chat-bot-filter', 'checked', !!s.botFilter);
+  set('chat-emoji-filter', 'checked', !!s.emojiFilter);
+  set('chat-repeat-filter', 'checked', !!s.repeatFilter);
+  set('chat-word-enabled', 'checked', !!s.wordFilterEnabled);
+  set('chat-user-enabled', 'checked', !!s.userFilterEnabled);
+  set('chat-keyword-enabled', 'checked', !!s.keywordEnabled);
+  set('chat-fav-enabled', 'checked', !!s.favEnabled);
+  set('chat-tag-enabled', 'checked', !!s.tagEnabled);
+  set('chat-broadcaster-notif', 'checked', !!s.broadcasterNotif);
+
+  // Text input
+  set('chat-tag-username', 'value', s.tagUsername || '');
+
+  // Chip lists
+  renderChips('chat-bot-chips', s.botList || [], 'botList');
+  renderChips('chat-word-chips', s.wordList || [], 'wordList');
+  renderChips('chat-user-chips', s.userList || [], 'userList');
+  renderChips('chat-keyword-chips', s.keywordList || [], 'keywordList');
+  renderChips('chat-fav-chips', s.favList || [], 'favList');
+
+  // Collapsible state
+  syncChatSectionStates(s);
+}
+
+function renderChips(containerId, items, settingKey) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = '';
+  items.forEach(item => {
+    const chip = document.createElement('span');
+    chip.className = 'chat-chip';
+    chip.textContent = item;
+    chip.title = Utils.i18n('chatChipRemoveTooltip') || 'Kaldırmak için tıkla';
+    chip.addEventListener('click', async () => {
+      const s = await Storage.getChatSettings();
+      s[settingKey] = (s[settingKey] || []).filter(x => x !== item);
+      await Storage.setChatSettings(s);
+      renderChips(containerId, s[settingKey], settingKey);
+    });
+    el.appendChild(chip);
+  });
+}
+
+function setupChatHandlers() {
+  /**
+   * Bind a flag checkbox: save to storage AND update its section's data-enabled attr.
+   * Returns nothing; assumes element exists.
+   */
+  const bindFlag = (checkboxId, settingKey) => {
+    const el = document.getElementById(checkboxId);
+    if (!el) return;
+    el.addEventListener('change', async e => {
+      const on = e.target.checked;
+      await Storage.updateChatSetting(settingKey, on);
+      // Update its containing section's data-enabled so the CSS collapse kicks in
+      const section = el.closest('.chat-section[data-collapsible="true"]');
+      if (section) section.setAttribute('data-enabled', on ? 'true' : 'false');
+    });
+  };
+
+  // Filter mode — radio buttons (v2.0.1, Options-style)
+  // Hidden checkbox `chat-filter-blur` is still the storage source of truth.
+  const modeHide = document.getElementById('chat-mode-hide');
+  const modeBlur = document.getElementById('chat-mode-blur');
+  const hiddenBlur = document.getElementById('chat-filter-blur');
+  const applyFilterMode = async (blur) => {
+    if (hiddenBlur) hiddenBlur.checked = blur;
+    if (modeHide) modeHide.checked = !blur;
+    if (modeBlur) modeBlur.checked = blur;
+    await Storage.updateChatSetting('filterBlur', blur);
+  };
+  modeHide?.addEventListener('change', e => { if (e.target.checked) applyFilterMode(false); });
+  modeBlur?.addEventListener('change', e => { if (e.target.checked) applyFilterMode(true); });
+
+  // 9 collapsible section flags
+  bindFlag('chat-bot-filter', 'botFilter');
+  bindFlag('chat-emoji-filter', 'emojiFilter');
+  bindFlag('chat-repeat-filter', 'repeatFilter');
+  bindFlag('chat-word-enabled', 'wordFilterEnabled');
+  bindFlag('chat-user-enabled', 'userFilterEnabled');
+  bindFlag('chat-keyword-enabled', 'keywordEnabled');
+  bindFlag('chat-fav-enabled', 'favEnabled');
+  bindFlag('chat-tag-enabled', 'tagEnabled');
+  bindFlag('chat-broadcaster-notif', 'broadcasterNotif');
+
+  // Tag username (debounced)
+  let tagTimeout;
+  document.getElementById('chat-tag-username')?.addEventListener('input', e => {
+    clearTimeout(tagTimeout);
+    tagTimeout = setTimeout(async () => {
+      await Storage.updateChatSetting('tagUsername', e.target.value.trim());
+    }, 500);
+  });
+
+  // List add/remove handlers
+  setupListHandler('chat-bot-input', 'chat-bot-add', 'chat-bot-chips', 'botList');
+  setupListHandler('chat-word-input', 'chat-word-add', 'chat-word-chips', 'wordList');
+  setupListHandler('chat-user-input', 'chat-user-add', 'chat-user-chips', 'userList');
+  setupListHandler('chat-keyword-input', 'chat-keyword-add', 'chat-keyword-chips', 'keywordList');
+  setupListHandler('chat-fav-input', 'chat-fav-add', 'chat-fav-chips', 'favList');
+}
+
+function setupListHandler(inputId, btnId, chipsId, settingKey) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById(btnId);
+  if (!input || !btn) return;
+
+  const addItem = async () => {
+    const val = input.value.trim();
+    if (!val) return;
+    const s = await Storage.getChatSettings();
+    const list = s[settingKey] || [];
+    if (!list.includes(val)) {
+      list.push(val);
+      s[settingKey] = list;
+      await Storage.setChatSettings(s);
+      renderChips(chipsId, list, settingKey);
+    }
+    input.value = '';
+  };
+
+  btn.addEventListener('click', addItem);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') { e.preventDefault(); addItem(); }
+  });
 }

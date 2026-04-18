@@ -36,6 +36,8 @@ const StorageKeys = {
   VIEWER_HISTORY: 'viewerHistory',   // { slug: [{v, t}, ...] }
   ANOMALY_SETTINGS: 'anomalySettings',
   NOTIF_DELAY: 'notifDelay',            // dakika: 0,5,10,15
+  CHAT_INTEGRATION_ENABLED: 'chatIntegrationEnabled',
+  CHAT_SETTINGS: 'chatSettings',        // { filterBlur, botFilter, botList, emojiFilter, repeatFilter, wordFilterEnabled, wordList, userFilterEnabled, userList, keywordEnabled, keywordList, favEnabled, favList, tagEnabled, tagUsername, broadcasterNotif }
 };
 
 // Keys that should NOT be synced (too large, device-specific, or internal)
@@ -365,5 +367,82 @@ const Storage = {
     } else {
       return nowMins >= startMins || nowMins < endMins;
     }
+  },
+
+  // ─── Chat Integration ───
+
+  async getChatIntegrationEnabled() {
+    return (await this.get(StorageKeys.CHAT_INTEGRATION_ENABLED)) || false;
+  },
+
+  async setChatIntegrationEnabled(enabled) {
+    await chrome.storage.local.set({ [StorageKeys.CHAT_INTEGRATION_ENABLED]: enabled });
+  },
+
+  async getChatSettings() {
+    const stored = await this.get(StorageKeys.CHAT_SETTINGS);
+    const merged = Object.assign({
+      filterBlur: false,       // false = hide, true = blur
+      botFilter: false,
+      botList: ['Nightbot', 'StreamElements', 'Moobot', 'Fossabot', 'KickBot'],
+      emojiFilter: false,
+      emojiThreshold: 5,
+      repeatFilter: false,
+      repeatWindow: 60,
+      repeatThreshold: 3,
+      // Per-category switches (v1.9.10+). Existing lists with data auto-migrate to enabled.
+      wordFilterEnabled: false,
+      wordList: [],
+      userFilterEnabled: false,
+      userList: [],
+      keywordEnabled: false,
+      keywordList: [],
+      favEnabled: false,
+      favList: [],
+      tagEnabled: false,
+      tagUsername: '',
+      broadcasterNotif: false,
+    }, stored || {});
+
+    // ─── Migration for existing users (v1.9.10 chat panel upgrade) ───
+    // If a user already has list items but no explicit enabled flag stored, auto-enable.
+    // Only runs once — after first save, stored flags win.
+    if (stored) {
+      const migrations = [
+        ['wordFilterEnabled', 'wordList'],
+        ['userFilterEnabled', 'userList'],
+        ['keywordEnabled', 'keywordList'],
+        ['favEnabled', 'favList'],
+        ['tagEnabled', 'tagUsername'],
+      ];
+      let migrated = false;
+      for (const [flag, listKey] of migrations) {
+        if (stored[flag] === undefined) {
+          const v = stored[listKey];
+          const hasData = Array.isArray(v) ? v.length > 0 : !!(v && String(v).trim());
+          if (hasData) {
+            merged[flag] = true;
+            migrated = true;
+          }
+        }
+      }
+      if (migrated) {
+        // Persist migrated flags so this runs only once
+        try { await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: merged }); } catch (_) {}
+      }
+    }
+
+    return merged;
+  },
+
+  async setChatSettings(settings) {
+    await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: settings });
+  },
+
+  async updateChatSetting(key, value) {
+    const current = await this.getChatSettings();
+    current[key] = value;
+    await this.setChatSettings(current);
+    return current;
   },
 };

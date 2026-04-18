@@ -1,4 +1,52 @@
 {
+  "anomalyAlertLabel": {
+    "message": "Upozornění"
+  },
+  "anomalyDesc": {
+    "message": "Detekuje neobvyklé skoky sledovanosti. Porovnává s průměry minulých streamů nebo kontroluje rychlost změny. Bez předchozí historie žádné upozornění."
+  },
+  "anomalyDropEnabled": {
+    "message": "Upozornit na abnormální pokles sledovanosti"
+  },
+  "anomalyDropSettings": {
+    "message": "Detekce poklesu"
+  },
+  "anomalyDropTitle": {
+    "message": "Podezřelý pokles sledovanosti"
+  },
+  "anomalyModeBadge": {
+    "message": "Pouze odznak v popup okně"
+  },
+  "anomalyModeBoth": {
+    "message": "Oznámení na ploše + odznak v popup okně"
+  },
+  "anomalyModeNotif": {
+    "message": "Pouze oznámení na ploše"
+  },
+  "anomalyNote": {
+    "message": "Nový stream (< 10 min): porovnání s průměry. Probíhající stream: kontrola rychlosti změny. Bez předchozí historie žádné upozornění."
+  },
+  "anomalyNotifyMode": {
+    "message": "Režim oznámení"
+  },
+  "anomalySensitivity": {
+    "message": "Citlivost"
+  },
+  "anomalySpikeSettings": {
+    "message": "Prahy detekce nárůstu"
+  },
+  "anomalySpikeTitle": {
+    "message": "Podezřelý nárůst sledovanosti"
+  },
+  "anomalyThreshold": {
+    "message": "Práh upozornění"
+  },
+  "anomalyTitle": {
+    "message": "Detekce anomálií sledovanosti"
+  },
+  "anomalyWarnLabel": {
+    "message": "Varování"
+  },
   "appDescription": {
     "message": "Žádné přehlédnuté streamy — KickAlert zachytí každé živé vysílání, i to nejnenápadnější ;)"
   },
@@ -14,14 +62,134 @@
   "autoLaunchSettings": {
     "message": "Nastavení automatického spuštění"
   },
-  "autoUnmuteCheckbox": {
-    "message": "Automaticky zapnout zvuk po automatickém spuštění<br />(Poznámka: Neprojeví se vizuálně na posuvníku hlasitosti)"
+  "autoLaunchTab": {
+    "message": "Automatické spuštění"
   },
   "autoRefreshPopup": {
     "message": "Automaticky obnovovat záložku Sledované"
   },
-  "autoLaunchTab": {
-    "message": "Automatické spuštění"
+  "autoUnmuteCheckbox": {
+    "message": "Automaticky zapnout zvuk po automatickém spuštění<br />(Poznámka: Neprojeví se vizuálně na posuvníku hlasitosti)"
+  },
+  "bellMain": {
+    "message": "Hlavní zvuk"
+  },
+  "bellMuted": {
+    "message": "Bez oznámení"
+  },
+  "bellSilent": {
+    "message": "Tiché oznámení"
+  },
+  "bellSub": {
+    "message": "Vedlejší zvuk"
+  },
+  "cardModeCompact": {
+    "message": "Kompaktní"
+  },
+  "cardModeDetail": {
+    "message": "Detailní"
+  },
+  "cardModeLabel": {
+    "message": "Zobrazení karet"
+  },
+  "chatActiveChannel": {
+    "message": "Aktivní kanál"
+  },
+  "chatBotFilter": {
+    "message": "Filtr botů"
+  },
+  "chatBotFilterDesc": {
+    "message": "Skrýt zprávy botů. Klikněte na štítek pro odstranění."
+  },
+  "chatBotPlaceholder": {
+    "message": "Přidat bota..."
+  },
+  "chatEmojiSpam": {
+    "message": "Filtr emoji spamu"
+  },
+  "chatFavPlaceholder": {
+    "message": "Přidat uživatelské jméno..."
+  },
+  "chatFavoriteDesc": {
+    "message": "Zprávy oblíbených jsou zvýrazněny jejich Kick barvou."
+  },
+  "chatFavoriteUsers": {
+    "message": "Oblíbení uživatelé"
+  },
+  "chatFilterBlur": {
+    "message": "Rozmazat"
+  },
+  "chatFilterHide": {
+    "message": "Skrýt"
+  },
+  "chatFilterMode": {
+    "message": "Režim filtru"
+  },
+  "chatFilterModeDesc": {
+    "message": "Skrýt odstraní zprávu. Rozmazat ji ztlumí — najeďte myší pro zobrazení."
+  },
+  "chatIntegrationDesc": {
+    "message": "Když je zapnuto, nahoře se zobrazí záložka Chat. Po první instalaci obnovte otevřené karty Kick."
+  },
+  "chatIntegrationTitle": {
+    "message": "Integrace chatu"
+  },
+  "chatKeywordDesc": {
+    "message": "Zprávy s těmito slovy jsou zvýrazněny zeleně."
+  },
+  "chatKeywordHighlight": {
+    "message": "Zvýraznění klíčových slov"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "Přidat slovo..."
+  },
+  "chatNoChannel": {
+    "message": "Žádný aktivní Kick kanál"
+  },
+  "chatRepeatDesc": {
+    "message": "Skrývá, když stejný uživatel pošle stejnou zprávu 3+ krát."
+  },
+  "chatRepeatFilter": {
+    "message": "Filtr opakovaných zpráv"
+  },
+  "chatTab": {
+    "message": "Chat"
+  },
+  "chatTagDesc": {
+    "message": "Dostat upozornění, když někdo zmíní vaše jméno."
+  },
+  "chatTagNotif": {
+    "message": "Upozornění na zmínku"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 vás zmínil"
+  },
+  "chatTagPlaceholder": {
+    "message": "Vaše Kick jméno..."
+  },
+  "chatUserFilter": {
+    "message": "Filtr uživatelů"
+  },
+  "chatUserPlaceholder": {
+    "message": "Přidat uživatelské jméno..."
+  },
+  "chatWordFilter": {
+    "message": "Filtr slov"
+  },
+  "chatWordPlaceholder": {
+    "message": "Přidat slovo..."
+  },
+  "checkInterval": {
+    "message": "Interval kontroly"
+  },
+  "clearHistory": {
+    "message": "Vymazat"
+  },
+  "cloudSyncNote": {
+    "message": "Synchronizovat nastavení mezi zařízeními přes účet prohlížeče. Vlastní zvuky a historie upozornění se nesynchronizují."
+  },
+  "cloudSyncTitle": {
+    "message": "Synchronizace v cloudu"
   },
   "customSoundButtonClear": {
     "message": "[Vymazat]"
@@ -35,9 +203,6 @@
   "customSoundMainLabel": {
     "message": "Hlavní zvuk"
   },
-  "customSoundSubLabel": {
-    "message": "Vedlejší zvuk"
-  },
   "customSoundStatusErrorQuota": {
     "message": "Chyba: Překročena kvóta úložiště"
   },
@@ -50,11 +215,38 @@
   "customSoundStatusUnset": {
     "message": "Nenastaveno"
   },
+  "customSoundSubLabel": {
+    "message": "Vedlejší zvuk"
+  },
+  "displaySettings": {
+    "message": "Nastavení zobrazení"
+  },
+  "dndEnd": {
+    "message": "Konec"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Pozastavit automatické spuštění"
+  },
+  "dndMuteNotifications": {
+    "message": "Ztlumit oznámení"
+  },
+  "dndMuteSound": {
+    "message": "Ztlumit zvuky"
+  },
+  "dndStart": {
+    "message": "Začátek"
+  },
+  "dndTitle": {
+    "message": "Nerušit"
+  },
   "duplicateTabGuard": {
     "message": "Ochrana před duplicitními záložkami"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "Přepnout ochranu před duplicitními záložkami. Pokud je zapnuto, nová záložka se neotevře, pokud stream již je otevřen."
+  },
+  "errorLoadingHistory": {
+    "message": "Chyba při načítání historie."
   },
   "fetchError": {
     "message": "Nepodařilo se načíst kanály. Ujistěte se, že jste přihlášeni na Kick a zkuste to znovu."
@@ -62,8 +254,68 @@
   "following": {
     "message": "Sledované"
   },
+  "groupAddPlaceholder": {
+    "message": "Nová skupina..."
+  },
+  "groupAll": {
+    "message": "Vše"
+  },
+  "groupAssign": {
+    "message": "Přiřadit skupinu"
+  },
+  "groupsTitle": {
+    "message": "Skupiny kanálů"
+  },
+  "history": {
+    "message": "Historie oznámení"
+  },
+  "historyGroupOlder": {
+    "message": "Dříve"
+  },
+  "historyGroupThisWeek": {
+    "message": "Tento týden"
+  },
+  "historyGroupToday": {
+    "message": "Dnes"
+  },
+  "historyGroupYesterday": {
+    "message": "Včera"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Používá se jazyk prohlížeče: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Jazyk prohlížeče není podporován — používá se angličtina"
+  },
+  "langSectionTitle": {
+    "message": "Jazyk"
+  },
+  "lastStream": {
+    "message": "Poslední stream"
+  },
+  "noDataYet": {
+    "message": "Zatím není dostatek dat"
+  },
+  "noHistoryYet": {
+    "message": "Zatím žádná historie."
+  },
   "noLiveStreams": {
     "message": "Žádné živé streamy."
+  },
+  "notifButtonMute": {
+    "message": "Ztlumit"
+  },
+  "notifButtonOpen": {
+    "message": "Otevřít"
+  },
+  "notifDelayLabel": {
+    "message": "Oznámit po zahájení streamu"
+  },
+  "notifDelayNow": {
+    "message": "Ihned"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 zahájil/a stream"
   },
   "notificationSettings": {
     "message": "Nastavení oznámení"
@@ -71,14 +323,17 @@
   "notificationSoundVolume": {
     "message": "Hlasitost zvuku"
   },
+  "onlySwitchChannels": {
+    "message": "Oznamovat pouze vybrané kanály"
+  },
   "options": {
     "message": "Možnosti"
   },
-  "optionsButtonTooltip": {
-    "message": "Otevřít stránku možností"
-  },
   "optionsBack": {
     "message": "Zpět"
+  },
+  "optionsButtonTooltip": {
+    "message": "Otevřít stránku možností"
   },
   "refresh": {
     "message": "Obnovit"
@@ -89,206 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Při restartu prohlížeče obnovit automatické spuštění"
   },
-  "showNotificationCheckbox": {
-    "message": "Zobrazit oznámení na ploše"
-  },
-  "showOfflineChannels": {
-    "message": "Zobrazit offline kanály v záložce Sledované"
-  },
-  "testSoundVolume": {
-    "message": "[Test]"
-  },
-  "history": {
-    "message": "Historie oznámení"
-  },
-  "noHistoryYet": {
-    "message": "Zatím žádná historie."
-  },
-  "errorLoadingHistory": {
-    "message": "Chyba při načítání historie."
-  },
-  "clearHistory": {
-    "message": "Vymazat"
-  },
-  "onlySwitchChannels": {
-    "message": "Oznamovat pouze vybrané kanály"
-  },
-  "silentForOthers": {
-    "message": "Tichá oznámení pro ostatní kanály"
-  },
-  "checkInterval": {
-    "message": "Interval kontroly"
-  },
-  "displaySettings": {
-    "message": "Nastavení zobrazení"
-  },
   "searchChannels": {
     "message": "Hledat kanály..."
-  },
-  "notifStartedStreaming": {
-    "message": "$1 zahájil/a stream"
-  },
-  "notifButtonOpen": {
-    "message": "Otevřít"
-  },
-  "notifButtonMute": {
-    "message": "Ztlumit"
-  },
-  "dndTitle": {
-    "message": "Nerušit"
-  },
-  "dndStart": {
-    "message": "Začátek"
-  },
-  "dndEnd": {
-    "message": "Konec"
-  },
-  "dndMuteNotifications": {
-    "message": "Ztlumit oznámení"
-  },
-  "dndMuteSound": {
-    "message": "Ztlumit zvuky"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "Pozastavit automatické spuštění"
-  },
-  "soundModeExtension": {
-    "message": "Zvuky rozšíření"
-  },
-  "soundModeWindows": {
-    "message": "Zvuky systému"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "Vlastní upozornění — nelze přehlédnout"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "Standardní systémový zvuk — může splynout s pozadím"
-  },
-  "bellMain": {
-    "message": "Hlavní zvuk"
-  },
-  "bellSub": {
-    "message": "Vedlejší zvuk"
-  },
-  "bellSilent": {
-    "message": "Tiché oznámení"
-  },
-  "bellMuted": {
-    "message": "Bez oznámení"
-  },
-  "cloudSyncTitle": {
-    "message": "Synchronizace v cloudu"
-  },
-  "cloudSyncNote": {
-    "message": "Synchronizujte nastavení napříč zařízeními přes váš účet Google. Vlastní zvuky a historie oznámení se nesynchronizují."
-  },
-  "themeLabel": {
-    "message": "Motiv"
-  },
-  "themeDark": {
-    "message": "Tmavý"
-  },
-  "themeLight": {
-    "message": "Světlý"
-  },
-  "groupAll": {
-    "message": "Vše"
-  },
-  "groupsTitle": {
-    "message": "Skupiny kanálů"
-  },
-  "groupAddPlaceholder": {
-    "message": "Nová skupina..."
-  },
-  "groupAssign": {
-    "message": "Přiřadit skupinu"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — Žádné živé streamy"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 živě"
-  },
-  "tooltipMore": {
-    "message": "+$1 dalších"
-  },
-  "historyGroupToday": {
-    "message": "Dnes"
-  },
-  "historyGroupYesterday": {
-    "message": "Včera"
-  },
-  "historyGroupThisWeek": {
-    "message": "Tento týden"
-  },
-  "historyGroupOlder": {
-    "message": "Dříve"
-  },
-  "lastStream": {
-    "message": "Poslední stream"
-  },
-  "notifDelayLabel": {
-    "message": "Oznámit po zahájení streamu"
-  },
-  "notifDelayNow": {
-    "message": "Ihned"
-  },
-  "viewerTrendTitle": {
-    "message": "Trend sledovanosti"
-  },
-  "noDataYet": {
-    "message": "Zatím není dostatek dat"
-  },
-  "anomalyTitle": {
-    "message": "Detekce anomálií sledovanosti"
-  },
-  "anomalyDesc": {
-    "message": "Detekuje neobvyklé skoky sledovanosti. Porovnává s průměry minulých streamů nebo kontroluje rychlost změny. Bez předchozí historie žádné upozornění."
-  },
-  "anomalyThreshold": {
-    "message": "Práh upozornění"
-  },
-  "anomalyNotifyMode": {
-    "message": "Režim oznámení"
-  },
-  "anomalyModeBoth": {
-    "message": "Oznámení na ploše + odznak v popup okně"
-  },
-  "anomalyModeNotif": {
-    "message": "Pouze oznámení na ploše"
-  },
-  "anomalyModeBadge": {
-    "message": "Pouze odznak v popup okně"
-  },
-  "anomalyNote": {
-    "message": "Nový stream (< 10 min): porovnání s průměry. Probíhající stream: kontrola rychlosti změny. Bez předchozí historie žádné upozornění."
-  },
-  "anomalyDropEnabled": {
-    "message": "Upozornit na abnormální pokles sledovanosti"
-  },
-  "anomalySpikeTitle": {
-    "message": "Podezřelý nárůst sledovanosti"
-  },
-  "anomalyDropTitle": {
-    "message": "Podezřelý pokles sledovanosti"
-  },
-  "anomalySpikeSettings": {
-    "message": "Prahy detekce nárůstu"
-  },
-  "anomalyDropSettings": {
-    "message": "Detekce poklesu"
-  },
-  "anomalyWarnLabel": {
-    "message": "Varování"
-  },
-  "anomalyAlertLabel": {
-    "message": "Upozornění"
-  },
-  "anomalySensitivity": {
-    "message": "Citlivost"
-  },
-  "sensitivityMin": {
-    "message": "Citlivý"
   },
   "sensitivityAvg": {
     "message": "Vyvážený"
@@ -296,22 +353,104 @@
   "sensitivityMax": {
     "message": "Přísný"
   },
-  "cardModeLabel": {
-    "message": "Zobrazení karet"
+  "sensitivityMin": {
+    "message": "Citlivý"
   },
-  "cardModeCompact": {
-    "message": "Kompaktní"
+  "showNotificationCheckbox": {
+    "message": "Zobrazit oznámení na ploše"
   },
-  "cardModeDetail": {
-    "message": "Detailní"
+  "showOfflineChannels": {
+    "message": "Zobrazit offline kanály v záložce Sledované"
   },
-  "langSectionTitle": {
-    "message": "Jazyk"
+  "silentForOthers": {
+    "message": "Tichá oznámení pro ostatní kanály"
   },
-  "langBrowserNoteSupported": {
-    "message": "Používá se jazyk prohlížeče: $1"
+  "soundModeExtension": {
+    "message": "Zvuky rozšíření"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "Jazyk prohlížeče není podporován — používá se angličtina"
+  "soundModeExtensionTooltip": {
+    "message": "Vlastní upozornění — nelze přehlédnout"
+  },
+  "soundModeWindows": {
+    "message": "Zvuky systému"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Standardní systémový zvuk — může splynout s pozadím"
+  },
+  "testSoundVolume": {
+    "message": "[Test]"
+  },
+  "themeDark": {
+    "message": "Tmavý"
+  },
+  "themeLabel": {
+    "message": "Motiv"
+  },
+  "themeLight": {
+    "message": "Světlý"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 živě"
+  },
+  "tooltipMore": {
+    "message": "+$1 dalších"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Žádné živé streamy"
+  },
+  "viewerTrendTitle": {
+    "message": "Trend sledovanosti"
+  },
+  "chatBroadcasterNotif": {
+    "message": "Oznámení zprávy streamera",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "Dostávat oznámení, když streamer píše v chatu. Max 1 oznámení za minutu.",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1 napsal do chatu",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "Zprávy obsahující tato slova jsou skryty nebo rozmazány.",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "Zprávy od uvedených uživatelů jsou skryty nebo rozmazány.",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "Ztlumí zprávy s nadměrnými emoji (najeďte pro zobrazení).",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "živě $1 min",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "Kliknutím odebrat",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "před $1 d",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "před $1 h",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "před $1 min",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "Právě teď",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "Zatím nedostatek dat",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

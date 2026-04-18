@@ -1,6 +1,57 @@
 {
+  "anomalyAlertLabel": {
+    "message": "Alerta"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyDropEnabled": {
+    "message": "Notificar queda anormal de espectadores"
+  },
+  "anomalyDropSettings": {
+    "message": "Detecção de queda"
+  },
+  "anomalyDropTitle": {
+    "message": "Queda suspeita de espectadores"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalySensitivity": {
+    "message": "Sensibilidade"
+  },
+  "anomalySpikeSettings": {
+    "message": "Limites de detecção de pico"
+  },
+  "anomalySpikeTitle": {
+    "message": "Pico suspeito de espectadores"
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyWarnLabel": {
+    "message": "Aviso"
+  },
   "appDescription": {
     "message": "Chega de streams ninja às 3 da manhã — KickAlert captura cada transmissão surpresa ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
   },
   "autoLaunch": {
     "message": "Abertura Automática"
@@ -11,8 +62,134 @@
   "autoLaunchSettings": {
     "message": "Configurações de Abertura Automática"
   },
+  "autoLaunchTab": {
+    "message": "Abertura Automática"
+  },
+  "autoRefreshPopup": {
+    "message": "Atualizar aba Seguindo automaticamente"
+  },
   "autoUnmuteCheckbox": {
     "message": "Ativar som automaticamente ao abrir<br />(Nota: Não refletido no controle de volume)"
+  },
+  "bellMain": {
+    "message": "Som principal"
+  },
+  "bellMuted": {
+    "message": "Sem notificação"
+  },
+  "bellSilent": {
+    "message": "Notificação silenciosa"
+  },
+  "bellSub": {
+    "message": "Som secundário"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "chatActiveChannel": {
+    "message": "Canal ativo"
+  },
+  "chatBotFilter": {
+    "message": "Filtro de bot"
+  },
+  "chatBotFilterDesc": {
+    "message": "Ocultar mensagens de bot. Clique em um chip para remover."
+  },
+  "chatBotPlaceholder": {
+    "message": "Adicionar bot..."
+  },
+  "chatEmojiSpam": {
+    "message": "Filtro de spam de emoji"
+  },
+  "chatFavPlaceholder": {
+    "message": "Adicionar nome de usuário..."
+  },
+  "chatFavoriteDesc": {
+    "message": "Mensagens dos favoritos são destacadas com sua cor no Kick."
+  },
+  "chatFavoriteUsers": {
+    "message": "Usuários favoritos"
+  },
+  "chatFilterBlur": {
+    "message": "Desfocar"
+  },
+  "chatFilterHide": {
+    "message": "Ocultar"
+  },
+  "chatFilterMode": {
+    "message": "Modo de filtro"
+  },
+  "chatFilterModeDesc": {
+    "message": "Ocultar remove a mensagem. Desfocar atenua — passe o mouse para ver."
+  },
+  "chatIntegrationDesc": {
+    "message": "Quando ativo, a aba Chat aparece acima. Após a primeira instalação, atualize as abas do Kick abertas."
+  },
+  "chatIntegrationTitle": {
+    "message": "Integração de chat"
+  },
+  "chatKeywordDesc": {
+    "message": "Mensagens com essas palavras são destacadas em verde."
+  },
+  "chatKeywordHighlight": {
+    "message": "Destaque de palavras-chave"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "Adicionar palavra..."
+  },
+  "chatNoChannel": {
+    "message": "Nenhum canal Kick ativo"
+  },
+  "chatRepeatDesc": {
+    "message": "Oculta quando o mesmo usuário envia a mesma mensagem 3+ vezes."
+  },
+  "chatRepeatFilter": {
+    "message": "Filtro de mensagem repetida"
+  },
+  "chatTab": {
+    "message": "Chat"
+  },
+  "chatTagDesc": {
+    "message": "Seja notificado quando alguém mencionar seu nome."
+  },
+  "chatTagNotif": {
+    "message": "Notificação de menção"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 mencionou você"
+  },
+  "chatTagPlaceholder": {
+    "message": "Seu nome no Kick..."
+  },
+  "chatUserFilter": {
+    "message": "Filtro de usuário"
+  },
+  "chatUserPlaceholder": {
+    "message": "Adicionar nome de usuário..."
+  },
+  "chatWordFilter": {
+    "message": "Filtro de palavras"
+  },
+  "chatWordPlaceholder": {
+    "message": "Adicionar palavra..."
+  },
+  "checkInterval": {
+    "message": "Intervalo de verificação"
+  },
+  "clearHistory": {
+    "message": "Limpar"
+  },
+  "cloudSyncNote": {
+    "message": "Sincronize configurações entre dispositivos via sua conta do navegador. Sons personalizados e histórico de notificações não são sincronizados."
+  },
+  "cloudSyncTitle": {
+    "message": "Sincronização na nuvem"
   },
   "customSoundButtonClear": {
     "message": "[Limpar]"
@@ -41,11 +218,35 @@
   "customSoundSubLabel": {
     "message": "Som secundário"
   },
+  "displaySettings": {
+    "message": "Configurações de exibição"
+  },
+  "dndEnd": {
+    "message": "Fim"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Pausar abertura automática"
+  },
+  "dndMuteNotifications": {
+    "message": "Silenciar notificações"
+  },
+  "dndMuteSound": {
+    "message": "Silenciar sons"
+  },
+  "dndStart": {
+    "message": "Início"
+  },
+  "dndTitle": {
+    "message": "Não perturbe"
+  },
   "duplicateTabGuard": {
     "message": "Proteção de Abas Duplicadas"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "Alternar proteção de abas duplicadas. Quando ativo, uma nova aba não será aberta se já existir uma para a stream."
+  },
+  "errorLoadingHistory": {
+    "message": "Erro ao carregar histórico."
   },
   "fetchError": {
     "message": "Falha ao carregar canais. Verifique se você está logado no Kick e tente novamente."
@@ -53,8 +254,68 @@
   "following": {
     "message": "Seguindo"
   },
+  "groupAddPlaceholder": {
+    "message": "Novo grupo..."
+  },
+  "groupAll": {
+    "message": "Todos"
+  },
+  "groupAssign": {
+    "message": "Atribuir grupo"
+  },
+  "groupsTitle": {
+    "message": "Grupos de canais"
+  },
+  "history": {
+    "message": "Histórico de notificações"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Usando idioma do navegador: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Idioma do navegador não suportado — usando inglês"
+  },
+  "langSectionTitle": {
+    "message": "Idioma"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "noHistoryYet": {
+    "message": "Sem histórico ainda."
+  },
   "noLiveStreams": {
     "message": "Nenhuma stream ao vivo."
+  },
+  "notifButtonMute": {
+    "message": "Silenciar"
+  },
+  "notifButtonOpen": {
+    "message": "Abrir"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 está ao vivo"
   },
   "notificationSettings": {
     "message": "Configurações de Notificação"
@@ -62,8 +323,14 @@
   "notificationSoundVolume": {
     "message": "Volume do som"
   },
+  "onlySwitchChannels": {
+    "message": "Notificar apenas canais ativados"
+  },
   "options": {
     "message": "Opções"
+  },
+  "optionsBack": {
+    "message": "Voltar"
   },
   "optionsButtonTooltip": {
     "message": "Abrir página de opções"
@@ -77,227 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Redefinir abertura automática ao reiniciar o navegador"
   },
-  "showNotificationCheckbox": {
-    "message": "Mostrar notificações na área de trabalho"
-  },
-  "testSoundVolume": {
-    "message": "[Testar]"
-  },
-  "appName": {
-    "message": "KickAlert"
-  },
-  "history": {
-    "message": "Histórico de notificações"
-  },
-  "noHistoryYet": {
-    "message": "Sem histórico ainda."
-  },
-  "errorLoadingHistory": {
-    "message": "Erro ao carregar histórico."
-  },
-  "onlySwitchChannels": {
-    "message": "Notificar apenas canais ativados"
-  },
-  "silentForOthers": {
-    "message": "Notificações silenciosas para outros canais"
-  },
-  "checkInterval": {
-    "message": "Intervalo de verificação"
-  },
-  "autoLaunchTab": {
-    "message": "Abertura Automática"
-  },
-  "showOfflineChannels": {
-    "message": "Mostrar canais offline na aba Following"
-  },
-  "displaySettings": {
-    "message": "Configurações de exibição"
-  },
-  "autoRefreshPopup": {
-    "message": "Atualizar aba Seguindo automaticamente"
-  },
-  "optionsBack": {
-    "message": "Voltar"
-  },
-  "dndTitle": {
-    "message": "Não perturbe"
-  },
-  "dndStart": {
-    "message": "Início"
-  },
-  "dndEnd": {
-    "message": "Fim"
-  },
-  "dndMuteNotifications": {
-    "message": "Silenciar notificações"
-  },
-  "dndMuteSound": {
-    "message": "Silenciar sons"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "Pausar abertura automática"
-  },
   "searchChannels": {
     "message": "Buscar canais..."
-  },
-  "clearHistory": {
-    "message": "Limpar"
-  },
-  "notifStartedStreaming": {
-    "message": "$1 está ao vivo"
-  },
-  "soundModeExtension": {
-    "message": "Sons da extensão"
-  },
-  "soundModeWindows": {
-    "message": "Sons do Windows"
-  },
-  "bellMain": {
-    "message": "Som principal"
-  },
-  "bellSub": {
-    "message": "Som secundário"
-  },
-  "bellSilent": {
-    "message": "Notificação silenciosa"
-  },
-  "bellMuted": {
-    "message": "Sem notificação"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "Alertas personalizados marcantes — difíceis de perder"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "Som padrão do sistema — pode passar despercebido"
-  },
-  "cloudSyncTitle": {
-    "message": "Sincronização na nuvem"
-  },
-  "cloudSyncNote": {
-    "message": "Sincronize configurações entre dispositivos pela sua conta Google. Sons personalizados e histórico de notificações não são sincronizados."
-  },
-  "themeLabel": {
-    "message": "Tema"
-  },
-  "themeDark": {
-    "message": "Escuro"
-  },
-  "themeLight": {
-    "message": "Claro"
-  },
-  "groupAll": {
-    "message": "Todos"
-  },
-  "groupsTitle": {
-    "message": "Grupos de canais"
-  },
-  "groupAddPlaceholder": {
-    "message": "Novo grupo..."
-  },
-  "groupAssign": {
-    "message": "Atribuir grupo"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — Nenhuma transmissão ao vivo"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 ao vivo"
-  },
-  "tooltipMore": {
-    "message": "+$1 mais"
-  },
-  "notifButtonOpen": {
-    "message": "Abrir"
-  },
-  "notifButtonMute": {
-    "message": "Silenciar"
-  },
-  "anomalyTitle": {
-    "message": "Viewer anomaly detection"
-  },
-  "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
-  },
-  "anomalyThreshold": {
-    "message": "Alert threshold"
-  },
-  "anomalyNotifyMode": {
-    "message": "Notification mode"
-  },
-  "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
-  },
-  "anomalyModeNotif": {
-    "message": "Desktop notification only"
-  },
-  "anomalyModeBadge": {
-    "message": "Badge in popup only"
-  },
-  "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
-  },
-  "cardModeLabel": {
-    "message": "Card view"
-  },
-  "cardModeCompact": {
-    "message": "Compact"
-  },
-  "cardModeDetail": {
-    "message": "Detail"
-  },
-  "historyGroupToday": {
-    "message": "Today"
-  },
-  "historyGroupYesterday": {
-    "message": "Yesterday"
-  },
-  "historyGroupThisWeek": {
-    "message": "This week"
-  },
-  "historyGroupOlder": {
-    "message": "Earlier"
-  },
-  "lastStream": {
-    "message": "Last stream"
-  },
-  "notifDelayLabel": {
-    "message": "Notify after stream starts"
-  },
-  "notifDelayNow": {
-    "message": "Now"
-  },
-  "viewerTrendTitle": {
-    "message": "Viewer Trend"
-  },
-  "noDataYet": {
-    "message": "Not enough data yet"
-  },
-  "anomalyDropEnabled": {
-    "message": "Notificar queda anormal de espectadores"
-  },
-  "anomalySpikeTitle": {
-    "message": "Pico suspeito de espectadores"
-  },
-  "anomalyDropTitle": {
-    "message": "Queda suspeita de espectadores"
-  },
-  "anomalySpikeSettings": {
-    "message": "Limites de detecção de pico"
-  },
-  "anomalyWarnLabel": {
-    "message": "Aviso"
-  },
-  "anomalyAlertLabel": {
-    "message": "Alerta"
-  },
-  "anomalyDropSettings": {
-    "message": "Detecção de queda"
-  },
-  "anomalySensitivity": {
-    "message": "Sensibilidade"
-  },
-  "sensitivityMin": {
-    "message": "Sensível"
   },
   "sensitivityAvg": {
     "message": "Equilibrado"
@@ -305,13 +353,104 @@
   "sensitivityMax": {
     "message": "Estrito"
   },
-  "langSectionTitle": {
-    "message": "Idioma"
+  "sensitivityMin": {
+    "message": "Sensível"
   },
-  "langBrowserNoteSupported": {
-    "message": "Usando idioma do navegador: $1"
+  "showNotificationCheckbox": {
+    "message": "Mostrar notificações na área de trabalho"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "Idioma do navegador não suportado — usando inglês"
+  "showOfflineChannels": {
+    "message": "Mostrar canais offline na aba Following"
+  },
+  "silentForOthers": {
+    "message": "Notificações silenciosas para outros canais"
+  },
+  "soundModeExtension": {
+    "message": "Sons da extensão"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Alertas personalizados marcantes — difíceis de perder"
+  },
+  "soundModeWindows": {
+    "message": "Sons do Windows"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Som padrão do sistema — pode passar despercebido"
+  },
+  "testSoundVolume": {
+    "message": "[Testar]"
+  },
+  "themeDark": {
+    "message": "Escuro"
+  },
+  "themeLabel": {
+    "message": "Tema"
+  },
+  "themeLight": {
+    "message": "Claro"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 ao vivo"
+  },
+  "tooltipMore": {
+    "message": "+$1 mais"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Nenhuma transmissão ao vivo"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "chatBroadcasterNotif": {
+    "message": "Notificação de mensagem do streamer",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "Receba notificação quando o streamer escrever no chat. Máx. 1 notificação por minuto.",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1 escreveu no chat",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "Mensagens com essas palavras são ocultadas ou desfocadas.",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "Mensagens dos usuários listados são ocultadas ou desfocadas.",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "Esmaece mensagens com excesso de emojis (passe o mouse para ver).",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "ao vivo há $1 min",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "Clique para remover",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "há $1d",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "há $1h",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "há $1 min",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "Agora mesmo",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "Dados insuficientes ainda",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

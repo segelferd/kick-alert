@@ -1,6 +1,57 @@
 {
+  "anomalyAlertLabel": {
+    "message": "알림"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyDropEnabled": {
+    "message": "비정상적인 시청자 감소 알림"
+  },
+  "anomalyDropSettings": {
+    "message": "급감 감지"
+  },
+  "anomalyDropTitle": {
+    "message": "의심스러운 시청자 급감"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalySensitivity": {
+    "message": "감도"
+  },
+  "anomalySpikeSettings": {
+    "message": "급증 감지 임계값"
+  },
+  "anomalySpikeTitle": {
+    "message": "의심스러운 시청자 급증"
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyWarnLabel": {
+    "message": "경고"
+  },
   "appDescription": {
     "message": "새벽 3시 닌자 방송도 놓치지 마세요 — KickAlert이 모든 깜짝 방송을 잡아냅니다 ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
   },
   "autoLaunch": {
     "message": "자동 열기"
@@ -11,8 +62,134 @@
   "autoLaunchSettings": {
     "message": "자동 열기 설정"
   },
+  "autoLaunchTab": {
+    "message": "자동 열기"
+  },
+  "autoRefreshPopup": {
+    "message": "팔로잉 탭 자동 새로고침"
+  },
   "autoUnmuteCheckbox": {
     "message": "자동 열기 후 플레이어 음소거 자동 해제<br />(참고: 볼륨 슬라이더에 시각적으로 반영되지 않음)"
+  },
+  "bellMain": {
+    "message": "메인 소리"
+  },
+  "bellMuted": {
+    "message": "알림 없음"
+  },
+  "bellSilent": {
+    "message": "무음 알림"
+  },
+  "bellSub": {
+    "message": "보조 소리"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "chatActiveChannel": {
+    "message": "활성 채널"
+  },
+  "chatBotFilter": {
+    "message": "봇 필터"
+  },
+  "chatBotFilterDesc": {
+    "message": "봇 메시지 숨기기. 칩을 클릭하여 제거."
+  },
+  "chatBotPlaceholder": {
+    "message": "봇 추가..."
+  },
+  "chatEmojiSpam": {
+    "message": "이모지 스팸 필터"
+  },
+  "chatFavPlaceholder": {
+    "message": "사용자명 추가..."
+  },
+  "chatFavoriteDesc": {
+    "message": "즐겨찾기 메시지는 자신의 Kick 색상으로 강조됩니다."
+  },
+  "chatFavoriteUsers": {
+    "message": "즐겨찾기 사용자"
+  },
+  "chatFilterBlur": {
+    "message": "흐리게"
+  },
+  "chatFilterHide": {
+    "message": "숨기기"
+  },
+  "chatFilterMode": {
+    "message": "필터 모드"
+  },
+  "chatFilterModeDesc": {
+    "message": "숨기기는 메시지를 제거. 흐리게는 흐려짐 — 마우스로 보기."
+  },
+  "chatIntegrationDesc": {
+    "message": "켜지면 위에 채팅 탭이 표시됩니다. 최초 설치 후 열린 Kick 탭을 새로고침하세요."
+  },
+  "chatIntegrationTitle": {
+    "message": "채팅 통합"
+  },
+  "chatKeywordDesc": {
+    "message": "이 단어를 포함하는 메시지는 녹색으로 강조됩니다."
+  },
+  "chatKeywordHighlight": {
+    "message": "키워드 강조"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "단어 추가..."
+  },
+  "chatNoChannel": {
+    "message": "활성 Kick 채널 없음"
+  },
+  "chatRepeatDesc": {
+    "message": "같은 사용자가 같은 메시지를 3회 이상 보낼 때 숨김."
+  },
+  "chatRepeatFilter": {
+    "message": "반복 메시지 필터"
+  },
+  "chatTab": {
+    "message": "채팅"
+  },
+  "chatTagDesc": {
+    "message": "누군가 당신을 언급하면 알림."
+  },
+  "chatTagNotif": {
+    "message": "태그 알림"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1님이 당신을 언급했습니다"
+  },
+  "chatTagPlaceholder": {
+    "message": "당신의 Kick 사용자명..."
+  },
+  "chatUserFilter": {
+    "message": "사용자 필터"
+  },
+  "chatUserPlaceholder": {
+    "message": "사용자명 추가..."
+  },
+  "chatWordFilter": {
+    "message": "단어 필터"
+  },
+  "chatWordPlaceholder": {
+    "message": "단어 추가..."
+  },
+  "checkInterval": {
+    "message": "확인 간격"
+  },
+  "clearHistory": {
+    "message": "지우기"
+  },
+  "cloudSyncNote": {
+    "message": "브라우저 계정을 통해 기기 간 설정을 동기화합니다. 사용자 지정 사운드와 알림 기록은 동기화되지 않습니다."
+  },
+  "cloudSyncTitle": {
+    "message": "클라우드 동기화"
   },
   "customSoundButtonClear": {
     "message": "[지우기]"
@@ -41,11 +218,35 @@
   "customSoundSubLabel": {
     "message": "보조 소리"
   },
+  "displaySettings": {
+    "message": "화면 설정"
+  },
+  "dndEnd": {
+    "message": "종료"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "자동 열기 일시정지"
+  },
+  "dndMuteNotifications": {
+    "message": "알림 끄기"
+  },
+  "dndMuteSound": {
+    "message": "소리 끄기"
+  },
+  "dndStart": {
+    "message": "시작"
+  },
+  "dndTitle": {
+    "message": "방해 금지"
+  },
   "duplicateTabGuard": {
     "message": "중복 탭 방지"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "자동 열기 시 중복 탭 방지를 전환합니다. 활성화하면 이미 열린 스트림 탭이 있을 경우 새 탭을 열지 않습니다."
+  },
+  "errorLoadingHistory": {
+    "message": "기록 로드 오류."
   },
   "fetchError": {
     "message": "채널 로드에 실패했습니다. Kick에 로그인되어 있는지 확인 후 다시 시도하세요."
@@ -53,8 +254,68 @@
   "following": {
     "message": "팔로잉"
   },
+  "groupAddPlaceholder": {
+    "message": "새 그룹..."
+  },
+  "groupAll": {
+    "message": "전체"
+  },
+  "groupAssign": {
+    "message": "그룹 지정"
+  },
+  "groupsTitle": {
+    "message": "채널 그룹"
+  },
+  "history": {
+    "message": "알림 기록"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "langBrowserNoteSupported": {
+    "message": "브라우저 언어 사용 중: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "브라우저 언어 미지원 — 영어 사용"
+  },
+  "langSectionTitle": {
+    "message": "언어"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "noHistoryYet": {
+    "message": "아직 기록이 없습니다."
+  },
   "noLiveStreams": {
     "message": "현재 라이브 스트림이 없습니다."
+  },
+  "notifButtonMute": {
+    "message": "음소거"
+  },
+  "notifButtonOpen": {
+    "message": "열기"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 방송을 시작했습니다"
   },
   "notificationSettings": {
     "message": "알림 설정"
@@ -62,8 +323,14 @@
   "notificationSoundVolume": {
     "message": "소리 볼륨"
   },
+  "onlySwitchChannels": {
+    "message": "활성화된 채널만 알림"
+  },
   "options": {
     "message": "옵션"
+  },
+  "optionsBack": {
+    "message": "뒤로"
   },
   "optionsButtonTooltip": {
     "message": "옵션 페이지 열기"
@@ -77,227 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "브라우저 재시작 시 자동 열기 설정 초기화"
   },
-  "showNotificationCheckbox": {
-    "message": "데스크톱 알림 표시"
-  },
-  "testSoundVolume": {
-    "message": "[테스트]"
-  },
-  "appName": {
-    "message": "KickAlert"
-  },
-  "history": {
-    "message": "알림 기록"
-  },
-  "noHistoryYet": {
-    "message": "아직 기록이 없습니다."
-  },
-  "errorLoadingHistory": {
-    "message": "기록 로드 오류."
-  },
-  "onlySwitchChannels": {
-    "message": "활성화된 채널만 알림"
-  },
-  "silentForOthers": {
-    "message": "다른 채널은 무음 알림"
-  },
-  "checkInterval": {
-    "message": "확인 간격"
-  },
-  "autoLaunchTab": {
-    "message": "자동 열기"
-  },
-  "showOfflineChannels": {
-    "message": "팔로잉 탭에서 오프라인 채널 표시"
-  },
-  "displaySettings": {
-    "message": "화면 설정"
-  },
-  "autoRefreshPopup": {
-    "message": "팔로잉 탭 자동 새로고침"
-  },
-  "optionsBack": {
-    "message": "뒤로"
-  },
-  "dndTitle": {
-    "message": "방해 금지"
-  },
-  "dndStart": {
-    "message": "시작"
-  },
-  "dndEnd": {
-    "message": "종료"
-  },
-  "dndMuteNotifications": {
-    "message": "알림 끄기"
-  },
-  "dndMuteSound": {
-    "message": "소리 끄기"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "자동 열기 일시정지"
-  },
   "searchChannels": {
     "message": "채널 검색..."
-  },
-  "clearHistory": {
-    "message": "지우기"
-  },
-  "notifStartedStreaming": {
-    "message": "$1 방송을 시작했습니다"
-  },
-  "soundModeExtension": {
-    "message": "확장 프로그램 소리"
-  },
-  "soundModeWindows": {
-    "message": "Windows 소리"
-  },
-  "bellMain": {
-    "message": "메인 소리"
-  },
-  "bellSub": {
-    "message": "보조 소리"
-  },
-  "bellSilent": {
-    "message": "무음 알림"
-  },
-  "bellMuted": {
-    "message": "알림 없음"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "눈에 띄는 맞춤 알림 — 놓치기 어려움"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "기본 시스템 소리 — 일상에 묻힐 수 있음"
-  },
-  "cloudSyncTitle": {
-    "message": "클라우드 동기화"
-  },
-  "cloudSyncNote": {
-    "message": "Google 계정을 통해 기기 간 설정을 동기화합니다. 맞춤 소리와 알림 기록은 동기화되지 않습니다."
-  },
-  "themeLabel": {
-    "message": "테마"
-  },
-  "themeDark": {
-    "message": "다크"
-  },
-  "themeLight": {
-    "message": "라이트"
-  },
-  "groupAll": {
-    "message": "전체"
-  },
-  "groupsTitle": {
-    "message": "채널 그룹"
-  },
-  "groupAddPlaceholder": {
-    "message": "새 그룹..."
-  },
-  "groupAssign": {
-    "message": "그룹 지정"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — 라이브 방송 없음"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 라이브"
-  },
-  "tooltipMore": {
-    "message": "+$1 더"
-  },
-  "notifButtonOpen": {
-    "message": "열기"
-  },
-  "notifButtonMute": {
-    "message": "음소거"
-  },
-  "anomalyTitle": {
-    "message": "Viewer anomaly detection"
-  },
-  "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
-  },
-  "anomalyThreshold": {
-    "message": "Alert threshold"
-  },
-  "anomalyNotifyMode": {
-    "message": "Notification mode"
-  },
-  "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
-  },
-  "anomalyModeNotif": {
-    "message": "Desktop notification only"
-  },
-  "anomalyModeBadge": {
-    "message": "Badge in popup only"
-  },
-  "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
-  },
-  "cardModeLabel": {
-    "message": "Card view"
-  },
-  "cardModeCompact": {
-    "message": "Compact"
-  },
-  "cardModeDetail": {
-    "message": "Detail"
-  },
-  "historyGroupToday": {
-    "message": "Today"
-  },
-  "historyGroupYesterday": {
-    "message": "Yesterday"
-  },
-  "historyGroupThisWeek": {
-    "message": "This week"
-  },
-  "historyGroupOlder": {
-    "message": "Earlier"
-  },
-  "lastStream": {
-    "message": "Last stream"
-  },
-  "notifDelayLabel": {
-    "message": "Notify after stream starts"
-  },
-  "notifDelayNow": {
-    "message": "Now"
-  },
-  "viewerTrendTitle": {
-    "message": "Viewer Trend"
-  },
-  "noDataYet": {
-    "message": "Not enough data yet"
-  },
-  "anomalyDropEnabled": {
-    "message": "비정상적인 시청자 감소 알림"
-  },
-  "anomalySpikeTitle": {
-    "message": "의심스러운 시청자 급증"
-  },
-  "anomalyDropTitle": {
-    "message": "의심스러운 시청자 급감"
-  },
-  "anomalySpikeSettings": {
-    "message": "급증 감지 임계값"
-  },
-  "anomalyWarnLabel": {
-    "message": "경고"
-  },
-  "anomalyAlertLabel": {
-    "message": "알림"
-  },
-  "anomalyDropSettings": {
-    "message": "급감 감지"
-  },
-  "anomalySensitivity": {
-    "message": "감도"
-  },
-  "sensitivityMin": {
-    "message": "민감"
   },
   "sensitivityAvg": {
     "message": "균형"
@@ -305,13 +353,104 @@
   "sensitivityMax": {
     "message": "엄격"
   },
-  "langSectionTitle": {
-    "message": "언어"
+  "sensitivityMin": {
+    "message": "민감"
   },
-  "langBrowserNoteSupported": {
-    "message": "브라우저 언어 사용 중: $1"
+  "showNotificationCheckbox": {
+    "message": "데스크톱 알림 표시"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "브라우저 언어 미지원 — 영어 사용"
+  "showOfflineChannels": {
+    "message": "팔로잉 탭에서 오프라인 채널 표시"
+  },
+  "silentForOthers": {
+    "message": "다른 채널은 무음 알림"
+  },
+  "soundModeExtension": {
+    "message": "확장 프로그램 소리"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "눈에 띄는 맞춤 알림 — 놓치기 어려움"
+  },
+  "soundModeWindows": {
+    "message": "Windows 소리"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "기본 시스템 소리 — 일상에 묻힐 수 있음"
+  },
+  "testSoundVolume": {
+    "message": "[테스트]"
+  },
+  "themeDark": {
+    "message": "다크"
+  },
+  "themeLabel": {
+    "message": "테마"
+  },
+  "themeLight": {
+    "message": "라이트"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 라이브"
+  },
+  "tooltipMore": {
+    "message": "+$1 더"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — 라이브 방송 없음"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "chatBroadcasterNotif": {
+    "message": "스트리머 메시지 알림",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "스트리머가 채팅에 글을 쓸 때 알림을 받습니다. 분당 최대 1개의 알림.",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1님이 채팅에 글을 썼습니다",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "이러한 단어가 포함된 메시지는 숨겨지거나 흐리게 표시됩니다.",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "목록에 있는 사용자의 메시지는 숨겨지거나 흐리게 표시됩니다.",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "이모지가 과도한 메시지를 흐리게 표시합니다 (마우스 오버로 표시).",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "방송 시작 $1분 경과",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "클릭하여 제거",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "$1일 전",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "$1시간 전",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "$1분 전",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "방금 전",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "아직 데이터가 부족합니다",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

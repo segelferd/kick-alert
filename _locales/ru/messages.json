@@ -1,6 +1,57 @@
 {
+  "anomalyAlertLabel": {
+    "message": "Оповещение"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyDropEnabled": {
+    "message": "Уведомлять об аномальном падении зрителей"
+  },
+  "anomalyDropSettings": {
+    "message": "Обнаружение падения"
+  },
+  "anomalyDropTitle": {
+    "message": "Подозрительное падение зрителей"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalySensitivity": {
+    "message": "Чувствительность"
+  },
+  "anomalySpikeSettings": {
+    "message": "Пороги обнаружения всплесков"
+  },
+  "anomalySpikeTitle": {
+    "message": "Подозрительный рост зрителей"
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyWarnLabel": {
+    "message": "Предупреждение"
+  },
   "appDescription": {
     "message": "Никаких ниндзя-стримов в 3 часа ночи — KickAlert ловит каждую внезапную трансляцию ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
   },
   "autoLaunch": {
     "message": "Автозапуск"
@@ -11,8 +62,134 @@
   "autoLaunchSettings": {
     "message": "Настройки автозапуска"
   },
+  "autoLaunchTab": {
+    "message": "Автозапуск"
+  },
+  "autoRefreshPopup": {
+    "message": "Автообновление вкладки Подписки"
+  },
   "autoUnmuteCheckbox": {
     "message": "Автоматически включать звук после автозапуска<br />(Примечание: не отображается на ползунке громкости)"
+  },
+  "bellMain": {
+    "message": "Основной звук"
+  },
+  "bellMuted": {
+    "message": "Без уведомления"
+  },
+  "bellSilent": {
+    "message": "Тихое уведомление"
+  },
+  "bellSub": {
+    "message": "Дополнительный звук"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "chatActiveChannel": {
+    "message": "Активный канал"
+  },
+  "chatBotFilter": {
+    "message": "Фильтр ботов"
+  },
+  "chatBotFilterDesc": {
+    "message": "Скрыть сообщения ботов. Нажмите на чип для удаления."
+  },
+  "chatBotPlaceholder": {
+    "message": "Добавить бота..."
+  },
+  "chatEmojiSpam": {
+    "message": "Фильтр спама эмодзи"
+  },
+  "chatFavPlaceholder": {
+    "message": "Добавить имя пользователя..."
+  },
+  "chatFavoriteDesc": {
+    "message": "Сообщения избранных подсвечиваются их цветом Kick."
+  },
+  "chatFavoriteUsers": {
+    "message": "Избранные пользователи"
+  },
+  "chatFilterBlur": {
+    "message": "Размыть"
+  },
+  "chatFilterHide": {
+    "message": "Скрыть"
+  },
+  "chatFilterMode": {
+    "message": "Режим фильтра"
+  },
+  "chatFilterModeDesc": {
+    "message": "Скрыть убирает сообщение. Размыть затемняет — наведите курсор для просмотра."
+  },
+  "chatIntegrationDesc": {
+    "message": "Когда включено, вкладка «Чат» появится выше. После первой установки обновите открытые вкладки Kick."
+  },
+  "chatIntegrationTitle": {
+    "message": "Интеграция чата"
+  },
+  "chatKeywordDesc": {
+    "message": "Сообщения с этими словами подсвечиваются зелёным."
+  },
+  "chatKeywordHighlight": {
+    "message": "Подсветка ключевых слов"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "Добавить слово..."
+  },
+  "chatNoChannel": {
+    "message": "Нет активного Kick-канала"
+  },
+  "chatRepeatDesc": {
+    "message": "Скрывает, когда один пользователь отправляет одно сообщение 3+ раз."
+  },
+  "chatRepeatFilter": {
+    "message": "Фильтр повторов"
+  },
+  "chatTab": {
+    "message": "Чат"
+  },
+  "chatTagDesc": {
+    "message": "Уведомление, когда кто-то упоминает ваше имя."
+  },
+  "chatTagNotif": {
+    "message": "Уведомление о метке"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 упомянул вас"
+  },
+  "chatTagPlaceholder": {
+    "message": "Ваше имя в Kick..."
+  },
+  "chatUserFilter": {
+    "message": "Фильтр пользователей"
+  },
+  "chatUserPlaceholder": {
+    "message": "Добавить имя пользователя..."
+  },
+  "chatWordFilter": {
+    "message": "Фильтр слов"
+  },
+  "chatWordPlaceholder": {
+    "message": "Добавить слово..."
+  },
+  "checkInterval": {
+    "message": "Интервал проверки"
+  },
+  "clearHistory": {
+    "message": "Очистить"
+  },
+  "cloudSyncNote": {
+    "message": "Синхронизируйте настройки между устройствами через аккаунт браузера. Пользовательские звуки и история уведомлений не синхронизируются."
+  },
+  "cloudSyncTitle": {
+    "message": "Облачная синхронизация"
   },
   "customSoundButtonClear": {
     "message": "[Очистить]"
@@ -41,11 +218,35 @@
   "customSoundSubLabel": {
     "message": "Дополнительный звук"
   },
+  "displaySettings": {
+    "message": "Настройки отображения"
+  },
+  "dndEnd": {
+    "message": "Конец"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Приостановить автозапуск"
+  },
+  "dndMuteNotifications": {
+    "message": "Отключить уведомления"
+  },
+  "dndMuteSound": {
+    "message": "Отключить звуки"
+  },
+  "dndStart": {
+    "message": "Начало"
+  },
+  "dndTitle": {
+    "message": "Не беспокоить"
+  },
   "duplicateTabGuard": {
     "message": "Защита от дублей"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "Переключить защиту от дублирования вкладок. При включении новая вкладка не откроется, если стрим уже открыт."
+  },
+  "errorLoadingHistory": {
+    "message": "Ошибка загрузки истории."
   },
   "fetchError": {
     "message": "Не удалось загрузить каналы. Убедитесь, что вы вошли в Kick, и попробуйте снова."
@@ -53,8 +254,68 @@
   "following": {
     "message": "Подписки"
   },
+  "groupAddPlaceholder": {
+    "message": "Новая группа..."
+  },
+  "groupAll": {
+    "message": "Все"
+  },
+  "groupAssign": {
+    "message": "Назначить группу"
+  },
+  "groupsTitle": {
+    "message": "Группы каналов"
+  },
+  "history": {
+    "message": "История уведомлений"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Используется язык браузера: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Язык браузера не поддерживается — используется английский"
+  },
+  "langSectionTitle": {
+    "message": "Язык"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "noHistoryYet": {
+    "message": "Пока нет записей."
+  },
   "noLiveStreams": {
     "message": "Нет прямых трансляций."
+  },
+  "notifButtonMute": {
+    "message": "Отключить"
+  },
+  "notifButtonOpen": {
+    "message": "Открыть"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 начал трансляцию"
   },
   "notificationSettings": {
     "message": "Настройки уведомлений"
@@ -62,8 +323,14 @@
   "notificationSoundVolume": {
     "message": "Громкость звука"
   },
+  "onlySwitchChannels": {
+    "message": "Уведомлять только включённые каналы"
+  },
   "options": {
     "message": "Настройки"
+  },
+  "optionsBack": {
+    "message": "Назад"
   },
   "optionsButtonTooltip": {
     "message": "Открыть страницу настроек"
@@ -77,227 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Сбросить настройки автозапуска при перезагрузке браузера"
   },
-  "showNotificationCheckbox": {
-    "message": "Показывать уведомления на рабочем столе"
-  },
-  "testSoundVolume": {
-    "message": "[Тест]"
-  },
-  "appName": {
-    "message": "KickAlert"
-  },
-  "history": {
-    "message": "История уведомлений"
-  },
-  "noHistoryYet": {
-    "message": "Пока нет записей."
-  },
-  "errorLoadingHistory": {
-    "message": "Ошибка загрузки истории."
-  },
-  "onlySwitchChannels": {
-    "message": "Уведомлять только включённые каналы"
-  },
-  "silentForOthers": {
-    "message": "Тихие уведомления для остальных каналов"
-  },
-  "checkInterval": {
-    "message": "Интервал проверки"
-  },
-  "autoLaunchTab": {
-    "message": "Автозапуск"
-  },
-  "showOfflineChannels": {
-    "message": "Показывать офлайн-каналы во вкладке Подписки"
-  },
-  "displaySettings": {
-    "message": "Настройки отображения"
-  },
-  "autoRefreshPopup": {
-    "message": "Автообновление вкладки Подписки"
-  },
-  "optionsBack": {
-    "message": "Назад"
-  },
-  "dndTitle": {
-    "message": "Не беспокоить"
-  },
-  "dndStart": {
-    "message": "Начало"
-  },
-  "dndEnd": {
-    "message": "Конец"
-  },
-  "dndMuteNotifications": {
-    "message": "Отключить уведомления"
-  },
-  "dndMuteSound": {
-    "message": "Отключить звуки"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "Приостановить автозапуск"
-  },
   "searchChannels": {
     "message": "Поиск каналов..."
-  },
-  "clearHistory": {
-    "message": "Очистить"
-  },
-  "notifStartedStreaming": {
-    "message": "$1 начал трансляцию"
-  },
-  "soundModeExtension": {
-    "message": "Звуки расширения"
-  },
-  "soundModeWindows": {
-    "message": "Звуки Windows"
-  },
-  "bellMain": {
-    "message": "Основной звук"
-  },
-  "bellSub": {
-    "message": "Дополнительный звук"
-  },
-  "bellSilent": {
-    "message": "Тихое уведомление"
-  },
-  "bellMuted": {
-    "message": "Без уведомления"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "Заметные пользовательские оповещения — сложно пропустить"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "Стандартный системный звук — может затеряться"
-  },
-  "cloudSyncTitle": {
-    "message": "Облачная синхронизация"
-  },
-  "cloudSyncNote": {
-    "message": "Синхронизируйте настройки между устройствами через аккаунт Google. Пользовательские звуки и история уведомлений не синхронизируются."
-  },
-  "themeLabel": {
-    "message": "Тема"
-  },
-  "themeDark": {
-    "message": "Тёмная"
-  },
-  "themeLight": {
-    "message": "Светлая"
-  },
-  "groupAll": {
-    "message": "Все"
-  },
-  "groupsTitle": {
-    "message": "Группы каналов"
-  },
-  "groupAddPlaceholder": {
-    "message": "Новая группа..."
-  },
-  "groupAssign": {
-    "message": "Назначить группу"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — Нет прямых трансляций"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 в эфире"
-  },
-  "tooltipMore": {
-    "message": "ещё $1"
-  },
-  "notifButtonOpen": {
-    "message": "Открыть"
-  },
-  "notifButtonMute": {
-    "message": "Отключить"
-  },
-  "anomalyTitle": {
-    "message": "Viewer anomaly detection"
-  },
-  "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
-  },
-  "anomalyThreshold": {
-    "message": "Alert threshold"
-  },
-  "anomalyNotifyMode": {
-    "message": "Notification mode"
-  },
-  "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
-  },
-  "anomalyModeNotif": {
-    "message": "Desktop notification only"
-  },
-  "anomalyModeBadge": {
-    "message": "Badge in popup only"
-  },
-  "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
-  },
-  "cardModeLabel": {
-    "message": "Card view"
-  },
-  "cardModeCompact": {
-    "message": "Compact"
-  },
-  "cardModeDetail": {
-    "message": "Detail"
-  },
-  "historyGroupToday": {
-    "message": "Today"
-  },
-  "historyGroupYesterday": {
-    "message": "Yesterday"
-  },
-  "historyGroupThisWeek": {
-    "message": "This week"
-  },
-  "historyGroupOlder": {
-    "message": "Earlier"
-  },
-  "lastStream": {
-    "message": "Last stream"
-  },
-  "notifDelayLabel": {
-    "message": "Notify after stream starts"
-  },
-  "notifDelayNow": {
-    "message": "Now"
-  },
-  "viewerTrendTitle": {
-    "message": "Viewer Trend"
-  },
-  "noDataYet": {
-    "message": "Not enough data yet"
-  },
-  "anomalyDropEnabled": {
-    "message": "Уведомлять об аномальном падении зрителей"
-  },
-  "anomalySpikeTitle": {
-    "message": "Подозрительный рост зрителей"
-  },
-  "anomalyDropTitle": {
-    "message": "Подозрительное падение зрителей"
-  },
-  "anomalySpikeSettings": {
-    "message": "Пороги обнаружения всплесков"
-  },
-  "anomalyWarnLabel": {
-    "message": "Предупреждение"
-  },
-  "anomalyAlertLabel": {
-    "message": "Оповещение"
-  },
-  "anomalyDropSettings": {
-    "message": "Обнаружение падения"
-  },
-  "anomalySensitivity": {
-    "message": "Чувствительность"
-  },
-  "sensitivityMin": {
-    "message": "Чувств."
   },
   "sensitivityAvg": {
     "message": "Баланс"
@@ -305,13 +353,104 @@
   "sensitivityMax": {
     "message": "Строго"
   },
-  "langSectionTitle": {
-    "message": "Язык"
+  "sensitivityMin": {
+    "message": "Чувств."
   },
-  "langBrowserNoteSupported": {
-    "message": "Используется язык браузера: $1"
+  "showNotificationCheckbox": {
+    "message": "Показывать уведомления на рабочем столе"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "Язык браузера не поддерживается — используется английский"
+  "showOfflineChannels": {
+    "message": "Показывать офлайн-каналы во вкладке Подписки"
+  },
+  "silentForOthers": {
+    "message": "Тихие уведомления для остальных каналов"
+  },
+  "soundModeExtension": {
+    "message": "Звуки расширения"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Заметные пользовательские оповещения — сложно пропустить"
+  },
+  "soundModeWindows": {
+    "message": "Звуки Windows"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Стандартный системный звук — может затеряться"
+  },
+  "testSoundVolume": {
+    "message": "[Тест]"
+  },
+  "themeDark": {
+    "message": "Тёмная"
+  },
+  "themeLabel": {
+    "message": "Тема"
+  },
+  "themeLight": {
+    "message": "Светлая"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 в эфире"
+  },
+  "tooltipMore": {
+    "message": "ещё $1"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Нет прямых трансляций"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "chatBroadcasterNotif": {
+    "message": "Уведомление о сообщении стримера",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "Получать уведомление, когда стример пишет в чат. Не более 1 уведомления в минуту.",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1 написал в чате",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "Сообщения с этими словами скрываются или размываются.",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "Сообщения от пользователей из списка скрываются или размываются.",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "Приглушает сообщения с чрезмерным количеством эмодзи (наведите для показа).",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "в эфире $1 мин",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "Нажмите, чтобы удалить",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "$1 дн. назад",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "$1 ч. назад",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "$1 мин. назад",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "Только что",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "Пока недостаточно данных",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

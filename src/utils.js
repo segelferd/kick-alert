@@ -55,10 +55,11 @@ const Utils = {
     const diffMs = Date.now() - new Date(iso).getTime();
     const h = Math.floor(diffMs / 3600000);
     const d = Math.floor(h / 24);
-    if (d > 0) return `${d}d ago`;
-    if (h > 0) return `${h}h ago`;
+    if (d > 0) return Utils.i18n('timeAgoDay', [String(d)]) || `${d}d ago`;
+    if (h > 0) return Utils.i18n('timeAgoHour', [String(h)]) || `${h}h ago`;
     const m = Math.floor(diffMs / 60000);
-    return m > 0 ? `${m}m ago` : 'Just now';
+    if (m > 0) return Utils.i18n('timeAgoMin', [String(m)]) || `${m}m ago`;
+    return Utils.i18n('timeAgoJustNow') || 'Just now';
   },
 
   /**
@@ -137,11 +138,21 @@ const Utils = {
   },
 
   /**
-   * Ensure i18n is loaded — call before using i18n() if SW may have slept.
+   * Ensure i18n is loaded AND matches current user preference.
+   * Called before using i18n() in background contexts where SW may have slept
+   * or where user may have switched language since init.
+   * The loadLocale() call is no-op if the target language is already cached.
    */
   async ensureI18n() {
-    if (_localeMessages) return;
-    await this.initI18n();
+    try {
+      const lang = await this.detectLanguage();
+      await this.loadLocale(lang);
+    } catch (e) {
+      // If anything fails, fall back to English
+      if (!_localeMessages) {
+        await this.loadLocale('en');
+      }
+    }
   },
 
   getCurrentLang() {

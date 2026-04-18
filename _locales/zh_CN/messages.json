@@ -1,6 +1,57 @@
 {
+  "anomalyAlertLabel": {
+    "message": "警报"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyDropEnabled": {
+    "message": "通知异常观众下降"
+  },
+  "anomalyDropSettings": {
+    "message": "下降检测"
+  },
+  "anomalyDropTitle": {
+    "message": "可疑观众急降"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalySensitivity": {
+    "message": "灵敏度"
+  },
+  "anomalySpikeSettings": {
+    "message": "激增检测阈值"
+  },
+  "anomalySpikeTitle": {
+    "message": "可疑观众激增"
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyWarnLabel": {
+    "message": "警告"
+  },
   "appDescription": {
     "message": "凌晨3点的忍者直播再也逃不掉 — KickAlert捕捉每一个惊喜直播 ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
   },
   "autoLaunch": {
     "message": "自动打开"
@@ -11,8 +62,134 @@
   "autoLaunchSettings": {
     "message": "自动打开设置"
   },
+  "autoLaunchTab": {
+    "message": "自动打开"
+  },
+  "autoRefreshPopup": {
+    "message": "自动刷新关注列表"
+  },
   "autoUnmuteCheckbox": {
     "message": "自动打开后自动取消静音<br />（注意：不会在音量滑块上显示）"
+  },
+  "bellMain": {
+    "message": "主提示音"
+  },
+  "bellMuted": {
+    "message": "无通知"
+  },
+  "bellSilent": {
+    "message": "静音通知"
+  },
+  "bellSub": {
+    "message": "次提示音"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "chatActiveChannel": {
+    "message": "活动频道"
+  },
+  "chatBotFilter": {
+    "message": "机器人过滤"
+  },
+  "chatBotFilterDesc": {
+    "message": "隐藏机器人消息。点击标签移除。"
+  },
+  "chatBotPlaceholder": {
+    "message": "添加机器人..."
+  },
+  "chatEmojiSpam": {
+    "message": "表情垃圾过滤"
+  },
+  "chatFavPlaceholder": {
+    "message": "添加用户名..."
+  },
+  "chatFavoriteDesc": {
+    "message": "收藏用户的消息以其 Kick 颜色高亮。"
+  },
+  "chatFavoriteUsers": {
+    "message": "收藏用户"
+  },
+  "chatFilterBlur": {
+    "message": "模糊"
+  },
+  "chatFilterHide": {
+    "message": "隐藏"
+  },
+  "chatFilterMode": {
+    "message": "过滤模式"
+  },
+  "chatFilterModeDesc": {
+    "message": "隐藏会移除消息。模糊会淡化 — 悬停查看。"
+  },
+  "chatIntegrationDesc": {
+    "message": "开启后上方显示聊天标签。首次安装后请刷新已打开的 Kick 标签页。"
+  },
+  "chatIntegrationTitle": {
+    "message": "聊天集成"
+  },
+  "chatKeywordDesc": {
+    "message": "包含这些词的消息将以绿色高亮显示。"
+  },
+  "chatKeywordHighlight": {
+    "message": "关键词高亮"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "添加词语..."
+  },
+  "chatNoChannel": {
+    "message": "没有活动的 Kick 频道"
+  },
+  "chatRepeatDesc": {
+    "message": "当同一用户发送同一消息 3+ 次时隐藏。"
+  },
+  "chatRepeatFilter": {
+    "message": "重复消息过滤"
+  },
+  "chatTab": {
+    "message": "聊天"
+  },
+  "chatTagDesc": {
+    "message": "有人提及你时收到通知。"
+  },
+  "chatTagNotif": {
+    "message": "提及通知"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 提到了你"
+  },
+  "chatTagPlaceholder": {
+    "message": "你的 Kick 用户名..."
+  },
+  "chatUserFilter": {
+    "message": "用户过滤"
+  },
+  "chatUserPlaceholder": {
+    "message": "添加用户名..."
+  },
+  "chatWordFilter": {
+    "message": "词语过滤"
+  },
+  "chatWordPlaceholder": {
+    "message": "添加词语..."
+  },
+  "checkInterval": {
+    "message": "检查间隔"
+  },
+  "clearHistory": {
+    "message": "清除"
+  },
+  "cloudSyncNote": {
+    "message": "通过浏览器账户在设备之间同步设置。自定义声音和通知历史不会同步。"
+  },
+  "cloudSyncTitle": {
+    "message": "云同步"
   },
   "customSoundButtonClear": {
     "message": "[清除]"
@@ -41,11 +218,35 @@
   "customSoundSubLabel": {
     "message": "次提示音"
   },
+  "displaySettings": {
+    "message": "显示设置"
+  },
+  "dndEnd": {
+    "message": "结束"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "暂停自动打开"
+  },
+  "dndMuteNotifications": {
+    "message": "静音通知"
+  },
+  "dndMuteSound": {
+    "message": "静音提示音"
+  },
+  "dndStart": {
+    "message": "开始"
+  },
+  "dndTitle": {
+    "message": "免打扰"
+  },
   "duplicateTabGuard": {
     "message": "重复标签页保护"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "切换重复标签页保护。开启后，如果直播标签页已打开，则不会再打开新的标签页。"
+  },
+  "errorLoadingHistory": {
+    "message": "加载历史记录出错。"
   },
   "fetchError": {
     "message": "加载频道失败。请确认您已登录 Kick 并重试。"
@@ -53,8 +254,68 @@
   "following": {
     "message": "关注列表"
   },
+  "groupAddPlaceholder": {
+    "message": "新分组..."
+  },
+  "groupAll": {
+    "message": "全部"
+  },
+  "groupAssign": {
+    "message": "分配分组"
+  },
+  "groupsTitle": {
+    "message": "频道分组"
+  },
+  "history": {
+    "message": "通知历史"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "langBrowserNoteSupported": {
+    "message": "正在使用浏览器语言：$1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "不支持浏览器语言 — 使用英语"
+  },
+  "langSectionTitle": {
+    "message": "语言"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "noHistoryYet": {
+    "message": "暂无历史记录。"
+  },
   "noLiveStreams": {
     "message": "暂无直播。"
+  },
+  "notifButtonMute": {
+    "message": "静音"
+  },
+  "notifButtonOpen": {
+    "message": "打开"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 开始了直播"
   },
   "notificationSettings": {
     "message": "通知设置"
@@ -62,8 +323,14 @@
   "notificationSoundVolume": {
     "message": "音量"
   },
+  "onlySwitchChannels": {
+    "message": "仅通知已开启的频道"
+  },
   "options": {
     "message": "设置"
+  },
+  "optionsBack": {
+    "message": "返回"
   },
   "optionsButtonTooltip": {
     "message": "打开设置页面"
@@ -77,227 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "浏览器重启时重置自动打开设置"
   },
-  "showNotificationCheckbox": {
-    "message": "显示桌面通知"
-  },
-  "testSoundVolume": {
-    "message": "[测试]"
-  },
-  "appName": {
-    "message": "KickAlert"
-  },
-  "history": {
-    "message": "通知历史"
-  },
-  "noHistoryYet": {
-    "message": "暂无历史记录。"
-  },
-  "errorLoadingHistory": {
-    "message": "加载历史记录出错。"
-  },
-  "onlySwitchChannels": {
-    "message": "仅通知已开启的频道"
-  },
-  "silentForOthers": {
-    "message": "其他频道静音通知"
-  },
-  "checkInterval": {
-    "message": "检查间隔"
-  },
-  "autoLaunchTab": {
-    "message": "自动打开"
-  },
-  "showOfflineChannels": {
-    "message": "在关注列表中显示离线频道"
-  },
-  "displaySettings": {
-    "message": "显示设置"
-  },
-  "autoRefreshPopup": {
-    "message": "自动刷新关注列表"
-  },
-  "optionsBack": {
-    "message": "返回"
-  },
-  "dndTitle": {
-    "message": "免打扰"
-  },
-  "dndStart": {
-    "message": "开始"
-  },
-  "dndEnd": {
-    "message": "结束"
-  },
-  "dndMuteNotifications": {
-    "message": "静音通知"
-  },
-  "dndMuteSound": {
-    "message": "静音提示音"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "暂停自动打开"
-  },
   "searchChannels": {
     "message": "搜索频道..."
-  },
-  "clearHistory": {
-    "message": "清除"
-  },
-  "notifStartedStreaming": {
-    "message": "$1 开始了直播"
-  },
-  "soundModeExtension": {
-    "message": "扩展提示音"
-  },
-  "soundModeWindows": {
-    "message": "Windows 提示音"
-  },
-  "bellMain": {
-    "message": "主提示音"
-  },
-  "bellSub": {
-    "message": "次提示音"
-  },
-  "bellSilent": {
-    "message": "静音通知"
-  },
-  "bellMuted": {
-    "message": "无通知"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "醒目的自定义提示音 — 不容易错过"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "标准系统提示音 — 日常中可能被忽略"
-  },
-  "cloudSyncTitle": {
-    "message": "云同步"
-  },
-  "cloudSyncNote": {
-    "message": "通过 Google 账户在设备间同步设置。自定义提示音和通知历史不会同步。"
-  },
-  "themeLabel": {
-    "message": "主题"
-  },
-  "themeDark": {
-    "message": "深色"
-  },
-  "themeLight": {
-    "message": "浅色"
-  },
-  "groupAll": {
-    "message": "全部"
-  },
-  "groupsTitle": {
-    "message": "频道分组"
-  },
-  "groupAddPlaceholder": {
-    "message": "新分组..."
-  },
-  "groupAssign": {
-    "message": "分配分组"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — 没有直播"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 个直播"
-  },
-  "tooltipMore": {
-    "message": "还有$1个"
-  },
-  "notifButtonOpen": {
-    "message": "打开"
-  },
-  "notifButtonMute": {
-    "message": "静音"
-  },
-  "anomalyTitle": {
-    "message": "Viewer anomaly detection"
-  },
-  "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
-  },
-  "anomalyThreshold": {
-    "message": "Alert threshold"
-  },
-  "anomalyNotifyMode": {
-    "message": "Notification mode"
-  },
-  "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
-  },
-  "anomalyModeNotif": {
-    "message": "Desktop notification only"
-  },
-  "anomalyModeBadge": {
-    "message": "Badge in popup only"
-  },
-  "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
-  },
-  "cardModeLabel": {
-    "message": "Card view"
-  },
-  "cardModeCompact": {
-    "message": "Compact"
-  },
-  "cardModeDetail": {
-    "message": "Detail"
-  },
-  "historyGroupToday": {
-    "message": "Today"
-  },
-  "historyGroupYesterday": {
-    "message": "Yesterday"
-  },
-  "historyGroupThisWeek": {
-    "message": "This week"
-  },
-  "historyGroupOlder": {
-    "message": "Earlier"
-  },
-  "lastStream": {
-    "message": "Last stream"
-  },
-  "notifDelayLabel": {
-    "message": "Notify after stream starts"
-  },
-  "notifDelayNow": {
-    "message": "Now"
-  },
-  "viewerTrendTitle": {
-    "message": "Viewer Trend"
-  },
-  "noDataYet": {
-    "message": "Not enough data yet"
-  },
-  "anomalyDropEnabled": {
-    "message": "通知异常观众下降"
-  },
-  "anomalySpikeTitle": {
-    "message": "可疑观众激增"
-  },
-  "anomalyDropTitle": {
-    "message": "可疑观众急降"
-  },
-  "anomalySpikeSettings": {
-    "message": "激增检测阈值"
-  },
-  "anomalyWarnLabel": {
-    "message": "警告"
-  },
-  "anomalyAlertLabel": {
-    "message": "警报"
-  },
-  "anomalyDropSettings": {
-    "message": "下降检测"
-  },
-  "anomalySensitivity": {
-    "message": "灵敏度"
-  },
-  "sensitivityMin": {
-    "message": "敏感"
   },
   "sensitivityAvg": {
     "message": "均衡"
@@ -305,13 +353,104 @@
   "sensitivityMax": {
     "message": "严格"
   },
-  "langSectionTitle": {
-    "message": "语言"
+  "sensitivityMin": {
+    "message": "敏感"
   },
-  "langBrowserNoteSupported": {
-    "message": "正在使用浏览器语言：$1"
+  "showNotificationCheckbox": {
+    "message": "显示桌面通知"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "不支持浏览器语言 — 使用英语"
+  "showOfflineChannels": {
+    "message": "在关注列表中显示离线频道"
+  },
+  "silentForOthers": {
+    "message": "其他频道静音通知"
+  },
+  "soundModeExtension": {
+    "message": "扩展提示音"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "醒目的自定义提示音 — 不容易错过"
+  },
+  "soundModeWindows": {
+    "message": "Windows 提示音"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "标准系统提示音 — 日常中可能被忽略"
+  },
+  "testSoundVolume": {
+    "message": "[测试]"
+  },
+  "themeDark": {
+    "message": "深色"
+  },
+  "themeLabel": {
+    "message": "主题"
+  },
+  "themeLight": {
+    "message": "浅色"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 个直播"
+  },
+  "tooltipMore": {
+    "message": "还有$1个"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — 没有直播"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "chatBroadcasterNotif": {
+    "message": "主播消息通知",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "主播在聊天中发言时接收通知。每分钟最多 1 个通知。",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1 在聊天中发言",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "包含这些词语的消息将被隐藏或模糊处理。",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "列表中用户的消息将被隐藏或模糊处理。",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "淡化含有大量表情符号的消息（悬停以显示）。",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "直播 $1 分钟",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "点击删除",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "$1 天前",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "$1 小时前",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "$1 分钟前",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "刚刚",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "数据尚不足",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

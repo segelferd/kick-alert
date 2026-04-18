@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>KickAlert — Test Panel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #111; color: #eee; padding: 20px; min-width: 520px; }
+    h1 { font-size: 16px; font-weight: 600; color: #53FC18; margin-bottom: 4px; }
+    .subtitle { font-size: 11px; color: #555; margin-bottom: 16px; }
+    .section { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; }
+    .section-title { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 10px; }
+    .row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; flex-wrap: wrap; }
+    .row:last-child { margin-bottom: 0; }
+    label { font-size: 12px; color: #777; min-width: 110px; flex-shrink: 0; }
+    input[type=text], input[type=number], input[type=url], select { background: #222; border: 1px solid #333; border-radius: 4px; color: #eee; font-size: 12px; padding: 5px 8px; flex: 1; min-width: 0; }
+    input[type=number] { max-width: 70px; flex: none; }
+    button { background: #222; border: 1px solid #444; border-radius: 5px; color: #eee; font-size: 12px; padding: 5px 11px; cursor: pointer; white-space: nowrap; }
+    button:hover { background: #2a2a2a; border-color: #53FC18; color: #53FC18; }
+    button.danger { border-color: #e74c3c; color: #e74c3c; }
+    button.danger:hover { background: #2a1111; }
+    button.success { border-color: #53FC18; color: #53FC18; }
+    .log-box { background: #0d0d0d; border: 1px solid #222; border-radius: 6px; font-family: monospace; font-size: 11px; padding: 10px; height: 160px; overflow-y: auto; color: #888; margin-top: 10px; }
+    .log-box .ok { color: #53FC18; }
+    .log-box .err { color: #e74c3c; }
+    .log-box .info { color: #5ba4f5; }
+    .log-box .warn { color: #f0a500; }
+    .status-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .status-pill { font-size: 11px; padding: 3px 8px; border-radius: 4px; background: #1a1a1a; border: 1px solid #2a2a2a; color: #888; }
+    .status-pill span { font-weight: 600; color: #ccc; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .thresh-table { width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 4px; }
+    .thresh-table th { color: #666; font-weight: 500; padding: 3px 6px; text-align: left; }
+    .thresh-table td { padding: 3px 6px; color: #aaa; }
+    .thresh-table tr:nth-child(even) td { background: #1f1f1f; }
+  </style>
+</head>
+<body>
+<h1>KickAlert — Test Paneli</h1>
+<p class="subtitle">Geliştirici test arayüzü · background konsolundan openTestPanel() ile açılır</p>
+
+<div id="status-row" class="status-row"></div>
+
+<div class="grid2">
+
+<!-- SOL KOLON -->
+<div>
+
+<div class="section">
+  <div class="section-title">🔔 Yeni Yayın Bildirimi</div>
+  <div class="row"><label>Kullanıcı adı</label><input type="text" id="notif-user" value="TestYayıncı" /></div>
+  <div class="row"><label>Başlık</label><input type="text" id="notif-title" value="Test yayını başladı!" /></div>
+  <div class="row"><label>Kategori</label><input type="text" id="notif-cat" value="Just Chatting" /></div>
+  <div class="row"><label>Avatar URL</label><input type="url" id="notif-avatar" placeholder="(boş = varsayılan ikon)" /></div>
+  <div class="row">
+    <label>Ses modu</label>
+    <select id="notif-sound">
+      <option value="extension">Extension sesi</option>
+      <option value="windows">Windows sesi</option>
+      <option value="silent">Sessiz</option>
+    </select>
+  </div>
+  <div class="row"><label>Gecikme</label>
+    <select id="notif-delay">
+      <option value="0">Anında</option>
+      <option value="3">3 saniye</option>
+      <option value="10">10 saniye</option>
+    </select>
+    <button id="btn-notif">▶ Gönder</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">📈 Anomali Bildirimleri</div>
+  <div class="row"><label>Kullanıcı adı</label><input type="text" id="anom-user" value="TestYayıncı" /></div>
+  <div class="row"><label>Artış %</label><input type="number" id="anom-spike-pct" value="120" min="1" max="999" /><button id="btn-spike">▶ Artış</button></div>
+  <div class="row"><label>Düşüş %</label><input type="number" id="anom-drop-pct" value="45" min="1" max="100" /><button id="btn-drop">▶ Düşüş</button></div>
+</div>
+
+<div class="section">
+  <div class="section-title">🔊 Ses Testleri</div>
+  <div class="row">
+    <button id="btn-sound-main">▶ Ana Ses</button>
+    <button id="btn-sound-sub">▶ İkincil Ses</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">⚙️ Anomali Eşikleri</div>
+  <div id="thresh-display"></div>
+</div>
+
+</div>
+
+<!-- SAĞ KOLON -->
+<div>
+
+<div class="section" style="border-color:#53FC18;border-width:2px;">
+  <div class="section-title" style="color:#53FC18;">🧪 E2E Test — Gerçek Akış Simülasyonu</div>
+  <div class="row"><label>Kanal slug</label><input type="text" id="e2e-slug" value="" placeholder="(boş = tüm kanalları kontrol et)" /></div>
+  <div class="row">
+    <button id="btn-e2e" class="success">▶ Tam Akış Testi</button>
+    <button id="btn-e2e-force" class="success">▶ Zorla Bildirim Testi</button>
+  </div>
+  <div id="e2e-results" style="margin-top:8px;"></div>
+</div>
+
+<div class="section">
+  <div class="section-title">🔍 API Testi</div>
+  <div class="row"><label>Kanal slug</label><input type="text" id="api-slug" value="jahrein" /></div>
+  <div class="row">
+    <button id="btn-api-check">Kanal Sorgula</button>
+    <button id="btn-api-token">Token Kontrol</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">🚀 Auto-Launch Testi</div>
+  <div class="row"><label>Kanal slug</label><input type="text" id="launch-slug" value="jahrein" /></div>
+  <div class="row">
+    <button id="btn-launch-trigger">Yeni Yayın Simüle Et</button>
+    <button id="btn-tab-guard">Tab Guard Test</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">🌙 DND Durumu</div>
+  <div id="dnd-display" style="font-size:12px;color:#888;line-height:1.8;"></div>
+</div>
+
+<div class="section" style="border-color:#53FC18;">
+  <div class="section-title" style="color:#53FC18;">💬 Chat Bildirimleri</div>
+  <div class="row"><label>Gönderen</label><input type="text" id="chat-test-user" value="TestKullanici" /></div>
+  <div class="row"><label>Kanal</label><input type="text" id="chat-test-channel" value="testkanal" /></div>
+  <div class="row"><label>Mesaj</label><input type="text" id="chat-test-msg" value="@sen nasılsın kardeşim?" /></div>
+  <div class="row">
+    <button id="btn-chat-tag">▶ Tag Bildirimi</button>
+    <button id="btn-chat-broadcaster">▶ Yayıncı Bildirimi</button>
+  </div>
+  <div class="row">
+    <button id="btn-chat-dump">Chat Ayarları Dump</button>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-title">🗄️ Storage & Canlı Durum</div>
+  <div class="row">
+    <button id="btn-state">Storage</button>
+    <button id="btn-live">Canlı Kanallar</button>
+    <button id="btn-viewer-hist">ViewerHistory</button>
+  </div>
+  <div class="row">
+    <button id="btn-clear" class="danger">liveSlugs Sıfırla</button>
+    <button id="btn-clear-vh" class="danger">ViewerHistory Temizle</button>
+  </div>
+</div>
+
+</div>
+</div>
+
+<div class="log-box" id="log"></div>
+
+<script src="../src/storage.js"></script>
+<script src="../src/utils.js"></script>
+<script src="../src/test.js"></script>
+</body>
+</html>

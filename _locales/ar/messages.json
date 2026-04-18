@@ -1,6 +1,57 @@
 {
+  "anomalyAlertLabel": {
+    "message": "تنبيه"
+  },
+  "anomalyDesc": {
+    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+  },
+  "anomalyDropEnabled": {
+    "message": "إشعار عند انخفاض مشبوه في المشاهدين"
+  },
+  "anomalyDropSettings": {
+    "message": "كشف الانخفاض"
+  },
+  "anomalyDropTitle": {
+    "message": "انخفاض مشبوه في المشاهدين"
+  },
+  "anomalyModeBadge": {
+    "message": "Badge in popup only"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktop notification + badge in popup"
+  },
+  "anomalyModeNotif": {
+    "message": "Desktop notification only"
+  },
+  "anomalyNote": {
+    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+  },
+  "anomalyNotifyMode": {
+    "message": "Notification mode"
+  },
+  "anomalySensitivity": {
+    "message": "الحساسية"
+  },
+  "anomalySpikeSettings": {
+    "message": "عتبات كشف الارتفاع المفاجئ"
+  },
+  "anomalySpikeTitle": {
+    "message": "ارتفاع مشبوه في المشاهدين"
+  },
+  "anomalyThreshold": {
+    "message": "Alert threshold"
+  },
+  "anomalyTitle": {
+    "message": "Viewer anomaly detection"
+  },
+  "anomalyWarnLabel": {
+    "message": "تحذير"
+  },
   "appDescription": {
     "message": "لا مزيد من البثوث المفاجئة في الثالثة صباحاً — KickAlert يلتقط كل بث مفاجئ ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
   },
   "autoLaunch": {
     "message": "الفتح التلقائي"
@@ -11,8 +62,134 @@
   "autoLaunchSettings": {
     "message": "إعدادات الفتح التلقائي"
   },
+  "autoLaunchTab": {
+    "message": "الفتح التلقائي"
+  },
+  "autoRefreshPopup": {
+    "message": "تحديث علامة التبويب تلقائياً"
+  },
   "autoUnmuteCheckbox": {
     "message": "إلغاء كتم الصوت تلقائياً عند الفتح<br />(ملاحظة: لا ينعكس على شريط الصوت)"
+  },
+  "bellMain": {
+    "message": "الصوت الرئيسي"
+  },
+  "bellMuted": {
+    "message": "بدون إشعار"
+  },
+  "bellSilent": {
+    "message": "إشعار صامت"
+  },
+  "bellSub": {
+    "message": "الصوت الثانوي"
+  },
+  "cardModeCompact": {
+    "message": "Compact"
+  },
+  "cardModeDetail": {
+    "message": "Detail"
+  },
+  "cardModeLabel": {
+    "message": "Card view"
+  },
+  "chatActiveChannel": {
+    "message": "القناة النشطة"
+  },
+  "chatBotFilter": {
+    "message": "مرشح البوتات"
+  },
+  "chatBotFilterDesc": {
+    "message": "إخفاء رسائل البوتات. انقر على الشريحة للإزالة."
+  },
+  "chatBotPlaceholder": {
+    "message": "إضافة بوت..."
+  },
+  "chatEmojiSpam": {
+    "message": "مرشح البريد المزعج للرموز التعبيرية"
+  },
+  "chatFavPlaceholder": {
+    "message": "إضافة اسم مستخدم..."
+  },
+  "chatFavoriteDesc": {
+    "message": "رسائل المفضلين تُبرز بلون Kick الخاص بهم."
+  },
+  "chatFavoriteUsers": {
+    "message": "المستخدمون المفضلون"
+  },
+  "chatFilterBlur": {
+    "message": "طمس"
+  },
+  "chatFilterHide": {
+    "message": "إخفاء"
+  },
+  "chatFilterMode": {
+    "message": "وضع التصفية"
+  },
+  "chatFilterModeDesc": {
+    "message": "الإخفاء يزيل الرسالة. الطمس يخفّفها — مرر للعرض."
+  },
+  "chatIntegrationDesc": {
+    "message": "عند التفعيل يظهر تبويب الدردشة أعلاه. بعد التثبيت الأول، قم بتحديث علامات تبويب Kick المفتوحة."
+  },
+  "chatIntegrationTitle": {
+    "message": "دمج الدردشة"
+  },
+  "chatKeywordDesc": {
+    "message": "الرسائل التي تحتوي على هذه الكلمات تُبرز باللون الأخضر."
+  },
+  "chatKeywordHighlight": {
+    "message": "تمييز الكلمات المفتاحية"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "إضافة كلمة..."
+  },
+  "chatNoChannel": {
+    "message": "لا توجد قناة Kick نشطة"
+  },
+  "chatRepeatDesc": {
+    "message": "يخفي عندما يرسل نفس المستخدم نفس الرسالة 3+ مرات."
+  },
+  "chatRepeatFilter": {
+    "message": "مرشح الرسائل المكررة"
+  },
+  "chatTab": {
+    "message": "الدردشة"
+  },
+  "chatTagDesc": {
+    "message": "احصل على إشعار عندما يذكر أحدهم اسمك."
+  },
+  "chatTagNotif": {
+    "message": "إشعار الإشارة"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 ذكرك"
+  },
+  "chatTagPlaceholder": {
+    "message": "اسم مستخدم Kick الخاص بك..."
+  },
+  "chatUserFilter": {
+    "message": "مرشح المستخدم"
+  },
+  "chatUserPlaceholder": {
+    "message": "إضافة اسم مستخدم..."
+  },
+  "chatWordFilter": {
+    "message": "مرشح الكلمات"
+  },
+  "chatWordPlaceholder": {
+    "message": "إضافة كلمة..."
+  },
+  "checkInterval": {
+    "message": "فترة التحقق"
+  },
+  "clearHistory": {
+    "message": "مسح"
+  },
+  "cloudSyncNote": {
+    "message": "مزامنة الإعدادات عبر الأجهزة من خلال حساب المتصفح. الأصوات المخصصة وسجل الإشعارات لا تتم مزامنتها."
+  },
+  "cloudSyncTitle": {
+    "message": "المزامنة السحابية"
   },
   "customSoundButtonClear": {
     "message": "[مسح]"
@@ -41,11 +218,35 @@
   "customSoundSubLabel": {
     "message": "الصوت الثانوي"
   },
+  "displaySettings": {
+    "message": "إعدادات العرض"
+  },
+  "dndEnd": {
+    "message": "النهاية"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "إيقاف الفتح التلقائي"
+  },
+  "dndMuteNotifications": {
+    "message": "كتم الإشعارات"
+  },
+  "dndMuteSound": {
+    "message": "كتم الأصوات"
+  },
+  "dndStart": {
+    "message": "البداية"
+  },
+  "dndTitle": {
+    "message": "عدم الإزعاج"
+  },
   "duplicateTabGuard": {
     "message": "حماية من التبويبات المكررة"
   },
   "duplicateTabGuardButtonTooltip": {
     "message": "تبديل حماية التبويبات المكررة. عند التفعيل، لن يتم فتح تبويب جديد إذا كان هناك تبويب مفتوح للبث."
+  },
+  "errorLoadingHistory": {
+    "message": "خطأ في تحميل السجل."
   },
   "fetchError": {
     "message": "فشل تحميل القنوات. تأكد من تسجيل الدخول إلى Kick وحاول مجدداً."
@@ -53,8 +254,68 @@
   "following": {
     "message": "المتابَعون"
   },
+  "groupAddPlaceholder": {
+    "message": "مجموعة جديدة..."
+  },
+  "groupAll": {
+    "message": "الكل"
+  },
+  "groupAssign": {
+    "message": "تعيين مجموعة"
+  },
+  "groupsTitle": {
+    "message": "مجموعات القنوات"
+  },
+  "history": {
+    "message": "سجل الإشعارات"
+  },
+  "historyGroupOlder": {
+    "message": "Earlier"
+  },
+  "historyGroupThisWeek": {
+    "message": "This week"
+  },
+  "historyGroupToday": {
+    "message": "Today"
+  },
+  "historyGroupYesterday": {
+    "message": "Yesterday"
+  },
+  "langBrowserNoteSupported": {
+    "message": "يتم استخدام لغة المتصفح: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "لغة المتصفح غير مدعومة — يتم استخدام الإنجليزية"
+  },
+  "langSectionTitle": {
+    "message": "اللغة"
+  },
+  "lastStream": {
+    "message": "Last stream"
+  },
+  "noDataYet": {
+    "message": "Not enough data yet"
+  },
+  "noHistoryYet": {
+    "message": "لا يوجد سجل بعد."
+  },
   "noLiveStreams": {
     "message": "لا توجد بثوث مباشرة."
+  },
+  "notifButtonMute": {
+    "message": "كتم"
+  },
+  "notifButtonOpen": {
+    "message": "فتح"
+  },
+  "notifDelayLabel": {
+    "message": "Notify after stream starts"
+  },
+  "notifDelayNow": {
+    "message": "Now"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 بدأ البث المباشر"
   },
   "notificationSettings": {
     "message": "إعدادات الإشعارات"
@@ -62,8 +323,14 @@
   "notificationSoundVolume": {
     "message": "مستوى الصوت"
   },
+  "onlySwitchChannels": {
+    "message": "إشعار القنوات المفعّلة فقط"
+  },
   "options": {
     "message": "الخيارات"
+  },
+  "optionsBack": {
+    "message": "رجوع"
   },
   "optionsButtonTooltip": {
     "message": "فتح صفحة الخيارات"
@@ -77,227 +344,8 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "إعادة تعيين الفتح التلقائي عند إعادة تشغيل المتصفح"
   },
-  "showNotificationCheckbox": {
-    "message": "إظهار إشعارات سطح المكتب"
-  },
-  "testSoundVolume": {
-    "message": "[اختبار]"
-  },
-  "appName": {
-    "message": "KickAlert"
-  },
-  "history": {
-    "message": "سجل الإشعارات"
-  },
-  "noHistoryYet": {
-    "message": "لا يوجد سجل بعد."
-  },
-  "errorLoadingHistory": {
-    "message": "خطأ في تحميل السجل."
-  },
-  "onlySwitchChannels": {
-    "message": "إشعار القنوات المفعّلة فقط"
-  },
-  "silentForOthers": {
-    "message": "إشعارات صامتة للقنوات الأخرى"
-  },
-  "checkInterval": {
-    "message": "فترة التحقق"
-  },
-  "autoLaunchTab": {
-    "message": "الفتح التلقائي"
-  },
-  "showOfflineChannels": {
-    "message": "إظهار القنوات غير المتصلة في تبويب المتابَعين"
-  },
-  "displaySettings": {
-    "message": "إعدادات العرض"
-  },
-  "autoRefreshPopup": {
-    "message": "تحديث علامة التبويب تلقائياً"
-  },
-  "optionsBack": {
-    "message": "رجوع"
-  },
-  "dndTitle": {
-    "message": "عدم الإزعاج"
-  },
-  "dndStart": {
-    "message": "البداية"
-  },
-  "dndEnd": {
-    "message": "النهاية"
-  },
-  "dndMuteNotifications": {
-    "message": "كتم الإشعارات"
-  },
-  "dndMuteSound": {
-    "message": "كتم الأصوات"
-  },
-  "dndMuteAutoLaunch": {
-    "message": "إيقاف الفتح التلقائي"
-  },
   "searchChannels": {
     "message": "...البحث عن القنوات"
-  },
-  "clearHistory": {
-    "message": "مسح"
-  },
-  "notifStartedStreaming": {
-    "message": "$1 بدأ البث المباشر"
-  },
-  "soundModeExtension": {
-    "message": "أصوات الإضافة"
-  },
-  "soundModeWindows": {
-    "message": "أصوات ويندوز"
-  },
-  "bellMain": {
-    "message": "الصوت الرئيسي"
-  },
-  "bellSub": {
-    "message": "الصوت الثانوي"
-  },
-  "bellSilent": {
-    "message": "إشعار صامت"
-  },
-  "bellMuted": {
-    "message": "بدون إشعار"
-  },
-  "soundModeExtensionTooltip": {
-    "message": "تنبيهات مخصصة لافتة — يصعب تفويتها"
-  },
-  "soundModeWindowsTooltip": {
-    "message": "صوت النظام العادي — قد يمر دون ملاحظة"
-  },
-  "cloudSyncTitle": {
-    "message": "المزامنة السحابية"
-  },
-  "cloudSyncNote": {
-    "message": "مزامنة الإعدادات عبر الأجهزة من خلال حساب Google. الأصوات المخصصة وسجل الإشعارات لا تتم مزامنتها."
-  },
-  "themeLabel": {
-    "message": "المظهر"
-  },
-  "themeDark": {
-    "message": "داكن"
-  },
-  "themeLight": {
-    "message": "فاتح"
-  },
-  "groupAll": {
-    "message": "الكل"
-  },
-  "groupsTitle": {
-    "message": "مجموعات القنوات"
-  },
-  "groupAddPlaceholder": {
-    "message": "مجموعة جديدة..."
-  },
-  "groupAssign": {
-    "message": "تعيين مجموعة"
-  },
-  "tooltipNoLive": {
-    "message": "KickAlert — لا توجد بثوث مباشرة"
-  },
-  "tooltipLiveCount": {
-    "message": "$1 مباشر"
-  },
-  "tooltipMore": {
-    "message": "+$1 المزيد"
-  },
-  "notifButtonOpen": {
-    "message": "فتح"
-  },
-  "notifButtonMute": {
-    "message": "كتم"
-  },
-  "anomalyTitle": {
-    "message": "Viewer anomaly detection"
-  },
-  "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
-  },
-  "anomalyThreshold": {
-    "message": "Alert threshold"
-  },
-  "anomalyNotifyMode": {
-    "message": "Notification mode"
-  },
-  "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
-  },
-  "anomalyModeNotif": {
-    "message": "Desktop notification only"
-  },
-  "anomalyModeBadge": {
-    "message": "Badge in popup only"
-  },
-  "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
-  },
-  "cardModeLabel": {
-    "message": "Card view"
-  },
-  "cardModeCompact": {
-    "message": "Compact"
-  },
-  "cardModeDetail": {
-    "message": "Detail"
-  },
-  "historyGroupToday": {
-    "message": "Today"
-  },
-  "historyGroupYesterday": {
-    "message": "Yesterday"
-  },
-  "historyGroupThisWeek": {
-    "message": "This week"
-  },
-  "historyGroupOlder": {
-    "message": "Earlier"
-  },
-  "lastStream": {
-    "message": "Last stream"
-  },
-  "notifDelayLabel": {
-    "message": "Notify after stream starts"
-  },
-  "notifDelayNow": {
-    "message": "Now"
-  },
-  "viewerTrendTitle": {
-    "message": "Viewer Trend"
-  },
-  "noDataYet": {
-    "message": "Not enough data yet"
-  },
-  "anomalyDropEnabled": {
-    "message": "إشعار عند انخفاض مشبوه في المشاهدين"
-  },
-  "anomalySpikeTitle": {
-    "message": "ارتفاع مشبوه في المشاهدين"
-  },
-  "anomalyDropTitle": {
-    "message": "انخفاض مشبوه في المشاهدين"
-  },
-  "anomalySpikeSettings": {
-    "message": "عتبات كشف الارتفاع المفاجئ"
-  },
-  "anomalyWarnLabel": {
-    "message": "تحذير"
-  },
-  "anomalyAlertLabel": {
-    "message": "تنبيه"
-  },
-  "anomalyDropSettings": {
-    "message": "كشف الانخفاض"
-  },
-  "anomalySensitivity": {
-    "message": "الحساسية"
-  },
-  "sensitivityMin": {
-    "message": "حساس"
   },
   "sensitivityAvg": {
     "message": "متوازن"
@@ -305,13 +353,104 @@
   "sensitivityMax": {
     "message": "صارم"
   },
-  "langSectionTitle": {
-    "message": "اللغة"
+  "sensitivityMin": {
+    "message": "حساس"
   },
-  "langBrowserNoteSupported": {
-    "message": "يتم استخدام لغة المتصفح: $1"
+  "showNotificationCheckbox": {
+    "message": "إظهار إشعارات سطح المكتب"
   },
-  "langBrowserNoteUnsupported": {
-    "message": "لغة المتصفح غير مدعومة — يتم استخدام الإنجليزية"
+  "showOfflineChannels": {
+    "message": "إظهار القنوات غير المتصلة في تبويب المتابَعين"
+  },
+  "silentForOthers": {
+    "message": "إشعارات صامتة للقنوات الأخرى"
+  },
+  "soundModeExtension": {
+    "message": "أصوات الإضافة"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "تنبيهات مخصصة لافتة — يصعب تفويتها"
+  },
+  "soundModeWindows": {
+    "message": "أصوات ويندوز"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "صوت النظام العادي — قد يمر دون ملاحظة"
+  },
+  "testSoundVolume": {
+    "message": "[اختبار]"
+  },
+  "themeDark": {
+    "message": "داكن"
+  },
+  "themeLabel": {
+    "message": "المظهر"
+  },
+  "themeLight": {
+    "message": "فاتح"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 مباشر"
+  },
+  "tooltipMore": {
+    "message": "+$1 المزيد"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — لا توجد بثوث مباشرة"
+  },
+  "viewerTrendTitle": {
+    "message": "Viewer Trend"
+  },
+  "chatBroadcasterNotif": {
+    "message": "إشعار رسالة المذيع",
+    "description": "Chat integration — chatBroadcasterNotif"
+  },
+  "chatBroadcasterDesc": {
+    "message": "تلقي إشعار عندما يكتب المذيع في الدردشة. حد أقصى إشعار واحد في الدقيقة.",
+    "description": "Chat integration — chatBroadcasterDesc"
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "كتب $1 في الدردشة",
+    "description": "Chat integration — chatBroadcasterNotifTitle"
+  },
+  "chatWordFilterDesc": {
+    "message": "يتم إخفاء أو تمويه الرسائل التي تحتوي على هذه الكلمات.",
+    "description": "Chat integration — chatWordFilterDesc"
+  },
+  "chatUserFilterDesc": {
+    "message": "يتم إخفاء أو تمويه رسائل المستخدمين المدرجين.",
+    "description": "Chat integration — chatUserFilterDesc"
+  },
+  "chatEmojiSpamDesc": {
+    "message": "يُعتم الرسائل ذات الرموز التعبيرية المفرطة (حرّك المؤشر للكشف).",
+    "description": "Chat integration — chatEmojiSpamDesc"
+  },
+  "anomalyAgeLabel": {
+    "message": "مباشر منذ $1 دقيقة",
+    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "انقر للإزالة",
+    "description": "Tooltip shown on hover over a removable chip in chat panel."
+  },
+  "timeAgoDay": {
+    "message": "قبل $1 يوم",
+    "description": "Relative time — timeAgoDay"
+  },
+  "timeAgoHour": {
+    "message": "قبل $1 س",
+    "description": "Relative time — timeAgoHour"
+  },
+  "timeAgoMin": {
+    "message": "قبل $1 د",
+    "description": "Relative time — timeAgoMin"
+  },
+  "timeAgoJustNow": {
+    "message": "الآن",
+    "description": "Relative time — timeAgoJustNow"
+  },
+  "viewerHistoryNoData": {
+    "message": "لا توجد بيانات كافية بعد",
+    "description": "Shown in viewer history modal when stream has too little data"
   }
 }

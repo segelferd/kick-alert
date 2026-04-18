@@ -168,6 +168,11 @@ const KickAPI = {
    * Map API response to our domain model
    */
   toDomainChannel(ch) {
+    // startedAt UTC normalize — Kick API Z suffix olmadan UTC döndürebilir
+    let rawStart = ch.start_time || ch.started_at || ch.livestream?.start_time || null;
+    if (rawStart && typeof rawStart === 'string' && !rawStart.endsWith('Z') && !rawStart.includes('+')) {
+      rawStart = rawStart + 'Z';
+    }
     return {
       isLive: ch.is_live || false,
       profilePic: ch.profile_picture || '',
@@ -176,7 +181,7 @@ const KickAPI = {
       sessionTitle: ch.session_title || '',
       categoryName: ch.categories?.[0]?.name || ch.category_name || '',
       viewerCount: ch.viewer_count || 0,
-      startedAt: ch.start_time || ch.started_at || ch.livestream?.start_time || null,
+      startedAt: rawStart,
       thumbnailUrl: (typeof ch.thumbnail === 'object' ? (ch.thumbnail?.url || ch.thumbnail?.src) : ch.thumbnail) || '',
     };
   },

@@ -52,7 +52,6 @@ async function getAvatarDataUrl(ch) {
 
 // ─── Init ───
 
-// _sessionStart storage'da tutulur — SW uyanınca sıfırlanmasın
 // Sensitivity → eşik mapping
 const SPIKE_THRESHOLDS = {
   min: { warn: 25,  alert: 75  },
@@ -218,11 +217,15 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
       changes[StorageKeys.DND_END] || changes[StorageKeys.SUSPEND_FROM_DATE]) {
     await updateBadgeColor();
   }
-  if (changes[StorageKeys.USER_LANGUAGE]) {
-    const newLang = changes[StorageKeys.USER_LANGUAGE].newValue;
-    if (newLang) {
-      console.log(`[KickAlert] Language changed to ${newLang} — reloading locale`);
+  if (changes[StorageKeys.USER_LANGUAGE] || changes[StorageKeys.USE_BROWSER_LANGUAGE]) {
+    // Either manual language choice or "use browser language" toggle changed.
+    // Re-detect and reload locale. detectLanguage() reads both flags.
+    try {
+      const newLang = await Utils.detectLanguage();
+      console.log(`[KickAlert] Language preference changed — reloading locale: ${newLang}`);
       await Utils.loadLocale(newLang);
+    } catch (e) {
+      console.warn('[KickAlert] Language reload failed:', e);
     }
   }
 });
@@ -335,11 +338,11 @@ async function checkViewerAnomalies(channels, history) {
           const mode = anomalySettings.notifyMode || 'both';
           if (mode === 'notif' || mode === 'both') {
             const icon = await getAvatarDataUrl(ch);
-            const spikeTitle = Utils.i18n('anomalySpikeTitle') || 'Şüpheli İzleyici Artışı';
+            const spikeTitle = Utils.i18n('anomalySpikeTitle') || 'Viewer spike';
             chrome.notifications.create('ka-anomaly-' + ch.channelSlug + '-' + now, {
               type: 'basic', iconUrl: icon,
               title: ch.userUsername + ' — ' + spikeTitle,
-              message: anomaly.label, silent: false,
+              message: anomaly.label,
             });
           }
           rec._lastRiseAlert = now;
@@ -357,11 +360,11 @@ async function checkViewerAnomalies(channels, history) {
             const mode = anomalySettings.notifyMode || 'both';
             if (mode === 'notif' || mode === 'both') {
               const icon = await getAvatarDataUrl(ch);
-              const dropTitle = Utils.i18n('anomalyDropTitle') || 'Şüpheli İzleyici Düşüşü';
+              const dropTitle = Utils.i18n('anomalyDropTitle') || 'Viewer drop';
               chrome.notifications.create('ka-drop-' + ch.channelSlug + '-' + now, {
                 type: 'basic', iconUrl: icon,
                 title: ch.userUsername + ' — ' + dropTitle,
-                message: drop.label, silent: false,
+                message: drop.label,
               });
             }
             rec._lastDropAlert = now;
@@ -414,7 +417,8 @@ function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
         ? now - new Date(streamStartedAt).getTime()
         : now - current[0].t;
       const streamAgeMin = Math.round(streamAge / 60000);
-      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)}`;
+      const ageLabel = Utils.i18n('anomalyAgeLabel', [String(streamAgeMin)]) || `${streamAgeMin} min`;
+      const label = `${ageLabel} · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)}`;
       return { pct: roc.pct, level, label };
     }
 
@@ -430,8 +434,9 @@ function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
       ? now - new Date(streamStartedAt).getTime()
       : now - current[0].t;
     const streamAgeMin = Math.round(streamAge / 60000);
+    const ageLabel2 = Utils.i18n('anomalyAgeLabel', [String(streamAgeMin)]) || `${streamAgeMin} min`;
     return { pct: totalPct, level,
-      label: `${streamAgeMin} dk yayında · ${formatK(baseValue)} → ${formatK(currentCount)}` };
+      label: `${ageLabel2} · ${formatK(baseValue)} → ${formatK(currentCount)}` };
   } catch { return null; }
 }
 
@@ -469,7 +474,8 @@ function getViewerDropSync(rec, currentCount, streamStartedAt, now, anomalySetti
       // İlk 15 dk'da düşüş alarmı verme — yayın başında organik dalgalanma olabilir
       if (streamAge < STREAM_SETTLE_MS) return null;
       const streamAgeMin = Math.round(streamAge / 60000);
-      const label = `${streamAgeMin} dk yayında · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)}`;
+      const ageLabel = Utils.i18n('anomalyAgeLabel', [String(streamAgeMin)]) || `${streamAgeMin} min`;
+      const label = `${ageLabel} · ${formatK(roc.avgPrev)} → ${formatK(roc.avgRecent)}`;
       return { pct: absPct, level, label };
     }
 
@@ -487,8 +493,9 @@ function getViewerDropSync(rec, currentCount, streamStartedAt, now, anomalySetti
 
     const level = dropPct >= alertThreshold ? 'alert' : 'warn';
     const streamAgeMin = Math.round(streamAge / 60000);
+    const ageLabel2 = Utils.i18n('anomalyAgeLabel', [String(streamAgeMin)]) || `${streamAgeMin} min`;
     return { pct: dropPct, level,
-      label: `${streamAgeMin} dk yayında · ${formatK(peak)} → ${formatK(currentCount)}` };
+      label: `${ageLabel2} · ${formatK(peak)} → ${formatK(currentCount)}` };
   } catch { return null; }
 }
 
@@ -539,10 +546,6 @@ async function checkChannels() {
 
   let notified = false;
 
-  // Session başlangıcını storage'dan oku — SW uyanınca sıfırlanmaz
-  const sessionData = await chrome.storage.local.get('_sessionStart');
-  const sessionStart = sessionData._sessionStart || Date.now();
-
   // Bildirim gecikmesi — loop dışında tek seferde oku
   const notifDelay = await Storage.getNotifDelay();
 
@@ -565,13 +568,7 @@ async function checkChannels() {
       }
     } else {
       // startedAt null — yayın ne zaman başladı bilinmiyor.
-      // viewerHistory kaydı varsa bu kanal daha önce görülmüştü — zaten yayındaydı, atla.
-      if (vh[ch.channelSlug] && (vh[ch.channelSlug].current?.length > 0 || vh[ch.channelSlug].pastAvgs?.length > 0)) {
-        console.log(`[KickAlert] Skipping known live (no startedAt, has history): ${ch.channelSlug}`);
-        liveChannelSlugs.add(ch.channelSlug);
-        continue;
-      }
-      // startedAt null + viewerHistory yok: API'den yayın başlangıcını sorgula
+      // API'den yayın başlangıcını sorgula — viewerHistory eski oturumdan kalmış olabilir
       const apiStartTime = await KickAPI.getChannelStartTime(ch.channelSlug);
       if (apiStartTime) {
         const streamStart = new Date(apiStartTime).getTime();
@@ -585,17 +582,23 @@ async function checkChannels() {
         // Yayın 10 dk içinde başlamış — yeni yayın, devam et
         console.log(`[KickAlert] New live confirmed via API startTime (${Math.round(streamAgeMs/60000)} min): ${ch.channelSlug}`);
       } else {
-        // API'den de bilgi gelmedi — sessizce kayıt et, yanlış bildirim riskini al
-        console.log(`[KickAlert] No startedAt, no history, no API time — silently registering: ${ch.channelSlug}`);
-        liveChannelSlugs.add(ch.channelSlug);
-        continue;
+        // API'den de bilgi gelmedi — büyük ihtimalle yeni başlamış yayın (API henüz güncellenmemiş)
+        // Bildirim gönder, yanlış skip'ten iyidir
+        console.log(`[KickAlert] No startedAt, no API time — treating as new live: ${ch.channelSlug}`);
       }
     }
 
     // Bildirim gecikmesi kontrolü
-    if (notifDelay > 0 && ch.startedAt) {
-      const streamAgeMin = (Date.now() - new Date(ch.startedAt).getTime()) / 60000;
-      if (streamAgeMin < notifDelay) {
+    if (notifDelay > 0) {
+      let streamAgeMin = null;
+      if (ch.startedAt) {
+        streamAgeMin = (Date.now() - new Date(ch.startedAt).getTime()) / 60000;
+      } else {
+        // startedAt null — API'den alınan startTime ile hesapla
+        const apiTime = await KickAPI.getChannelStartTime(ch.channelSlug);
+        if (apiTime) streamAgeMin = (Date.now() - new Date(apiTime).getTime()) / 60000;
+      }
+      if (streamAgeMin !== null && streamAgeMin < notifDelay) {
         console.log(`[KickAlert] Delay pending: ${ch.channelSlug} (${Math.round(streamAgeMin)}/${notifDelay}min)`);
         continue;
       }
@@ -682,25 +685,32 @@ async function updateDynamicTooltip(channels) {
 // Windows notification sound fix: silent: true — our own sound plays via offscreen
 
 async function sendNotification(ch, notifiedLives, isSilent) {
+  await Utils.ensureI18n();
   const id = `kickalert-${ch.channelSlug}-${Date.now()}`;
   const title = Utils.i18n('notifStartedStreaming', [ch.userUsername])
     || `${ch.userUsername} started streaming`;
   const iconUrl = await getAvatarDataUrl(ch);
 
-  const btnOpen = Utils.i18n('notifButtonOpen') || 'Open';
-  const btnMute = Utils.i18n('notifButtonMute') || 'Mute';
-
-  chrome.notifications.create(id, {
+  const isFirefox = typeof browser !== 'undefined';
+  const notifOptions = {
     type: 'basic',
     iconUrl: iconUrl,
     title: title,
     message: ch.sessionTitle || '-',
-    silent: isSilent,
-    buttons: [
+  };
+
+  // Firefox doesn't support buttons or silent in notifications.create
+  if (!isFirefox) {
+    const btnOpen = Utils.i18n('notifButtonOpen') || 'Open';
+    const btnMute = Utils.i18n('notifButtonMute') || 'Mute';
+    notifOptions.silent = isSilent;
+    notifOptions.buttons = [
       { title: btnOpen },
       { title: btnMute },
-    ],
-  });
+    ];
+  }
+
+  chrome.notifications.create(id, notifOptions);
   notifiedLives[id] = { url: `https://kick.com/${ch.channelSlug}`, slug: ch.channelSlug };
 }
 
@@ -839,10 +849,30 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 
 chrome.runtime.onStartup.addListener(async () => {
-  // Tarayıcı yeniden açıldı — liveSlugs ve sessionStart sıfırla
+  // Tarayıcı yeniden açıldı — liveSlugs sıfırla
   const now = Date.now();
   await chrome.storage.local.remove(['_liveSlugs', '_lastCheckDone', '_initLock']);
   await chrome.storage.local.set({ _sessionStart: now });
+
+  // viewerHistory current dizilerini temizle — anomali sistemi temiz başlasın
+  // PC kapat/aç sonrası eski current verisi kalıyor → sahte anomali gösterimi
+  try {
+    const vhData = await chrome.storage.local.get('viewerHistory');
+    const vh = vhData.viewerHistory || {};
+    let changed = false;
+    for (const slug of Object.keys(vh)) {
+      if (vh[slug].current && vh[slug].current.length > 0) {
+        vh[slug].current = [];
+        vh[slug].streamPeak = null;
+        vh[slug].streamValley = null;
+        changed = true;
+      }
+    }
+    if (changed) await chrome.storage.local.set({ viewerHistory: vh });
+  } catch (e) {
+    console.warn('[KickAlert] Failed to clear viewerHistory on startup:', e);
+  }
+
   initialize();
 });
 
@@ -870,7 +900,6 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         respond({ success: true, channels: stored, fromCache: true });
       } else {
         try {
-          _autoLaunchTabOpened = false; // Her check başında sıfırla — ilk sekme öne gelsin
   const channels = await KickAPI.getAllFollowingChannels();
           cachedChannels = channels;
           try { await chrome.storage.local.set({ _cachedChannels: channels }); } catch {}
@@ -942,6 +971,102 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
+  if (msg.type === 'CHAT_TAG_NOTIFICATION') {
+    (async () => {
+      try {
+        await Utils.ensureI18n();
+        const isFirefox = typeof browser !== 'undefined';
+        const fromUser = msg.fromUser || 'Someone';
+        const channel = msg.channel || '';
+        const message = msg.message || '';
+
+        const title = Utils.i18n('chatTagNotifTitle', [fromUser]) || `@${fromUser} sizi etiketledi`;
+        const body = (channel ? `[${channel}] ` : '') + message;
+
+        const id = `kickalert-tag-${Date.now()}`;
+        const notifOptions = {
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+          title: title,
+          message: body.substring(0, 200),
+        };
+        if (!isFirefox) {
+          notifOptions.silent = false;
+          if (channel) {
+            notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
+          }
+        }
+
+        chrome.notifications.create(id, notifOptions);
+
+        // Track for click handling — reuse notifiedLives structure
+        if (channel) {
+          const state = await getPersistedState();
+          state.notifiedLives[id] = {
+            url: `https://kick.com/${channel}`,
+            slug: channel,
+            isTag: true,
+          };
+          await setPersistedNotifiedLives(state.notifiedLives);
+        }
+
+        respond({ success: true });
+      } catch (e) {
+        console.warn('[KickAlert] CHAT_TAG_NOTIFICATION error:', e);
+        respond({ success: false, error: e.message });
+      }
+    })();
+    return true;
+  }
+
+  if (msg.type === 'CHAT_BROADCASTER_NOTIFICATION') {
+    (async () => {
+      try {
+        await Utils.ensureI18n();
+        const isFirefox = typeof browser !== 'undefined';
+        const fromUser = msg.fromUser || '';
+        const channel = msg.channel || '';
+        const message = msg.message || '';
+
+        const title = Utils.i18n('chatBroadcasterNotifTitle', [fromUser || channel])
+                      || `${fromUser || channel} wrote`;
+        const body = message;
+
+        const id = `kickalert-broadcaster-${Date.now()}`;
+        const notifOptions = {
+          type: 'basic',
+          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+          title: title,
+          message: body.substring(0, 200),
+        };
+        if (!isFirefox) {
+          notifOptions.silent = false;
+          if (channel) {
+            notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
+          }
+        }
+
+        chrome.notifications.create(id, notifOptions);
+
+        if (channel) {
+          const state = await getPersistedState();
+          state.notifiedLives[id] = {
+            url: `https://kick.com/${channel}`,
+            slug: channel,
+            isBroadcaster: true,
+          };
+          await setPersistedNotifiedLives(state.notifiedLives);
+        }
+
+        respond({ success: true });
+      } catch (e) {
+        console.warn('[KickAlert] CHAT_BROADCASTER_NOTIFICATION error:', e);
+        respond({ success: false, error: e.message });
+      }
+    })();
+    return true;
+  }
+
   if (msg.type === 'TEST_NOTIFICATION') {
     // Test notification with buttons — uses first live channel or a fake one
     const testCh = cachedChannels.find(c => c.isLive) || {
@@ -960,6 +1085,127 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     respond({ success: true, channel: testCh.userUsername });
     return false;
   }
+
+  // ─── E2E Test: Gerçek akışı simüle et ───
+  if (msg.type === 'E2E_TEST') {
+    (async () => {
+      const results = [];
+      const log = (step, status, detail) => results.push({ step, status, detail });
+
+      try {
+        // 1. API'den kanal listesi çek
+        log('API Fetch', 'running', 'getAllFollowingChannels() çağrılıyor...');
+        let channels;
+        try {
+          channels = await KickAPI.getAllFollowingChannels();
+          log('API Fetch', 'ok', `${channels.length} kanal döndü, ${channels.filter(c => c.isLive).length} canlı`);
+        } catch (e) {
+          log('API Fetch', 'error', e.message);
+          respond({ success: false, results });
+          return;
+        }
+
+        // 2. Belirli kanalı bul (varsa)
+        const targetSlug = msg.slug || null;
+        const liveChannels = channels.filter(c => c.isLive);
+        let targetCh = null;
+        if (targetSlug) {
+          targetCh = channels.find(c => c.channelSlug === targetSlug);
+          if (!targetCh) {
+            log('Kanal Bulma', 'error', `"${targetSlug}" takip listesinde yok`);
+          } else {
+            log('Kanal Bulma', 'ok', `${targetCh.userUsername} — isLive: ${targetCh.isLive}, startedAt: ${targetCh.startedAt || 'null'}, viewers: ${targetCh.viewerCount}`);
+          }
+        } else {
+          log('Kanal Listesi', 'ok', liveChannels.map(c => `${c.userUsername}(${c.viewerCount})`).join(', ') || 'Canlı kanal yok');
+        }
+
+        // 3. State kontrol
+        const state = await getPersistedState();
+        log('State', 'ok', `liveSlugs: ${state.liveSlugs.size}, notifiedLives: ${Object.keys(state.notifiedLives).length}, lastCheckDone: ${state.lastCheckDone}`);
+
+        // 4. Belirli kanal için karar simülasyonu
+        if (targetCh) {
+          const inLiveSlugs = state.liveSlugs.has(targetCh.channelSlug);
+          log('liveSlugs Check', inLiveSlugs ? 'warn' : 'ok',
+            inLiveSlugs ? `${targetSlug} liveSlugs'da VAR → "zaten canlı" sayılır, bildirim GİTMEZ` : `${targetSlug} liveSlugs'da YOK → yeni yayın adayı`);
+
+          if (!inLiveSlugs && targetCh.isLive) {
+            // startedAt kontrolü
+            if (targetCh.startedAt) {
+              const streamAgeMs = Date.now() - new Date(targetCh.startedAt).getTime();
+              const ageMin = Math.round(streamAgeMs / 60000);
+              if (streamAgeMs > 10 * 60 * 1000) {
+                log('startedAt Check', 'warn', `Yayın ${ageMin} dk önce başlamış (>10dk) → SKIP`);
+              } else {
+                log('startedAt Check', 'ok', `Yayın ${ageMin} dk önce başlamış (<10dk) → BİLDİRİM GİDER`);
+              }
+            } else {
+              // API'den startTime sorgula
+              log('startedAt', 'warn', 'startedAt null — API sorgulanıyor...');
+              const apiTime = await KickAPI.getChannelStartTime(targetCh.channelSlug);
+              if (apiTime) {
+                const streamAgeMs = Date.now() - new Date(apiTime).getTime();
+                const ageMin = Math.round(streamAgeMs / 60000);
+                log('API startTime', ageMin > 10 ? 'warn' : 'ok',
+                  `API startTime: ${apiTime} (${ageMin} dk) → ${ageMin > 10 ? 'SKIP' : 'BİLDİRİM GİDER'}`);
+              } else {
+                log('API startTime', 'ok', 'API startTime null — yeni yayın sayılır → BİLDİRİM GİDER');
+              }
+            }
+
+            // notifDelay kontrolü
+            const notifDelay = await Storage.getNotifDelay();
+            log('notifDelay', 'ok', `Gecikme ayarı: ${notifDelay} dk`);
+
+            // DND kontrolü
+            const dndActive = await Storage.isDndActive();
+            const dndMuteNotif = dndActive && await Storage.getDndMuteNotif();
+            log('DND', dndActive ? 'warn' : 'ok',
+              dndActive ? `DND AKTİF — bildirim susturma: ${dndMuteNotif}` : 'DND kapalı');
+
+            // Bildirim ayarı
+            const showNotif = await Storage.getShowNotification();
+            log('Bildirim Ayarı', showNotif ? 'ok' : 'warn',
+              showNotif ? 'Bildirimler açık' : 'Bildirimler KAPALI — bildirim gitmez');
+
+            // Suspend kontrolü
+            const suspended = !!(await Storage.getSuspendFromDate());
+            log('Suspend', suspended ? 'warn' : 'ok',
+              suspended ? 'Eklenti askıda — bildirim gitmez' : 'Eklenti aktif');
+
+            // i18n kontrolü
+            await Utils.ensureI18n();
+            const lang = Utils.getCurrentLang();
+            const testTitle = Utils.i18n('notifStartedStreaming', [targetCh.userUsername]);
+            log('i18n', 'ok', `Dil: ${lang} — Bildirim metni: "${testTitle}"`);
+
+            // Auto-launch kontrolü
+            const autoOpen = await Storage.getAutoOpenChannels();
+            const isAutoLaunch = !!(autoOpen && autoOpen[targetCh.channelSlug]);
+            log('Auto-Launch', 'ok', isAutoLaunch ? `${targetSlug} auto-launch AÇIK` : `${targetSlug} auto-launch kapalı`);
+
+            // Anomali kontrolü
+            const anomalySettings = await Storage.getAnomalySettings();
+            log('Anomali', 'ok', `Anomali: ${anomalySettings.enabled ? 'açık' : 'kapalı'}, Spike: ${anomalySettings.spikeSensitivity}, Drop: ${anomalySettings.dropEnabled ? anomalySettings.dropSensitivity : 'kapalı'}`);
+          }
+        }
+
+        // 5. viewerHistory durumu
+        const vhData = await chrome.storage.local.get('viewerHistory');
+        const vh = vhData.viewerHistory || {};
+        const vhKeys = Object.keys(vh);
+        const vhSummary = vhKeys.slice(0, 5).map(s => `${s}(c:${(vh[s].current||[]).length},p:${(vh[s].pastAvgs||[]).length})`).join(', ');
+        log('viewerHistory', 'ok', `${vhKeys.length} kanal: ${vhSummary}${vhKeys.length > 5 ? '...' : ''}`);
+
+        respond({ success: true, results });
+      } catch (e) {
+        log('Genel Hata', 'error', e.message + ' — ' + e.stack?.split('\n')[1]?.trim());
+        respond({ success: false, results });
+      }
+    })();
+    return true;
+  }
 });
 
 self.onmessage = () => {};
@@ -976,4 +1222,13 @@ self.testNotification = async function() {
   await sendNotification(testCh, state.notifiedLives, true);
   await setPersistedNotifiedLives(state.notifiedLives);
   console.log(`[KickAlert] Test notification sent for: ${testCh.userUsername}`);
+};
+
+// ─── Test Panel ───
+// Sadece geliştirici konsolundan erişilebilir
+// background context konsoluna: openTestPanel() yaz
+self.openTestPanel = function() {
+  const url = chrome.runtime.getURL('html/test.html') + '?key=Temmuz2014';
+  chrome.tabs.create({ url, active: true });
+  console.log('[KickAlert] Test panel açıldı');
 };
