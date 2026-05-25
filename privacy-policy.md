@@ -1,10 +1,10 @@
 # KickAlert — Privacy Policy
 
-**Last updated:** April 2026
+**Last updated:** May 2026
 
 ## Overview
 
-KickAlert is a browser extension that notifies you when your followed Kick.com streamers go live and provides viewer analytics. Your privacy matters — this extension works entirely within your browser with no external data collection.
+KickAlert is a browser extension that notifies you in real time when your followed Kick.com streamers go live, offers optional chat filtering, and provides viewer analytics. Your privacy matters — this extension works entirely within your browser with no external data collection.
 
 ## Data Collection
 
@@ -49,15 +49,23 @@ All settings listed above **except**: custom sound files, notification history, 
 | `offscreen` | Play custom notification sounds in background (Chrome only) |
 | `alarms` | Reliably schedule periodic channel checks every 30–300 seconds |
 | `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API requests |
+| `scripting` | Inject the content script into open kick.com tabs as a reliability fallback (reads only public channel status) |
+| `host: kick.com` | Fetch followed channels and live status; read session cookie for auth |
+| `host: ws-us2.pusher.com` | Connect to Kick's real-time WebSocket service for instant live-stream events |
 
 ## Third-Party Services
 
 KickAlert communicates only with:
 
 - **kick.com** — To fetch followed channels and their live status via the official API
+- **ws-us2.pusher.com** — Kick's own real-time WebSocket service, used to receive instant live-stream events for channels you follow (only public stream-start events are read)
 - **player.kick.com** — To embed live streams in the multi-stream viewer (via iframe)
 
-No analytics, tracking, advertising, or telemetry services are used.
+No analytics, tracking, advertising, or telemetry services are used. KickAlert connects to Pusher because that is the real-time infrastructure Kick itself uses; no data about you is sent to it — the extension only listens for public "channel is live" events.
+
+## Chat Integration (Optional)
+
+When you enable the optional Chat tab, KickAlert reads chat messages on the Kick.com page you are viewing **locally in your browser** to apply your chosen filters (hiding bots, spam, blocked words/users, etc.) and to highlight keywords, favorite users, mentions of you, and broadcaster messages. Chat content is processed entirely on your device in real time and is **never stored, logged, or transmitted anywhere**. The only persisted chat-related settings are your own filter preferences, blocklists, keywords, and favorite-user list.
 
 ## Viewer Anomaly Detection
 

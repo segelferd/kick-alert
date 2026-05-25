@@ -1,56 +1,65 @@
 # KickAlert
 
-**Chrome & Firefox Extension — Kick.com Live Stream Notifications & Viewer Analytics**
+**Chrome & Firefox Extension — Real-Time Kick.com Live Stream Notifications, Chat Filters & Viewer Analytics**
 
-No more ninja streams at 3 AM — KickAlert catches every surprise broadcast, even the sneakiest ones ;)
+Your favorite streamer goes live at 3 AM. You're asleep. You miss it. KickAlert makes sure that never happens again — catching every surprise broadcast the instant it starts.
 
 ## Features
 
-### 🔔 Notifications & Alerts
-- **Live Notifications** — Desktop alerts with streamer's avatar when followed channels go live
-- **Notification Actions** — Open or Mute channels directly from the notification popup
-- **Notification Delay** — Get notified immediately, or after 5, 10, or 15 minutes
-- **Per-Channel Sound Control** — 4-state bell: main sound / secondary sound / silent / muted
-- **Dynamic Tooltip** — Hover over the icon to see who's live without opening the popup
+### ⚡ Real-Time Notifications
+- **Live WebSocket alerts** — built on a persistent Pusher WebSocket connection, notifications fire the **moment** a followed channel goes live (no polling lag)
+- **Desktop notifications** with the streamer's avatar
+- **Notification actions** — open or mute channels directly from the popup
+- **Notification delay** — immediate, or after 5 / 10 / 15 minutes
+- **Per-channel sound control** — 4-state bell: main / secondary / silent / muted
+- **Dynamic tooltip** — hover the icon to see who's live without opening the popup
+
+### 💬 Chat Integration (optional)
+A dedicated Chat tab with **9 configurable filters** — take back control of any channel's chat:
+- **Bot filter** — hide known chat bots
+- **Word / user blocklists**
+- **Repeated-message filter** (anti-spam)
+- **Emoji-spam filter**
+- **Keyword highlight** — glow on messages matching your keywords
+- **Favorite-user highlight** — uses the user's own Kick color
+- **@mention alerts** — desktop notification when someone tags you
+- **Broadcaster-message alerts** — get notified when the streamer talks
+- Each filter has its own on/off switch, with **hide** or **blur** mode
 
 ### 📊 Viewer Anomaly Detection
-- **Spike Detection** — Alerts when a channel's viewer count rises abnormally fast
-- **Drop Detection** — Alerts when a channel's viewer count falls abnormally fast
-- **Sensitivity Control** — Sensitive / Balanced / Strict for both spike and drop
-- **Rate-of-Change Engine** — Detects sudden jumps using a 30-minute sliding window (60 data points)
-- **Session Peak/Valley Tracking** — Tracks all-time high and low per stream, resets each cooldown
-- **Smart Thresholds** — Min 1,000 viewers required; no false alarms at stream start
+- **Spike & drop detection** — alerts when a channel's viewer count rises or falls abnormally fast
+- **Sensitivity control** — Sensitive / Balanced / Strict
+- **Rate-of-change engine** — sliding-window comparison to catch sudden jumps
+- **Session peak/valley tracking** — per-stream all-time high and low
+- **Anomaly badge** — colored badge (↑ spike / ↓ drop) on channel cards
+
+### 📈 Channel Overview & Trends
+- **Sparkline trend graph** — mini viewer chart on every live card
+- **Viewer trend modal** — full chart with peak / low / averages, a rotating **Overall / Now** momentum badge, and marked peak point
+- **Favorite channels** — star channels (available on both tabs); favorites + live appear first
+- **Channel groups** — create custom groups, filter with a chip-bar
+- **Category filter** — filter live channels by game/category
+- **Offline channels** — optionally show followed channels that aren't live, with last-seen info
+- **Search** — across Following and Auto-Launch tabs, including category names
 
 ### 📺 Multi-Stream Viewer
-- Watch up to 4 Kick channels simultaneously in a dedicated tab
-- 5 layout options: solo, side-by-side, triple, 2×2 grid, focus
-- Drag and drop to reorder streams
+- Watch up to **4 Kick channels simultaneously** in a dedicated tab
+- Multiple layout options (solo, side-by-side, triple, 2×2 grid, focus)
+- Mute / unmute individual streams with one click
 
 ### 🚀 Auto-Launch
-- Automatically open streams in a new tab per-channel toggle
-- **Duplicate Tab Guard** — Won't open a tab if the stream is already open
-- **Suspend Mode** — Pause auto-launch temporarily
-
-### 📋 Channel Overview
-- **Sparkline Trend Graph** — Mini viewer trend chart on every live card
-- **Viewer History Modal** — Full trend chart with min/max labels, navigate between live channels
-- **Anomaly Badge** — Colored badge (↑ spike / ↓ drop) directly on channel cards
-- **Favorite Channels** — Star channels, they appear first (favorite+live priority)
-- **Channel Groups** — Create custom groups, filter with chip-bar
-- **Category Filter** — Filter live channels by game/category
-- **Offline Channels** — Optionally show followed channels that are not live, with last-seen info
-- **Search** — Filter across Following and Auto-Launch tabs, including category names
+- Automatically open streams in a new tab — per-channel toggle
+- **Duplicate tab guard** — won't open a tab if the stream is already open
+- **Suspend mode** — pause auto-launch temporarily
+- **Auto-unmute** — automatically unmute the player after launch
 
 ### ⚙️ Settings
-- **Do Not Disturb** — Schedule quiet hours; mute notifications, sounds, auto-launch independently
-- **Cloud Sync** — Sync settings across devices via your Google account
-- **Dark & Light Theme**
-- **Sound Mode** — Extension sounds (custom audio + volume control) or Windows notification sounds
-- **Custom Sounds** — Upload your own audio files (up to 2 MB each)
-- **Auto-Refresh Popup** — Keep the following list up to date automatically
-- **Adjustable Check Interval** — 30–300 seconds
-- **Auto-Unmute** — Automatically unmute player after auto-launch
-- **12 Languages** — EN, TR, DE, FR, ES, PT-BR, AR, JA, KO, RU, IT, ZH-CN (runtime switchable)
+- **Do Not Disturb** — schedule quiet hours; mute notifications, sounds, and auto-launch independently
+- **Cloud sync** — sync settings across devices via your browser account
+- **Dark & light theme**
+- **Custom sounds** — upload your own audio files (up to 2 MB each), with volume control
+- **Adjustable check interval** — fallback polling between 30–300 seconds
+- **13 languages** — EN, TR, DE, FR, ES, PT-BR, IT, RU, JA, KO, ZH-CN, AR, CS (runtime switchable, auto-detected)
 
 ## Installation
 
@@ -71,26 +80,31 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 
 ```
 ├── src/
-│   ├── background.js    # Service worker — channel polling, notifications, anomaly detection
-│   ├── popup.js         # Popup UI — channel cards, sparklines, options panel
+│   ├── background.js    # Service worker — WebSocket coordination, notifications, anomaly detection
+│   ├── pusher.js        # Pusher WebSocket client — real-time live events
+│   ├── offscreen.js     # Offscreen document — persistent WebSocket + background audio
+│   ├── popup.js         # Popup UI — channel cards, sparklines, trend modal, options
+│   ├── chat.js          # Chat integration — 9 filters, highlights, mention alerts
+│   ├── bot_tracker.js   # Chat bot detection / health scoring
+│   ├── content.js       # Content script — auto-unmute + reliable live-status on kick.com
 │   ├── storage.js       # Storage abstraction layer
 │   ├── kickapi.js       # Kick.com API client — Bearer auth, cursor pagination, backoff
-│   ├── utils.js         # i18n, formatters (formatK, formatDuration)
-│   ├── offscreen.js     # Background audio playback (Chrome)
-│   ├── content.js       # Content script — auto-unmute on kick.com
-│   └── multistream.js   # Multi-stream viewer page logic
+│   ├── multistream.js   # Multi-stream viewer page logic
+│   ├── utils.js         # i18n, formatters (formatViewers, formatDuration)
+│   └── test.js          # Built-in test panel logic
 ├── html/
 │   ├── popup.html       # Extension popup
 │   ├── multistream.html # Multi-stream viewer tab
-│   └── offscreen.html   # Offscreen document for audio
+│   ├── offscreen.html   # Offscreen document (WebSocket + audio)
+│   └── test.html        # Test / diagnostics panel
 ├── css/
 │   ├── popup.css        # Popup & options styles
 │   └── multistream.css  # Multi-stream viewer styles
-├── _locales/            # 12 language files
-├── icons/               # Extension icons (48px, 128px)
+├── _locales/            # 13 language files
+├── icons/               # Extension icons
 ├── sounds/              # Default notification sounds
-├── manifest.json        # Chrome MV3 manifest
-└── manifest.firefox.json # Firefox-specific manifest
+├── rules.json           # declarativeNetRequest rules (Referer header)
+└── manifest.json        # Manifest V3 (Chrome & Firefox builds kept in sync)
 ```
 
 ## Permissions
@@ -98,36 +112,38 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 | Permission | Reason |
 |---|---|
 | `storage` | Preferences, per-channel settings, favorites, groups, history, cloud sync |
+| `offscreen` | Holds the persistent WebSocket connection and plays notification sounds (MV3 workers can't do either directly) |
 | `notifications` | Desktop notifications when streamers go live |
-| `tabs` | Auto-launch, duplicate tab detection, multi-stream management |
 | `cookies` | Read Kick.com session cookie for API auth (never sent elsewhere) |
-| `offscreen` | Play custom notification sounds in background (Chrome only) |
-| `alarms` | Reliable periodic channel checks (MV3 workers sleep after ~30s) |
+| `tabs` | Auto-launch, duplicate tab detection, multi-stream management |
+| `alarms` | Fallback periodic checks (MV3 workers sleep after ~30s) |
 | `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API |
+| `scripting` | Inject content script into open kick.com tabs (reliability fallback) |
+| `host: kick.com` | Fetch followed channels & live status |
+| `host: ws-us2.pusher.com` | Real-time WebSocket live events |
 
 ## Technical Highlights
 
-- **Zero dependencies** — Pure vanilla JS, no build step required
-- **Manifest V3** — Modern extension architecture, cross-browser
-- **chrome.alarms** — Reliable scheduling that survives service worker sleep
-- **Rate-of-change anomaly engine** — Sliding window comparison (last 2 min vs previous 2 min)
-- **streamPeak / streamValley** — Session-wide extremes for accurate long-term detection
-- **Exponential backoff** — Smart retry on API failures (1s → 2s → 4s → 8s, 429-aware)
-- **Stale-while-revalidate** — Instant popup loading from cached channel data
-- **Cloud sync** — Optional chrome.storage.sync with smart exclusion of large/local-only data
-- **Custom i18n** — Runtime language switching, notifications follow user's selected language
-- **Persisted state** — liveChannelSlugs and notifiedLives survive service worker restarts
+- **Real-time over WebSocket** — a live Pusher connection (`wss://ws-us2.pusher.com`) delivers `StreamerIsLive` events instantly, replacing slow polling and bypassing peak-hour rate limits
+- **Offscreen-held connection** — the WebSocket and audio live in an offscreen document, surviving Manifest V3 service-worker sleep
+- **Layered request resilience** — Referer override, request jitter, content-script proxy fallback, and minimal headers keep API calls reliable
+- **Zero dependencies** — pure vanilla JS, no build step required
+- **Manifest V3** — modern, cross-browser architecture
+- **Rate-of-change anomaly engine** — sliding-window comparison with session-wide peak/valley tracking
+- **Exponential backoff** — smart retry on API failures (429-aware)
+- **Stale-while-revalidate** — instant popup loading from cached channel data
+- **Cloud sync** — optional browser sync with smart exclusion of large/local-only data
+- **Custom i18n** — runtime language switching; notifications follow the user's selected language
 
 ## Privacy
 
-KickAlert does not collect, transmit, or store any personal data externally. All data stays in your browser. See [Privacy Policy](https://raw.githubusercontent.com/segelferd/kick-alert/main/privacy-policy.md).
+KickAlert does not collect, transmit, or store any personal data externally. It communicates only with `kick.com` and Kick's real-time WebSocket service. All data stays in your browser. See [Privacy Policy](https://raw.githubusercontent.com/segelferd/kick-alert/main/privacy-policy.md).
 
 ## Support
 
 If you find KickAlert useful, consider supporting the project:
 
 - **Buy Me a Coffee:** [buymeacoffee.com/segelferd](https://buymeacoffee.com/segelferd)
-- **GitHub Sponsors:** [github.com/sponsors/segelferd](https://github.com/sponsors/segelferd)
 - **Bitcoin:** `bc1q7cmtp9vd6wmztxun0702whyve53u5xld2g82qp`
 
 ## License
