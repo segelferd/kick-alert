@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "Şüpheli İzleyici Artışı"
   },
+  "anomalyPlateauTitle": {
+    "message": "Şüpheli Sabit İzleyici",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 dk sabit · ~$2 izleyici",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "Şüpheli Düzgün Tırmanış",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "$2 dk içinde +%$1 · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Uyarı eşiği"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "Kanallar yüklenemedi. Kick'e giriş yaptığınızdan emin olun ve tekrar deneyin."
   },
+  "fetchErrorBlocked": {
+    "message": "Bağlantınız geçici olarak engellendi. Birkaç dakika bekleyin veya VPN deneyin.",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "Takip Edilenler"
   },
@@ -426,8 +446,36 @@
     "description": "Chat integration — chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
-    "message": "$1 dk yayında",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "message": "$1 dk'dır yayında",
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "$1 dk'dır takipte",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "son $1 dk",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "Bot şüphe skoru: %$1",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "Bot Tespiti",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "Bot skorunu tüm canlı kanallarda göster",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "Kapalıyken skor yalnızca ani yükselişte görünür.",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "Skor = izleyici sayısına göre beklenen ile sohbet sağlığının karşılaştırması. Logaritmik temel küçük ve büyük kanalları dengeler.",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "Kaldırmak için tıkla",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "Henüz yeterli veri yok",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "Zirve",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "Dip",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "Ortalama",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "Süre",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "zirve",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "sabit",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "Yayın ort.",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "Son 6 ort.",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "Genel",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "Şu an",
+    "description": "Trend badge last-6-intervals label"
   }
 }

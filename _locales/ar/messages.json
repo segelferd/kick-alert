@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "ارتفاع مشبوه في المشاهدين"
   },
+  "anomalyPlateauTitle": {
+    "message": "مشاهدون ثابتون مشبوهون",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 دقيقة ثابت · ~$2 مشاهد",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "نمو خطي مشبوه",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "+$1% خلال $2 دقيقة · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Alert threshold"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "فشل تحميل القنوات. تأكد من تسجيل الدخول إلى Kick وحاول مجدداً."
   },
+  "fetchErrorBlocked": {
+    "message": "تم حظر اتصالك مؤقتًا. انتظر بضع دقائق أو جرب VPN.",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "المتابَعون"
   },
@@ -426,8 +446,36 @@
     "description": "Chat integration — chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
-    "message": "مباشر منذ $1 دقيقة",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "message": "منذ $1 دقيقة بث مباشر",
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "يتم تتبع $1 دقيقة",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "آخر $1 دقيقة",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "درجة شكّ البوت: $1٪",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "كشف البوتات",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "إظهار درجة البوت في كل القنوات المباشرة",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "عند الإيقاف، تظهر النتيجة فقط أثناء الارتفاع المفاجئ.",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "النتيجة = صحة الدردشة مقارنة بالعدد المتوقع حسب عدد المشاهدين. خط الأساس اللوغاريتمي يطبّع القنوات الصغيرة والكبيرة.",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "انقر للإزالة",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "لا توجد بيانات كافية بعد",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "الذروة",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "الأدنى",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "المتوسط",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "المدة",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "الذروة",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "مستقر",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "المعدل",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "آخر 6",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "إجمالي",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "الآن",
+    "description": "Trend badge last-6-intervals label"
   }
 }

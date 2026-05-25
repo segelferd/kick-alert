@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "Pic de viewers suspect"
   },
+  "anomalyPlateauTitle": {
+    "message": "Spectateurs Stables Suspects",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 min stable · ~$2 spectateurs",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "Croissance Linéaire Suspecte",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "+$1% en $2 min · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Alert threshold"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "Échec du chargement des chaînes. Vérifiez que vous êtes connecté à Kick et réessayez."
   },
+  "fetchErrorBlocked": {
+    "message": "Votre connexion a été temporairement bloquée. Attendez quelques minutes ou essayez un VPN.",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "Abonnements"
   },
@@ -427,7 +447,35 @@
   },
   "anomalyAgeLabel": {
     "message": "en direct depuis $1 min",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "suivi depuis $1 min",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "$1 dernières min",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "Score de suspicion de bot : $1 %",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "Détection de bots",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "Afficher le score de bot sur tous les canaux en direct",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "Si désactivé, le score apparaît uniquement lors d'un pic.",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "Score = santé du chat vs attendu selon spectateurs. Base logarithmique normalise petites/grandes chaînes.",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "Cliquer pour supprimer",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "Pas encore assez de données",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "Pic",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "Min.",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "Moyenne",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "Durée",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "pic",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "stable",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "Moyenne",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "6 dern.",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "Global",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "Maintenant",
+    "description": "Trend badge last-6-intervals label"
   }
 }

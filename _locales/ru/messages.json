@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "Подозрительный рост зрителей"
   },
+  "anomalyPlateauTitle": {
+    "message": "Подозрительно стабильные зрители",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 мин стабильно · ~$2 зрителей",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "Подозрительно линейный рост",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "+$1% за $2 мин · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Alert threshold"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "Не удалось загрузить каналы. Убедитесь, что вы вошли в Kick, и попробуйте снова."
   },
+  "fetchErrorBlocked": {
+    "message": "Ваше подключение временно заблокировано. Подождите несколько минут или попробуйте VPN.",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "Подписки"
   },
@@ -427,7 +447,35 @@
   },
   "anomalyAgeLabel": {
     "message": "в эфире $1 мин",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "отслеживается $1 мин",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "последние $1 мин",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "Оценка подозрения на ботов: $1%",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "Обнаружение ботов",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "Показывать оценку ботов на всех живых каналах",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "Когда отключено, оценка отображается только во время всплеска.",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "Оценка = здоровье чата против ожидаемого по числу зрителей. Логарифмическая база нормализует малые/большие каналы.",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "Нажмите, чтобы удалить",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "Пока недостаточно данных",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "Пик",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "Мин.",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "Среднее",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "Время",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "пик",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "стабильно",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "Среднее",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "Посл. 6",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "Общий",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "Сейчас",
+    "description": "Trend badge last-6-intervals label"
   }
 }

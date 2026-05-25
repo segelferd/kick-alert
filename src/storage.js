@@ -38,6 +38,12 @@ const StorageKeys = {
   NOTIF_DELAY: 'notifDelay',            // dakika: 0,5,10,15
   CHAT_INTEGRATION_ENABLED: 'chatIntegrationEnabled',
   CHAT_SETTINGS: 'chatSettings',        // { filterBlur, botFilter, botList, emojiFilter, repeatFilter, wordFilterEnabled, wordList, userFilterEnabled, userList, keywordEnabled, keywordList, favEnabled, favList, tagEnabled, tagUsername, broadcasterNotif }
+  // v2.3.0: Bot tracker
+  BOT_TRACKER_ENABLED: 'botTrackerEnabled',  // master toggle
+  BOT_TRACKER_NOTIFY: 'botTrackerNotify',    // skor bildirimde göster (default false)
+  BOT_SCORE_ALWAYS_VISIBLE: 'botScoreAlwaysVisible',  // popup'ta her zaman göster (default false — sadece anomaly'de)
+  CHATROOM_ID_CACHE: '_chatroomIdCache',      // { slug: chatroomId, ... } — internal
+  BOT_SCORES: '_botScores',                   // { slug: { score, msgPerMin, ratio, computedAt }, ... } — internal
 };
 
 // Keys that should NOT be synced (too large, device-specific, or internal)
@@ -49,6 +55,8 @@ const SYNC_EXCLUDE_KEYS = new Set([
   StorageKeys.CLOUD_SYNC_ENABLED,      // meta — each device decides independently
   StorageKeys.VIEWER_HISTORY,          // grows very large (60 entries × N channels)
   StorageKeys.ANOMALY_SETTINGS,        // device-specific sensitivity prefs
+  StorageKeys.CHATROOM_ID_CACHE,       // v2.3.0: internal API cache
+  StorageKeys.BOT_SCORES,              // v2.3.0: runtime calculated, no need to sync
   '_liveSlugs', '_notifiedLives', '_lastCheckDone', // internal state
 ]);
 
@@ -63,6 +71,12 @@ const StorageDefaults = {
   [StorageKeys.NOTIFICATION_HISTORY]: [],
   [StorageKeys.SHOW_OFFLINE_CHANNELS]: false,
   [StorageKeys.AUTO_REFRESH_POPUP]: false,
+  // v2.3.0: Bot tracker — default açık (Chrome only)
+  [StorageKeys.BOT_TRACKER_ENABLED]: true,
+  [StorageKeys.BOT_TRACKER_NOTIFY]: false,
+  [StorageKeys.BOT_SCORE_ALWAYS_VISIBLE]: false,
+  [StorageKeys.CHATROOM_ID_CACHE]: {},
+  [StorageKeys.BOT_SCORES]: {},
 };
 
 let _syncEnabled = false;
@@ -76,7 +90,15 @@ const Storage = {
   },
 
   async set(key, value) {
-    await chrome.storage.local.set({ [key]: value });
+    // v2.1.0: storage.local.set quota aşımı veya başka hata atabilir.
+    // Eklentinin çökmesini engellemek için sarıldı; hata olursa warn'la
+    // ve sessizce devam et (eski veri korunur).
+    try {
+      await chrome.storage.local.set({ [key]: value });
+    } catch (e) {
+      console.warn('[KickAlert] Storage write failed:', key, e.message);
+      return; // sync'e de yazma anlamsız — vazgeç
+    }
     // Mirror to sync if enabled and key is syncable
     if (_syncEnabled && !SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
       try { await chrome.storage.sync.set({ [key]: value }); }
@@ -125,7 +147,7 @@ const Storage = {
     }
     try {
       await chrome.storage.sync.set(toSync);
-      console.log('[KickAlert] Cloud sync: pushed', Object.keys(toSync).length, 'keys');
+      console.debug('[KickAlert] Cloud sync: pushed', Object.keys(toSync).length, 'keys');
     } catch (e) {
       console.warn('[KickAlert] Cloud sync push failed:', e.message);
     }
@@ -144,7 +166,7 @@ const Storage = {
       }
       if (Object.keys(toLocal).length > 0) {
         await chrome.storage.local.set(toLocal);
-        console.log('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys');
+        console.debug('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys');
       }
     } catch (e) {
       console.warn('[KickAlert] Cloud sync pull failed:', e.message);
@@ -165,7 +187,7 @@ const Storage = {
       }
       if (Object.keys(toLocal).length > 0) {
         chrome.storage.local.set(toLocal);
-        console.log('[KickAlert] Cloud sync: received', Object.keys(toLocal).length, 'keys from another device');
+        console.debug('[KickAlert] Cloud sync: received', Object.keys(toLocal).length, 'keys from another device');
       }
     });
   },
@@ -444,5 +466,77 @@ const Storage = {
     current[key] = value;
     await this.setChatSettings(current);
     return current;
+  },
+
+  // ─── v2.3.0: Bot Tracker ───
+
+  async getBotTrackerEnabled() {
+    return this.get(StorageKeys.BOT_TRACKER_ENABLED);
+  },
+  async setBotTrackerEnabled(v) {
+    return this.set(StorageKeys.BOT_TRACKER_ENABLED, v);
+  },
+
+  async getBotTrackerNotify() {
+    return this.get(StorageKeys.BOT_TRACKER_NOTIFY);
+  },
+  async setBotTrackerNotify(v) {
+    return this.set(StorageKeys.BOT_TRACKER_NOTIFY, v);
+  },
+
+  // v2.3.0: Bot skoru popup'ta her zaman görünsün mü (default false)
+  async getBotScoreAlwaysVisible() {
+    return this.get(StorageKeys.BOT_SCORE_ALWAYS_VISIBLE);
+  },
+  async setBotScoreAlwaysVisible(v) {
+    return this.set(StorageKeys.BOT_SCORE_ALWAYS_VISIBLE, v);
+  },
+
+  // chatroom_id cache: { slug → chatroomId }
+  async getChatroomIdCache() {
+    return (await this.get(StorageKeys.CHATROOM_ID_CACHE)) || {};
+  },
+  async getChatroomId(slug) {
+    const cache = await this.getChatroomIdCache();
+    return cache[slug] || null;
+  },
+  async setChatroomId(slug, chatroomId) {
+    const cache = await this.getChatroomIdCache();
+    cache[slug] = chatroomId;
+    await this.set(StorageKeys.CHATROOM_ID_CACHE, cache);
+  },
+
+  // v2.3.1 Plan F: channel_id cache (slug → channelId) — Pusher subscribe için.
+  // Pusher 'channel.{channel_id}' format kullanır; bu chatroomId'den farklı.
+  async getChannelIdCache() {
+    return (await this.get('channelIdCache')) || {};
+  },
+  async getChannelId(slug) {
+    const cache = await this.getChannelIdCache();
+    return cache[slug] || null;
+  },
+  async setChannelId(slug, channelId) {
+    const cache = await this.getChannelIdCache();
+    cache[slug] = channelId;
+    await this.set('channelIdCache', cache);
+  },
+
+  // bot scores: { slug → { score, msgPerMin, ratio, computedAt } }
+  async getBotScores() {
+    return (await this.get(StorageKeys.BOT_SCORES)) || {};
+  },
+  async getBotScore(slug) {
+    const scores = await this.getBotScores();
+    return scores[slug] || null;
+  },
+  async setBotScore(slug, scoreData) {
+    const scores = await this.getBotScores();
+    scores[slug] = scoreData;
+    await this.set(StorageKeys.BOT_SCORES, scores);
+  },
+  async removeBotScore(slug) {
+    const scores = await this.getBotScores();
+    delete scores[slug];
+    await this.set(StorageKeys.BOT_SCORES, scores);
   },
 };

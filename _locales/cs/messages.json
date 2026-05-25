@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "Podezřelý nárůst sledovanosti"
   },
+  "anomalyPlateauTitle": {
+    "message": "Podezřele stálí diváci",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 min stabilní · ~$2 diváků",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "Podezřele lineární růst",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "+$1% za $2 min · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Práh upozornění"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "Nepodařilo se načíst kanály. Ujistěte se, že jste přihlášeni na Kick a zkuste to znovu."
   },
+  "fetchErrorBlocked": {
+    "message": "Vaše připojení bylo dočasně zablokováno. Počkejte několik minut nebo zkuste VPN.",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "Sledované"
   },
@@ -426,8 +446,36 @@
     "description": "Chat integration — chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
-    "message": "živě $1 min",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "message": "$1 min v živém vysílání",
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "$1 min sledováno",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "posledních $1 min",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "Skóre podezření na bota: $1 %",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "Detekce botů",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "Zobrazit skóre botů na všech živých kanálech",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "Když je vypnuto, skóre se zobrazí pouze během prudkého nárůstu.",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "Skóre = zdraví chatu vs. očekávaný počet podle diváků. Logaritmický základ normalizuje malé i velké kanály.",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "Kliknutím odebrat",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "Zatím nedostatek dat",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "Vrchol",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "Min.",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "Průměr",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "Doba",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "vrchol",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "stabilní",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "Průměr",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "Posl. 6",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "Celkem",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "Teď",
+    "description": "Trend badge last-6-intervals label"
   }
 }

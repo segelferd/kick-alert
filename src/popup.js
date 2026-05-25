@@ -5,6 +5,12 @@
  * © 2025 Segelferd. All rights reserved.
  */
 
+// v2.3.1 Plan E: Production log temizliği. Aç/kapat:
+//   chrome.storage.local.set({ _debugMode: true })
+let DEBUG_MODE = false;
+chrome.storage.local.get(['_debugMode']).then(r => { DEBUG_MODE = !!r._debugMode; }).catch(() => {});
+function dbg(...args) { if (DEBUG_MODE) console.debug(...args); }
+
 let allChannels = [];
 let autoRefreshTimer = null;
 
@@ -114,6 +120,9 @@ async function detectActiveChannel() {
 
 function setupMenu() {
   document.getElementById('refresh-chip')?.addEventListener('click', async () => {
+    // v2.2.1: Manuel refresh → backoff'u sıfırla, anında fresh fetch
+    // VPN açıp düzelttikten sonra kullanıcı yeniden çalıştırabilir
+    try { await chrome.runtime.sendMessage({ type: 'RESET_BACKOFF' }); } catch {}
     await loadChannels();
     await loadHistory();
   });
@@ -163,12 +172,29 @@ async function updateMenuState() {
 
 // ─── Load Channels ───
 
+// v2.2.1: 401 (auth) vs 403 (Cloudflare/IP block) ayrımı için error parser
+function _pickFetchErrorKey(errorMsg) {
+  // background.js error: "AUTH_REQUIRED: API 401" veya "AUTH_REQUIRED: API 403"
+  if (typeof errorMsg === 'string' && /AUTH_REQUIRED:\s*API\s*403/i.test(errorMsg)) {
+    return 'fetchErrorBlocked';
+  }
+  return 'fetchError'; // default: 401 veya bilinmeyen hata → "Kick'e giriş yap"
+}
+
 async function loadChannels() {
   showLoading(true);
+  dbg('[KickAlert] loadChannels start');
   try {
     const res = await chrome.runtime.sendMessage({ type: 'GET_CHANNELS' });
+    dbg('[KickAlert] GET_CHANNELS response:', {
+      success: res?.success,
+      channelCount: res?.channels?.length,
+      fromCache: res?.fromCache,
+      error: res?.error,
+    });
     if (res?.success) {
       allChannels = res.channels;
+      dbg(`[KickAlert] allChannels set: ${allChannels.length} total, ${allChannels.filter(c => c.isLive).length} live`);
       await renderFollowing();
       await renderAutoLaunch();
       showLoading(false);
@@ -185,11 +211,13 @@ async function loadChannels() {
         } catch {}
       }
     } else {
-      showMsg('following-list', Utils.i18n('fetchError'));
+      console.warn(`[KickAlert] GET_CHANNELS failed: ${res?.error || 'unknown'}`);
+      showMsg('following-list', Utils.i18n(_pickFetchErrorKey(res?.error)));
       showLoading(false);
     }
-  } catch {
-    showMsg('following-list', Utils.i18n('fetchError'));
+  } catch (e) {
+    console.warn(`[KickAlert] loadChannels exception: ${e?.message}`);
+    showMsg('following-list', Utils.i18n(_pickFetchErrorKey(e?.message)));
     showLoading(false);
   }
 }
@@ -214,15 +242,18 @@ async function renderFollowing(categoryFilter) {
   const favs = await Storage.getFavoriteChannels();
   const groupMap = await Storage.getChannelGroupMap();
   let list = showOffline ? allChannels : allChannels.filter(c => c.isLive);
+  dbg(`[KickAlert] renderFollowing: allChannels=${allChannels?.length}, showOffline=${showOffline}, after filter=${list.length}`);
 
   // Kategori filtresi
   if (categoryFilter) {
     list = list.filter(c => c.categoryName === categoryFilter);
+    dbg(`[KickAlert] After category filter '${categoryFilter}': ${list.length}`);
   } else {
     // Grup filtresi
     const activeGroup = document.querySelector('.group-chip.active')?.dataset.group || '__all__';
     if (activeGroup !== '__all__' && !activeGroup.startsWith('__cat__')) {
       list = list.filter(c => groupMap[c.channelSlug] === activeGroup);
+      dbg(`[KickAlert] After group filter '${activeGroup}': ${list.length}`);
     }
   }
 
@@ -230,6 +261,7 @@ async function renderFollowing(categoryFilter) {
   await buildGroupFilterBar();
 
   if (list.length === 0) {
+    dbg(`[KickAlert] List EMPTY — showing noLiveStreams message`);
     el.innerHTML = `<div class="empty-state">${Utils.i18n('noLiveStreams')}</div>`;
     return;
   }
@@ -246,13 +278,19 @@ async function renderFollowing(categoryFilter) {
   const cardMode = 'detail'; // Compact mod kaldırıldı
 
   // Batch yükle — her kart için ayrı storage.get yerine tek seferde
-  const [favMap, groupMap2, bellMap, groupList] = await Promise.all([
+  const [favMap, groupMap2, bellMap, groupList, botScoresRes, botScoreAlways] = await Promise.all([
     Storage.getFavoriteChannels(),
     Storage.getChannelGroupMap(),
     Storage.getAllChannelSoundModes(),
     Storage.getChannelGroups(),
+    // v2.3.0 Aşama 3: Bot skorlarını background'tan al (Chrome only).
+    // Hata olursa ({}) — popup düzeni etkilenmez.
+    chrome.runtime.sendMessage({ type: 'GET_BOT_SCORES' }).catch(() => null),
+    // v2.3.0: "Her zaman göster" toggle'ı (default false)
+    Storage.getBotScoreAlwaysVisible(),
   ]);
-  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList };
+  const botScores = (botScoresRes?.success && botScoresRes.scores) ? botScoresRes.scores : {};
+  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList, botScores, botScoreAlways };
 
   for (const ch of list) el.appendChild(await channelCard(ch, cardMode, batchData));
 }
@@ -410,6 +448,10 @@ async function channelCard(ch, cardMode, batch) {
 
   // Sparkline — isLive bloğu dışında tanımla, offline kartlarda da scope'da olsun
   const sparkline = ch.isLive ? await buildSparkline(ch.channelSlug) : '';
+  // v2.3.0: Bot skor (sparkline yanına) — isLive bloğunda set edilir, action row'da kullanılır
+  let botScoreInSparkRow = '';
+  // v2.3.0: Sparkline çerçeve durumu — spike (yeşil), drop (kırmızı), yoksa nötr
+  let sparklineFrame = ''; // '', 'spike', 'spike-alert', 'drop', 'drop-alert'
 
   if (ch.isLive) {
     const dur = Utils.formatDuration(ch.startedAt);
@@ -427,30 +469,96 @@ async function channelCard(ch, cardMode, batch) {
       : (drop && cardMode !== 'compact')
       ? `<span class="viewer-anomaly viewer-anomaly-drop-${drop.level}">↓-${drop.pct}%</span>`
       : '';
+
+    // v2.3.0: Sparkline çerçevesini spike/drop rengine göre set et
+    // Spike → yeşil çerçeve, Drop → kırmızı çerçeve, Normal → nötr (silik gri)
+    if (anomaly) sparklineFrame = `spike-${anomaly.level}`;
+    else if (drop) sparklineFrame = `drop-${drop.level}`;
+
+    // v2.3.0 Aşama 3: Bot skoru rozeti
+    // Yetersiz veri (insufficient/null) → görünmez (Karar A — yetersiz veri).
+    // 3 renk: 0-30 kırmızı, 30-70 sarı, 70-100 yeşil.
+    // Format: "smart_toy 28%" (Karar B — yüzde işaretli).
+    //
+    // v2.3.0 Yerleşim mantığı (Patron'un seçtiği):
+    //   alwaysVisible AÇIK   → Sparkline'ın yanında, butonların solunda (her zaman aynı yer)
+    //   alwaysVisible KAPALI → Sadece anomaly varsa, anomaly satırının sonunda
+    let botScoreBadge = '';        // anomaly satırı için
+    // botScoreInSparkRow zaten dış scope'ta tanımlı — burada sadece atama
+    const botData = batch?.botScores?.[ch.channelSlug];
+    const alwaysVisible = !!batch?.botScoreAlways;
+
+    if (botData && typeof botData.score === 'number' && cardMode !== 'compact') {
+      const score = botData.score;
+      // v2.3.0: 5 tier renk (streamscharts skalası)
+      const tier = score < 20 ? 'very-low'
+        : score < 40 ? 'low'
+        : score < 60 ? 'medium'
+        : score < 80 ? 'high'
+        : 'very-high';
+      const tooltip = (Utils.i18n('botScoreTooltip', [String(score)]) || `Bot suspicion score: ${score}%`)
+        + (typeof botData.msgPerMin === 'number'
+            ? ` (${botData.msgPerMin}/min, ${botData.activeChatters} chatters)`
+            : '');
+      const badgeHTML = `<span class="bot-score bot-score-${tier}" title="${esc(tooltip)}">`
+        + `<span class="material-icons bot-score-icon">smart_toy</span>`
+        + `<span class="bot-score-value">${score}%</span>`
+        + `</span>`;
+
+      if (alwaysVisible) {
+        // Switch açık → sparkline satırı, butonların solunda (her kanalda)
+        botScoreInSparkRow = badgeHTML;
+      } else if (anomaly) {
+        // Switch kapalı + spike var → anomaly satırı sonu
+        // NOT: Drop sırasında bot skoru gösterilmez. Drop = izleyici düşüşü
+        // demek, bot trafiği zaten azalıyor. Bot skoru drop sırasında
+        // anlamsız çünkü chatter sayısı da düşmüş, "iyileşmiş" görünür.
+        botScoreBadge = badgeHTML;
+      }
+      // Switch kapalı + drop var → bot skoru gizli
+      // Switch kapalı + anomaly yok → hiç gösterme
+    }
+
     const anomalyNote = (anomaly && cardMode !== 'compact')
-      ? `<div class="anomaly-row ${anomaly.level}">↑ ${anomaly.label} ${anomalyBadge}</div>`
+      ? `<div class="anomaly-row ${anomaly.level}">↑ ${anomaly.label} ${anomalyBadge}${botScoreBadge}</div>`
       : (drop && cardMode !== 'compact')
-      ? `<div class="anomaly-row drop-${drop.level}">↓ ${drop.label} ${anomalyBadge}</div>`
+      ? `<div class="anomaly-row drop-${drop.level}">↓ ${drop.label} ${anomalyBadge}${botScoreBadge}</div>`
       : '';
+
     meta = `<div class="channel-meta">
       <span class="rec-indicator"><span class="rec-dot"></span></span>
       <span class="stream-duration" data-slug="${esc(ch.channelSlug)}">${esc(dur)}</span>
       <span class="meta-separator">·</span>
       <span class="viewer-count">${esc(viewers)}</span>
-      ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name" title="${esc(ch.categoryName)}">${esc(ch.categoryName)}</span>` : ''}
+      ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name marquee-text" title="${esc(ch.categoryName)}"><span class="marquee-inner">${esc(ch.categoryName)}</span></span>` : ''}
     </div>${anomalyNote}`;
   }
 
   card.innerHTML = `
     <div class="card-top">
-      <img class="channel-avatar" src="${esc(pic)}" alt="" onerror="this.src='../images/default-profile-pictures/default.jpeg'" />
+      <img class="channel-avatar" src="${esc(pic)}" alt="" />
       <div class="channel-info">
         <div class="channel-name" title="${esc(ch.userUsername)}">${esc(ch.userUsername)}${groupBadge}</div>
-        ${ch.isLive ? `<div class="channel-title" title="${esc(ch.sessionTitle || '-')}">${esc(ch.sessionTitle || '-')}</div>` : (lastSeenLabel ? `<div class="offline-last-seen">${Utils.i18n('lastStream') || 'Son yayın'}: ${esc(lastSeenLabel)}</div>` : '')}
+        ${ch.isLive ? `<div class="channel-title marquee-text" title="${esc(ch.sessionTitle || '-')}"><span class="marquee-inner">${esc(ch.sessionTitle || '-')}</span></div>` : (lastSeenLabel ? `<div class="offline-last-seen">${Utils.i18n('lastStream') || 'Last stream'}: ${esc(lastSeenLabel)}</div>` : '')}
         ${meta}
       </div>
     </div>
-    ${ch.isLive && ch.thumbnailUrl ? `<img class="channel-thumbnail" src="${esc(ch.thumbnailUrl)}" alt="" loading="lazy" onerror="this.style.display='none'" />` : ''}`;
+    ${ch.isLive && ch.thumbnailUrl ? `<img class="channel-thumbnail" src="${esc(ch.thumbnailUrl)}" alt="" loading="lazy" />` : ''}`;
+
+  // v2.1.0: CSP-safe error handlers (Firefox inline onerror'ı yasaklar)
+  const avatarImg = card.querySelector('.channel-avatar');
+  if (avatarImg) {
+    avatarImg.addEventListener('error', () => {
+      avatarImg.src = '../images/default-profile-pictures/default.jpeg';
+    }, { once: true });
+  }
+  const thumbImg = card.querySelector('.channel-thumbnail');
+  if (thumbImg) {
+    thumbImg.addEventListener('error', () => {
+      thumbImg.style.display = 'none';
+    }, { once: true });
+  }
+
 
   // Thumbnail overlay lazy fetch sonrası kurulacak — aşağıda
   // Actions row — always show (live and offline both get star)
@@ -460,9 +568,22 @@ async function channelCard(ch, cardMode, batch) {
   // Sparkline — butonların yanında, sadece live + detail
   if (ch.isLive && cardMode !== 'compact' && sparkline) {
     const sparkWrap = document.createElement('span');
-    sparkWrap.className = 'card-sparkline-wrap';
+    // v2.3.0: Çerçeve rengi spike/drop durumuna göre
+    sparkWrap.className = sparklineFrame
+      ? `card-sparkline-wrap card-sparkline-wrap-${sparklineFrame}`
+      : 'card-sparkline-wrap';
     sparkWrap.innerHTML = sparkline;
     actions.appendChild(sparkWrap);
+  }
+
+  // v2.3.0: Bot skor badge — sparkline'dan sonra, butonlardan önce.
+  // Switch açık olduğunda her live kanalda, switch kapalıyken sadece anomaly satırında.
+  // Renkler iki veriyi (sparkline çizgisi + badge zemini) zaten ayırıyor — seperatör yok.
+  if (ch.isLive && cardMode !== 'compact' && botScoreInSparkRow) {
+    const botWrap = document.createElement('span');
+    botWrap.className = 'bot-score-action-wrap';
+    botWrap.innerHTML = botScoreInSparkRow;
+    actions.appendChild(botWrap);
   }
 
   // Open button — her zaman (live ve offline)
@@ -569,6 +690,25 @@ async function channelCard(ch, cardMode, batch) {
     });
   }
 
+  // v2.3.5: Taşan metinleri ölç, sadece gerçekten taşanları kayan yap.
+  // DOM'a eklendikten SONRA ölçülmeli (scrollWidth aksi halde 0), o yüzden rAF.
+  requestAnimationFrame(() => {
+    card.querySelectorAll('.marquee-text').forEach(box => {
+      const inner = box.querySelector('.marquee-inner');
+      if (!inner) return;
+      // Taşma var mı? (içerik kutudan genişse)
+      const overflow = inner.scrollWidth - box.clientWidth;
+      if (overflow > 2) {
+        box.classList.add('is-overflowing');
+        // Kayma mesafesi: tam metin görünene kadar (+ küçük tampon)
+        box.style.setProperty('--marquee-shift', `-${overflow + 6}px`);
+      } else {
+        box.classList.remove('is-overflowing');
+        box.style.removeProperty('--marquee-shift');
+      }
+    });
+  });
+
   return card;
 }
 
@@ -581,7 +721,7 @@ async function autoLaunchCard(ch, cardMode, batch) {
   const isAuto = await Storage.isAutoOpenChannel(ch.channelSlug);
 
   card.innerHTML = `
-    <img class="channel-avatar" src="${esc(pic)}" alt="" onerror="this.src='../images/default-profile-pictures/default.jpeg'" />
+    <img class="channel-avatar" src="${esc(pic)}" alt="" />
     <div class="channel-info">
       <div class="channel-name">${esc(ch.userUsername)}</div>
       ${ch.isLive
@@ -593,6 +733,37 @@ async function autoLaunchCard(ch, cardMode, batch) {
            </div>`
         : '<div class="offline-label">Offline</div>'}
     </div>`;
+
+  // v2.1.0: CSP-safe avatar fallback
+  const avatarImg = card.querySelector('.channel-avatar');
+  if (avatarImg) {
+    avatarImg.addEventListener('error', () => {
+      avatarImg.src = '../images/default-profile-pictures/default.jpeg';
+    }, { once: true });
+  }
+
+
+  // v2.3.4: Yıldız (favori) butonu — "Takip Edilenler" sekmesiyle tutarlılık.
+  // Aynı .star-btn class + data-slug → iki sekme otomatik senkronize olur.
+  const isFav = batch ? !!batch.favMap?.[ch.channelSlug] : await Storage.isFavoriteChannel(ch.channelSlug);
+  const starBtn = document.createElement('button');
+  starBtn.className = 'card-action-btn star-btn';
+  starBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+  starBtn.innerHTML = `<span class="material-icons">${isFav ? 'star' : 'star_border'}</span>`;
+  starBtn.querySelector('.material-icons').style.color = isFav ? '#f0c040' : '';
+  starBtn.dataset.slug = ch.channelSlug;
+  starBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const nowFav = await Storage.toggleFavoriteChannel(ch.channelSlug);
+    // Tüm sekmelerdeki aynı slug'lı yıldızları senkronla
+    document.querySelectorAll(`.star-btn[data-slug="${ch.channelSlug}"]`).forEach(b => {
+      const ic = b.querySelector('.material-icons');
+      ic.textContent = nowFav ? 'star' : 'star_border';
+      ic.style.color = nowFav ? '#f0c040' : '';
+      b.title = nowFav ? 'Remove from favorites' : 'Add to favorites';
+    });
+  });
+  card.appendChild(starBtn);
 
   // Bell button
   const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
@@ -608,9 +779,9 @@ async function autoLaunchCard(ch, cardMode, batch) {
   const cb = card.querySelector('input[type="checkbox"]');
   cb.addEventListener('change', e => Storage.setAutoOpenChannel(ch.channelSlug, e.target.checked));
 
-  // Click anywhere on card toggles the switch (except on switch and bell)
+  // Click anywhere on card toggles the switch (except on switch, bell, and star)
   card.addEventListener('click', (e) => {
-    if (e.target.closest('.toggle-switch') || e.target.closest('.bell-btn')) return;
+    if (e.target.closest('.toggle-switch') || e.target.closest('.bell-btn') || e.target.closest('.star-btn')) return;
     cb.checked = !cb.checked;
     cb.dispatchEvent(new Event('change'));
   });
@@ -650,10 +821,10 @@ async function loadHistory() {
 
     function getGroup(ts) {
       const t = new Date(ts).getTime();
-      if (t >= today) return Utils.i18n('historyGroupToday') || 'Bugün';
-      if (t >= yesterday) return Utils.i18n('historyGroupYesterday') || 'Dün';
+      if (t >= today) return Utils.i18n('historyGroupToday') || 'Today';
+      if (t >= yesterday) return Utils.i18n('historyGroupYesterday') || 'Yesterday';
       if (t >= thisWeek) return Utils.i18n('historyGroupThisWeek') || 'Bu Hafta';
-      return Utils.i18n('historyGroupOlder') || 'Daha Önce';
+      return Utils.i18n('historyGroupOlder') || 'Earlier';
     }
 
     let lastGroup = null;
@@ -670,7 +841,7 @@ async function loadHistory() {
       item.className = 'history-item';
       const pic = entry.profilePic || '../images/default-profile-pictures/default.jpeg';
       item.innerHTML = `
-        <img class="history-avatar" src="${esc(pic)}" alt="" onerror="this.src='../images/default-profile-pictures/default.jpeg'" />
+        <img class="history-avatar" src="${esc(pic)}" alt="" />
         <div class="history-body">
           <div class="history-header">
             <span class="history-username">${esc(entry.username)}</span>
@@ -679,6 +850,13 @@ async function loadHistory() {
           <div class="history-title">${esc(entry.title)}</div>
           <div class="history-category">${esc(entry.category)}</div>
         </div>`;
+      // v2.1.0: CSP-safe avatar fallback
+      const histAvatarImg = item.querySelector('.history-avatar');
+      if (histAvatarImg) {
+        histAvatarImg.addEventListener('error', () => {
+          histAvatarImg.src = '../images/default-profile-pictures/default.jpeg';
+        }, { once: true });
+      }
       item.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${entry.channelSlug}` }));
       el.appendChild(item);
     });
@@ -873,6 +1051,8 @@ async function loadOptionsSettings() {
   optEl('opt-show-offline').checked = await Storage.getShowOfflineChannels();
   optEl('opt-show-notification').checked = await Storage.getShowNotification();
   optEl('opt-auto-refresh').checked = await Storage.getAutoRefreshPopup();
+  // v2.3.0: Bot skorunu her zaman göster (default false)
+  optEl('opt-bot-score-always-visible').checked = await Storage.getBotScoreAlwaysVisible();
 
   const vol = await Storage.getSoundVolume();
   optEl('opt-volume-slider').value = vol;
@@ -986,6 +1166,11 @@ function setupOptionsListeners() {
   optBind('opt-show-offline', v => Storage.setShowOfflineChannels(v));
   optBind('opt-show-notification', v => Storage.setShowNotification(v));
   optBind('opt-auto-refresh', v => Storage.setAutoRefreshPopup(v));
+  // v2.3.0: Bot skor görünürlüğü değişince popup'ı anında yenile
+  optBind('opt-bot-score-always-visible', async (v) => {
+    await Storage.setBotScoreAlwaysVisible(v);
+    await renderFollowing();
+  });
 
   // Sound mode radio
   optEl('opt-sound-extension').addEventListener('change', () => {
@@ -1408,7 +1593,7 @@ async function showViewerHistoryModal(ch) {
 
   if (!modal) return;
 
-  title.textContent = ch.userUsername + ' — ' + (Utils.i18n('viewerTrendTitle') || 'İzleyici Trendi');
+  title.textContent = ch.userUsername + ' — ' + (Utils.i18n('viewerTrendTitle') || 'Viewer Trend');
 
   // Navigasyon — canlı kanallar arasında geçiş
   const liveChannels = allChannels.filter(c => c.isLive);
@@ -1438,6 +1623,17 @@ async function showViewerHistoryModal(ch) {
   svg.innerHTML = '';
   labels.innerHTML = '';
   noData.style.display = 'none';
+  // v2.3.7: Eski metrik kutularını temizle (başka kanala geçince / veri yoksa)
+  const oldMetrics = modal.querySelector('.vh-metrics');
+  if (oldMetrics) oldMetrics.remove();
+  const oldMinMax2 = modal.querySelector('.vh-minmax-row');
+  if (oldMinMax2) oldMinMax2.remove();
+  // v2.3.3: Rozet dönüşüm timer'ını durdur (yeniden çizimde yeniden kurulur)
+  const titleForClear = document.getElementById('vh-modal-title');
+  if (titleForClear && titleForClear._vhBadgeTimer) {
+    clearInterval(titleForClear._vhBadgeTimer);
+    titleForClear._vhBadgeTimer = null;
+  }
   modal.style.display = 'flex';
 
   // Veri çek
@@ -1454,11 +1650,28 @@ async function showViewerHistoryModal(ch) {
   const close = () => {
     modal.style.display = 'none';
     document.removeEventListener('keydown', escHandler);
+    // v2.3.3: Rozet dönüşüm timer'ını durdur (modal kapalıyken boşa dönmesin)
+    const t = document.getElementById('vh-modal-title');
+    if (t && t._vhBadgeTimer) { clearInterval(t._vhBadgeTimer); t._vhBadgeTimer = null; }
   };
   const escHandler = (e) => { if (e.key === 'Escape') close(); };
   document.addEventListener('keydown', escHandler);
   closeBtn.onclick = close;
   backdrop.onclick = close;
+}
+
+// v2.3.3: Bir yüzde değerini eklentinin RESMİ spike/drop renk standardına çevirir.
+// Hem genel trend hem "son 6 interval" ivmesi bu helper'ı kullanır (tek kaynak).
+// Döndürür: { level, color } — level CSS class eki, color SVG çizgi rengi.
+// v2.3.3: Bir yüzde değerini KART SPARKLINE standardına çevirir (birebir aynı):
+//   yukarı → #53FC18 (Kick yeşili), aşağı → #E24B4A (kırmızı),
+//   neredeyse sabit (<%3) → #8a8a8a (gri).
+// Hem genel trend hem "şu an" ivmesi bu helper'ı kullanır (tek kaynak).
+function _trendStyle(pct) {
+  const FLAT = 3;
+  if (pct >= FLAT)  return { level: 'up',   color: '#53FC18' };
+  if (pct <= -FLAT) return { level: 'down', color: '#E24B4A' };
+  return { level: 'flat', color: '#8a8a8a' };
 }
 
 function drawViewerChart(svg, labels, entries, ch) {
@@ -1469,11 +1682,14 @@ function drawViewerChart(svg, labels, entries, ch) {
   const maxV = Math.max(...vals);
   const range = maxV - minV || 1;
 
-  // Trend rengi
+  // Trend rengi — _trendStyle helper'ı (3 katman: standart / soluk / gri)
   const mid = Math.floor(vals.length / 2);
   const firstAvg = vals.slice(0, mid).reduce((s, v) => s + v, 0) / mid;
   const secondAvg = vals.slice(mid).reduce((s, v) => s + v, 0) / (vals.length - mid);
-  const color = secondAvg >= firstAvg ? '#53FC18' : '#E24B4A';
+  const _trendPct = firstAvg > 0 ? Math.round(((secondAvg - firstAvg) / firstAvg) * 100) : 0;
+  const _genStyle = _trendStyle(_trendPct);
+  const color = _genStyle.color;
+  const trendLevel = _genStyle.level;
 
   // Nokta koordinatları
   const pts = vals.map((v, i) => ({
@@ -1518,25 +1734,109 @@ function drawViewerChart(svg, labels, entries, ch) {
     <path d="${lineD}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
     ${dotsHtml}`;
 
-  // Min/Max label'ları chart wrap'ın dışında göster
+  // ── v2.3.7 (B): Metrikleri hesapla — hepsi mevcut entries verisinden ──
   const chartWrap = svg.closest('.vh-chart-wrap');
-  let minMaxRow = chartWrap.parentElement.querySelector('.vh-minmax-row');
-  if (!minMaxRow) {
-    minMaxRow = document.createElement('div');
-    minMaxRow.className = 'vh-minmax-row';
-    chartWrap.parentElement.insertBefore(minMaxRow, chartWrap);
-  }
-  minMaxRow.innerHTML =
-    `<span class="vh-minmax-label">min. <b style="color:#E24B4A">${Utils.formatViewers(minV)}</b></span>` +
-    `<span class="vh-minmax-label" style="color:var(--text-muted)">/</span>` +
-    `<span class="vh-minmax-label vh-max">max. <b style="color:#53FC18">${Utils.formatViewers(maxV)}</b></span>`;
+  // Yayın (tüm izleme) ortalaması
+  const avgAll = Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
+  // Son 6 interval ortalaması (yaklaşık son 3 dk — 30sn aralıkla)
+  const lastN = vals.slice(-6);
+  const avgRecent = Math.round(lastN.reduce((s, v) => s + v, 0) / lastN.length);
+  const maxIdx = vals.indexOf(maxV);                      // zirve hangi entry
+  // İzlenen süre (ilk-son entry arası — yayın başı değil, izleme süresi)
+  const watchedMs = times[times.length - 1] - times[0];
+  const watchedMin = Math.max(1, Math.round(watchedMs / 60000));
+  const durLabel = watchedMin >= 60
+    ? `${Math.floor(watchedMin / 60)}s ${watchedMin % 60}dk`
+    : `${watchedMin}dk`;
 
-  // X ekseni — ilk ve son zaman
   const fmt = (t) => {
     const d = new Date(t);
     return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
   };
-  labels.innerHTML = `<span>${fmt(times[0])}</span><span>${Utils.formatViewers(vals[vals.length-1])} izleyici</span><span>${fmt(times[times.length-1])}</span>`;
+
+  // ── Son 6 interval ivmesi (anlık momentum — son ~3 dk) ──
+  // Son 6 intervalin ilk değeri vs son değeri arası yüzde değişim.
+  let recentPct = 0;
+  if (lastN.length >= 2) {
+    const rFirst = lastN[0], rLast = lastN[lastN.length - 1];
+    recentPct = rFirst > 0 ? Math.round(((rLast - rFirst) / rFirst) * 100) : 0;
+  }
+  const _recentStyle = _trendStyle(recentPct);
+
+  // Rozet metni üreten yardımcı (etiket + yön oku + yüzde + renk class)
+  const buildBadgeData = (label, pct, style) => {
+    const absT = Math.abs(pct);
+    if (style.level === 'flat') {
+      return { cls: 'vh-trend-flat', text: `${label} → ${Utils.i18n('trendStable') || 'sabit'}` };
+    }
+    const isUp = style.level === 'up';
+    return { cls: `vh-trend-${style.level}`, text: `${label} ${isUp ? '↑' : '↓'} ${absT}%` };
+  };
+
+  // ── Başlığa DÖNÜŞÜMLÜ trend rozeti: Genel ↔ Son 6 (her 3.5sn'de geçiş) ──
+  const titleEl = document.getElementById('vh-modal-title');
+  if (titleEl) {
+    const oldBadge = titleEl.querySelector('.vh-trend-badge');
+    if (oldBadge) oldBadge.remove();
+    // Önceki interval'ı temizle (başka kanala geçilince çift dönüş olmasın)
+    if (titleEl._vhBadgeTimer) { clearInterval(titleEl._vhBadgeTimer); titleEl._vhBadgeTimer = null; }
+
+    const badge = document.createElement('span');
+    badge.className = 'vh-trend-badge';
+    titleEl.appendChild(badge);
+
+    const states = [
+      buildBadgeData(Utils.i18n('vhTrendGeneral') || 'Genel', _trendPct, _genStyle),
+      buildBadgeData(Utils.i18n('vhTrendRecent') || 'Şu an', recentPct, _recentStyle),
+    ];
+    let idx = 0;
+    const apply = () => {
+      const st = states[idx];
+      badge.className = `vh-trend-badge ${st.cls} vh-badge-fade`;
+      badge.textContent = st.text;
+      // fade efektini yeniden tetikle
+      void badge.offsetWidth;
+      badge.classList.add('vh-badge-show');
+    };
+    apply();
+    // İki durum farklıysa dönüşümü başlat (aynıysa sabit kalsın)
+    if (states[0].text !== states[1].text) {
+      titleEl._vhBadgeTimer = setInterval(() => {
+        idx = (idx + 1) % states.length;
+        badge.classList.remove('vh-badge-show');
+        setTimeout(apply, 180); // kısa fade-out → fade-in
+      }, 3500);
+    }
+  }
+
+  // ── min/max row'u kaldır (artık metrik kutularında) ──
+  const oldMinMax = chartWrap.parentElement.querySelector('.vh-minmax-row');
+  if (oldMinMax) oldMinMax.remove();
+
+  // ── 4 metrik kutusu: Zirve / Dip / Yayın ort. / Son 6 ort. ──
+  let metricsRow = chartWrap.parentElement.querySelector('.vh-metrics');
+  if (!metricsRow) {
+    metricsRow = document.createElement('div');
+    metricsRow.className = 'vh-metrics';
+    chartWrap.parentElement.appendChild(metricsRow);
+  }
+  const L = {
+    peak: Utils.i18n('vhPeak') || 'Zirve',
+    low:  Utils.i18n('vhLow')  || 'Dip',
+    avgAll: Utils.i18n('vhAvgAll') || 'Yayın ort.',
+    avgRecent: Utils.i18n('vhAvgRecent') || 'Son 6 ort.',
+  };
+  metricsRow.innerHTML =
+    `<div class="vh-metric"><div class="vh-m-label">${L.peak}</div><div class="vh-m-value vh-m-peak">${Utils.formatViewers(maxV)}</div></div>` +
+    `<div class="vh-metric"><div class="vh-m-label">${L.low}</div><div class="vh-m-value vh-m-low">${Utils.formatViewers(minV)}</div></div>` +
+    `<div class="vh-metric"><div class="vh-m-label">${L.avgAll}</div><div class="vh-m-value">${Utils.formatViewers(avgAll)}</div></div>` +
+    `<div class="vh-metric"><div class="vh-m-label">${L.avgRecent}</div><div class="vh-m-value">${Utils.formatViewers(avgRecent)}</div></div>`;
+
+  // ── X ekseni — başlangıç (+izleme süresi) · zirve zamanı · şu an ──
+  labels.innerHTML =
+    `<span>${fmt(times[0])} <span class="vh-peak-time">(${durLabel})</span></span>` +
+    `<span class="vh-peak-time">${Utils.i18n('vhPeakAt') || 'zirve'}: ${fmt(times[maxIdx])}</span>` +
+    `<span>${fmt(times[times.length-1])}</span>`;
 }
 
 // ─── Chat Settings ───
@@ -1603,7 +1903,7 @@ function renderChips(containerId, items, settingKey) {
     const chip = document.createElement('span');
     chip.className = 'chat-chip';
     chip.textContent = item;
-    chip.title = Utils.i18n('chatChipRemoveTooltip') || 'Kaldırmak için tıkla';
+    chip.title = Utils.i18n('chatChipRemoveTooltip') || 'Click to remove';
     chip.addEventListener('click', async () => {
       const s = await Storage.getChatSettings();
       s[settingKey] = (s[settingKey] || []).filter(x => x !== item);

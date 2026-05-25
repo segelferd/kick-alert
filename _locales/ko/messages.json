@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "의심스러운 시청자 급증"
   },
+  "anomalyPlateauTitle": {
+    "message": "수상한 고정 시청자",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1분 고정 · ~$2 시청자",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "수상한 직선 증가",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "$2분 동안 +$1% · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Alert threshold"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "채널 로드에 실패했습니다. Kick에 로그인되어 있는지 확인 후 다시 시도하세요."
   },
+  "fetchErrorBlocked": {
+    "message": "연결이 일시적으로 차단되었습니다. 몇 분 기다리거나 VPN을 시도하세요.",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "팔로잉"
   },
@@ -427,7 +447,35 @@
   },
   "anomalyAgeLabel": {
     "message": "방송 시작 $1분 경과",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "$1분째 추적 중",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "최근 $1분",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "봇 의심 점수: $1%",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "봇 감지",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "모든 라이브 채널에서 봇 점수 표시",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "꺼져 있으면 점수는 급증 시에만 표시됩니다.",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "점수 = 시청자 수 대비 예상 채팅 활성도. 로그 기반으로 소형/대형 채널을 정규화.",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "클릭하여 제거",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "아직 데이터가 부족합니다",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "최고",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "최저",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "평균",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "시간",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "최고",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "안정",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "평균",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "최근 6",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "전체",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "현재",
+    "description": "Trend badge last-6-intervals label"
   }
 }

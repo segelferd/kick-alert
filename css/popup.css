@@ -206,12 +206,36 @@ body {
 .meta-separator { color: var(--text-muted); font-size: 11px; flex-shrink: 0; }
 .offline-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
 
+/* v2.3.5: Taşan metin için kayan (marquee) gösterim.
+   JS bir elemanın gerçekten taştığını ölçüp .is-overflowing ekler.
+   Sadece o zaman + sadece kart hover'ında kayar. overflow:hidden ile
+   metin kendi kutusunda kalır, asla komşu alanların üstüne taşmaz. */
+.marquee-text {
+  display: block; overflow: hidden; white-space: nowrap;
+  text-overflow: ellipsis; min-width: 0;
+}
+.marquee-text > .marquee-inner {
+  display: inline-block; white-space: nowrap;
+  /* taşmıyorsa normal akış — ellipsis için parent text-overflow yeterli */
+}
+/* Taşan VE hover olunca kay */
+.channel-card:hover .marquee-text.is-overflowing > .marquee-inner {
+  animation: ka-marquee 8s linear infinite;
+}
+/* Taşıyorsa ellipsis'i kapat (tam metin kayacak), taşmıyorsa ellipsis kalır */
+.marquee-text.is-overflowing { text-overflow: clip; }
+@keyframes ka-marquee {
+  0%, 12%   { transform: translateX(0); }
+  88%, 100% { transform: translateX(var(--marquee-shift, -50%)); }
+}
+
 /* Card Action Buttons */
 .card-actions {
   display: flex; flex-direction: column; gap: 2px; flex-shrink: 0;
 }
 .card-actions-row {
-  display: flex; gap: 4px; padding: 4px 0 0 52px;
+  display: flex; gap: 4px; padding: 4px 0 0 0;
+  align-items: center;
 }
 .card-action-btn {
   display: flex; align-items: center; justify-content: center;
@@ -596,21 +620,189 @@ body {
   border-radius: 3px;
   flex-shrink: 0;
   line-height: 1.4;
+  /* v2.3.0: Bot skor badge ile görsel eşitlik için ince çerçeve */
+  border: 1px solid transparent;
 }
 .viewer-anomaly-warn {
   background: rgba(186, 117, 23, 0.15);
   color: #BA7517;
+  border-color: rgba(186, 117, 23, 0.55);
 }
 .viewer-anomaly-alert {
   background: rgba(226, 75, 74, 0.15);
   color: #E24B4A;
+  border-color: rgba(226, 75, 74, 0.60);
 }
-[data-theme="light"] .viewer-anomaly-warn { background: #FAEEDA; color: #854F0B; }
-[data-theme="light"] .viewer-anomaly-alert { background: #FCEBEB; color: #E24B4A; }
-.viewer-anomaly-drop-warn  { background: rgba(55, 138, 221, 0.15);  color: #378ADD; }
-.viewer-anomaly-drop-alert { background: rgba(127, 119, 221, 0.18); color: #7F77DD; }
-[data-theme="light"] .viewer-anomaly-drop-warn  { background: #E6F1FB; color: #185FA5; }
-[data-theme="light"] .viewer-anomaly-drop-alert { background: #EEEDFE; color: #534AB7; }
+[data-theme="light"] .viewer-anomaly-warn { background: #FAEEDA; color: #854F0B; border-color: rgba(133, 79, 11, 0.45); }
+[data-theme="light"] .viewer-anomaly-alert { background: #FCEBEB; color: #E24B4A; border-color: rgba(226, 75, 74, 0.55); }
+.viewer-anomaly-drop-warn  { background: rgba(55, 138, 221, 0.15);  color: #378ADD; border-color: rgba(55, 138, 221, 0.60); }
+.viewer-anomaly-drop-alert { background: rgba(127, 119, 221, 0.18); color: #7F77DD; border-color: rgba(127, 119, 221, 0.65); }
+[data-theme="light"] .viewer-anomaly-drop-warn  { background: #E6F1FB; color: #185FA5; border-color: rgba(24, 95, 165, 0.45); }
+[data-theme="light"] .viewer-anomaly-drop-alert { background: #EEEDFE; color: #534AB7; border-color: rgba(83, 74, 183, 0.55); }
+
+/* ────────────────────────────────────────────────────────────
+ * v2.3.0 Aşama 3: Bot Suspicion Score Badge
+ * Anomaly satırının sonuna eklenir, sade tek satır görünüm.
+ * 3 renk tier: 0-30 kırmızı (low), 30-70 sarı (mid), 70-100 yeşil (high).
+ * Format: [smart_toy] 28%
+ * Anomaly badge'inden seperatör (·) ile ayrılır — ::before ile çizilir.
+ * ──────────────────────────────────────────────────────────── */
+.bot-score {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 600;
+  padding: 0 5px;
+  min-height: 18px;
+  box-sizing: border-box;
+  border-radius: 5px;
+  flex-shrink: 0;
+  line-height: 1.4;
+  margin-left: 4px;
+  cursor: help;
+  /* v2.3.0: Anomaly badge'leriyle aynı çerçeve stili */
+  border: 1px solid transparent;
+}
+.bot-score::before {
+  content: '·';
+  display: inline-block;
+  margin-right: 4px;
+  margin-left: -4px;
+  color: var(--text-muted, rgba(255,255,255,0.45));
+  font-weight: normal;
+  cursor: default;
+}
+.bot-score-icon {
+  font-size: 12px !important;
+  line-height: 1 !important;
+  width: 12px;
+  height: 12px;
+}
+
+/* v2.3.0: Action row'da (sparkline'ın yanında) bot skor — seperatörsüz, sadece boşluk */
+.bot-score-action-wrap {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  /* margin-left kaldırıldı — card-actions-row gap: 4px tüm boşlukları yönetiyor */
+}
+/* Eski seperatör — kullanılmıyor ama referans için */
+.bot-score-sep {
+  color: var(--text-muted, rgba(255,255,255,0.45));
+  font-size: 11px;
+  user-select: none;
+}
+/* Action row içindeki badge'in ::before'unu kapat (seperatör manuel) */
+.bot-score-action-wrap .bot-score::before {
+  content: none;
+}
+.bot-score-action-wrap .bot-score {
+  margin-left: 0;
+}
+
+/* v2.3.0: 5 tier renk skalası (streamscharts mantığı)
+ * 0-20:  very-low  (çok şüpheli, kırmızı)
+ * 20-40: low       (şüpheli, turuncu)
+ * 40-60: medium    (normal, sarı)
+ * 60-80: high      (sağlıklı, açık yeşil)
+ * 80+:   very-high (çok aktif, koyu yeşil)
+ */
+
+/* Tier 1: 0-20 → çok şüpheli (kırmızı) */
+.bot-score-very-low {
+  background: rgba(226, 75, 74, 0.18);
+  color: #E24B4A;
+  border-color: rgba(226, 75, 74, 0.60);
+}
+[data-theme="light"] .bot-score-very-low {
+  background: #FCEBEB;
+  color: #C92F2F;
+  border-color: rgba(226, 75, 74, 0.55);
+}
+
+/* Tier 2: 20-40 → şüpheli (turuncu) */
+.bot-score-low {
+  background: rgba(238, 130, 60, 0.18);
+  color: #EE823C;
+  border-color: rgba(238, 130, 60, 0.60);
+}
+[data-theme="light"] .bot-score-low {
+  background: #FCEEE0;
+  color: #C66520;
+  border-color: rgba(198, 101, 32, 0.55);
+}
+
+/* Tier 3: 40-60 → normal (sarı) */
+.bot-score-medium {
+  background: rgba(186, 117, 23, 0.18);
+  color: #D5A02C;
+  border-color: rgba(186, 117, 23, 0.60);
+}
+[data-theme="light"] .bot-score-medium {
+  background: #FAEEDA;
+  color: #854F0B;
+  border-color: rgba(133, 79, 11, 0.55);
+}
+
+/* Tier 4: 60-80 → sağlıklı (açık yeşil) */
+.bot-score-high {
+  background: rgba(82, 168, 80, 0.18);
+  color: #52A850;
+  border-color: rgba(82, 168, 80, 0.60);
+}
+[data-theme="light"] .bot-score-high {
+  background: #E8F4E5;
+  color: #2E7C2C;
+  border-color: rgba(46, 124, 44, 0.55);
+}
+
+/* Tier 5: 80+ → çok aktif (koyu yeşil) */
+.bot-score-very-high {
+  background: rgba(46, 160, 67, 0.20);
+  color: #2EA043;
+  border-color: rgba(46, 160, 67, 0.60);
+}
+[data-theme="light"] .bot-score-very-high {
+  background: #DEF2DD;
+  color: #1A7F37;
+  border-color: rgba(26, 127, 55, 0.55);
+}
+
+/* v2.3.0: Bot tespiti açıklama kutusu (Options) */
+.bot-score-info {
+  margin-top: 10px;
+  padding: 10px;
+  background: rgba(255,255,255,0.03);
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.06);
+}
+[data-theme="light"] .bot-score-info {
+  background: rgba(0,0,0,0.02);
+  border-color: rgba(0,0,0,0.08);
+}
+.bot-score-info-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+.bot-score-tier-legend {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.bot-score-tier-legend .bot-score {
+  cursor: default;
+  font-size: 9px;
+  padding: 1px 4px;
+  margin-left: 0;
+}
+/* Legend'da seperatör (·) gösterme — flex gap zaten ayırıyor */
+.bot-score-tier-legend .bot-score::before {
+  content: none;
+}
 
 .viewer-anomaly-note::before {
   content: '↑';
@@ -708,8 +900,42 @@ body {
 .card-sparkline-wrap {
   display: flex;
   align-items: center;
-  margin-right: 4px;
+  justify-content: center;
+  /* v2.3.6: Bot skoru rozetiyle aynı yükseklik — hizalı görünüm */
+  min-height: 18px;
+  box-sizing: border-box;
+  padding: 0 5px;
+  border-radius: 5px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.015);
 }
+[data-theme="light"] .card-sparkline-wrap {
+  border-color: rgba(0,0,0,0.06);
+  background: rgba(0,0,0,0.015);
+}
+
+/* v2.3.0: Spike/Drop sırasında sparkline çerçevesi rengini alır */
+.card-sparkline-wrap-spike-warn {
+  border-color: rgba(186, 117, 23, 0.45); /* warn → sarı */
+  background: rgba(186, 117, 23, 0.05);
+}
+.card-sparkline-wrap-spike-alert {
+  border-color: rgba(46, 160, 67, 0.50);  /* alert (büyük spike) → yeşil */
+  background: rgba(46, 160, 67, 0.06);
+}
+.card-sparkline-wrap-drop-warn {
+  border-color: rgba(226, 75, 74, 0.45);  /* warn drop → kırmızı */
+  background: rgba(226, 75, 74, 0.05);
+}
+.card-sparkline-wrap-drop-alert {
+  border-color: rgba(127, 119, 221, 0.50); /* alert drop → mor */
+  background: rgba(127, 119, 221, 0.06);
+}
+[data-theme="light"] .card-sparkline-wrap-spike-warn  { border-color: rgba(133, 79, 11, 0.40); background: rgba(186, 117, 23, 0.06); }
+[data-theme="light"] .card-sparkline-wrap-spike-alert { border-color: rgba(26, 127, 55, 0.45); background: rgba(46, 160, 67, 0.06); }
+[data-theme="light"] .card-sparkline-wrap-drop-warn   { border-color: rgba(226, 75, 74, 0.40); background: rgba(226, 75, 74, 0.06); }
+[data-theme="light"] .card-sparkline-wrap-drop-alert  { border-color: rgba(83, 74, 183, 0.45); background: rgba(127, 119, 221, 0.06); }
+
 .sparkline {
   flex-shrink: 0;
   display: block;
@@ -730,10 +956,14 @@ body {
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 12px;
-  width: 340px;
+  width: 440px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
   padding: 14px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
+.vh-modal-box::-webkit-scrollbar { width: 0; display: none; }
 .vh-modal-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 12px;
@@ -762,6 +992,49 @@ body {
 .vh-minmax-label.vh-max {
   color: var(--text-muted);
 }
+
+/* v2.3.7: B — 4 metrik kutusu (zirve/dip/ortalama/süre) */
+.vh-metrics {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 8px; margin-top: 10px;
+}
+.vh-metric {
+  background: var(--bg-secondary);
+  border-radius: 8px; padding: 9px 10px;
+  min-width: 0; overflow: hidden;
+}
+.vh-metric .vh-m-label {
+  font-size: 9px; letter-spacing: 0.5px; color: var(--text-muted);
+  text-transform: uppercase; margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vh-metric .vh-m-value {
+  font-size: 15px; font-weight: 700; color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.vh-m-value.vh-m-peak { color: #53FC18; }
+.vh-m-value.vh-m-low  { color: #E24B4A; }
+/* Trend rozeti (başlıkta) — eklentinin RESMİ spike/drop renk standardı.
+   Kart-içi viewer-anomaly rozetiyle BİREBİR aynı 4 renk:
+   spike-warn (sarı #BA7517), spike-alert (kırmızı #E24B4A),
+   drop-warn (mavi #378ADD), drop-alert (mor #7F77DD). */
+.vh-trend-badge {
+  font-size: 11px; font-weight: 600;
+  padding: 1px 7px; border-radius: 5px; margin-left: 8px;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: opacity .18s ease, background .18s ease, color .18s ease;
+}
+/* v2.3.3: Dönüşümlü rozet fade — apply() opacity'yi 0→1 yapar */
+.vh-badge-fade { opacity: 0; }
+.vh-badge-fade.vh-badge-show { opacity: 1; }
+.vh-trend-up   { background: rgba(83,252,24,0.15);  color: #53FC18; border-color: rgba(83,252,24,0.50); }
+.vh-trend-down { background: rgba(226,75,74,0.15);  color: #E24B4A; border-color: rgba(226,75,74,0.55); }
+.vh-trend-flat { background: rgba(255,255,255,0.08); color: var(--text-muted); border-color: rgba(255,255,255,0.15); }
+[data-theme="light"] .vh-trend-up   { background: #E8FAE0; color: #2D9A0F; border-color: rgba(45,154,15,0.45); }
+[data-theme="light"] .vh-trend-down { background: #FCEBEB; color: #C92F2F; border-color: rgba(226,75,74,0.50); }
+/* Zirve zamanı (x ekseni ortası) */
+.vh-peak-time { color: var(--text-secondary); }
 .vh-chart-labels {
   display: flex; justify-content: space-between;
   font-size: 10px; color: var(--text-muted);

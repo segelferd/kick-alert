@@ -38,6 +38,22 @@
   "anomalySpikeTitle": {
     "message": "不審な視聴者急増"
   },
+  "anomalyPlateauTitle": {
+    "message": "疑わしい一定視聴者数",
+    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 分一定 · 約$2 人",
+    "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
+  },
+  "anomalySmoothTitle": {
+    "message": "疑わしい直線的増加",
+    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+  },
+  "anomalySmoothBody": {
+    "message": "$2 分で +$1% · $3 → $4",
+    "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
+  },
   "anomalyThreshold": {
     "message": "Alert threshold"
   },
@@ -251,6 +267,10 @@
   "fetchError": {
     "message": "チャンネルの読み込みに失敗しました。Kick にログインしていることを確認してから、もう一度試してください。"
   },
+  "fetchErrorBlocked": {
+    "message": "接続が一時的にブロックされました。数分待つか、VPN をお試しください。",
+    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+  },
   "following": {
     "message": "フォロー中"
   },
@@ -426,8 +446,36 @@
     "description": "Chat integration — chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
-    "message": "配信$1分経過",
-    "description": "Stream age label in anomaly notification body. $1 = minutes live."
+    "message": "配信中 $1 分経過",
+    "description": "Anomaly notification body when API provides stream start_time. $1 = minutes live."
+  },
+  "anomalyObsLabel": {
+    "message": "$1 分追跡中",
+    "description": "Anomaly notification body when API didn't provide stream start_time. $1 = minutes of observation."
+  },
+  "anomalyWindowLabel": {
+    "message": "直近 $1 分",
+    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+  },
+  "botScoreTooltip": {
+    "message": "ボット疑いスコア: $1%",
+    "description": "Tooltip on bot score badge in popup. $1 = score 0-100."
+  },
+  "botTrackerSettings": {
+    "message": "ボット検出",
+    "description": "Options section title for bot detection settings."
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "すべてのライブチャンネルでボットスコアを表示",
+    "description": "Toggle label — show bot score badge on all live channels."
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "オフの場合、スコアはスパイク時のみ表示されます。",
+    "description": "Hint text under the always-visible toggle."
+  },
+  "botScoreFormulaInfo": {
+    "message": "スコア = 視聴者数から期待される値に対するチャットの健全性。対数ベースで小規模・大規模を均等化。",
+    "description": "Bot detection formula description in options panel."
   },
   "chatChipRemoveTooltip": {
     "message": "クリックして削除",
@@ -452,5 +500,45 @@
   "viewerHistoryNoData": {
     "message": "まだデータが不足しています",
     "description": "Shown in viewer history modal when stream has too little data"
+  },
+  "vhPeak": {
+    "message": "ピーク",
+    "description": "Viewer chart peak label"
+  },
+  "vhLow": {
+    "message": "最低",
+    "description": "Viewer chart low label"
+  },
+  "vhAvg": {
+    "message": "平均",
+    "description": "Viewer chart average label"
+  },
+  "vhWatched": {
+    "message": "時間",
+    "description": "Viewer chart watched duration label"
+  },
+  "vhPeakAt": {
+    "message": "ピーク",
+    "description": "Viewer chart peak time x-axis label"
+  },
+  "trendStable": {
+    "message": "安定",
+    "description": "Trend badge stable label"
+  },
+  "vhAvgAll": {
+    "message": "平均",
+    "description": "Viewer chart all-session average"
+  },
+  "vhAvgRecent": {
+    "message": "直近6",
+    "description": "Viewer chart last-6-intervals average"
+  },
+  "vhTrendGeneral": {
+    "message": "全体",
+    "description": "Trend badge general/overall label"
+  },
+  "vhTrendRecent": {
+    "message": "現在",
+    "description": "Trend badge last-6-intervals label"
   }
 }

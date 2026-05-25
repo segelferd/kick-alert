@@ -1,4 +1,8 @@
 <!DOCTYPE html>
 <html><head><title>KickAlert Offscreen</title></head>
-<body><script src="../src/offscreen.js"></script></body>
+<body>
+  <!-- v2.3.0: bot_tracker.js önce yüklenmeli, offscreen.js içindeki message handler ona referans veriyor -->
+  <script src="../src/bot_tracker.js"></script>
+  <script src="../src/offscreen.js"></script>
+</body>
 </html>

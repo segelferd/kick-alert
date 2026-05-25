@@ -1,5 +1,5 @@
 /**
- * KickAlert — Chat Integration v2.0.0
+ * KickAlert — Chat Integration
  * Based on v1.7.0 proven implementation. Selectors verified with KickKit v1.0.0.
  *
  * Kick DOM (2025/2026):
@@ -22,7 +22,9 @@
 (function () {
   'use strict';
 
-  console.log('%c[KickAlert Chat v1.9.10] loaded: ' + location.href,
+  // v2.1.0: dinamik version stamp (manifest'ten okunur)
+  const _v = (chrome.runtime.getManifest && chrome.runtime.getManifest().version) || '?';
+  console.debug('%c[KickAlert Chat v' + _v + '] loaded: ' + location.href,
     'background:#53FC18;color:#000;font-weight:bold;padding:2px 6px');
 
   const NON_CHANNEL = new Set([
@@ -35,7 +37,7 @@
   ]);
   const slug = location.pathname.replace(/^\/+|\/+$/g, '').split('/')[0].toLowerCase();
   if (!slug || NON_CHANNEL.has(slug)) {
-    console.log('[KickAlert Chat] not a channel page, exiting');
+    console.debug('[KickAlert Chat] not a channel page, exiting');
     return;
   }
 
@@ -375,7 +377,7 @@
     });
 
     root.querySelectorAll(MSG_SEL).forEach(n => processMessage(n, false));
-    console.log('[KickAlert Chat] observer started on ' + slug);
+    console.debug('[KickAlert Chat] observer started on ' + slug);
   }
 
   function waitForChat(cb) {
@@ -431,7 +433,7 @@
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== 'local') return;
     if (!changes.chatIntegrationEnabled && !changes.chatSettings) return;
-    console.log('[KickAlert Chat] settings changed, reprocessing');
+    console.debug('[KickAlert Chat] settings changed, reprocessing');
     try {
       loadSettings(() => {
         if (!enabled) {
@@ -467,7 +469,7 @@
   // Init
   loadThrottle();
   loadSettings(() => {
-    console.log('[KickAlert Chat] enabled=' + enabled + ' slug=' + slug);
+    console.debug('[KickAlert Chat] enabled=' + enabled + ' slug=' + slug);
     if (!enabled) return;
     activate();
   });

@@ -311,6 +311,32 @@
           </div>
         </div>
       </div>
+      <!-- v2.3.0: Bot Tracker Settings -->
+      <div class="opt-section">
+        <div class="opt-section-title">
+          <span class="material-icons-outlined">smart_toy</span>
+          <span data-i18n="botTrackerSettings">Bot Detection</span>
+        </div>
+        <div class="opt-row" style="justify-content:space-between;">
+          <span style="font-size:12px;color:var(--text-secondary);flex:1;" data-i18n="botScoreAlwaysVisibleLabel">Show bot score on all live channels</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-bot-score-always-visible" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);padding:4px 0 0 0;line-height:1.5;" data-i18n="botScoreAlwaysVisibleHint">When off, the score appears only during a spike.</div>
+        <!-- v2.3.0: Formül + 5 tier renk açıklaması -->
+        <div class="bot-score-info">
+          <div class="bot-score-info-text" data-i18n="botScoreFormulaInfo">Score = chat health vs expected by viewer count. Logarithmic baseline normalizes small/large channels.</div>
+          <div class="bot-score-tier-legend">
+            <span class="bot-score bot-score-very-low" style="margin:0;">0-20</span>
+            <span class="bot-score bot-score-low" style="margin:0;">20-40</span>
+            <span class="bot-score bot-score-medium" style="margin:0;">40-60</span>
+            <span class="bot-score bot-score-high" style="margin:0;">60-80</span>
+            <span class="bot-score bot-score-very-high" style="margin:0;">80+</span>
+          </div>
+        </div>
+      </div>
       <div class="opt-section">
         <div class="opt-section-title">
           <span class="material-icons-outlined">notifications</span>

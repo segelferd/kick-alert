@@ -9,6 +9,11 @@
           "header": "referer",
           "operation": "set",
           "value": "https://kick.com/"
+        },
+        {
+          "header": "origin",
+          "operation": "set",
+          "value": "https://kick.com"
         }
       ]
     },
