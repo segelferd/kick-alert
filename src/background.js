@@ -440,6 +440,17 @@ async function handlePusherLiveEvent(slug, livestreamData) {
 
   dbg(`[KickAlert] Pusher: YENİ YAYIN → ${slug} (API'den bağımsız bildirim)`);
 
+  // ── v2.3.4: WS → tab açma yarış güvenliği ──
+  // Pusher 'StreamerIsLive' event'i yayın başlama saniyesinde gelir, ama Kick'in
+  // video playback pipeline'ı (AWS IVS) birkaç saniye sonra hazır olur. Eskiden
+  // 30sn polling tampon görevi görüyordu; WS gerçek zamanlı olduğu için o tampon
+  // kayboldu → sekme yayın daha hazır değilken açılıyor. 3sn'lik sabit küçük bir
+  // gecikme bu yarışı kapatır. Bildirim+ses+tab hepsi bu gecikmeden SONRA gider,
+  // dolayısıyla davranış v2.3.3 polling akışına yakınsar.
+  // NOT: liveSlugs.add() yukarıda yapıldı (satır ~416) — bu 3sn boyunca polling
+  // veya 2. WS event'i ÇİFT BİLDİRİM üretemez ("zaten live listesinde, skip").
+  await Utils.delay(3000);
+
   // ── 3) BUG#3 FIX: Kanal objesini bul/kur (push güvenli — liveSlugs guard'ı
   //     mükerrer push'u zaten önlüyor çünkü 2. event "zaten live" diye döner) ──
   let ch = cachedChannels.find(c => c.channelSlug === slug);
