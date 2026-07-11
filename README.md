@@ -148,4 +148,4 @@ If you find KickAlert useful, consider supporting the project:
 
 ## License
 
-[PolyForm Noncommercial 1.0.0](LICENSE) © 2025–2026 Segelferd — free for personal, hobby, and noncommercial use. See [LICENSE](LICENSE) for full terms.
+[PolyForm Noncommercial 1.0.0](LICENSE) © 2025–2026 Segelferd — free for personal, hobby, and noncommercial use. See [LICENSE](LICENSE) and [NOTICE](NOTICE) for full terms.
