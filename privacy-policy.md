@@ -77,7 +77,7 @@ Uninstalling the extension removes all locally stored data. You can also clear n
 
 ## Open Source
 
-KickAlert is fully open source under the MIT License. Review the complete source code at [github.com/segelferd/kick-alert](https://github.com/segelferd/kick-alert).
+KickAlert's complete source code is publicly available for review under the PolyForm Noncommercial License 1.0.0 at [github.com/segelferd/kick-alert](https://github.com/segelferd/kick-alert).
 
 ## Contact
 

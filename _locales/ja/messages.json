@@ -331,8 +331,14 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "タブを開く遅延"
+  },
+  "notifDelayUnit": {
+    "message": "分"
+  },
   "notifDelayNow": {
-    "message": "Now"
+    "message": "すぐに"
   },
   "notifStartedStreaming": {
     "message": "$1 が配信を開始しました"
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "現在",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "並び順:"
+  },
+  "sortByKick": {
+    "message": "Kick既定"
+  },
+  "sortByAlphabetic": {
+    "message": "アルファベット"
+  },
+  "sortByLiveTime": {
+    "message": "配信時間"
+  },
+  "sortByViewers": {
+    "message": "視聴者数"
+  },
+  "sortDirToggle": {
+    "message": "方向を切替"
   }
 }

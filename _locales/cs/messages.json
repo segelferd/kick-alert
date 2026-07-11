@@ -331,6 +331,12 @@
   "notifDelayLabel": {
     "message": "Oznámit po zahájení streamu"
   },
+  "autoOpenDelayLabel": {
+    "message": "Zpoždění otevření"
+  },
+  "notifDelayUnit": {
+    "message": "min"
+  },
   "notifDelayNow": {
     "message": "Ihned"
   },
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "Teď",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "Řadit:"
+  },
+  "sortByKick": {
+    "message": "Výchozí Kick"
+  },
+  "sortByAlphabetic": {
+    "message": "Abecedně"
+  },
+  "sortByLiveTime": {
+    "message": "Doba vysílání"
+  },
+  "sortByViewers": {
+    "message": "Diváci"
+  },
+  "sortDirToggle": {
+    "message": "Změnit směr"
   }
 }

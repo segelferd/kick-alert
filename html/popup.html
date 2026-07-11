@@ -51,6 +51,27 @@
       <div id="group-filter-bar" class="group-filter-bar" style="display:none;">
         <button class="group-chip active" data-group="__all__" data-i18n="groupAll">All</button>
       </div>
+      <div id="follow-sort-bar" class="follow-sort-bar">
+        <span class="follow-sort-label" data-i18n="sortByLabel">Sort:</span>
+        <button class="sort-chip" data-sort-by="kick" data-i18n-title="sortByKick" title="Kick default">
+          <svg class="sort-kick-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <!-- Kick font'unun resmi K glyph'i (Kick Font Regular, NachoZombiezz 2023) -->
+            <path d="M2.662 22.500V1.500H9.662V6.162H12.000V3.838H14.338V1.500H21.338V8.500H19.000V10.838H16.662V13.162H19.000V15.500H21.338V22.500H14.338V20.162H12.000V17.838H9.662V22.500Z"/>
+          </svg>
+        </button>
+        <button class="sort-chip" data-sort-by="alphabetic" data-i18n-title="sortByAlphabetic" title="A→Z">
+          <span class="sort-chip-text">A↕</span>
+        </button>
+        <button class="sort-chip" data-sort-by="liveTime" data-i18n-title="sortByLiveTime" title="Live time">
+          <span class="material-icons">schedule</span>
+        </button>
+        <button class="sort-chip" data-sort-by="viewers" data-i18n-title="sortByViewers" title="Viewers">
+          <span class="material-icons">visibility</span>
+        </button>
+        <button id="sort-dir-toggle" class="sort-chip sort-dir" data-i18n-title="sortDirToggle" title="Toggle direction">
+          <span class="material-icons" id="sort-dir-icon">arrow_downward</span>
+        </button>
+      </div>
       <div id="following-list" class="channels-container"></div>
     </div>
     <div id="autolaunch-panel" class="tab-content">
@@ -346,14 +367,11 @@
           <input type="checkbox" id="opt-show-notification" />
           <span data-i18n="showNotificationCheckbox">Show desktop notifications</span>
         </label>
-        <div class="opt-row" style="justify-content:space-between;margin-top:6px">
-          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="notifDelayLabel">Notify after stream starts</span>
-          <div style="display:flex;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden">
-            <button class="card-mode-btn notif-delay-btn" data-delay="0" data-i18n="notifDelayNow">Now</button>
-            <button class="card-mode-btn notif-delay-btn" data-delay="5">5m</button>
-            <button class="card-mode-btn notif-delay-btn" data-delay="10">10m</button>
-            <button class="card-mode-btn notif-delay-btn" data-delay="15">15m</button>
-          </div>
+        <div class="opt-slider-row opt-slider-row-compact">
+          <span class="opt-slider-label" data-i18n="autoOpenDelayLabel" title="Pusher event ile yayının video pipeline'ı hazır olması arasındaki güvenlik tamponu">Tab open delay</span>
+          <input type="range" id="opt-auto-open-delay-slider" min="3" max="9" step="2" />
+          <span id="opt-auto-open-delay-value" class="opt-slider-value"></span>
+          <span class="opt-slider-unit">sec</span>
         </div>
         <div class="opt-divider"></div>
         <div class="opt-sound-mode">

@@ -19,17 +19,22 @@ const MIN_ALARM_PERIOD = 0.5;
 const NOTIFIED_LIVES_MAX_AGE = 24 * 60 * 60 * 1000; // 24 hours
 
 // v2.3.1 Plan E: Production log temizliği.
+// v2.3.5+: KLog merkezi sistemine geçildi (utils.js içinde).
 // Geliştirme sırasında devTools console'undan açılabilir:
-//   chrome.storage.local.set({ _debugMode: true })
+//   chrome.storage.local.set({ _debugMode: true })   // DEBUG seviyesi
+//   chrome.storage.local.set({ _traceMode: true })   // TRACE seviyesi (en detaylı)
 // Veya kapatmak için:
-//   chrome.storage.local.set({ _debugMode: false })
-// Ayar SW yeniden uyandığında okunur.
+//   chrome.storage.local.set({ _debugMode: false, _traceMode: false })
+// Ayar SW yeniden uyandığında veya storage onChanged ile anında okunur.
+// NOT: ERROR/WARN/INFO seviyeleri prod'da bile her zaman görünür (kritik olaylar).
 let DEBUG_MODE = false;
 chrome.storage.local.get(['_debugMode']).then(r => { DEBUG_MODE = !!r._debugMode; }).catch(() => {});
 chrome.storage.onChanged.addListener((changes) => {
   if (changes._debugMode) DEBUG_MODE = !!changes._debugMode.newValue;
 });
-function dbg(...args) { if (DEBUG_MODE) console.debug(...args); }
+// Eski dbg() çağrıları KLog'un legacy köprüsüne yönlendirilir.
+// Yeni kod KLog.info/debug/warn/error/trace kullanmalı (kategori + STEP-ID ile).
+function dbg(...args) { KLog.legacy(...args); }
 
 let cachedChannels = [];
 const avatarCache = {}; // slug → dataUrl
@@ -383,10 +388,13 @@ async function harvestMissingChannelIds() {
  */
 async function handlePusherLiveEvent(slug, livestreamData) {
   if (!slug) return;
+  const _t0 = KLog.timer(); // toplam akış süresi
+
+  KLog.info('PUSH-10', `${slug} → Pusher StreamerIsLive event alındı`);
 
   const ls = livestreamData?.livestream || {};
 
-  // ── Bulgu#6 (ikinci güvenlik katmanı): Kanal hâlâ takip ediliyor mu? ──
+  // ── PUSH-11: Bulgu#6 — Kanal hâlâ takip ediliyor mu? ──
   // Offscreen LiveTracker unfollow edilen kanalları unsubscribe eder, ama o
   // mesaj gecikebilir/kaçabilir. cachedChannels takip listesinin kaynağıysa
   // ve kanal orada YOKSA + cache taze ise → unfollow edilmiş, bildirme.
@@ -394,68 +402,73 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   if (cachedChannels && cachedChannels.length > 0) {
     const stillFollowed = cachedChannels.some(c => c.channelSlug === slug);
     if (!stillFollowed) {
-      dbg(`[KickAlert] Pusher: ${slug} takip edilmiyor (unfollow?), bildirim atlanıyor + unsubscribe sync`);
-      // Offscreen'in bu kanalı bırakması için tam listeyi yeniden gönder
+      KLog.warn('PUSH-11', `${slug} takip edilmiyor (unfollow?), bildirim atlandı + unsubscribe sync`);
       refreshPusherSubscriptions();
       return;
     }
+    KLog.debug('PUSH-11', `${slug} takip listesinde ✓`);
   }
 
-  // ── 1) Duplicate kontrolü ──
+  // ── PUSH-12: Duplicate kontrolü ──
   const state = await getPersistedState();
   if (state.liveSlugs.has(slug)) {
-    dbg(`[KickAlert] Pusher: ${slug} zaten live listesinde, skip`);
+    KLog.debug('PUSH-12', `${slug} zaten live listesinde, SKIP (çift event/polling yarışı önlendi)`);
     return;
   }
 
-  // ── BUG#1 FIX: "İşliyorum" işaretini HEMEN koy (delay/await öncesi) ──
+  // ── PUSH-13: "İşliyorum" kilidi (delay/await öncesi) ──
   // Aksi halde notifDelay penceresinde polling aynı kanalı yakalayıp
   // ÇİFT BİLDİRİM gönderebilir. Erken işaretleme bu yarışı kapatır.
   // Ayrıca aynı kanaldan arka arkaya gelen 2. event'i de bloklar.
   state.liveSlugs.add(slug);
   await setPersistedLiveSlugs(state.liveSlugs);
+  KLog.debug('PUSH-13', `${slug} liveSlugs kilidi atıldı (çift bildirim koruması aktif)`);
 
-  // ── 2) Yayın yaşı kontrolü ──
+  // ── PUSH-14: Yayın yaşı kontrolü ──
   // StreamerIsLive event'i yayın TAM BAŞLARKEN gelir → created_at = şimdi.
   // Ama SW yeni uyandıysa veya geç event aldıysak, eski yayını bildirmeyelim.
   if (ls.created_at) {
     const ageMs = Date.now() - new Date(ls.created_at).getTime();
+    const ageMin = Math.round(ageMs / 60000);
     if (ageMs > 10 * 60 * 1000) {
-      dbg(`[KickAlert] Pusher: ${slug} yayını ${Math.round(ageMs/60000)}dk önce başlamış, eski sayılıp bildirilmiyor`);
-      // liveSlugs zaten yukarıda eklendi — tekrar bildirilmeyecek.
-      // Kanal CANLI ama eski → polling ezmesin diye _pusherLiveSlugs'a ekle.
+      KLog.warn('PUSH-14', `${slug} yayını ${ageMin}dk önce başlamış, eski sayılıp bildirilmiyor`);
       _markPusherLive(slug);
       return;
     }
+    KLog.debug('PUSH-14', `${slug} yayın yaşı: ${ageMin}dk (10dk limitinin altında) ✓`);
   }
 
-  // ── 4) BUG#4 FIX: baseline guard'ı badge yazımından ÖNCE ──
+  // ── PUSH-15: Baseline guard'ı ──
   // İlk kurulum: lastCheckDone yoksa baseline kurulmadı — sessizce kaydet,
   // badge'e dokunma (polling baseline kurunca tutarlı sayı yazacak).
   if (!state.lastCheckDone) {
-    dbg(`[KickAlert] Pusher: ${slug} — baseline kurulmadan geldi, sessizce kaydedildi`);
-    _markPusherLive(slug); // canlı → polling ezmesin
-    return; // liveSlugs zaten eklendi
+    KLog.warn('PUSH-15', `${slug} — baseline kurulmadan geldi, sessizce kaydedildi (polling badge düzeltecek)`);
+    _markPusherLive(slug);
+    return;
   }
 
-  dbg(`[KickAlert] Pusher: YENİ YAYIN → ${slug} (API'den bağımsız bildirim)`);
+  KLog.info('PUSH-15', `${slug} → tüm guard'lar geçti, YENİ YAYIN bildirim akışı başlıyor`);
 
-  // ── v2.3.4: WS → tab açma yarış güvenliği ──
+  // ── PUSH-16: WS → tab açma yarış güvenliği (kullanıcı ayarlı 3/5/7/9 sn) ──
   // Pusher 'StreamerIsLive' event'i yayın başlama saniyesinde gelir, ama Kick'in
   // video playback pipeline'ı (AWS IVS) birkaç saniye sonra hazır olur. Eskiden
   // 30sn polling tampon görevi görüyordu; WS gerçek zamanlı olduğu için o tampon
-  // kayboldu → sekme yayın daha hazır değilken açılıyor. 3sn'lik sabit küçük bir
-  // gecikme bu yarışı kapatır. Bildirim+ses+tab hepsi bu gecikmeden SONRA gider,
+  // kayboldu → sekme yayın daha hazır değilken açılıyor. Sabit küçük bir gecikme
+  // bu yarışı kapatır. Bildirim+ses+tab hepsi bu gecikmeden SONRA gider,
   // dolayısıyla davranış v2.3.3 polling akışına yakınsar.
-  // NOT: liveSlugs.add() yukarıda yapıldı (satır ~416) — bu 3sn boyunca polling
+  // NOT: liveSlugs.add() yukarıda yapıldı (PUSH-13) — bu gecikme boyunca polling
   // veya 2. WS event'i ÇİFT BİLDİRİM üretemez ("zaten live listesinde, skip").
-  await Utils.delay(3000);
+  // v2.3.5: süre artık kullanıcı ayarı (Storage.AUTO_OPEN_DELAY: 3/5/7/9 sn).
+  const autoOpenDelaySec = await Storage.getAutoOpenDelay();
+  const _delayTimer = KLog.timer();
+  KLog.info('PUSH-16', `${slug} → ${autoOpenDelaySec}sn güvenlik gecikmesi BAŞLADI (playback pipeline için)`);
+  await Utils.delay(autoOpenDelaySec * 1000);
+  KLog.info('PUSH-16', `${slug} → gecikme BİTTİ (${_delayTimer.ms()}ms), kanal objesi kuruluyor`);
 
-  // ── 3) BUG#3 FIX: Kanal objesini bul/kur (push güvenli — liveSlugs guard'ı
-  //     mükerrer push'u zaten önlüyor çünkü 2. event "zaten live" diye döner) ──
+  // ── PUSH-17: Kanal objesi (cache'te yoksa minimal kur) ──
   let ch = cachedChannels.find(c => c.channelSlug === slug);
   if (!ch) {
-    // cachedChannels'ta yok (API 403 olmuş olabilir) — minimal obje kur.
+    KLog.debug('PUSH-17', `${slug} cachedChannels'ta yok (API 403 olmuş olabilir) → minimal obje kuruluyor`);
     ch = {
       channelSlug: slug,
       userUsername: slug,
@@ -472,15 +485,17 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     ch.sessionTitle = ls.session_title || ch.sessionTitle;
     ch.startedAt = ls.created_at || ch.startedAt;
     if (ls.category?.name) ch.categoryName = ls.category.name;
+    KLog.debug('PUSH-17', `${slug} cachedChannels'ta bulundu, isLive=true güncellendi`);
   }
 
-  // ── Badge & cache güncelle (baseline kurulduğu kesin) ──
+  // ── PUSH-18: Badge & cache güncelle ──
   const liveCount = cachedChannels.filter(c => c.isLive).length;
   await chrome.action.setBadgeText({ text: liveCount > 0 ? String(liveCount) : '' });
   await updateBadgeColor();
   try { await chrome.storage.local.set({ _cachedChannels: cachedChannels }); } catch {}
+  KLog.debug('PUSH-18', `Badge güncellendi: ${liveCount} canlı kanal`);
 
-  // ── Bildirim ayarları ──
+  // ── NOTIF-50: Bildirim ayarları ──
   const showNotif = await Storage.getShowNotification();
   const suspended = !!(await Storage.getSuspendFromDate());
   const dndActive = await Storage.isDndActive();
@@ -489,12 +504,16 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   const dndMuteAutolaunch = dndActive && await Storage.getDndMuteAutolaunch();
   const soundMode = await Storage.getSoundMode();
   const chSoundPref = await Storage.getChannelSoundMode(slug);
+  KLog.debug('NOTIF-50', `${slug} ayarlar: showNotif=${showNotif} suspended=${suspended} dnd=${dndActive} chSoundPref=${chSoundPref}`);
 
-  // ── Bildirim gecikmesi (kullanıcı ayarı) ──
+  // ── NOTIF-51: Bildirim gecikmesi (kullanıcı ayarı, opsiyonel) ──
   const notifDelay = await Storage.getNotifDelay();
-  if (notifDelay > 0) await Utils.delay(notifDelay * 1000);
+  if (notifDelay > 0) {
+    KLog.info('NOTIF-51', `${slug} → notifDelay ayarı: ${notifDelay} dakika ek bekleme`);
+    await Utils.delay(notifDelay * 1000);
+  }
 
-  // ── History ──
+  // ── NOTIF-52: History ──
   Storage.addNotificationHistory({
     username: ch.userUsername,
     channelSlug: ch.channelSlug,
@@ -503,46 +522,63 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     category: ch.categoryName || '-',
     timestamp: new Date().toISOString(),
   });
+  KLog.debug('NOTIF-52', `${slug} history'ye eklendi`);
 
-  // ── BUG#2 FIX: notifiedLives'ı sendNotification'dan HEMEN ÖNCE taze oku ──
-  // state.notifiedLives snapshot eskimiş olabilir (polling arada yazmış olabilir).
-  // Taze okuyup üzerine ekleyerek lost-update'i önlüyoruz.
+  // ── NOTIF-53: notifiedLives'ı taze oku (lost-update koruması) ──
   const freshState = await getPersistedState();
   const notifiedLives = freshState.notifiedLives;
 
-  // ── #C FIX: Bildirim bloğunu try/catch ile sar ──
-  // liveSlugs.add EN BAŞTA yapıldı (çift bildirim koruması). AMA bildirim
-  // burada throw ederse slug liveSlugs'ta kilitli kalır → kanal "bildirildi"
-  // sayılır ama bildirim GİTMEDİ → kalıcı kayıp. Hata olursa rollback yapıp
-  // sonraki event'in tekrar denemesine izin veriyoruz.
+  // ── Bildirim bloğu (try/catch ile sarılı) ──
+  // liveSlugs.add EN BAŞTA yapıldı (PUSH-13). AMA bildirim burada throw ederse
+  // slug liveSlugs'ta kilitli kalır → bildirim GİTMEDİ → kalıcı kayıp.
+  // Hata olursa rollback yapıp sonraki event'in tekrar denemesine izin veriyoruz.
   try {
-    // muted = sadece history
     if (chSoundPref !== 'muted') {
+      // NOTIF-54: Bildirim
       if (showNotif && !dndMuteNotif) {
         const isSilentNotif = soundMode === 'extension' || chSoundPref === 'silent';
         await sendNotification(ch, notifiedLives, isSilentNotif);
+        KLog.info('NOTIF-54', `${slug} → bildirim GÖNDERİLDİ (silentSystem=${isSilentNotif})`);
+      } else {
+        KLog.debug('NOTIF-54', `${slug} → bildirim atlandı (showNotif=${showNotif} dndMute=${dndMuteNotif})`);
       }
+
+      // NOTIF-55: Ses
       if (!dndMuteSound && chSoundPref !== 'silent') {
         const soundType = chSoundPref === 'main' ? 'NEW_LIVE_MAIN' : 'NEW_LIVE_SUB';
         await playSound(soundType);
+        KLog.info('NOTIF-55', `${slug} → ses çalındı (${soundType})`);
+      } else {
+        KLog.debug('NOTIF-55', `${slug} → ses atlandı (dndMute=${dndMuteSound} pref=${chSoundPref})`);
       }
-      if (!suspended && !dndMuteAutolaunch && await shouldAutoOpen(ch)) {
-        await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: true });
+
+      // TAB-70: Auto-open kontrolü ve sekme açma
+      if (!suspended && !dndMuteAutolaunch) {
+        const shouldOpen = await shouldAutoOpen(ch);
+        if (shouldOpen) {
+          const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: true });
+          KLog.info('TAB-70', `${slug} → SEKME AÇILDI (tabId=${tab.id}) — toplam akış ${_t0.ms()}ms`);
+        } else {
+          KLog.debug('TAB-70', `${slug} → shouldAutoOpen=false (kanal/global ayar) → sekme açılmadı`);
+        }
+      } else {
+        KLog.debug('TAB-70', `${slug} → sekme atlandı (suspended=${suspended} dndMuteAutolaunch=${dndMuteAutolaunch})`);
       }
+    } else {
+      KLog.debug('NOTIF-54', `${slug} → tamamen sessiz (chSoundPref=muted, sadece history)`);
     }
 
-    // ── notifiedLives persist (liveSlugs zaten en başta yazıldı) ──
+    // notifiedLives persist (liveSlugs zaten EN BAŞTA yazıldı)
     await setPersistedNotifiedLives(notifiedLives);
 
-    // ── #E FIX: Pusher'ın canlı bildiği kanalı işaretle ──
-    // Polling (checkChannels) liveSlugs'u REPLACE ettiğinde bunu koruyacak.
+    // PUSH-19: Pusher'ın canlı bildiği kanalı işaretle (polling ezmesin)
     _markPusherLive(slug);
 
-    dbg(`[KickAlert] Pusher: ${slug} bildirimi tamamlandı (API kullanılmadı) ⚡`);
+    KLog.info('PUSH-19', `${slug} → bildirim akışı TAMAMLANDI (toplam ${_t0.ms()}ms, API kullanılmadı) ⚡`);
   } catch (e) {
-    // #C FIX: Bildirim başarısız → rollback. Slug'ı liveSlugs'tan çıkar ki
-    // sonraki StreamerIsLive event'i tekrar deneyebilsin (kayıp bildirim olmaz).
-    console.warn(`[KickAlert] Pusher: ${slug} bildirim hatası, rollback yapılıyor: ${e.message}`);
+    // Bildirim başarısız → rollback. Slug'ı liveSlugs'tan çıkar ki sonraki
+    // StreamerIsLive event'i tekrar deneyebilsin (kayıp bildirim olmaz).
+    KLog.error('PUSH-99', `${slug} bildirim hatası, rollback yapılıyor`, e);
     try {
       const rb = await getPersistedState();
       rb.liveSlugs.delete(slug);
@@ -1517,28 +1553,34 @@ async function _checkChannelsInner() {
     // Muted = no notification, no sound, only history
     if (chSoundPref === 'muted') continue;
 
-    // Send notification (if enabled and not DND-muted)
+    // POLL-40: Send notification (if enabled and not DND-muted)
     if (showNotif && !dndMuteNotif) {
       if (notified) await Utils.delay(5000);
-      // silent flag: true when extension mode (we play our own), false when windows mode
       const isSilentNotif = soundMode === 'extension' || chSoundPref === 'silent';
       await sendNotification(ch, notifiedLives, isSilentNotif);
+      KLog.info('POLL-40', `${ch.channelSlug} → polling bildirim GÖNDERİLDİ (silentSystem=${isSilentNotif})`);
       notified = true;
+    } else {
+      KLog.debug('POLL-40', `${ch.channelSlug} → polling bildirim atlandı (showNotif=${showNotif} dndMute=${dndMuteNotif})`);
     }
 
-    // Play sound based on channel preference
+    // POLL-41: Play sound based on channel preference
     if (!dndMuteSound && chSoundPref !== 'silent') {
       const soundType = chSoundPref === 'main' ? 'NEW_LIVE_MAIN' : 'NEW_LIVE_SUB';
       await playSound(soundType);
+      KLog.info('POLL-41', `${ch.channelSlug} → polling ses çalındı (${soundType})`);
     }
 
-    // Auto-open tab (independent of sound)
+    // POLL-42 / TAB-71: Auto-open tab (independent of sound)
+    // NOT: Polling yolunda 3-9sn güvenlik gecikmesi YOK çünkü polling zaten
+    // 30sn cycle ile çalışır — yayın yakalandığında zaten birkaç saniye geçmiştir.
     if (!suspended && !dndMuteAutolaunch) {
       if (await shouldAutoOpen(ch)) {
-        // İlk açılan sekmeyi öne getir — Cloudflare otomatik onayı için gerekli
-        // Sonraki kanallar arka planda — kullanıcı kendi geçer
-        await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: !_autoLaunchTabOpened });
+        const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: !_autoLaunchTabOpened });
+        KLog.info('TAB-71', `${ch.channelSlug} → polling SEKME AÇILDI (tabId=${tab.id}, gecikme yok)`);
         _autoLaunchTabOpened = true;
+      } else {
+        KLog.debug('TAB-71', `${ch.channelSlug} → polling shouldAutoOpen=false → sekme açılmadı`);
       }
     }
   }

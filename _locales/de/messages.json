@@ -331,8 +331,14 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "Verzögerung Tab-Öffnung"
+  },
+  "notifDelayUnit": {
+    "message": "Min"
+  },
   "notifDelayNow": {
-    "message": "Now"
+    "message": "Jetzt"
   },
   "notifStartedStreaming": {
     "message": "$1 ist jetzt live"
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "Jetzt",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "Sortieren:"
+  },
+  "sortByKick": {
+    "message": "Kick-Standard"
+  },
+  "sortByAlphabetic": {
+    "message": "Alphabetisch"
+  },
+  "sortByLiveTime": {
+    "message": "Live-Zeit"
+  },
+  "sortByViewers": {
+    "message": "Zuschauer"
+  },
+  "sortDirToggle": {
+    "message": "Richtung umschalten"
   }
 }

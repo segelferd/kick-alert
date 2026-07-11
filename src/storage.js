@@ -36,6 +36,9 @@ const StorageKeys = {
   VIEWER_HISTORY: 'viewerHistory',   // { slug: [{v, t}, ...] }
   ANOMALY_SETTINGS: 'anomalySettings',
   NOTIF_DELAY: 'notifDelay',            // dakika: 0,5,10,15
+  AUTO_OPEN_DELAY: 'autoOpenDelay',     // v2.3.5: WS sonrası tab açma gecikmesi (sn): 3,5,7,9
+  FOLLOW_SORT_BY: 'followSortBy',       // v2.3.5: follow tab sıralama: kick|alphabetic|liveTime|viewers
+  FOLLOW_SORT_DIR: 'followSortDir',     // v2.3.5: yön: asc|desc
   CHAT_INTEGRATION_ENABLED: 'chatIntegrationEnabled',
   CHAT_SETTINGS: 'chatSettings',        // { filterBlur, botFilter, botList, emojiFilter, repeatFilter, wordFilterEnabled, wordList, userFilterEnabled, userList, keywordEnabled, keywordList, favEnabled, favList, tagEnabled, tagUsername, broadcasterNotif }
   // v2.3.0: Bot tracker
@@ -353,10 +356,39 @@ const Storage = {
    * Check if current time is within DND hours.
    */
   // ─── Viewer Anomaly History ───
-  async getNotifDelay() {
-    return (await this.get(StorageKeys.NOTIF_DELAY)) || 0;
+  // v2.3.5: notifDelay UI'ı kaldırıldı, davranış her zaman "Hemen" (0).
+  // Backward compatibility: getter her zaman 0 döner, setter no-op.
+  // (Eski kullanıcının storage'da 5/10/15 değeri olsa bile yok sayılır.)
+  async getNotifDelay() { return 0; },
+  async setNotifDelay() { /* no-op: UI kaldırıldı */ },
+
+  // v2.3.5: WS → tab açma güvenlik gecikmesi (saniye). İzinli: 3, 5, 7, 9.
+  // Default 5 (yeni kullanıcılar için). Mevcut kullanıcının ayarı kaydedildiyse
+  // o ayar korunur — sadece hiç set edilmemişse 5'e düşer.
+  async getAutoOpenDelay() {
+    const v = await this.get(StorageKeys.AUTO_OPEN_DELAY);
+    return [3, 5, 7, 9].includes(v) ? v : 5;
   },
-  async setNotifDelay(v) { return this.set(StorageKeys.NOTIF_DELAY, v); },
+  async setAutoOpenDelay(v) {
+    if (![3, 5, 7, 9].includes(v)) v = 5; // güvenlik: sadece izinli değerler
+    return this.set(StorageKeys.AUTO_OPEN_DELAY, v);
+  },
+
+  // v2.3.5: Follow tab sıralama tercihi
+  // by: 'kick' (varsayılan, Kick API sırası) | 'alphabetic' | 'liveTime' | 'viewers'
+  // dir: 'asc' | 'desc'
+  async getFollowSort() {
+    const by = await this.get(StorageKeys.FOLLOW_SORT_BY);
+    const dir = await this.get(StorageKeys.FOLLOW_SORT_DIR);
+    return {
+      by: ['kick', 'alphabetic', 'liveTime', 'viewers'].includes(by) ? by : 'kick',
+      dir: ['asc', 'desc'].includes(dir) ? dir : 'desc',
+    };
+  },
+  async setFollowSort(by, dir) {
+    if (by) await this.set(StorageKeys.FOLLOW_SORT_BY, by);
+    if (dir) await this.set(StorageKeys.FOLLOW_SORT_DIR, dir);
+  },
 
 
   async getAnomalySettings() {

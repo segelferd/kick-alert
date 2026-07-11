@@ -331,8 +331,14 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "تأخير فتح التبويب"
+  },
+  "notifDelayUnit": {
+    "message": "دقيقة"
+  },
   "notifDelayNow": {
-    "message": "Now"
+    "message": "الآن"
   },
   "notifStartedStreaming": {
     "message": "$1 بدأ البث المباشر"
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "الآن",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "فرز:"
+  },
+  "sortByKick": {
+    "message": "افتراضي Kick"
+  },
+  "sortByAlphabetic": {
+    "message": "أبجدي"
+  },
+  "sortByLiveTime": {
+    "message": "مدة البث"
+  },
+  "sortByViewers": {
+    "message": "المشاهدون"
+  },
+  "sortDirToggle": {
+    "message": "تبديل الاتجاه"
   }
 }

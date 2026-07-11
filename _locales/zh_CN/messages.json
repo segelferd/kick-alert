@@ -331,8 +331,14 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "标签打开延迟"
+  },
+  "notifDelayUnit": {
+    "message": "分钟"
+  },
   "notifDelayNow": {
-    "message": "Now"
+    "message": "立即"
   },
   "notifStartedStreaming": {
     "message": "$1 开始了直播"
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "当前",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "排序:"
+  },
+  "sortByKick": {
+    "message": "Kick 默认"
+  },
+  "sortByAlphabetic": {
+    "message": "字母顺序"
+  },
+  "sortByLiveTime": {
+    "message": "直播时长"
+  },
+  "sortByViewers": {
+    "message": "观众数"
+  },
+  "sortDirToggle": {
+    "message": "切换方向"
   }
 }

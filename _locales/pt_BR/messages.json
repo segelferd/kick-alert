@@ -331,8 +331,14 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "Atraso de abertura"
+  },
+  "notifDelayUnit": {
+    "message": "min"
+  },
   "notifDelayNow": {
-    "message": "Now"
+    "message": "Agora"
   },
   "notifStartedStreaming": {
     "message": "$1 está ao vivo"
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "Agora",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "Ordenar:"
+  },
+  "sortByKick": {
+    "message": "Kick padrão"
+  },
+  "sortByAlphabetic": {
+    "message": "Alfabético"
+  },
+  "sortByLiveTime": {
+    "message": "Tempo ao vivo"
+  },
+  "sortByViewers": {
+    "message": "Espectadores"
+  },
+  "sortDirToggle": {
+    "message": "Inverter ordem"
   }
 }

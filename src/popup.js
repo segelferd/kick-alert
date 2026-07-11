@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupTabs();
   setupMenu();
   setupSearch();
+  setupFollowSortBar();
   setupHistoryClear();
   setupRateLink();
   await updateChatTabVisibility();
@@ -266,12 +267,40 @@ async function renderFollowing(categoryFilter) {
     return;
   }
 
+  // v2.3.5: Kullanıcı sıralama tercihi (canlı + favori önceliği KORUNUR)
+  const sortPref = await Storage.getFollowSort();
+  const dirMul = sortPref.dir === 'desc' ? -1 : 1;
+  // Kick API sırası için orijinal indeksi sakla (sort'tan önce)
+  const origIdx = new Map(list.map((c, i) => [c.channelSlug, i]));
+
   list.sort((a, b) => {
+    // 1. seviye: canlı kanallar her zaman önce
+    if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
+    // 2. seviye: favori kanallar her zaman önce
     const aFav = favs[a.channelSlug] ? 1 : 0;
     const bFav = favs[b.channelSlug] ? 1 : 0;
-    if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
     if (aFav !== bFav) return bFav - aFav;
-    return a.userUsername.localeCompare(b.userUsername);
+    // 3. seviye: kullanıcının seçtiği kriter
+    switch (sortPref.by) {
+      case 'alphabetic':
+        return dirMul * a.userUsername.localeCompare(b.userUsername);
+      case 'liveTime': {
+        // En yeni canlı yayını üste (desc) veya en eskiyi (asc).
+        // Offline kanallarda startedAt yok → 0 farzedilir; zaten 1. seviyede ayrı bloktalar.
+        const aT = a.startedAt ? new Date(a.startedAt).getTime() : 0;
+        const bT = b.startedAt ? new Date(b.startedAt).getTime() : 0;
+        return dirMul * (bT - aT); // desc=yeni üstte; asc için dirMul ters çevirir
+      }
+      case 'viewers': {
+        const aV = a.viewerCount || 0;
+        const bV = b.viewerCount || 0;
+        return dirMul * (bV - aV); // desc=çok izleyici üstte
+      }
+      case 'kick':
+      default:
+        // Kick API'den geldiği orijinal sıra
+        return dirMul * (origIdx.get(a.channelSlug) - origIdx.get(b.channelSlug));
+    }
   });
 
   el.innerHTML = '';
@@ -915,6 +944,45 @@ function setupSearch() {
   });
 }
 
+// ─── v2.3.5: Follow tab sort bar ───
+async function setupFollowSortBar() {
+  const bar = document.getElementById('follow-sort-bar');
+  if (!bar) return;
+  const dirIcon = document.getElementById('sort-dir-icon');
+
+  // Mevcut tercihi UI'a yansıt
+  async function refresh() {
+    const pref = await Storage.getFollowSort();
+    bar.querySelectorAll('.sort-chip[data-sort-by]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.sortBy === pref.by);
+    });
+    if (dirIcon) {
+      dirIcon.textContent = pref.dir === 'desc' ? 'arrow_downward' : 'arrow_upward';
+    }
+  }
+  await refresh();
+
+  // Kriter butonları
+  bar.querySelectorAll('.sort-chip[data-sort-by]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      await Storage.setFollowSort(btn.dataset.sortBy, null);
+      await refresh();
+      await renderFollowing();
+    });
+  });
+
+  // Yön toggle butonu
+  const dirBtn = document.getElementById('sort-dir-toggle');
+  if (dirBtn) {
+    dirBtn.addEventListener('click', async () => {
+      const cur = await Storage.getFollowSort();
+      await Storage.setFollowSort(null, cur.dir === 'desc' ? 'asc' : 'desc');
+      await refresh();
+      await renderFollowing();
+    });
+  }
+}
+
 // ─── History Clear ───
 
 function setupHistoryClear() {
@@ -1109,11 +1177,14 @@ async function loadOptionsSettings() {
   const dropSlider = optEl('opt-drop-sensitivity-slider');
   if (dropSlider) { dropSlider.value = ['min','avg','max'].indexOf(anomalySettings.dropSensitivity || 'avg'); updateSensitivityFill(dropSlider, DROP_LABELS); }
 
-  // Bildirim gecikmesi
-  const notifDelay = await Storage.getNotifDelay();
-  document.querySelectorAll('.notif-delay-btn').forEach(btn => {
-    btn.classList.toggle('active', +btn.dataset.delay === notifDelay);
-  });
+  // v2.3.5: Auto-open (tab açma) gecikmesi (slider)
+  const autoOpenDelay = await Storage.getAutoOpenDelay();
+  const autoOpenDelaySlider = optEl('opt-auto-open-delay-slider');
+  if (autoOpenDelaySlider) {
+    autoOpenDelaySlider.value = autoOpenDelay;
+    optEl('opt-auto-open-delay-value').textContent = autoOpenDelay;
+    optUpdateSliderFill(autoOpenDelaySlider);
+  }
 
   optEl('opt-cloud-sync').checked = await Storage.getCloudSyncEnabled();
 
@@ -1253,16 +1324,15 @@ function setupOptionsListeners() {
   setupSensitivitySlider('opt-spike-sensitivity-slider', 'spikeSensitivity');
   setupSensitivitySlider('opt-drop-sensitivity-slider', 'dropSensitivity');
 
-  // Bildirim gecikmesi
-  document.querySelectorAll('.notif-delay-btn').forEach(btn => {
-    btn.addEventListener('click', async () => {
-      const delay = +btn.dataset.delay;
-      await Storage.setNotifDelay(delay);
-      document.querySelectorAll('.notif-delay-btn').forEach(b =>
-        b.classList.toggle('active', +b.dataset.delay === delay)
-      );
+  // v2.3.5: Auto-open (tab açma) gecikmesi (slider)
+  const autoOpenSlider = optEl('opt-auto-open-delay-slider');
+  if (autoOpenSlider) {
+    autoOpenSlider.addEventListener('input', () => {
+      optEl('opt-auto-open-delay-value').textContent = autoOpenSlider.value;
+      optUpdateSliderFill(autoOpenSlider);
     });
-  });
+    autoOpenSlider.addEventListener('change', () => Storage.setAutoOpenDelay(+autoOpenSlider.value));
+  }
 
   // Cloud Sync listener
   optBind('opt-cloud-sync', v => Storage.setCloudSyncEnabled(v));

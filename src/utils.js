@@ -168,3 +168,127 @@ const Utils = {
     return m ? m[1].toLowerCase() : null;
   },
 };
+
+/**
+ * ════════════════════════════════════════════════════════════════════════════
+ * KLog — KickAlert Merkezi Logging Sistemi (v2.3.5+)
+ * ════════════════════════════════════════════════════════════════════════════
+ *
+ * AMAÇ: Her log satırı 4 bilgi taşır:
+ *   1. ZAMAN  — HH:MM:SS.mmm (ms hassasiyetinde)
+ *   2. SEVİYE — ERROR/WARN/INFO/DEBUG/TRACE (renkli ikon)
+ *   3. ADRES  — KATEGORI-STEPNUM (örn: PUSH-16) → koddaki katman+adım
+ *   4. MESAJ  — okunabilir açıklama
+ *
+ * SEVİYELER (sırası: severity yüksekten düşüğe):
+ *   ERROR (🔴) — exception, kalıcı hata. HER ZAMAN görünür (prod dahil).
+ *   WARN  (🟡) — beklenmedik ama kurtarılan durum. HER ZAMAN görünür.
+ *   INFO  (🔵) — önemli olay: yayın yakalandı, tab açıldı. HER ZAMAN görünür.
+ *   DEBUG (⚪) — detaylı akış: state değişim, ayar okuma. _debugMode açıksa.
+ *   TRACE (🔍) — çok ince detay: interval, hesaplama. _traceMode açıksa.
+ *
+ * KATEGORİLER (alt sistemler):
+ *   BOOT  — service worker başlangıç, importScripts, alarm kurulumu
+ *   PUSH  — Pusher WebSocket akışı (handlePusherLiveEvent)
+ *   POLL  — Polling akışı (checkChannels)
+ *   NOTIF — Bildirim, ses, history
+ *   TAB   — Auto-open, sekme açma
+ *   API   — Kick API çağrıları (fetchKick, getAllFollowingChannels)
+ *   BOT   — Bot tracker
+ *   STATE — Persisted state, storage, cache
+ *   AUTH  — Session, cookie, OAuth
+ *   CHAT  — Chat panel
+ *
+ * ADRES (STEP-ID) ŞEMASI:
+ *   {KATEGORI}-{NUM}  →  örn: PUSH-16  =  Pusher akışının 16. adımı
+ *
+ * KULLANIM:
+ *   KLog.info('PUSH-10', `${slug} → event alındı`);
+ *   KLog.debug('PUSH-12', `duplicate check`, { liveSlugs: state.liveSlugs.size });
+ *   KLog.warn('API-82', `403 backoff aktif, ${ms}ms bekle`);
+ *   KLog.error('PUSH-99', 'unexpected error', err);
+ *
+ *   const t = KLog.timer();
+ *   ... iş ...
+ *   KLog.info('PUSH-16', `gecikme bitti (${t.ms()}ms)`);
+ *
+ * KONTROL:
+ *   chrome.storage.local.set({ _debugMode: true })   // DEBUG seviyesi aç
+ *   chrome.storage.local.set({ _traceMode: true })   // TRACE seviyesi aç
+ *   chrome.storage.local.set({ _debugMode: false, _traceMode: false })  // sessiz
+ * ════════════════════════════════════════════════════════════════════════════
+ */
+const KLog = (() => {
+  let DEBUG = false;
+  let TRACE = false;
+
+  // Ayarları storage'dan oku (service worker uyandığında)
+  if (typeof chrome !== 'undefined' && chrome.storage?.local) {
+    chrome.storage.local.get(['_debugMode', '_traceMode']).then(r => {
+      DEBUG = !!r._debugMode;
+      TRACE = !!r._traceMode;
+    }).catch(() => {});
+    chrome.storage.onChanged?.addListener((changes) => {
+      if (changes._debugMode) DEBUG = !!changes._debugMode.newValue;
+      if (changes._traceMode) TRACE = !!changes._traceMode.newValue;
+    });
+  }
+
+  function ts() {
+    const d = new Date();
+    const hh = String(d.getHours()).padStart(2, '0');
+    const mm = String(d.getMinutes()).padStart(2, '0');
+    const ss = String(d.getSeconds()).padStart(2, '0');
+    const ms = String(d.getMilliseconds()).padStart(3, '0');
+    return `${hh}:${mm}:${ss}.${ms}`;
+  }
+
+  // Renkli prefix formatlama (Chrome DevTools %c stil destekli)
+  function fmt(level, icon, color, addr, msg, ...rest) {
+    const prefix = `%c[${ts()}] ${icon} ${level.padEnd(5)} %c[${addr.padEnd(8)}]%c ${msg}`;
+    const baseStyle = `color:${color};font-weight:bold`;
+    const addrStyle = `color:#9c88ff;font-weight:bold`;
+    const msgStyle  = `color:inherit;font-weight:normal`;
+    return [prefix, baseStyle, addrStyle, msgStyle, ...rest];
+  }
+
+  return {
+    // ── Seviyeler ──
+    error(addr, msg, ...extra) {
+      console.error(...fmt('ERROR', '🔴', '#FF6B6B', addr, msg), ...extra);
+    },
+    warn(addr, msg, ...extra) {
+      console.warn(...fmt('WARN', '🟡', '#FFD93D', addr, msg), ...extra);
+    },
+    info(addr, msg, ...extra) {
+      console.log(...fmt('INFO', '🔵', '#53FC18', addr, msg), ...extra);
+    },
+    debug(addr, msg, ...extra) {
+      if (!DEBUG && !TRACE) return;
+      console.log(...fmt('DEBUG', '⚪', '#AAAAAA', addr, msg), ...extra);
+    },
+    trace(addr, msg, ...extra) {
+      if (!TRACE) return;
+      console.log(...fmt('TRACE', '🔍', '#6c7280', addr, msg), ...extra);
+    },
+
+    // ── Timer yardımcısı (timing bug'ları için) ──
+    timer() {
+      const start = performance.now();
+      return {
+        ms: () => Math.round(performance.now() - start),
+        s: () => ((performance.now() - start) / 1000).toFixed(2),
+      };
+    },
+
+    // ── Durum sorguları ──
+    isDebug: () => DEBUG,
+    isTrace: () => TRACE,
+
+    // ── Eski dbg() köprüsü (geçiş için, hep DEBUG seviyesinde) ──
+    legacy(...args) {
+      if (!DEBUG && !TRACE) return;
+      console.debug(...args);
+    },
+  };
+})();

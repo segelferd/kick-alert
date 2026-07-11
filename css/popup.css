@@ -409,6 +409,9 @@ body {
   opacity: 0.35; pointer-events: none;
 }
 .opt-slider-row { display: flex; align-items: center; gap: 7px; padding: 5px 0; font-size: 13px; }
+/* v2.3.5: compact slider — label esner, slider %50 kadar dar ve sağda */
+.opt-slider-row-compact .opt-slider-label { flex: 1; min-width: 0; }
+.opt-slider-row-compact input[type="range"] { flex: 0 0 50%; }
 .opt-slider-label { color: var(--text-secondary); min-width: 95px; flex-shrink: 0; font-size: 12px; }
 .opt-slider-row input[type="range"] {
   -webkit-appearance: none; appearance: none;
@@ -569,6 +572,33 @@ body {
 }
 [data-theme="light"] .group-chip.active { color: #fff; }
 .group-chip:hover:not(.active) { background: var(--bg-hover); color: var(--text-secondary); }
+
+/* v2.3.5: Follow tab sort bar */
+.follow-sort-bar {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-bottom: 1px solid var(--border);
+}
+.follow-sort-label {
+  font-size: 11px; color: var(--text-muted); margin-right: 4px;
+}
+.sort-chip {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 26px; height: 22px; padding: 0; border-radius: 6px;
+  border: 1px solid rgba(255,255,255,.1);
+  background: rgba(255,255,255,.04); color: var(--text-muted);
+  cursor: pointer; transition: all .15s;
+}
+.sort-chip .material-icons { font-size: 14px; }
+.sort-chip .sort-kick-svg { width: 14px; height: 14px; display: block; }
+.sort-chip-text { font-size: 11px; font-weight: 600; }
+.sort-chip:hover:not(.active) {
+  background: var(--bg-hover); color: var(--text-secondary);
+}
+.sort-chip.active {
+  background: rgba(83,252,24,.15); color: var(--accent);
+  border-color: rgba(83,252,24,.4);
+}
+.sort-chip.sort-dir { margin-left: auto; }
 
 /* Options — Groups Management */
 .opt-groups-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }

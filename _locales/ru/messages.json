@@ -331,8 +331,14 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "Задержка открытия"
+  },
+  "notifDelayUnit": {
+    "message": "мин"
+  },
   "notifDelayNow": {
-    "message": "Now"
+    "message": "Сейчас"
   },
   "notifStartedStreaming": {
     "message": "$1 начал трансляцию"
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "Сейчас",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "Сортировка:"
+  },
+  "sortByKick": {
+    "message": "По умолчанию Kick"
+  },
+  "sortByAlphabetic": {
+    "message": "По алфавиту"
+  },
+  "sortByLiveTime": {
+    "message": "Время в эфире"
+  },
+  "sortByViewers": {
+    "message": "Зрители"
+  },
+  "sortDirToggle": {
+    "message": "Сменить направление"
   }
 }

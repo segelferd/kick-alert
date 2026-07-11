@@ -331,6 +331,12 @@
   "notifDelayLabel": {
     "message": "Yayın başladıktan sonra bildir"
   },
+  "autoOpenDelayLabel": {
+    "message": "Sekme açma gecikmesi"
+  },
+  "notifDelayUnit": {
+    "message": "dk"
+  },
   "notifDelayNow": {
     "message": "Hemen"
   },
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "Şu an",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "Sırala:"
+  },
+  "sortByKick": {
+    "message": "Kick varsayılan"
+  },
+  "sortByAlphabetic": {
+    "message": "Alfabetik"
+  },
+  "sortByLiveTime": {
+    "message": "Yayın süresi"
+  },
+  "sortByViewers": {
+    "message": "İzleyici"
+  },
+  "sortDirToggle": {
+    "message": "Yönü değiştir"
   }
 }

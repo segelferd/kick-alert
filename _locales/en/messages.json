@@ -331,6 +331,12 @@
   "notifDelayLabel": {
     "message": "Notify after stream starts"
   },
+  "autoOpenDelayLabel": {
+    "message": "Tab open delay"
+  },
+  "notifDelayUnit": {
+    "message": "min"
+  },
   "notifDelayNow": {
     "message": "Now"
   },
@@ -540,5 +546,23 @@
   "vhTrendRecent": {
     "message": "Now",
     "description": "Trend badge last-6-intervals label"
+  },
+  "sortByLabel": {
+    "message": "Sort:"
+  },
+  "sortByKick": {
+    "message": "Kick default"
+  },
+  "sortByAlphabetic": {
+    "message": "Alphabetic"
+  },
+  "sortByLiveTime": {
+    "message": "Live time"
+  },
+  "sortByViewers": {
+    "message": "Viewers"
+  },
+  "sortDirToggle": {
+    "message": "Toggle direction"
   }
 }
