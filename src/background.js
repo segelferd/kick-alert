@@ -70,28 +70,50 @@ function _unmarkPusherLive(slug) {
 // ─── Avatar Helper ───
 
 async function getAvatarDataUrl(ch) {
-  if (!ch.profilePic) return chrome.runtime.getURL('icons/icon128.png');
   const slug = ch.channelSlug;
+  if (!ch.profilePic) {
+    KLog.warn('AVA-01', `${slug} → profilePic verisi boş geldi, varsayılan ikon kullanılacak`);
+    return chrome.runtime.getURL('icons/icon128.png');
+  }
   if (avatarCache[slug]) return avatarCache[slug];
-  try {
+
+  const _fetchAvatarOnce = async () => {
     const resp = await fetch(ch.profilePic);
-    if (!resp.ok) throw new Error(resp.status);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const blob = await resp.blob();
-    const dataUrl = await new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => resolve(reader.result);
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
+  };
+
+  const _storeInCache = (dataUrl) => {
     // Evict oldest entries if cache is full
     const keys = Object.keys(avatarCache);
     if (keys.length >= AVATAR_CACHE_MAX) {
       delete avatarCache[keys[0]];
     }
     avatarCache[slug] = dataUrl;
+  };
+
+  try {
+    const dataUrl = await _fetchAvatarOnce();
+    _storeInCache(dataUrl);
     return dataUrl;
-  } catch {
-    return chrome.runtime.getURL('icons/icon128.png');
+  } catch (err1) {
+    KLog.warn('AVA-02', `${slug} → ilk avatar indirme denemesi başarısız (${err1.message}), 300ms sonra tekrar denenecek`);
+    await new Promise((r) => setTimeout(r, 300));
+    try {
+      const dataUrl = await _fetchAvatarOnce();
+      _storeInCache(dataUrl);
+      KLog.info('AVA-03', `${slug} → ikinci denemede avatar başarıyla alındı`);
+      return dataUrl;
+    } catch (err2) {
+      KLog.warn('AVA-04', `${slug} → ikinci deneme de başarısız (${err2.message}), varsayılan ikona düşülüyor`);
+      return chrome.runtime.getURL('icons/icon128.png');
+    }
   }
 }
 

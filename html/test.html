@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>KickAlert — Test Panel</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #111; color: #eee;
+      min-width: 760px;
+      display: flex; flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ─── Sticky Health Header ─── */
+    #health-header {
+      position: sticky; top: 0; z-index: 100;
+      background: linear-gradient(180deg, #0a0a0a 0%, #0f0f0f 100%);
+      border-bottom: 1px solid #1f1f1f;
+      padding: 14px 20px 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+    #health-header.healthy { border-bottom-color: #1f4d10; }
+    #health-header.warning { border-bottom-color: #6b4a00; }
+    #health-header.critical { border-bottom-color: #5a1414; }
+
+    .health-line { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .health-status {
+      font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
+      padding: 4px 12px; border-radius: 5px;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .health-status.healthy { background: #0d2a05; color: #53FC18; border: 1px solid #1f4d10; }
+    .health-status.warning { background: #2a2000; color: #f0a500; border: 1px solid #6b4a00; }
+    .health-status.critical { background: #2a0808; color: #FF6B6B; border: 1px solid #5a1414; animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,107,0.4); }
+      50% { box-shadow: 0 0 0 6px rgba(255,107,107,0); }
+    }
+
+    .health-metric { font-size: 12px; color: #888; }
+    .health-metric strong { color: #ddd; font-weight: 600; }
+    .health-metric.fail strong { color: #FF6B6B; }
+    .health-metric.warn strong { color: #f0a500; }
+    .health-metric.ok strong { color: #53FC18; }
+
+    .health-issues {
+      margin-top: 8px; font-size: 12px;
+      padding: 8px 12px; border-radius: 5px;
+      display: none;
+    }
+    .health-issues.show { display: block; }
+    .health-issues.warning { background: #1a1400; border-left: 3px solid #f0a500; color: #f0a500; }
+    .health-issues.critical { background: #1a0808; border-left: 3px solid #FF6B6B; color: #FF6B6B; }
+    .health-issues ul { margin: 4px 0 4px 20px; }
+    .health-issues li { margin: 2px 0; }
+    .health-suggestion {
+      margin-top: 6px; padding-top: 6px;
+      border-top: 1px dashed rgba(255,255,255,0.1);
+      color: #aaa; font-size: 11px;
+    }
+    .health-suggestion strong { color: #ddd; }
+
+    /* ─── Main content ─── */
+    #content {
+      flex: 1;
+      padding: 18px 20px 12px;
+      overflow-y: auto;
+    }
+
+    .section-heading {
+      font-size: 11px; font-weight: 600; color: #888;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin: 0 0 10px 2px;
+    }
+
+    /* ─── Senaryo Kartları (3 sütun grid) ─── */
+    .scenarios-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .scenario-card {
+      background: #1a1a1a; border: 1px solid #2a2a2a;
+      border-radius: 8px; padding: 14px;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: flex; flex-direction: column; gap: 6px;
+      position: relative; overflow: hidden;
+    }
+    .scenario-card:hover {
+      border-color: #53FC18;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(83,252,24,0.08);
+    }
+    .scenario-card.running {
+      border-color: #5ba4f5;
+      background: linear-gradient(180deg, #1a1a1a 0%, #0a1424 100%);
+    }
+    .scenario-card.running::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 0%, #5ba4f5 50%, transparent 100%);
+      animation: scanning 1.5s infinite linear;
+    }
+    @keyframes scanning {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+    .scenario-card.success { border-color: #1f4d10; background: linear-gradient(180deg, #1a1a1a 0%, #0d1f05 100%); }
+    .scenario-card.warn { border-color: #6b4a00; background: linear-gradient(180deg, #1a1a1a 0%, #1f1700 100%); }
+    .scenario-card.fail { border-color: #5a1414; background: linear-gradient(180deg, #1a1a1a 0%, #1a0808 100%); }
+
+    .scenario-icon { font-size: 22px; line-height: 1; }
+    .scenario-title { font-size: 13px; font-weight: 600; color: #ddd; }
+    .scenario-desc { font-size: 11px; color: #888; line-height: 1.4; }
+    .scenario-meta {
+      font-size: 10px; color: #555; margin-top: 4px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .scenario-meta .badge {
+      background: #0d0d0d; padding: 2px 6px; border-radius: 3px;
+      color: #888; font-family: monospace;
+    }
+    .scenario-result {
+      font-size: 11px; font-weight: 600;
+      margin-top: 6px;
+      display: none;
+    }
+    .scenario-card.success .scenario-result,
+    .scenario-card.warn .scenario-result,
+    .scenario-card.fail .scenario-result { display: block; }
+    .scenario-card.success .scenario-result { color: #53FC18; }
+    .scenario-card.warn .scenario-result { color: #f0a500; }
+    .scenario-card.fail .scenario-result { color: #FF6B6B; }
+
+    /* ─── Canlı Akış Paneli ─── */
+    .flow-panel {
+      background: #1a1a1a; border: 1px solid #2a2a2a;
+      border-radius: 8px; padding: 16px;
+      margin-bottom: 16px;
+      min-height: 80px;
+    }
+    .flow-panel.idle {
+      display: flex; align-items: center; justify-content: center;
+      color: #555; font-size: 12px; font-style: italic;
+      min-height: 60px;
+    }
+    .flow-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+    .flow-title { font-size: 13px; font-weight: 600; color: #ddd; }
+    .flow-summary {
+      font-size: 11px; padding: 3px 10px; border-radius: 4px;
+      background: #0d0d0d; color: #888; font-family: monospace;
+    }
+    .flow-summary.success { color: #53FC18; }
+    .flow-summary.warn { color: #f0a500; }
+    .flow-summary.fail { color: #FF6B6B; }
+
+    .flow-steps { display: flex; flex-direction: column; gap: 6px; }
+    .flow-step {
+      display: flex; align-items: flex-start; gap: 10px;
+      padding: 8px 12px; border-radius: 5px;
+      background: #0f0f0f;
+      font-size: 12px;
+      transition: background 0.2s ease;
+    }
+    .flow-step.running { background: #0a1424; border-left: 3px solid #5ba4f5; }
+    .flow-step.ok { border-left: 3px solid #1f4d10; }
+    .flow-step.warn { border-left: 3px solid #6b4a00; }
+    .flow-step.error { border-left: 3px solid #5a1414; }
+    .flow-step .icon {
+      font-size: 14px; line-height: 1.4; flex-shrink: 0;
+      width: 20px; text-align: center;
+    }
+    .flow-step.running .icon { animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .flow-step .step-name { font-weight: 600; color: #ddd; flex-shrink: 0; min-width: 140px; }
+    .flow-step.running .step-name { color: #5ba4f5; }
+    .flow-step.ok .step-name { color: #ddd; }
+    .flow-step.warn .step-name { color: #f0a500; }
+    .flow-step.error .step-name { color: #FF6B6B; }
+    .flow-step .step-detail {
+      font-size: 11px; color: #888; flex: 1; line-height: 1.5;
+      word-break: break-word;
+    }
+
+    /* ─── Detaylı Aletler (collapsible) ─── */
+    details.tools-section {
+      background: #131313; border: 1px solid #1f1f1f;
+      border-radius: 8px; margin-bottom: 12px;
+    }
+    details.tools-section summary {
+      padding: 12px 16px; cursor: pointer; font-size: 12px;
+      color: #aaa; font-weight: 500;
+      display: flex; align-items: center; gap: 8px;
+      list-style: none;
+      user-select: none;
+    }
+    details.tools-section summary::-webkit-details-marker { display: none; }
+    details.tools-section summary::before {
+      content: '▶'; font-size: 9px; color: #555;
+      transition: transform 0.15s ease;
+    }
+    details.tools-section[open] summary::before { transform: rotate(90deg); }
+    details.tools-section summary:hover { color: #ddd; }
+    details.tools-section .tools-content { padding: 0 16px 16px; }
+
+    /* ─── Inner sections ─── */
+    .section {
+      background: #1a1a1a; border: 1px solid #2a2a2a;
+      border-radius: 6px; padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 10px; font-weight: 600; color: #888;
+      text-transform: uppercase; letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .section-title-inline {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+    .row:last-child { margin-bottom: 0; }
+    label { font-size: 12px; color: #777; min-width: 110px; flex-shrink: 0; }
+    input[type=text], input[type=number], input[type=url], select {
+      background: #222; border: 1px solid #333; border-radius: 4px;
+      color: #eee; font-size: 12px; padding: 5px 8px;
+      flex: 1; min-width: 0;
+    }
+    input[type=number] { max-width: 70px; flex: none; }
+
+    button {
+      background: #222; border: 1px solid #444; border-radius: 5px;
+      color: #eee; font-size: 12px; padding: 5px 11px;
+      cursor: pointer; white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+    button:hover { background: #2a2a2a; border-color: #53FC18; color: #53FC18; }
+    button.danger { border-color: #e74c3c; color: #e74c3c; }
+    button.danger:hover { background: #2a1111; }
+    button.success { border-color: #53FC18; color: #53FC18; }
+    button.primary { background: #1f4d10; border-color: #53FC18; color: #53FC18; }
+    button.primary:hover { background: #2a6817; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+    /* ─── Pills, tables ─── */
+    .status-pill {
+      font-size: 11px; padding: 3px 8px; border-radius: 4px;
+      background: #1a1a1a; border: 1px solid #2a2a2a; color: #888;
+    }
+    .status-pill span { font-weight: 600; color: #ccc; }
+
+    .thresh-table { width: 100%; font-size: 11px; border-collapse: collapse; margin-top: 4px; }
+    .thresh-table th { color: #666; font-weight: 500; padding: 3px 6px; text-align: left; }
+    .thresh-table td { padding: 3px 6px; color: #aaa; }
+    .thresh-table tr:nth-child(even) td { background: #1f1f1f; }
+
+    /* ─── Log Box ─── */
+    #log-shell {
+      border-top: 1px solid #1f1f1f;
+      background: #0a0a0a;
+      padding: 10px 20px;
+    }
+    .log-header {
+      display: flex; align-items: center; justify-content: space-between;
+      font-size: 10px; color: #555; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-bottom: 6px;
+    }
+    .log-box {
+      background: #0d0d0d; border: 1px solid #222; border-radius: 6px;
+      font-family: monospace; font-size: 11px;
+      padding: 10px; height: 130px; overflow-y: auto; color: #888;
+    }
+    .log-box .ok { color: #53FC18; }
+    .log-box .err { color: #e74c3c; }
+    .log-box .info { color: #5ba4f5; }
+    .log-box .warn { color: #f0a500; }
+
+    .stop-link {
+      font-size: 10px; color: #5ba4f5; cursor: pointer; text-decoration: underline;
+    }
+    .stop-link:hover { color: #FF6B6B; }
+  </style>
+</head>
+<body>
+
+<!-- ─── STICKY HEALTH HEADER ─── -->
+<div id="health-header" class="healthy">
+  <div class="health-line">
+    <div class="health-status healthy" id="health-status">
+      <span id="health-icon">🟢</span>
+      <span id="health-text">Sistem kontrol ediliyor...</span>
+    </div>
+    <div class="health-metric"><strong id="m-success">—</strong> başarı (5dk)</div>
+    <div class="health-metric"><strong id="m-failures">—</strong> hata (5dk)</div>
+    <div class="health-metric"><strong id="m-backoff">—</strong> backoff</div>
+    <div class="health-metric"><strong id="m-interval">—</strong> aralık</div>
+    <div class="health-metric"><strong id="m-mode">—</strong> mod</div>
+    <div class="health-metric"><strong id="m-proxy">—</strong> proxy</div>
+    <div class="health-metric"><strong id="m-pusher">—</strong> Plan F</div>
+    <button id="btn-health-refresh" style="margin-left:auto;font-size:11px;padding:4px 10px;">🔄 Yenile</button>
+  </div>
+  <div class="health-issues" id="health-issues">
+    <strong>Tespit edilen sorun(lar):</strong>
+    <ul id="health-issues-list"></ul>
+    <div class="health-suggestion" id="health-suggestion"></div>
+  </div>
+</div>
+
+<!-- ─── MAIN CONTENT ─── -->
+<div id="content">
+
+  <!-- ═══════ 5 SENARYO KARTI ═══════ -->
+  <div class="section-heading">🎯 Tek Tıkla Test Senaryoları</div>
+  <div class="scenarios-grid">
+    <div class="scenario-card" data-scenario="health">
+      <div class="scenario-icon">🩺</div>
+      <div class="scenario-title">Sağlık Kontrolü</div>
+      <div class="scenario-desc">Bağlantı, auth, hız, cookie sağlığını ardışık ölçer.</div>
+      <div class="scenario-meta">
+        <span class="badge">~5sn</span><span>7 adım</span>
+      </div>
+      <div class="scenario-result">—</div>
+    </div>
+
+    <div class="scenario-card" data-scenario="notification">
+      <div class="scenario-icon">🔔</div>
+      <div class="scenario-title">Bildirim Pipeline</div>
+      <div class="scenario-desc">Bildirim, ses, DND, anomali ayarlarını uçtan uca test eder.</div>
+      <div class="scenario-meta">
+        <span class="badge">~3sn</span><span>8 adım</span>
+      </div>
+      <div class="scenario-result">—</div>
+    </div>
+
+    <div class="scenario-card" data-scenario="detection">
+      <div class="scenario-icon">📺</div>
+      <div class="scenario-title">Yayın Algılama</div>
+      <div class="scenario-desc">Gerçek kanalla "yayına geçti" akışını simüle eder.</div>
+      <div class="scenario-meta">
+        <span class="badge">~3sn</span>
+        <input type="text" id="detection-slug" value="" placeholder="slug (boş = liste)" style="font-size:10px;padding:2px 6px;flex:1;min-width:60px;" />
+      </div>
+      <div class="scenario-result">—</div>
+    </div>
+
+    <div class="scenario-card" data-scenario="recovery">
+      <div class="scenario-icon">🛡️</div>
+      <div class="scenario-title">Geri Kurtarma</div>
+      <div class="scenario-desc">Backoff ve recovery mekanizmasını canlı test eder.</div>
+      <div class="scenario-meta">
+        <span class="badge">~5sn</span><span>6 adım</span>
+      </div>
+      <div class="scenario-result">—</div>
+    </div>
+
+    <div class="scenario-card" data-scenario="pressure">
+      <div class="scenario-icon">🔥</div>
+      <div class="scenario-title">Cloudflare Baskı Testi</div>
+      <div class="scenario-desc"><strong>Plan B değerlendirmesi</strong> · 10 ardışık istek atar, M4 yavaşlatma kontrolü.</div>
+      <div class="scenario-meta">
+        <span class="badge">~50sn</span><span>7 adım</span>
+      </div>
+      <div class="scenario-result">—</div>
+    </div>
+  </div>
+
+  <!-- ═══════ CANLI AKIŞ PANELİ ═══════ -->
+  <div class="section-heading">📋 Canlı Akış</div>
+  <div class="flow-panel idle" id="flow-panel">
+    <span>Bir senaryo kartına tıkla — adımlar burada canlı görünecek.</span>
+  </div>
+
+  <!-- ═══════ DETAYLI ALETLER (collapsible) ═══════ -->
+  <details class="tools-section" id="tools-pressure" style="display:none;"></details>
+
+  <details class="tools-section">
+    <summary>🔧 Detaylı Aletler — Manuel Test Bileşenleri</summary>
+    <div class="tools-content">
+
+      <div class="grid2">
+
+        <!-- ─── Hızlı Tanı ─── -->
+        <div class="section">
+          <div class="section-title">⚡ Hızlı Tanı Testleri</div>
+          <div class="row">
+            <button id="btn-diag-rate" class="primary">▶ 5x Rate Test</button>
+            <button id="btn-diag-api">▶ Tek API</button>
+            <button id="btn-diag-refresh-session">▶ Refresh</button>
+          </div>
+          <div id="diag-api-result" style="font-size:11px;color:#888;margin-top:6px;font-family:monospace;"></div>
+        </div>
+
+        <!-- ─── Backoff & Recovery ─── -->
+        <div class="section">
+          <div class="section-title">🔄 Backoff & Recovery</div>
+          <div class="row">
+            <button id="btn-diag-backoff-status">Durum</button>
+            <button id="btn-diag-clear-backoff" class="danger">⚠ Sıfırla</button>
+            <button id="btn-diag-force-recheck" class="success">⚡ Force</button>
+          </div>
+          <div id="diag-backoff-result" style="font-size:11px;color:#888;margin-top:6px;font-family:monospace;"></div>
+        </div>
+
+        <!-- ─── Cookie Tablosu ─── -->
+        <div class="section" style="grid-column:1/-1;">
+          <div class="section-title-inline">
+            <span class="section-title" style="margin:0;">🍪 Kick.com Cookie'leri</span>
+            <button id="btn-diag-cookies" style="font-size:11px;padding:3px 8px;">📋 Yükle</button>
+          </div>
+          <div id="diag-cookies-table" style="margin-top:6px;"></div>
+        </div>
+
+        <!-- ─── Canlı Kanallar ─── -->
+        <div class="section" style="grid-column:1/-1;">
+          <div class="section-title-inline">
+            <span class="section-title" style="margin:0;">📺 Canlı Kanallar (Anomali)</span>
+            <div>
+              <button id="btn-diag-channels" style="font-size:11px;padding:3px 8px;">📊 Kanallar</button>
+              <button id="btn-diag-bot-scores" style="font-size:11px;padding:3px 8px;">🤖 Bot Skorları</button>
+            </div>
+          </div>
+          <div id="diag-channels-table" style="margin-top:6px;"></div>
+        </div>
+
+        <!-- ─── Manuel Bildirim Testleri ─── -->
+        <div class="section">
+          <div class="section-title">🔔 Manuel Bildirim</div>
+          <div class="row"><label>Kullanıcı</label><input type="text" id="notif-user" value="TestYayıncı" /></div>
+          <div class="row"><label>Başlık</label><input type="text" id="notif-title" value="Test yayını başladı!" /></div>
+          <div class="row"><label>Kategori</label><input type="text" id="notif-cat" value="Just Chatting" /></div>
+          <div class="row">
+            <label>Ses</label>
+            <select id="notif-sound">
+              <option value="extension">Extension</option>
+              <option value="windows">Windows</option>
+              <option value="silent">Sessiz</option>
+            </select>
+            <input type="url" id="notif-avatar" placeholder="avatar URL (opsiyonel)" style="font-size:11px;" />
+          </div>
+          <div class="row">
+            <label>Gecikme</label>
+            <select id="notif-delay">
+              <option value="0">Anında</option>
+              <option value="3">3 sn</option>
+              <option value="10">10 sn</option>
+            </select>
+            <button id="btn-notif">▶ Gönder</button>
+            <button id="btn-sound-main">▶ Ana Ses</button>
+            <button id="btn-sound-sub">▶ Alt Ses</button>
+          </div>
+        </div>
+
+        <!-- ─── Anomali Manuel ─── -->
+        <div class="section">
+          <div class="section-title">📈 Anomali Manuel</div>
+          <div class="row"><label>Kullanıcı</label><input type="text" id="anom-user" value="TestYayıncı" /></div>
+          <div class="row">
+            <label>Artış %</label><input type="number" id="anom-spike-pct" value="120" min="1" max="999" />
+            <button id="btn-spike">▶ Artış</button>
+          </div>
+          <div class="row">
+            <label>Düşüş %</label><input type="number" id="anom-drop-pct" value="45" min="1" max="100" />
+            <button id="btn-drop">▶ Düşüş</button>
+          </div>
+        </div>
+
+        <!-- ─── Chat Bildirimleri ─── -->
+        <div class="section">
+          <div class="section-title">💬 Chat Bildirimleri</div>
+          <div class="row"><label>Gönderen</label><input type="text" id="chat-test-user" value="TestKullanici" /></div>
+          <div class="row"><label>Kanal</label><input type="text" id="chat-test-channel" value="testkanal" /></div>
+          <div class="row"><label>Mesaj</label><input type="text" id="chat-test-msg" value="@sen nasılsın kardeşim?" /></div>
+          <div class="row">
+            <button id="btn-chat-tag">▶ Tag</button>
+            <button id="btn-chat-broadcaster">▶ Yayıncı</button>
+            <button id="btn-chat-dump">Dump</button>
+          </div>
+        </div>
+
+        <!-- ─── Auto-Launch ─── -->
+        <div class="section">
+          <div class="section-title">🚀 Auto-Launch & Storage</div>
+          <div class="row">
+            <label>Slug</label>
+            <input type="text" id="launch-slug" value="jahrein" />
+            <input type="text" id="api-slug" value="jahrein" style="display:none;" />
+          </div>
+          <div class="row">
+            <button id="btn-launch-trigger">▶ Yayın Simüle</button>
+            <button id="btn-tab-guard">Tab Guard</button>
+          </div>
+          <div class="row">
+            <button id="btn-state">Storage</button>
+            <button id="btn-live">Canlı</button>
+            <button id="btn-viewer-hist">ViewerHist</button>
+            <button id="btn-pusher">Plan F (Pusher)</button>
+          </div>
+          <div class="row">
+            <button id="btn-clear" class="danger">liveSlugs Sıfırla</button>
+            <button id="btn-clear-vh" class="danger">VH Temizle</button>
+          </div>
+          <div class="row">
+            <button id="btn-api-check" style="display:none;">Kanal API</button>
+            <button id="btn-api-token" style="display:none;">Token</button>
+          </div>
+        </div>
+
+        <!-- ─── Ayarlar ─── -->
+        <div class="section">
+          <div class="section-title">⚙️ Sistem & Ayarlar</div>
+          <div class="row">
+            <label>Aralık</label>
+            <select id="diag-interval-select">
+              <option value="30">30 sn</option>
+              <option value="45">45 sn</option>
+              <option value="60">60 sn (önerilen)</option>
+              <option value="90">90 sn</option>
+              <option value="120">2 dk</option>
+            </select>
+            <button id="btn-diag-set-interval">Uygula</button>
+          </div>
+          <div class="row">
+            <button id="btn-diag-reload-ext" class="danger">🔁 Eklenti Reload</button>
+          </div>
+          <div id="diag-system-info" style="font-size:11px;color:#888;line-height:1.6;font-family:monospace;margin-top:8px;"></div>
+        </div>
+
+        <!-- ─── DND & Anomali Eşik ─── -->
+        <div class="section">
+          <div class="section-title">🌙 DND & Eşikler</div>
+          <div id="dnd-display" style="font-size:11px;color:#888;line-height:1.6;margin-bottom:8px;"></div>
+          <div id="thresh-display"></div>
+          <div id="dnr-status-detail" style="font-size:11px;color:#888;line-height:1.5;font-family:monospace;margin-top:8px;border-top:1px solid #2a2a2a;padding-top:6px;"></div>
+        </div>
+
+      </div>
+
+    </div>
+  </details>
+
+</div>
+<!-- /content -->
+
+<!-- ─── ALT LOG ─── -->
+<div id="log-shell">
+  <div class="log-header">
+    <span>📋 Aktivite Logu</span>
+    <span style="font-size:10px;color:#555;">son olaylar — alttan üste</span>
+  </div>
+  <div class="log-box" id="log"></div>
+</div>
+
+<script src="../src/storage.js"></script>
+<script src="../src/utils.js"></script>
+<script src="../src/test.js"></script>
+</body>
+</html>
