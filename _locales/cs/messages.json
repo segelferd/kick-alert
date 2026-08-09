@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "Změnit směr"
+  },
+  "cloudSyncNowBtn": {
+    "message": "Synchronizovat nyní"
+  },
+  "cloudSyncNowRunning": {
+    "message": "Synchronizace..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "Synchronizováno!"
+  },
+  "cloudSyncNowFail": {
+    "message": "Synchronizace selhala"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "Nejprve zapněte synchronizaci"
   }
 }

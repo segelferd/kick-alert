@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "Toggle direction"
+  },
+  "cloudSyncNowBtn": {
+    "message": "Sync Now"
+  },
+  "cloudSyncNowRunning": {
+    "message": "Syncing..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "Synced!"
+  },
+  "cloudSyncNowFail": {
+    "message": "Sync failed"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "Enable sync first"
   }
 }

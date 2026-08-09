@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "Inverter ordem"
+  },
+  "cloudSyncNowBtn": {
+    "message": "Sincronizar agora"
+  },
+  "cloudSyncNowRunning": {
+    "message": "Sincronizando..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "Sincronizado!"
+  },
+  "cloudSyncNowFail": {
+    "message": "Falha na sincronização"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "Ative a sincronização primeiro"
   }
 }

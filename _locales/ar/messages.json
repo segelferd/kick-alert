@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "تبديل الاتجاه"
+  },
+  "cloudSyncNowBtn": {
+    "message": "مزامنة الآن"
+  },
+  "cloudSyncNowRunning": {
+    "message": "جارٍ المزامنة..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "تمت المزامنة!"
+  },
+  "cloudSyncNowFail": {
+    "message": "فشلت المزامنة"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "فعّل المزامنة أولاً"
   }
 }

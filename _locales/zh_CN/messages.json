@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "切换方向"
+  },
+  "cloudSyncNowBtn": {
+    "message": "立即同步"
+  },
+  "cloudSyncNowRunning": {
+    "message": "同步中..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "已同步！"
+  },
+  "cloudSyncNowFail": {
+    "message": "同步失败"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "请先开启同步"
   }
 }

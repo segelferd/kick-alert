@@ -166,6 +166,16 @@ body {
 }
 .history-clear-btn:hover { color: var(--red); border-color: var(--red); }
 
+/* Cloud Sync — manual "Sync Now" button (v2.3.7) */
+.opt-cloud-sync-now-btn {
+  display: flex; align-items: center; gap: 4px;
+  background: none; border: 1px solid var(--border); color: var(--text-muted);
+  font-family: inherit; font-size: 11px; padding: 4px 10px; border-radius: 4px;
+  cursor: pointer; transition: all .15s;
+}
+.opt-cloud-sync-now-btn:hover { color: var(--accent); border-color: var(--accent); }
+.opt-cloud-sync-now-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
 /* Channel Card */
 .channel-card.offline { opacity: 0.5; }
 .channel-card.offline:hover { opacity: 0.8; }

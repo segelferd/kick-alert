@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "Сменить направление"
+  },
+  "cloudSyncNowBtn": {
+    "message": "Синхронизировать"
+  },
+  "cloudSyncNowRunning": {
+    "message": "Синхронизация..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "Синхронизировано!"
+  },
+  "cloudSyncNowFail": {
+    "message": "Ошибка синхронизации"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "Сначала включите синхронизацию"
   }
 }

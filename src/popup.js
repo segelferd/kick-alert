@@ -1337,6 +1337,27 @@ function setupOptionsListeners() {
   // Cloud Sync listener
   optBind('opt-cloud-sync', v => Storage.setCloudSyncEnabled(v));
 
+  // v2.3.7: Manuel "Şimdi Senkronize Et" butonu — açma/kapama switch'inden
+  // bağımsız, kullanıcı istediği an tetikleyebilir. pull+push birleştirme yapar.
+  const syncNowBtn = document.getElementById('opt-cloud-sync-now');
+  const syncNowStatus = document.getElementById('opt-cloud-sync-now-status');
+  if (syncNowBtn) {
+    syncNowBtn.addEventListener('click', async () => {
+      syncNowBtn.disabled = true;
+      syncNowStatus.textContent = Utils.i18n('cloudSyncNowRunning') || 'Syncing...';
+      const result = await Storage.syncNow();
+      if (result.success) {
+        syncNowStatus.textContent = Utils.i18n('cloudSyncNowSuccess') || 'Synced!';
+      } else if (result.reason === 'disabled') {
+        syncNowStatus.textContent = Utils.i18n('cloudSyncNowDisabled') || 'Enable sync first';
+      } else {
+        syncNowStatus.textContent = Utils.i18n('cloudSyncNowFail') || 'Sync failed';
+      }
+      syncNowBtn.disabled = false;
+      setTimeout(() => { syncNowStatus.textContent = ''; }, 4000);
+    });
+  }
+
   // Chat Integration master switch
   optBind('opt-chat-integration', async v => {
     await Storage.setChatIntegrationEnabled(v);

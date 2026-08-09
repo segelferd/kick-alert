@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "Yönü değiştir"
+  },
+  "cloudSyncNowBtn": {
+    "message": "Şimdi Senkronize Et"
+  },
+  "cloudSyncNowRunning": {
+    "message": "Senkronize ediliyor..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "Senkronize edildi!"
+  },
+  "cloudSyncNowFail": {
+    "message": "Senkronizasyon başarısız"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "Önce senkronu açın"
   }
 }

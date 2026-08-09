@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "방향 전환"
+  },
+  "cloudSyncNowBtn": {
+    "message": "지금 동기화"
+  },
+  "cloudSyncNowRunning": {
+    "message": "동기화 중..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "동기화됨!"
+  },
+  "cloudSyncNowFail": {
+    "message": "동기화 실패"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "먼저 동기화를 켜주세요"
   }
 }

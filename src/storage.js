@@ -128,7 +128,36 @@ const Storage = {
     await chrome.storage.local.set({ [StorageKeys.CLOUD_SYNC_ENABLED]: enabled });
     if (enabled) {
       this._listenForSyncChanges();
+      // v2.3.7 FIX: Önceden burada SADECE _pushAllToSync() çağrılıyordu —
+      // bu, yeni/temiz bir cihazda (yerel depolama boş) switch açıldığında,
+      // buluttaki GERÇEK ayarları hiç okumadan, boş/varsayılan yerel veriyi
+      // buluta yazıp mevcut bulut verisini SİLİYORDU. Şimdi önce buluttan
+      // çekiyoruz (varsa gerçek veriyi yerel'e uyguluyoruz), SONRA push
+      // ediyoruz (yerelde olup buluta hiç gitmemiş anahtarları ekliyoruz).
+      // Sonuç: iki yönlü, veri kaybetmeyen bir birleştirme.
+      await this.pullFromSync();
       await this._pushAllToSync();
+    }
+  },
+
+  /**
+   * v2.3.7: Manuel "Şimdi Senkronize Et" — kullanıcının popup'tan tetikleyebildiği,
+   * açma/kapama switch'inden BAĞIMSIZ bir buton. Aynı güvenli sırayı izler:
+   * önce pull (buluttaki başka cihaz değişikliklerini al), sonra push (yerelde
+   * olup buluta gitmemiş anahtarları tamamla). Sync kapalıyken çağrılırsa
+   * hiçbir şey yapmadan bunu bildirir.
+   */
+  async syncNow() {
+    if (!_syncEnabled) {
+      return { success: false, reason: 'disabled' };
+    }
+    try {
+      await this.pullFromSync();
+      await this._pushAllToSync();
+      return { success: true };
+    } catch (e) {
+      console.warn('[KickAlert] syncNow failed:', e.message);
+      return { success: false, reason: 'error', message: e.message };
     }
   },
 

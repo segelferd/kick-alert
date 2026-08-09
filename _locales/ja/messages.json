@@ -564,5 +564,20 @@
   },
   "sortDirToggle": {
     "message": "方向を切替"
+  },
+  "cloudSyncNowBtn": {
+    "message": "今すぐ同期"
+  },
+  "cloudSyncNowRunning": {
+    "message": "同期中..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "同期しました！"
+  },
+  "cloudSyncNowFail": {
+    "message": "同期に失敗しました"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "先に同期をオンにしてください"
   }
 }
