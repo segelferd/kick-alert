@@ -579,5 +579,17 @@
   },
   "cloudSyncNowDisabled": {
     "message": "Attiva prima la sincronizzazione"
+  },
+  "fetchErrorOffline": {
+    "message": "Sembri essere offline. Controlla la tua connessione internet e riprova."
+  },
+  "fetchErrorRateLimited": {
+    "message": "Kick sta limitando temporaneamente le richieste. Si risolve automaticamente — attendi un momento."
+  },
+  "fetchErrorServerError": {
+    "message": "I server di Kick stanno avendo un problema in questo momento. Riprova tra qualche minuto."
+  },
+  "fetchErrorUnknown": {
+    "message": "Qualcosa è andato storto durante il caricamento dei tuoi canali. Riprova."
   }
 }

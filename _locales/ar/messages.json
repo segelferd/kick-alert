@@ -579,5 +579,17 @@
   },
   "cloudSyncNowDisabled": {
     "message": "فعّل المزامنة أولاً"
+  },
+  "fetchErrorOffline": {
+    "message": "يبدو أنك غير متصل بالإنترنت. تحقق من اتصالك وحاول مرة أخرى."
+  },
+  "fetchErrorRateLimited": {
+    "message": "يقوم Kick بتقييد الطلبات مؤقتًا. سيتم حل هذا تلقائيًا — يرجى الانتظار قليلاً."
+  },
+  "fetchErrorServerError": {
+    "message": "تواجه خوادم Kick مشكلة الآن. حاول مرة أخرى خلال بضع دقائق."
+  },
+  "fetchErrorUnknown": {
+    "message": "حدث خطأ ما أثناء تحميل قنواتك. حاول مرة أخرى."
   }
 }

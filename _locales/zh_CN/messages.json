@@ -579,5 +579,17 @@
   },
   "cloudSyncNowDisabled": {
     "message": "请先开启同步"
+  },
+  "fetchErrorOffline": {
+    "message": "您似乎已离线。请检查网络连接后重试。"
+  },
+  "fetchErrorRateLimited": {
+    "message": "Kick 暂时限制了请求频率，这会自动恢复 — 请稍候。"
+  },
+  "fetchErrorServerError": {
+    "message": "Kick 的服务器目前出现问题，请几分钟后重试。"
+  },
+  "fetchErrorUnknown": {
+    "message": "加载频道时出了点问题，请重试。"
   }
 }

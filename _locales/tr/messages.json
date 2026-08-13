@@ -579,5 +579,17 @@
   },
   "cloudSyncNowDisabled": {
     "message": "Önce senkronu açın"
+  },
+  "fetchErrorOffline": {
+    "message": "İnternet bağlantınız yok gibi görünüyor. Bağlantınızı kontrol edip tekrar deneyin."
+  },
+  "fetchErrorRateLimited": {
+    "message": "Kick geçici olarak istekleri sınırlıyor. Bu kendiliğinden düzelir — lütfen biraz bekleyin."
+  },
+  "fetchErrorServerError": {
+    "message": "Kick'in sunucularında şu an bir sorun var. Birkaç dakika sonra tekrar deneyin."
+  },
+  "fetchErrorUnknown": {
+    "message": "Kanallar yüklenirken bir şeyler ters gitti. Lütfen tekrar deneyin."
   }
 }

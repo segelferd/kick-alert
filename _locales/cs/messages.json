@@ -579,5 +579,17 @@
   },
   "cloudSyncNowDisabled": {
     "message": "Nejprve zapněte synchronizaci"
+  },
+  "fetchErrorOffline": {
+    "message": "Zdá se, že jste offline. Zkontrolujte připojení k internetu a zkuste to znovu."
+  },
+  "fetchErrorRateLimited": {
+    "message": "Kick dočasně omezuje požadavky. Vyřeší se to automaticky — prosím počkejte chvíli."
+  },
+  "fetchErrorServerError": {
+    "message": "Servery Kick mají momentálně problém. Zkuste to znovu za pár minut."
+  },
+  "fetchErrorUnknown": {
+    "message": "Při načítání kanálů se něco pokazilo. Zkuste to znovu."
   }
 }

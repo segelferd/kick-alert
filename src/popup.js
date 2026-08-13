@@ -173,13 +173,37 @@ async function updateMenuState() {
 
 // ─── Load Channels ───
 
-// v2.2.1: 401 (auth) vs 403 (Cloudflare/IP block) ayrımı için error parser
+// v2.3.8: Tüm bilinen hata türlerini doğru mesaja eşleştir. Önceden sadece
+// 401/403 özel işleniyordu, geri kalan HER ŞEY (offline, rate-limit, backoff,
+// 5xx sunucu hatası, JSON parse hatası) yanlışlıkla "Kick'e giriş yap" mesajına
+// düşüyordu — bu da kullanıcıyı yanıltıyordu (bkz. Chrome Web Store yorumu, 13 Ağu 2026).
 function _pickFetchErrorKey(errorMsg) {
-  // background.js error: "AUTH_REQUIRED: API 401" veya "AUTH_REQUIRED: API 403"
-  if (typeof errorMsg === 'string' && /AUTH_REQUIRED:\s*API\s*403/i.test(errorMsg)) {
+  if (typeof errorMsg !== 'string') return 'fetchErrorUnknown';
+
+  // 403 — Cloudflare/IP engeli (VPN önerisi mantıklı)
+  if (/AUTH_REQUIRED:\s*API\s*403/i.test(errorMsg)) {
     return 'fetchErrorBlocked';
   }
-  return 'fetchError'; // default: 401 veya bilinmeyen hata → "Kick'e giriş yap"
+  // 401 — gerçekten oturum yok/süresi dolmuş (tek gerçek "giriş yap" durumu)
+  if (/AUTH_REQUIRED:\s*API\s*401/i.test(errorMsg)) {
+    return 'fetchError';
+  }
+  // Cihaz tamamen offline — "giriş yap" değil, "internetini kontrol et"
+  if (/^OFFLINE:/i.test(errorMsg)) {
+    return 'fetchErrorOffline';
+  }
+  // Rate limit / adaptif backoff / recovery cooldown — hepsi aynı aile:
+  // "çok istek oldu, otomatik bekleniyor", kullanıcının yapması gereken bir şey yok
+  if (/rate limited|api backoff|recovery cooldown/i.test(errorMsg)) {
+    return 'fetchErrorRateLimited';
+  }
+  // Kick sunucu hatası (5xx) — "giriş yap" değil, "Kick'in sunucusu şu an sorunlu"
+  const serverErrMatch = errorMsg.match(/API error:\s*(\d{3})/i);
+  if (serverErrMatch && parseInt(serverErrMatch[1], 10) >= 500) {
+    return 'fetchErrorServerError';
+  }
+  // Geri kalan her şey (beklenmeyen 4xx, JSON parse hatası vb.) — genel/nötr mesaj
+  return 'fetchErrorUnknown';
 }
 
 async function loadChannels() {

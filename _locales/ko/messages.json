@@ -579,5 +579,17 @@
   },
   "cloudSyncNowDisabled": {
     "message": "먼저 동기화를 켜주세요"
+  },
+  "fetchErrorOffline": {
+    "message": "오프라인 상태인 것 같습니다. 인터넷 연결을 확인하고 다시 시도하세요."
+  },
+  "fetchErrorRateLimited": {
+    "message": "Kick이 일시적으로 요청을 제한하고 있습니다. 자동으로 해결됩니다 — 잠시만 기다려 주세요."
+  },
+  "fetchErrorServerError": {
+    "message": "Kick 서버에 현재 문제가 있습니다. 몇 분 후에 다시 시도하세요."
+  },
+  "fetchErrorUnknown": {
+    "message": "채널을 불러오는 중 문제가 발생했습니다. 다시 시도하세요."
   }
 }
