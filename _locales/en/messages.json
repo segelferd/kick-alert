@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Something went wrong loading your channels. Please try again."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Kick didn't recognize your session even though you're logged in. This is usually temporary on Kick's side — it should resolve on its own within a few minutes."
+  },
+  "emailLoginNotice": {
+    "message": "For KickAlert to work reliably, please make sure you're logged into Kick with email and password (not \"Continue with Google\")."
   }
 }

@@ -11,12 +11,27 @@ const KickAPI = {
    * Get session token from kick.com cookies for Bearer auth.
    * v2.1.0: Also uses credentials:'include' in fetchKick to send
    * additional session cookies (XSRF-TOKEN, etc.) automatically.
+   *
+   * v2.3.9: Birden fazla session_token cookie'si aynı anda var olabilir
+   * (özellikle giriş yöntemi değiştirildiğinde — Google OAuth ↔ email/şifre —
+   * eski cookie hemen silinmeyebilir). Önceden cookies[0] (Chrome'un keyfi/
+   * tanımsız sırası) kullanılıyordu, bu da bazen ESKİ/geçersiz cookie'nin
+   * seçilmesine yol açabiliyordu. Şimdi Kick Signal'ın da kullandığı yöntemle
+   * (kpjjlpmbcbnbemdadfnkgmhchiibifda) en son geçerlilik tarihine (expirationDate)
+   * sahip olanı seçiyoruz — giriş yöntemi ne olursa olsun her zaman en güncel
+   * session kullanılır.
    */
   async getSessionToken() {
     try {
       const cookies = await chrome.cookies.getAll({ domain: 'kick.com', name: 'session_token' });
       if (cookies.length === 0) return null;
-      return decodeURIComponent(cookies[0].value);
+      if (cookies.length === 1) return decodeURIComponent(cookies[0].value);
+
+      const newest = cookies.reduce((best, c) =>
+        (c.expirationDate ?? 0) > (best.expirationDate ?? 0) ? c : best
+      );
+      console.debug(`[KickAlert] ${cookies.length} adet session_token cookie bulundu, en yenisi seçildi (exp: ${newest.expirationDate})`);
+      return decodeURIComponent(newest.value);
     } catch { return null; }
   },
 
@@ -43,6 +58,8 @@ const KickAPI = {
    * değiştirmiyor — her iki yolda da aynı minimal header set.
    */
   async makeHeaders(via = 'sw') {
+    // v2.3.12 denemesi (Accept-Language/Cache-Control ekleme) sonuç değiştirmedi —
+    // geri alındı. Minimal header'a dönüldü.
     const headers = {
       'Accept': 'application/json',
       'X-App-Platform': 'web',
@@ -525,12 +542,15 @@ const KickAPI = {
       // birkaç dakika önceki baskısının kalıntısı; şu an Plan C aktifken anlamsız.
       const planCActive = await this._findKickTab() !== null;
       if (planCActive) {
-        console.debug(`[KickAlert] Backoff aktif (${Math.ceil((this._lastBackoffUntil - Date.now())/1000)}s) — Plan C tab var, backoff bypass, fetch'e devam`);
+        const remainingS = Math.ceil((this._lastBackoffUntil - Date.now()) / 1000);
+        KLog.info('BKF-01', `Backoff aktif (${remainingS}sn kalan) ama Plan C tab bulundu → backoff bypass, fetch denenecek`);
+        console.debug(`[KickAlert] Backoff aktif (${remainingS}s), Plan C tab var, backoff bypass, fetch'e devam`);
         this._lastBackoffUntil = 0;
         this._lastBackoffDuration = 0;
         this._saveBackoffToStorage(0);
         // Akış devam — _doFetch'e düş
       } else {
+        KLog.info('BKF-02', `Backoff aktif, Plan C tab bulunamadı (_findKickTab() → null) → recovery/backoff akışına devam`);
         // Plan C yok — eski güvenli akış (recovery dene, başarısızsa hata fırlat)
         // v2.3.1 fix E: Recovery atışı için cooldown 2dk → 1dk
         const sinceLastRecovery = Date.now() - (this._lastBackoffRecoveryAt || 0);
@@ -597,11 +617,35 @@ const KickAPI = {
           // v2.3.1 Plan E: via bilgisi de log'a girsin — Cloudflare baskısının
           // hangi katmandan geldiğini görmek için kritik (proxy vs SW).
           const via = response.via || '?';
+
+          // v2.3.11: Kick'in GERÇEKTEN ne söylediğini oku. Şu ana kadar sadece
+          // HTTP status kodunu yakalayıp atıyorduk — response body'de muhtemelen
+          // Kick'in kendi hata mesajı var (örn. "Unauthenticated", token formatı
+          // hatası, Cloudflare challenge sayfası HTML'i vb.). Bunu görmeden
+          // "neden 401 alıyoruz" sorusuna kör tahminle cevap veriyorduk.
+          let bodySnippet = '';
+          try {
+            const bodyText = await response.text();
+            bodySnippet = bodyText.slice(0, 300);
+          } catch (bodyErr) {
+            bodySnippet = `[body okunamadı: ${bodyErr.message}]`;
+          }
+          KLog.warn('AUTH-01', `API ${response.status} (via:${via}) — Kick body: ${bodySnippet}`);
+
+          // v2.3.13: 401 aldığımızda, o an elimizde GERÇEKTEN geçerli bir
+          // session_token var mıydı diye kontrol ediyoruz. Aylarca süren
+          // araştırma sonunda kanıtladık: bazen token var, geçerli, kick.com'un
+          // kendi sitesi aynı token'la 200 alıyor, ama biz yine de 401 alıyoruz —
+          // bu durumda kullanıcıya "giriş yap" demek YANLIŞ ve yanıltıcı, çünkü
+          // zaten giriş yapmış. Bu iki durumu ayırt ediyoruz.
+          const hadToken = !!(await this.getSessionToken());
+          const tokenFlag = hadToken ? 'token:yes' : 'token:no';
+
           if (now - (this._lastAuthWarnAt || 0) > 5 * 60 * 1000) {
-            console.warn(`[KickAlert] API ${response.status} (via:${via}) — adaptif backoff'a geçiliyor`);
+            console.warn(`[KickAlert] API ${response.status} (via:${via}) — adaptif backoff'a geçiliyor. Body: ${bodySnippet}`);
             this._lastAuthWarnAt = now;
           } else {
-            console.debug(`[KickAlert] API ${response.status} (via:${via}) — auth required, backoff aktive`);
+            console.debug(`[KickAlert] API ${response.status} (via:${via}) — auth required, backoff aktive. Body: ${bodySnippet}`);
           }
 
           // v2.3.1 fix: Plan C tab varsa 403 backoff'unu yumuşat.
@@ -632,7 +676,7 @@ const KickAPI = {
           this._lastBackoffDuration = backoffMs;
           this._lastBackoffEndTime = this._lastBackoffUntil;
           this._saveBackoffToStorage(this._lastBackoffUntil);
-          throw new Error(`AUTH_REQUIRED: API ${response.status}`);
+          throw new Error(`AUTH_REQUIRED: API ${response.status} (${tokenFlag})`);
         }
 
         if (!response.ok) throw new Error(`API error: ${response.status}`);

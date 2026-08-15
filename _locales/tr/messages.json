@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Kanallar yüklenirken bir şeyler ters gitti. Lütfen tekrar deneyin."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Giriş yapmış olmanıza rağmen Kick oturumunuzu tanımadı. Bu genellikle Kick tarafında geçici bir durumdur — birkaç dakika içinde kendiliğinden düzelir."
+  },
+  "emailLoginNotice": {
+    "message": "KickAlert'in güvenilir çalışması için lütfen Kick'e Google ile değil, e-posta ve şifreyle giriş yaptığınızdan emin olun."
   }
 }

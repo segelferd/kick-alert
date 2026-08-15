@@ -29,7 +29,7 @@
         <span class="material-icons">grid_view</span>
         <span class="chip-label">Multi</span>
       </button>
-      <button class="menu-chip" id="option-chip" title="">
+      <button class="menu-chip" id="option-chip" title="" style="position:relative;">
         <span class="material-icons">settings</span>
         <span class="chip-label">Options</span>
       </button>
@@ -275,6 +275,13 @@
       <span class="options-title">KickAlert Options</span>
     </div>
     <div class="options-body">
+      <div class="opt-email-login-notice" id="opt-email-login-notice" style="display:none;">
+        <span class="material-icons-outlined" style="font-size:16px;flex-shrink:0;">info</span>
+        <span class="opt-email-login-notice-text" data-i18n="emailLoginNotice">For KickAlert to work reliably, please make sure you're logged into Kick using email and password (not "Continue with Google").</span>
+        <button id="opt-email-login-notice-close" class="opt-email-login-notice-close" aria-label="Close">
+          <span class="material-icons-outlined" style="font-size:16px;">close</span>
+        </button>
+      </div>
       <div class="opt-section" id="lang-section">
         <div class="opt-dnd-header">
           <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">language</span>

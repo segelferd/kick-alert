@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Při načítání kanálů se něco pokazilo. Zkuste to znovu."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Kick nerozpoznal vaši relaci, i když jste přihlášeni. Obvykle jde o dočasný problém na straně Kick — měl by se sám vyřešit během několika minut."
+  },
+  "emailLoginNotice": {
+    "message": "Aby KickAlert fungoval spolehlivě, ujistěte se prosím, že jste na Kick přihlášeni pomocí e-mailu a hesla (nikoli přes „Pokračovat s Google“)."
   }
 }

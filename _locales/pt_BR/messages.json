@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Algo deu errado ao carregar seus canais. Tente novamente."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "O Kick não reconheceu sua sessão mesmo estando conectado. Isso geralmente é algo temporário do lado do Kick — deve se resolver sozinho em alguns minutos."
+  },
+  "emailLoginNotice": {
+    "message": "Para que o KickAlert funcione de forma confiável, certifique-se de estar conectado ao Kick com e-mail e senha (não pelo \"Continuar com o Google\")."
   }
 }

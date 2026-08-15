@@ -40,7 +40,33 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadHistory();
   await updateMenuState();
   await startAutoRefresh();
+  await updateEmailLoginNoticeDot();
 });
+
+// v2.3.15: Ayarlar sekmesinde bir kez gösterilen "email ile giriş yap" bildirimi.
+// Kapatılmadıysa: sekme ikonunda kırmızı nokta yanıp söner. Kapatılınca: hem nokta
+// hem mesaj bir daha hiç görünmez (storage'da kalıcı olarak işaretlenir).
+async function updateEmailLoginNoticeDot() {
+  const dismissed = await Storage.get(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED);
+  const chip = document.getElementById('option-chip');
+  if (chip) chip.classList.toggle('options-notice-border', !dismissed);
+}
+
+async function setupEmailLoginNotice() {
+  const dismissed = await Storage.get(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED);
+  const notice = document.getElementById('opt-email-login-notice');
+  if (!notice) return;
+  notice.style.display = dismissed ? 'none' : 'flex';
+  const closeBtn = document.getElementById('opt-email-login-notice-close');
+  if (closeBtn && !closeBtn._wired) {
+    closeBtn._wired = true;
+    closeBtn.addEventListener('click', async () => {
+      await Storage.set(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED, true);
+      notice.style.display = 'none';
+      await updateEmailLoginNoticeDot();
+    });
+  }
+}
 
 async function updateChatTabVisibility() {
   const chatEnabled = await Storage.getChatIntegrationEnabled();
@@ -184,8 +210,17 @@ function _pickFetchErrorKey(errorMsg) {
   if (/AUTH_REQUIRED:\s*API\s*403/i.test(errorMsg)) {
     return 'fetchErrorBlocked';
   }
-  // 401 — gerçekten oturum yok/süresi dolmuş (tek gerçek "giriş yap" durumu)
+  // 401 — iki farklı gerçek durum var, ayırt etmemiz lazım:
   if (/AUTH_REQUIRED:\s*API\s*401/i.test(errorMsg)) {
+    // token:yes → oturum çerezi GERÇEKTEN vardı ama Kick yine de reddetti.
+    // Aylarca süren araştırmayla kanıtlandı: bu, Kick'in kendi sunucu
+    // tarafında geçici bir tutarsızlık (aynı token bazen 200 bazen 401
+    // dönüyor) — kullanıcının GERÇEKTEN giriş yapmış olmasına rağmen
+    // "giriş yap" demek yanlış ve yanıltıcı olurdu.
+    if (/token:yes/i.test(errorMsg)) {
+      return 'fetchErrorSessionRejected';
+    }
+    // token:no → gerçekten hiç oturum çerezi yoktu, klasik "giriş yap" durumu
     return 'fetchError';
   }
   // Cihaz tamamen offline — "giriş yap" değil, "internetini kontrol et"
@@ -1052,6 +1087,7 @@ function showOptionsPanel() {
   applyOptionsI18n();
   loadOptionsSettings();
   setupOptionsListeners();
+  setupEmailLoginNotice();
 }
 
 async function renderLangSelector() {

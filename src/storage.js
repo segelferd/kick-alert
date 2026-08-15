@@ -47,6 +47,8 @@ const StorageKeys = {
   BOT_SCORE_ALWAYS_VISIBLE: 'botScoreAlwaysVisible',  // popup'ta her zaman göster (default false — sadece anomaly'de)
   CHATROOM_ID_CACHE: '_chatroomIdCache',      // { slug: chatroomId, ... } — internal
   BOT_SCORES: '_botScores',                   // { slug: { score, msgPerMin, ratio, computedAt }, ... } — internal
+  // v2.3.15: Ayarlar sekmesinde bir kez gösterilen "email ile giriş yap" bildirimi
+  EMAIL_LOGIN_NOTICE_DISMISSED: 'emailLoginNoticeDismissed', // cihaza özel, senkronize edilmez
 };
 
 // Keys that should NOT be synced (too large, device-specific, or internal)
@@ -60,6 +62,7 @@ const SYNC_EXCLUDE_KEYS = new Set([
   StorageKeys.ANOMALY_SETTINGS,        // device-specific sensitivity prefs
   StorageKeys.CHATROOM_ID_CACHE,       // v2.3.0: internal API cache
   StorageKeys.BOT_SCORES,              // v2.3.0: runtime calculated, no need to sync
+  StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED, // v2.3.15: cihaza özel, her cihaz bir kez görmeli
   '_liveSlugs', '_notifiedLives', '_lastCheckDone', // internal state
 ]);
 
@@ -80,6 +83,7 @@ const StorageDefaults = {
   [StorageKeys.BOT_SCORE_ALWAYS_VISIBLE]: false,
   [StorageKeys.CHATROOM_ID_CACHE]: {},
   [StorageKeys.BOT_SCORES]: {},
+  [StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED]: false,
 };
 
 let _syncEnabled = false;

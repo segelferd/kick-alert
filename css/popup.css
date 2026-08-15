@@ -176,6 +176,43 @@ body {
 .opt-cloud-sync-now-btn:hover { color: var(--accent); border-color: var(--accent); }
 .opt-cloud-sync-now-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* Options tab notice dot (v2.3.15) */
+/* Options button frame — pulses red until the notice is dismissed (v2.3.17) */
+.menu-chip.options-notice-border {
+  animation: options-border-pulse 1.4s ease-in-out infinite;
+}
+@keyframes options-border-pulse {
+  0%, 100% { box-shadow: 0 0 0 1px var(--red, #ff4d4f); }
+  50% { box-shadow: 0 0 0 1px rgba(255, 77, 79, 0.35); }
+}
+
+/* Options panel — one-time email login notice (v2.3.15) */
+.opt-email-login-notice {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: rgba(255, 77, 79, 0.08);
+  border: 1px solid rgba(255, 77, 79, 0.3);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-bottom: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+.opt-email-login-notice-text { flex: 1; }
+.opt-email-login-notice-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+.opt-email-login-notice-close:hover { color: var(--text-primary); }
+
 /* Channel Card */
 .channel-card.offline { opacity: 0.5; }
 .channel-card.offline:hover { opacity: 0.8; }

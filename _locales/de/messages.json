@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Beim Laden Ihrer Kanäle ist etwas schiefgelaufen. Bitte versuchen Sie es erneut."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Kick hat Ihre Sitzung nicht erkannt, obwohl Sie angemeldet sind. Dies liegt meist an einem vorübergehenden Problem bei Kick — es sollte sich innerhalb weniger Minuten von selbst lösen."
+  },
+  "emailLoginNotice": {
+    "message": "Damit KickAlert zuverlässig funktioniert, stellen Sie bitte sicher, dass Sie sich bei Kick mit E-Mail und Passwort anmelden (nicht über \"Mit Google fortfahren\")."
   }
 }

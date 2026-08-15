@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Qualcosa è andato storto durante il caricamento dei tuoi canali. Riprova."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Kick non ha riconosciuto la tua sessione anche se hai effettuato l'accesso. Di solito si tratta di un problema temporaneo lato Kick — dovrebbe risolversi da solo in pochi minuti."
+  },
+  "emailLoginNotice": {
+    "message": "Per un funzionamento affidabile di KickAlert, assicurati di aver effettuato l'accesso a Kick con e-mail e password (non tramite \"Continua con Google\")."
   }
 }

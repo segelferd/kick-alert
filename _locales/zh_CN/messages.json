@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "加载频道时出了点问题，请重试。"
+  },
+  "fetchErrorSessionRejected": {
+    "message": "您已登录，但 Kick 未能识别您的会话。这通常是 Kick 端的临时问题，几分钟内应会自行恢复。"
+  },
+  "emailLoginNotice": {
+    "message": "为确保 KickAlert 稳定运行，请确认您是使用邮箱和密码登录 Kick 的（而非通过「使用 Google 继续」）。"
   }
 }

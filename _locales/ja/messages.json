@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "チャンネルの読み込み中に問題が発生しました。もう一度お試しください。"
+  },
+  "fetchErrorSessionRejected": {
+    "message": "ログイン済みにもかかわらず、Kickがセッションを認識しませんでした。これは通常Kick側の一時的な問題で、数分以内に自然に解消されるはずです。"
+  },
+  "emailLoginNotice": {
+    "message": "KickAlertが正常に動作するために、Kickに「Googleで続行」ではなく、メールアドレスとパスワードでログインしていることをご確認ください。"
   }
 }

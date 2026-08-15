@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "Un problème est survenu lors du chargement de vos chaînes. Veuillez réessayer."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Kick n'a pas reconnu votre session bien que vous soyez connecté. Il s'agit généralement d'un problème temporaire du côté de Kick — cela devrait se résoudre de lui-même en quelques minutes."
+  },
+  "emailLoginNotice": {
+    "message": "Pour que KickAlert fonctionne de manière fiable, veuillez vous assurer d'être connecté à Kick avec un e-mail et un mot de passe (pas via « Continuer avec Google »)."
   }
 }

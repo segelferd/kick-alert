@@ -591,5 +591,11 @@
   },
   "fetchErrorUnknown": {
     "message": "채널을 불러오는 중 문제가 발생했습니다. 다시 시도하세요."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "로그인되어 있음에도 Kick이 세션을 인식하지 못했습니다. 이는 보통 Kick 측의 일시적인 문제이며, 몇 분 내에 저절로 해결됩니다."
+  },
+  "emailLoginNotice": {
+    "message": "KickAlert가 안정적으로 작동하려면 Kick에 \"Google로 계속하기\"가 아닌 이메일과 비밀번호로 로그인되어 있는지 확인해 주세요."
   }
 }
