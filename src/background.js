@@ -165,6 +165,15 @@ async function initialize() {
     await migrateAutoOpenChannels();
     await startOffscreen();
 
+    // v2.3.18: AdBlock DNR ruleset'ini kullanıcı ayarıyla senkronize et — SW
+    // yeniden başladığında ya da ilk kurulumda tutarlı olsun diye.
+    try {
+      const adBlockEnabled = await Storage.get(StorageKeys.AD_BLOCK_ENABLED);
+      await syncAdBlockRuleset(adBlockEnabled === true);
+    } catch (e) {
+      console.warn('[KickAlert] AdBlock init senkronizasyonu başarısız:', e.message);
+    }
+
     // v2.3.1: Init'te aktif backoff varsa, ilk checkSafe başarısız olmadan
     // önce bir session refresh dene. Bu sayede SW restart'tan sonra
     // 21 dk beklemek yerine hemen kurtulma şansı yakalarız.
@@ -298,7 +307,7 @@ async function refreshPusherSubscriptions() {
       // Firefox: SW içi Pusher
       Pusher.subscribeAll(subscribableItems);
     }
-    dbg(`[KickAlert] Pusher: ${subscribableItems.length}/${cachedChannels.length} kanala subscribe`);
+    KLog.debug('PSH-01', `${subscribableItems.length}/${cachedChannels.length} kanala subscribe`);
   } else {
     dbg(`[KickAlert] Pusher: subscribe edilecek kanal yok (channel_id cache boş — harvest başlatılacak)`);
   }
@@ -831,7 +840,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
       KickAPI.recordJitter(jitterMs);
     }
 
-    dbg(`[KickAlert] Alarm fired at ${new Date().toLocaleTimeString()} (+${jitterMs}ms jitter)`);
+    KLog.debug('ALM-01', `Alarm tetiklendi: ${new Date().toLocaleTimeString()} (+${jitterMs}ms jitter)`);
     await Utils.ensureI18n();
     await cleanupNotifiedLives(); // BUG 15 FIX
     await checkSafe();
@@ -876,7 +885,30 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
       console.warn('[KickAlert] Language reload failed:', e);
     }
   }
+  if (changes[StorageKeys.AD_BLOCK_ENABLED]) {
+    await syncAdBlockRuleset(changes[StorageKeys.AD_BLOCK_ENABLED].newValue === true);
+  }
 });
+
+/**
+ * v2.3.18: Reklam Engelleme (DENEYSEL) DNR ruleset'ini kullanıcı ayarına göre
+ * açar/kapatır. content.js/adblock-worker-hook.js tarafı ayrı olarak kendi
+ * localStorage bayraklarını okuyor — bu fonksiyon SADECE ağ seviyesi (DNR)
+ * kısmından sorumlu (Google reklam domain'lerini bloklayan 10 kural).
+ */
+async function syncAdBlockRuleset(enabled) {
+  try {
+    if (enabled) {
+      await chrome.declarativeNetRequest.updateEnabledRulesets({ enableRulesetIds: ['ruleset_ads'] });
+      console.log('[KickAlert] AdBlock DNR ruleset açıldı');
+    } else {
+      await chrome.declarativeNetRequest.updateEnabledRulesets({ disableRulesetIds: ['ruleset_ads'] });
+      console.log('[KickAlert] AdBlock DNR ruleset kapatıldı');
+    }
+  } catch (e) {
+    console.warn('[KickAlert] AdBlock ruleset güncellenemedi:', e.message);
+  }
+}
 
 // ─── Channel Check ───
 
@@ -1007,7 +1039,7 @@ async function checkViewerAnomalies(channels, history) {
             ? now - new Date(ch.startedAt).getTime()
             : now - cur[0].t) / 60000);
           if (roc) {
-            dbg(`[KickAlert] AnomalyCheck: ${ch.channelSlug} v=${ch.viewerCount} roc=${roc.pct}% age=${streamAgeMin}m valley=${rec.streamValley ?? '-'} peak=${rec.streamPeak ?? '-'} hasStartedAt=${!!ch.startedAt}`);
+            KLog.debug('ANM-01', `${ch.channelSlug}: v=${ch.viewerCount} roc=${roc.pct}% age=${streamAgeMin}m valley=${rec.streamValley ?? '-'} peak=${rec.streamPeak ?? '-'} hasStartedAt=${!!ch.startedAt}`);
           }
         }
       } catch {}
@@ -1766,7 +1798,7 @@ async function syncBotTracker(channels) {
   try {
     const response = await BotTrackerHost.sync(trackList);
     if (response?.success) {
-      dbg(`[KickAlert] BotTracker tracking ${response.trackedCount} channels`);
+      KLog.debug('BSC-01', `BotTracker ${response.trackedCount} kanal takip ediyor`);
     }
   } catch (e) {
     console.warn('[KickAlert] BotTracker sync error:', e.message);
@@ -1791,11 +1823,11 @@ async function recomputeBotScores(liveChannels) {
   const now = Date.now();
   const elapsed = now - _lastBotScoreCompute;
   if (elapsed < _BOT_SCORE_INTERVAL_MS) {
-    dbg(`[KickAlert][BotScore] Throttle: ${Math.round(elapsed/1000)}s elapsed, need ${_BOT_SCORE_INTERVAL_MS/1000}s — skip`);
+    KLog.debug('BSC-02', `Throttle: ${Math.round(elapsed/1000)}s geçti, ${_BOT_SCORE_INTERVAL_MS/1000}s gerekiyor — atlanıyor`);
     return;
   }
   _lastBotScoreCompute = now;
-  dbg(`[KickAlert][BotScore] recomputeBotScores BAŞLADI — ${liveChannels.length} live kanal (${BotTrackerHost.isLocal ? 'local/firefox' : 'offscreen/chrome'})`);
+  KLog.debug('BSC-03', `recomputeBotScores başladı — ${liveChannels.length} canlı kanal (${BotTrackerHost.isLocal ? 'local/firefox' : 'offscreen/chrome'})`);
 
   // viewerMap: { slug: viewerCount }
   const viewerMap = {};
@@ -1804,13 +1836,13 @@ async function recomputeBotScores(liveChannels) {
     if (ch.viewerCount > 0) viewerMap[ch.channelSlug] = ch.viewerCount;
     liveSlugs.add(ch.channelSlug);
   }
-  dbg(`[KickAlert][BotScore] viewerMap built: ${Object.keys(viewerMap).length} kanal`);
+  KLog.debug('BSC-04', `viewerMap oluşturuldu: ${Object.keys(viewerMap).length} kanal`);
 
   // BotTracker'dan skorları iste (chrome → offscreen, firefox → local)
   let scores = null;
   try {
     const res = await BotTrackerHost.computeScores(viewerMap);
-    dbg(`[KickAlert][BotScore] BotTracker response: success=${res?.success}, scoreCount=${Object.keys(res?.scores || {}).length}`);
+    KLog.debug('BSC-05', `BotTracker yanıtı: success=${res?.success}, scoreCount=${Object.keys(res?.scores || {}).length}`);
     if (res?.success) scores = res.scores;
   } catch (e) {
     console.warn('[KickAlert] BotTracker compute error:', e.message);
@@ -1842,7 +1874,7 @@ async function recomputeBotScores(liveChannels) {
       console.warn(`[KickAlert] setBotScore failed for ${slug}:`, e.message);
     }
   }
-  dbg(`[KickAlert][BotScore] Storage: ${written} yazıldı, ${skipped} atlandı (insufficient)`);
+  KLog.debug('BSC-06', `Storage: ${written} yazıldı, ${skipped} atlandı (insufficient)`);
 
   // Cleanup: canlıdan çıkan kanalların skorunu sil
   try {
@@ -2146,6 +2178,25 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   if (msg.type === 'PUSHER_OFFLINE_EVENT') {
     handlePusherOfflineEvent(msg.slug)
       .catch(e => console.warn('[KickAlert] Pusher offline handler error:', e.message));
+    return false;
+  }
+
+  // ─── v2.3.19: Reklam Engelleme (DENEYSEL) log köprüsü ───
+  // adblock-worker-hook.js (MAIN dünya + IVS worker thread'i) kendi konsoluna
+  // yazan logları content.js üzerinden buraya iletiyor. Tek amaç: test
+  // panelindeki Aktivite Logu'nda TÜM eklenti aktivitesini tek yerde görmek.
+  if (msg.type === 'AD_BLOCK_LOG') {
+    const level = msg.level === 'warn' ? 'warn' : 'info';
+    KLog[level](msg.code || 'ADB-00', msg.text || '');
+    return false;
+  }
+
+  // ─── v2.3.20: offscreen.html (LiveTracker/BotTracker) log köprüsü ───
+  // offscreen.js/bot_tracker.js ayrı DevTools context'inde çalışıyor —
+  // önemli olaylarını buraya (KLog'a) iletiyorlar, tek konsol için.
+  if (msg.type === 'OFFSCREEN_LOG') {
+    const level = msg.level === 'warn' ? 'warn' : 'info';
+    KLog[level](msg.code || 'OFF-00', msg.text || '');
     return false;
   }
 
@@ -3435,15 +3486,73 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           finalBackoff > 0 ? `${Math.round(finalBackoff/1000)}sn aktif` : 'Temiz');
 
         // 7. Plan B değerlendirmesi
+        // v2.3.21: Artık kesin biliyoruz — düşük başarı oranı Cloudflare baskısı
+        // DEĞİL, Kick'in kendi sunucu tarafındaki tutarsızlık (aynı geçerli token
+        // bazen 200 bazen 401 dönüyor, kick.com'un kendi sitesinde bile kanıtlandı).
+        // Eski mesaj "CF baskısı yüksek, Plan C düşünülmeli" yanıltıcıydı — Plan C
+        // zaten aktif olsa da bu sorunu çözmüyor.
         let verdict;
-        if (successRate >= 90) verdict = '✅ Plan B sağlam: %90+ başarı, CF baskısı yok';
-        else if (successRate >= 70 && failures >= 3) verdict = '✅ Plan B çalışıyor: M4 yavaşlatma devreye girdi';
-        else if (successRate < 50) verdict = '⚠ CF baskısı yüksek: Plan C (content script proxy) düşünülmeli';
+        if (successRate >= 90) verdict = '✅ Sağlam: %90+ başarı, tutarsızlık yok';
+        else if (successRate >= 70 && failures >= 3) verdict = '✅ Savunma çalışıyor: M4 yavaşlatma devreye girdi';
+        else if (successRate < 50) verdict = '⚠ Kick sunucu tutarsızlığı olası — "Auth Tutarlılık Testi (cf-ray)" ile örüntüyü incele';
         else verdict = '🟡 Karışık sonuç: Daha uzun gözlem gerekli';
         log('Plan B Değerlendirmesi', successRate >= 70 ? 'ok' : 'warn', verdict);
 
         const totalMs = Date.now() - start;
         respond({ success: true, results, totalMs });
+      } catch (e) {
+        log('General Error', 'error', e.message);
+        respond({ success: false, results });
+      }
+    })();
+    return true;
+  }
+
+  // v2.3.21: Auth Tutarlılık Teşhisi — backoff'u hiç tetiklemeden N ham istek
+  // atar, her birinin durumunu + cf-ray başlığını kaydeder. Amaç: Kick'in
+  // sunucu tarafı tutarsızlığının (aynı token bazen 200 bazen 401) belirli bir
+  // Cloudflare veri merkezine/arka uç repliksına bağlı olup olmadığını görmek.
+  if (msg.type === 'RUN_SCENARIO_AUTH_CONSISTENCY') {
+    (async () => {
+      const results = [];
+      const log = (step, status, detail) => results.push({ step, status, detail });
+      const start = Date.now();
+      try {
+        const probe = await KickAPI.authConsistencyProbe(10, 1500);
+        const okCount = probe.filter(p => p.ok).length;
+        const failCount = probe.length - okCount;
+
+        // Her isteği ayrı adım olarak göster — cf-ray dahil
+        probe.forEach(p => {
+          const rayShort = p.cfRay ? p.cfRay.split('-')[0] : '—';
+          log(
+            `İstek ${p.i}/${probe.length}`,
+            p.ok ? 'ok' : 'error',
+            `${p.status} · via:${p.via} · cf-ray:${rayShort} · ${p.ms}ms${p.err ? ' · ' + p.err : ''}`
+          );
+        });
+
+        // cf-ray öneklerine göre grupla — örüntü var mı diye
+        const rayGroups = {};
+        probe.forEach(p => {
+          const prefix = p.cfRay ? p.cfRay.split('-')[0] : 'bilinmiyor';
+          if (!rayGroups[prefix]) rayGroups[prefix] = { ok: 0, fail: 0 };
+          rayGroups[prefix][p.ok ? 'ok' : 'fail']++;
+        });
+        const groupSummary = Object.entries(rayGroups)
+          .map(([ray, c]) => `${ray}: ${c.ok}✓/${c.fail}✗`)
+          .join(' · ');
+        log('cf-ray Grup Analizi', 'ok', groupSummary || 'cf-ray verisi yok (hepsi proxy üzerinden, header yakalanmadı)');
+
+        // Genel sonuç
+        const successRate = Math.round((okCount / probe.length) * 100);
+        let verdict;
+        if (successRate === 100) verdict = '✅ 10/10 başarı — bu oturumda tutarsızlık gözlenmedi (şu an sorun yok gibi)';
+        else if (successRate === 0) verdict = '❌ 0/10 başarı — kalıcı bir reddediliş, geçici tutarsızlık değil';
+        else verdict = `🟡 Karışık: ${okCount}/${probe.length} başarı — Kick sunucu tutarsızlığı örüntüsü kanıtlandı`;
+        log('Genel Sonuç', successRate === 100 ? 'ok' : successRate === 0 ? 'error' : 'warn', verdict);
+
+        respond({ success: true, results, totalMs: Date.now() - start });
       } catch (e) {
         log('General Error', 'error', e.message);
         respond({ success: false, results });

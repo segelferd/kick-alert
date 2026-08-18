@@ -49,6 +49,12 @@ const StorageKeys = {
   BOT_SCORES: '_botScores',                   // { slug: { score, msgPerMin, ratio, computedAt }, ... } — internal
   // v2.3.15: Ayarlar sekmesinde bir kez gösterilen "email ile giriş yap" bildirimi
   EMAIL_LOGIN_NOTICE_DISMISSED: 'emailLoginNoticeDismissed', // cihaza özel, senkronize edilmez
+  // v2.3.18: Reklam Engelleme (DENEYSEL) — kapalı başlar, kullanıcı bilerek açar
+  AD_BLOCK_ENABLED: 'adBlockEnabled',
+  // v2.3.26: Kanal önizleme resimleri (thumbnail) - varsayılan kapalı
+  CHANNEL_THUMBNAILS_ENABLED: 'channelThumbnailsEnabled',
+  // v2.3.23: "Session var ama Kick reddetti" durumu aktif mi (cihaza özel, internal)
+  AUTH_SESSION_REJECTED: '_authSessionRejected',
 };
 
 // Keys that should NOT be synced (too large, device-specific, or internal)
@@ -84,6 +90,9 @@ const StorageDefaults = {
   [StorageKeys.CHATROOM_ID_CACHE]: {},
   [StorageKeys.BOT_SCORES]: {},
   [StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED]: false,
+  [StorageKeys.AD_BLOCK_ENABLED]: false,
+  [StorageKeys.CHANNEL_THUMBNAILS_ENABLED]: false,
+  [StorageKeys.AUTH_SESSION_REJECTED]: false,
 };
 
 let _syncEnabled = false;

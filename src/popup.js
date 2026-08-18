@@ -43,26 +43,60 @@ document.addEventListener('DOMContentLoaded', async () => {
   await updateEmailLoginNoticeDot();
 });
 
+// v2.3.23: Popup açıkken arka planda "session reddedildi" durumu değişirse
+// (örn. periyodik kontrol sırasında hata başlarsa/biterse), Options ikonunu
+// canlı güncelle — popup'ı kapatıp açmaya gerek kalmadan.
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes[StorageKeys.AUTH_SESSION_REJECTED]) {
+    updateEmailLoginNoticeDot();
+    // Ayarlar paneli o an açıksa mesaj kutusunu da güncelle
+    if (document.getElementById('options-panel')?.style.display === 'block') {
+      setupEmailLoginNotice();
+    }
+  }
+});
+
 // v2.3.15: Ayarlar sekmesinde bir kez gösterilen "email ile giriş yap" bildirimi.
-// Kapatılmadıysa: sekme ikonunda kırmızı nokta yanıp söner. Kapatılınca: hem nokta
-// hem mesaj bir daha hiç görünmez (storage'da kalıcı olarak işaretlenir).
+// v2.3.23: Artık iki ek durum var —
+//   1. Kalıcı, alarm vermeyen bir bilgi satırı (setupEmailLoginNotice içinde,
+//      HER ZAMAN görünür, kapatma düğmesi yok) — kullanıcı ilk bildirimi
+//      kapattıktan sonra bile bunu Ayarlar'da referans olarak bulabilsin.
+//   2. "Session var ama Kick reddetti" hatası (fetchErrorSessionRejected) aktif
+//      olduğunda, kullanıcı daha önce kapatmış olsa bile uyarı YENİDEN
+//      vurgulanır — çünkü artık gerçekten ilgili/aksiyona geçirilebilir hale
+//      geldi. Hata çözülünce (bir sonraki başarılı çekimde) otomatik söner.
 async function updateEmailLoginNoticeDot() {
   const dismissed = await Storage.get(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED);
+  const sessionRejected = await Storage.get(StorageKeys.AUTH_SESSION_REJECTED);
   const chip = document.getElementById('option-chip');
-  if (chip) chip.classList.toggle('options-notice-border', !dismissed);
+  if (chip) chip.classList.toggle('options-notice-border', !dismissed || !!sessionRejected);
 }
 
 async function setupEmailLoginNotice() {
   const dismissed = await Storage.get(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED);
+  const sessionRejected = await Storage.get(StorageKeys.AUTH_SESSION_REJECTED);
   const notice = document.getElementById('opt-email-login-notice');
-  if (!notice) return;
-  notice.style.display = dismissed ? 'none' : 'flex';
+  const noticeUrgentTag = document.getElementById('opt-email-login-notice-urgent');
+  const infoLine = document.getElementById('opt-email-login-info');
+
+  // v2.3.24: İkisi birbirini dışlar — uyarı (kapatılabilir, kırmızı çerçeveli)
+  // görünürken sabit bilgi satırı GİZLİ olmalı, ve tam tersi. İkisi aynı anda
+  // asla görünmemeli.
+  const showAlert = !dismissed || !!sessionRejected;
+  if (notice) {
+    notice.style.display = showAlert ? 'flex' : 'none';
+    if (noticeUrgentTag) noticeUrgentTag.style.display = sessionRejected ? 'inline' : 'none';
+  }
+  if (infoLine) infoLine.style.display = showAlert ? 'none' : 'flex';
+
   const closeBtn = document.getElementById('opt-email-login-notice-close');
   if (closeBtn && !closeBtn._wired) {
     closeBtn._wired = true;
     closeBtn.addEventListener('click', async () => {
       await Storage.set(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED, true);
-      notice.style.display = 'none';
+      if (notice) notice.style.display = 'none';
+      // Uyarı kapatıldı — session-rejected aktif değilse sabit satır devreye girsin
+      if (infoLine && !sessionRejected) infoLine.style.display = 'flex';
       await updateEmailLoginNoticeDot();
     });
   }
@@ -380,7 +414,57 @@ async function renderFollowing(categoryFilter) {
   const botScores = (botScoresRes?.success && botScoresRes.scores) ? botScoresRes.scores : {};
   const batchData = { favMap, groupMap: groupMap2, bellMap, groupList, botScores, botScoreAlways };
 
+  // v2.3.26: Kanal Önizlemeleri (Thumbnail).
+  // v2.4.5 DÜZELTME: Önceden burada TÜM canlı kanalların thumbnail'i bitene
+  // kadar (await Promise.all) liste HİÇ render edilmiyordu — yavaşlık
+  // şikayetinin asıl sebebi buydu. Artık thumbnailsEnabled sadece batchData'ya
+  // konup kartlar İSKELET halinde (rozetler hazır, resim "loading") ANINDA
+  // render ediliyor; asıl resim istekleri render'dan SONRA, arka planda
+  // paralel atılıyor ve her biri geldiğinde ilgili karta enjekte ediliyor.
+  const thumbnailsEnabled = await Storage.get(StorageKeys.CHANNEL_THUMBNAILS_ENABLED);
+  batchData.thumbnailsEnabled = thumbnailsEnabled;
+
   for (const ch of list) el.appendChild(await channelCard(ch, cardMode, batchData));
+
+  if (thumbnailsEnabled) {
+    const liveChannels = list.filter(ch => ch.isLive);
+    liveChannels.forEach(async (ch) => {
+      try {
+        const res = await chrome.runtime.sendMessage({ type: 'GET_CHANNEL_LIVE_DETAILS', slug: ch.channelSlug });
+        if (res?.success && res.details?.thumbnailUrl) {
+          injectThumbnailImage(ch.channelSlug, res.details.thumbnailUrl);
+        } else {
+          removeThumbnailSkeleton(ch.channelSlug); // veri gelmedi — iskeleti kaldır
+        }
+      } catch (e) {
+        removeThumbnailSkeleton(ch.channelSlug); // sessiz — bu kanal thumbnailsiz kalır
+      }
+    });
+  }
+}
+
+// v2.4.5: Async olarak gelen thumbnail URL'sini, zaten render edilmiş karta enjekte eder.
+function injectThumbnailImage(slug, url) {
+  const card = document.querySelector(`.channel-card[data-slug="${CSS.escape(slug)}"]`);
+  if (!card) return; // kullanıcı bu arada filtre değiştirmiş/kart kaldırılmış olabilir
+  const wrap = card.querySelector('.channel-thumbnail-wrap');
+  if (!wrap || wrap.querySelector('.channel-thumbnail')) return; // zaten yok ya da zaten dolu
+  const img = document.createElement('img');
+  img.className = 'channel-thumbnail';
+  img.alt = '';
+  img.loading = 'lazy';
+  img.addEventListener('error', () => {
+    if (typeof card._handleThumbnailLoadFailure === 'function') card._handleThumbnailLoadFailure();
+  }, { once: true });
+  img.addEventListener('load', () => wrap.classList.remove('is-loading'), { once: true });
+  img.src = url;
+  wrap.prepend(img); // rozetlerin ALTINDA kalsın diye en başa ekleniyor (z-index yerine DOM sırası)
+}
+
+// v2.4.5: Thumbnail verisi hiç gelmezse (kanal offline olmuş, hata vb.) iskeleti kaldır.
+function removeThumbnailSkeleton(slug) {
+  const card = document.querySelector(`.channel-card[data-slug="${CSS.escape(slug)}"]`);
+  if (card && typeof card._handleThumbnailLoadFailure === 'function') card._handleThumbnailLoadFailure();
 }
 
 async function buildGroupFilterBar() {
@@ -517,6 +601,7 @@ async function channelCard(ch, cardMode, batch) {
   cardMode = cardMode || 'detail';
   const card = document.createElement('div');
   card.className = `channel-card ${ch.isLive ? 'live' : 'offline'} ${cardMode}-card`;
+  card.dataset.slug = ch.channelSlug; // v2.4.5: async thumbnail enjeksiyonu için
   const isFav = batch ? !!(batch.favMap?.[ch.channelSlug]) : await Storage.isFavoriteChannel(ch.channelSlug);
   const chGroup = batch ? (batch.groupMap?.[ch.channelSlug] || null) : await Storage.getChannelGroup(ch.channelSlug);
   const groupBadge = chGroup ? `<span class="channel-group-badge">${esc(chGroup)}</span>` : '';
@@ -540,10 +625,23 @@ async function channelCard(ch, cardMode, batch) {
   let botScoreInSparkRow = '';
   // v2.3.0: Sparkline çerçeve durumu — spike (yeşil), drop (kırmızı), yoksa nötr
   let sparklineFrame = ''; // '', 'spike', 'spike-alert', 'drop', 'drop-alert'
+  // v2.3.30: thumbnail overlay'inde de kullanılıyor, if(ch.isLive) dışında da lazım
+  let viewers = '';
+  // v2.3.31: thumbnail overlay'inde kullanılıyor, card.innerHTML if(ch.isLive)
+  // bloğunun DIŞINDA olduğu için burada (dış kapsamda) tanımlanmalı — içeride
+  // tanımlanınca hem offline hem live kanallarda "is not defined" hatası veriyordu.
+  let botScoreOnThumbnail = '';
+  // v2.3.33: actions bloğu (if(ch.isLive) dışında) bunu kullanacak, dış kapsamda olmalı
+  // v2.4.5: Önceden "URL zaten çekilmiş mi" diye bakıyorduk — bu, tüm resimler
+  // gelene kadar render'ı bekletiyordu (yavaşlık şikayetinin asıl sebebi).
+  // Artık sadece "özellik açık mı" diye bakıyoruz — İSKELET (LIVE/izleyici/bot
+  // rozetleri + dikey buton sütunu) ANINDA çiziliyor, resmin kendisi (img src)
+  // hazır olduğunda ayrıca enjekte ediliyor (bkz. loadChannels).
+  const hasThumbnail = ch.isLive && !!batch?.thumbnailsEnabled;
 
   if (ch.isLive) {
     const dur = Utils.formatDuration(ch.startedAt);
-    const viewers = Utils.formatViewers(ch.viewerCount);
+    viewers = Utils.formatViewers(ch.viewerCount);
     const anomalySettings = await Storage.getAnomalySettings();
     const anomaly = anomalySettings.enabled
       ? await getViewerAnomaly(ch.channelSlug, ch.viewerCount, ch.startedAt)
@@ -571,7 +669,11 @@ async function channelCard(ch, cardMode, batch) {
     // v2.3.0 Yerleşim mantığı (Patron'un seçtiği):
     //   alwaysVisible AÇIK   → Sparkline'ın yanında, butonların solunda (her zaman aynı yer)
     //   alwaysVisible KAPALI → Sadece anomaly varsa, anomaly satırının sonunda
+    // v2.3.30: Thumbnail modu AÇIKSA (ayar açık + kanal live) → rozet thumbnail'in
+    // üzerine taşınıyor (mockup'a tam uyum), yukarıdaki iki konumun ikisi de
+    // devre dışı — çünkü artık görsel üzerinde zaten gösteriliyor.
     let botScoreBadge = '';        // anomaly satırı için
+    // botScoreOnThumbnail zaten dış scope'ta tanımlı — burada sadece atama
     // botScoreInSparkRow zaten dış scope'ta tanımlı — burada sadece atama
     const botData = batch?.botScores?.[ch.channelSlug];
     const alwaysVisible = !!batch?.botScoreAlways;
@@ -593,7 +695,10 @@ async function channelCard(ch, cardMode, batch) {
         + `<span class="bot-score-value">${score}%</span>`
         + `</span>`;
 
-      if (alwaysVisible) {
+      if (hasThumbnail) {
+        // Thumbnail varken rozet her zaman görsel üzerinde — konum tercihinden bağımsız
+        botScoreOnThumbnail = badgeHTML;
+      } else if (alwaysVisible) {
         // Switch açık → sparkline satırı, butonların solunda (her kanalda)
         botScoreInSparkRow = badgeHTML;
       } else if (anomaly) {
@@ -613,11 +718,13 @@ async function channelCard(ch, cardMode, batch) {
       ? `<div class="anomaly-row drop-${drop.level}">↓ ${drop.label} ${anomalyBadge}${botScoreBadge}</div>`
       : '';
 
+    // v2.3.30: Thumbnail varken izleyici sayısı görsel üzerinde zaten
+    // gösteriliyor — üst satırda tekrar etmesin. Süre ve kategori kalır
+    // (thumbnail üzerinde onlar için yer yok, tekrar da etmiyorlar).
     meta = `<div class="channel-meta">
       <span class="rec-indicator"><span class="rec-dot"></span></span>
       <span class="stream-duration" data-slug="${esc(ch.channelSlug)}">${esc(dur)}</span>
-      <span class="meta-separator">·</span>
-      <span class="viewer-count">${esc(viewers)}</span>
+      ${hasThumbnail ? '' : `<span class="meta-separator">·</span><span class="viewer-count">${esc(viewers)}</span>`}
       ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name marquee-text" title="${esc(ch.categoryName)}"><span class="marquee-inner">${esc(ch.categoryName)}</span></span>` : ''}
     </div>${anomalyNote}`;
   }
@@ -631,7 +738,15 @@ async function channelCard(ch, cardMode, batch) {
         ${meta}
       </div>
     </div>
-    ${ch.isLive && ch.thumbnailUrl ? `<img class="channel-thumbnail" src="${esc(ch.thumbnailUrl)}" alt="" loading="lazy" />` : ''}`;
+    ${hasThumbnail ? `<div class="channel-thumbnail-row">
+      <div class="card-actions-col"></div>
+      <div class="channel-thumbnail-wrap${ch.thumbnailUrl ? '' : ' is-loading'}">
+        ${ch.thumbnailUrl ? `<img class="channel-thumbnail" src="${esc(ch.thumbnailUrl)}" alt="" loading="lazy" />` : ''}
+        <span class="channel-thumbnail-live">LIVE</span>
+        ${botScoreOnThumbnail ? `<span class="channel-thumbnail-botscore">${botScoreOnThumbnail}</span>` : ''}
+        <span class="channel-thumbnail-viewers">${esc(viewers)} ${esc(Utils.i18n('thumbnailViewersSuffix') || 'viewers')}</span>
+      </div>
+    </div>` : ''}`;
 
   // v2.1.0: CSP-safe error handlers (Firefox inline onerror'ı yasaklar)
   const avatarImg = card.querySelector('.channel-avatar');
@@ -640,18 +755,39 @@ async function channelCard(ch, cardMode, batch) {
       avatarImg.src = '../images/default-profile-pictures/default.jpeg';
     }, { once: true });
   }
+  // v2.4.5: reusable — hem ilk render'da (nadiren, URL zaten hazırsa) hem de
+  // loadChannels()'ta sonradan enjekte edilen <img>'de kullanılıyor.
+  function handleThumbnailLoadFailure() {
+    const row = card.querySelector('.channel-thumbnail-row');
+    const wrap = card.querySelector('.channel-thumbnail-wrap');
+    // v2.3.33: Thumbnail modunda tüm satırı (buton sütunu + thumbnail) gizle,
+    // yoksa boş bir kutuda asılı kalan LIVE/izleyici rozetleri + tek başına
+    // kalan dikey buton sütunu garip görünür. Butonlar normal yatay satıra
+    // geri taşınır.
+    if (row) {
+      const actionsCol = row.querySelector('.card-actions-col');
+      if (actionsCol && actionsCol.children.length > 0) {
+        actionsCol.className = 'card-actions-row';
+        card.appendChild(actionsCol);
+      }
+      row.remove();
+    } else if (wrap) {
+      wrap.style.display = 'none';
+    }
+  }
   const thumbImg = card.querySelector('.channel-thumbnail');
+  card._handleThumbnailLoadFailure = handleThumbnailLoadFailure; // v2.4.5: loadChannels() dışarıdan çağırıyor
   if (thumbImg) {
-    thumbImg.addEventListener('error', () => {
-      thumbImg.style.display = 'none';
-    }, { once: true });
+    thumbImg.addEventListener('error', handleThumbnailLoadFailure, { once: true });
   }
 
 
   // Thumbnail overlay lazy fetch sonrası kurulacak — aşağıda
   // Actions row — always show (live and offline both get star)
+  // v2.3.33: Thumbnail modunda class farklı ('card-actions-col', dikey) ve
+  // card'a değil, thumbnail satırındaki .card-actions-col placeholder'ına ekleniyor.
   const actions = document.createElement('div');
-  actions.className = 'card-actions-row';
+  actions.className = hasThumbnail ? 'card-actions-col' : 'card-actions-row';
 
   // Sparkline — butonların yanında, sadece live + detail
   if (ch.isLive && cardMode !== 'compact' && sparkline) {
@@ -661,6 +797,14 @@ async function channelCard(ch, cardMode, batch) {
       ? `card-sparkline-wrap card-sparkline-wrap-${sparklineFrame}`
       : 'card-sparkline-wrap';
     sparkWrap.innerHTML = sparkline;
+    // v2.4.4: Sparkline .card-actions-row/.card-actions-col içinde olduğu için
+    // genel kart tıklaması onu dışlıyordu (viewer trend hiç açılmıyordu).
+    // Doğrudan buraya bağlıyoruz.
+    sparkWrap.style.cursor = 'pointer';
+    sparkWrap.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showViewerHistoryModal(ch);
+    });
     actions.appendChild(sparkWrap);
   }
 
@@ -756,15 +900,39 @@ async function channelCard(ch, cardMode, batch) {
   starBtn.dataset.slug = ch.channelSlug;
   actions.appendChild(starBtn);
 
-  card.appendChild(actions);
+  // v2.3.33: Thumbnail modunda actions, önceden HTML'de oluşturulan
+  // .card-actions-col placeholder'ının İÇİNE gidiyor (thumbnail'in solunda,
+  // dikey sütun). Değilse eskisi gibi doğrudan card'a (yatay satır).
+  if (hasThumbnail) {
+    const placeholder = card.querySelector('.channel-thumbnail-row .card-actions-col');
+    if (placeholder) placeholder.replaceWith(actions);
+    else card.appendChild(actions); // güvenlik ağı — beklenmeyen durum
+  } else {
+    card.appendChild(actions);
+  }
 
-  // Karta tıklayınca viewer history modal aç (butonlara tıklama hariç)
+  // Karta tıklayınca viewer history modal aç (butonlara/thumbnail'e tıklama hariç)
   if (ch.isLive) {
     card.style.cursor = 'pointer';
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.card-actions-row')) return;
+      // v2.4.4: .card-actions-row (yatay) + .card-actions-col (dikey, thumbnail
+      // modu) + .channel-thumbnail-wrap (kendi tıklama davranışı var, aşağıda)
+      // hariç tutuluyor. Sparkline karta dahil olduğu için normal şekilde
+      // viewer trend'i tetikliyor (ek olarak ayrıca da bağlıyoruz, aşağıda).
+      if (e.target.closest('.card-actions-row') || e.target.closest('.card-actions-col') || e.target.closest('.channel-thumbnail-wrap')) return;
       showViewerHistoryModal(ch);
     });
+
+    // v2.4.4: Thumbnail'e tıklayınca kanalı yeni sekmede aç (Open butonuyla
+    // aynı davranış) — viewer trend AÇILMASIN, sadece kanal.
+    const thumbWrapForClick = card.querySelector('.channel-thumbnail-wrap');
+    if (thumbWrapForClick) {
+      thumbWrapForClick.style.cursor = 'pointer';
+      thumbWrapForClick.addEventListener('click', (e) => {
+        e.stopPropagation();
+        chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}` });
+      });
+    }
   }
 
   // Lazy fetch — startTime
@@ -1248,6 +1416,12 @@ async function loadOptionsSettings() {
 
   optEl('opt-cloud-sync').checked = await Storage.getCloudSyncEnabled();
 
+  // Ad Block (v2.3.18, DENEYSEL)
+  optEl('opt-ad-block').checked = (await Storage.get(StorageKeys.AD_BLOCK_ENABLED)) === true;
+
+  // Channel Thumbnails (v2.3.26, DENEYSEL)
+  optEl('opt-channel-thumbnails').checked = (await Storage.get(StorageKeys.CHANNEL_THUMBNAILS_ENABLED)) === true;
+
   // Chat Integration
   const chatEnabled = await Storage.getChatIntegrationEnabled();
   optEl('opt-chat-integration').checked = chatEnabled;
@@ -1417,6 +1591,20 @@ function setupOptionsListeners() {
       setTimeout(() => { syncNowStatus.textContent = ''; }, 4000);
     });
   }
+
+  // Ad Block (v2.3.18, DENEYSEL) — sadece storage'a yazıyoruz, DNR ruleset
+  // toggle'ı background.js'teki storage.onChanged dinleyicisinde yapılıyor.
+  // content.js/adblock-worker-hook.js tarafı da aynı dinleyiciyle canlı güncellenir.
+  optBind('opt-ad-block', async v => {
+    await Storage.set(StorageKeys.AD_BLOCK_ENABLED, v);
+  });
+
+  // Channel Thumbnails (v2.3.26, DENEYSEL) — açılınca/kapanınca listeyi
+  // hemen yeniden çiz, kullanıcı popup'ı kapatıp açmak zorunda kalmasın.
+  optBind('opt-channel-thumbnails', async v => {
+    await Storage.set(StorageKeys.CHANNEL_THUMBNAILS_ENABLED, v);
+    await loadChannels();
+  });
 
   // Chat Integration master switch
   optBind('opt-chat-integration', async v => {

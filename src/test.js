@@ -1203,6 +1203,12 @@ const SCENARIOS = {
     description: '10 ardışık istek atıyor (50sn) — Plan B değerlendirmesi.',
     payload: () => ({}),
   },
+  authConsistency: {
+    title: '🎯 Auth Tutarlılık Testi (cf-ray)',
+    msgType: 'RUN_SCENARIO_AUTH_CONSISTENCY',
+    description: 'Backoff\'u hiç tetiklemeden 10 ham istek atar, her birinin cf-ray\'ini kaydeder — Kick sunucu tutarsızlığının örüntüsünü arar.',
+    payload: () => ({}),
+  },
 };
 
 let _scenarioRunning = false;

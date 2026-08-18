@@ -25,13 +25,33 @@ const KickAPI = {
     try {
       const cookies = await chrome.cookies.getAll({ domain: 'kick.com', name: 'session_token' });
       if (cookies.length === 0) return null;
-      if (cookies.length === 1) return decodeURIComponent(cookies[0].value);
+      if (cookies.length === 1) {
+        // v2.3.22: tek cookie olsa bile teşhis için maskeli id'sini logla
+        const val = decodeURIComponent(cookies[0].value);
+        const userId = val.split('|')[0] || val.split('%7C')[0] || '?';
+        KLog.info('TOK-01', `session_token: tek aday, userId=${userId}, exp=${cookies[0].expirationDate}`);
+        return val;
+      }
+
+      // v2.3.22: TÜM adayları teşhis için logla — "en yeni expirationDate" seçimi
+      // YANLIŞ olabilir: eski token daha UZUN ömürlü verilmiş olabilir, yeni
+      // token daha KISA ömürlü. Bu durumda "en yeni tarih" aslında ESKİ/bozuk
+      // token'ı seçer. Bunu görmeden bilemeyiz.
+      const candidates = cookies.map(c => {
+        const val = decodeURIComponent(c.value);
+        const userId = val.split('|')[0] || val.split('%7C')[0] || '?';
+        return { userId, exp: c.expirationDate, val };
+      });
+      KLog.warn('TOK-02', `${cookies.length} adet session_token cookie: ` +
+        candidates.map(c => `[userId=${c.userId}, exp=${c.exp}]`).join(' vs '));
 
       const newest = cookies.reduce((best, c) =>
         (c.expirationDate ?? 0) > (best.expirationDate ?? 0) ? c : best
       );
-      console.debug(`[KickAlert] ${cookies.length} adet session_token cookie bulundu, en yenisi seçildi (exp: ${newest.expirationDate})`);
-      return decodeURIComponent(newest.value);
+      const chosenVal = decodeURIComponent(newest.value);
+      const chosenUserId = chosenVal.split('|')[0] || chosenVal.split('%7C')[0] || '?';
+      KLog.warn('TOK-03', `Seçilen: userId=${chosenUserId}, exp=${newest.expirationDate} (en yüksek expirationDate mantığıyla)`);
+      return chosenVal;
     } catch { return null; }
   },
 
@@ -347,6 +367,9 @@ const KickAPI = {
       ok: p.ok,
       status: p.status,
       via: 'proxy',
+      // v2.3.21: content.js zaten cf-ray dahil response header'larını yakalayıp
+      // gönderiyordu (respHeaders), ama burada hiç açılmıyordu — sadece bunu ekledik.
+      headers: { get: (name) => (p.headers && p.headers[String(name).toLowerCase()]) || null },
       async json() {
         try { return JSON.parse(p.body); }
         catch (e) { throw new Error('Invalid JSON from proxy: ' + e.message); }
@@ -524,6 +547,40 @@ const KickAPI = {
       console.debug(`[KickAlert] Session refresh failed (${reason}):`, e.message);
       return false;
     }
+  },
+
+  /**
+   * v2.3.21: Auth Tutarlılık Teşhisi (DENEYSEL). Kick'in kendi sunucusunun
+   * AYNI geçerli token'a bazen 200 bazen 401 döndüğü kanıtlandı (bkz. Patron'la
+   * paylaşılan network dökümleri). Bu fonksiyon, backoff/hata yönetimini hiç
+   * tetiklemeden (erken çıkış yok) N ardışık ham istek atar ve her birinin
+   * durumunu + cf-ray başlığını kaydeder — amaç, hata Cloudflare'ın belirli bir
+   * veri merkezine/arka uç repliksına mı bağlı, yoksa tamamen rastgele mi
+   * olduğunu görmek. _doFetch() zaten Plan C + SW fallback'i kendi içinde
+   * yapıyor, backoff mantığına hiç girmiyor — bu yüzden temiz bir ölçüm.
+   */
+  async authConsistencyProbe(n = 10, delayMs = 1500) {
+    const results = [];
+    for (let i = 1; i <= n; i++) {
+      const start = Date.now();
+      try {
+        const resp = await this._doFetch(this.API_URL);
+        let cfRay = null;
+        try { cfRay = resp.headers?.get?.('cf-ray') || null; } catch (e) {}
+        results.push({
+          i,
+          status: resp.status,
+          ok: resp.status === 200,
+          cfRay,
+          via: resp.via || '?',
+          ms: Date.now() - start,
+        });
+      } catch (e) {
+        results.push({ i, status: 'ERR', ok: false, cfRay: null, via: '?', ms: Date.now() - start, err: e.message.substring(0, 60) });
+      }
+      if (i < n) await new Promise(r => setTimeout(r, delayMs));
+    }
+    return results;
   },
 
   async fetchKick(url) {
@@ -754,8 +811,20 @@ const KickAPI = {
       // Başarılı — taze veri, fallback cache'i güncelle
       this._followedFallback = { channels: all, cachedAt: Date.now() };
       this._lastFetchWasStale = false; // Risk#2: taze veri
+      // v2.3.23: Başarılı çekim → önceki "session reddedildi" uyarısı varsa temizle
+      try { await chrome.storage.local.set({ _authSessionRejected: false }); } catch (e) {}
       return all;
     } catch (e) {
+      // v2.3.23: token VARDI ama Kick yine de reddettiyse (fetchErrorSessionRejected
+      // durumu) — popup'ın Ayarlar ikonunu yeniden vurgulaması için işaretle.
+      // token:no (gerçekten giriş yok) durumunda işaretlemiyoruz, çünkü o zaten
+      // farklı, klasik bir "giriş yap" mesajı gösteriyor, email/şifre önerisiyle
+      // alakası yok.
+      try {
+        const isSessionRejected = e.message && e.message.startsWith('AUTH_REQUIRED:') && /token:yes/i.test(e.message);
+        await chrome.storage.local.set({ _authSessionRejected: isSessionRejected });
+      } catch (e2) {}
+
       // 403 / network hatası — son başarılı response varsa kullan
       if (this._followedFallback) {
         const ageMin = Math.round((Date.now() - this._followedFallback.cachedAt) / 60000);
@@ -840,10 +909,18 @@ const KickAPI = {
    */
   async getChannelLiveDetails(slug) {
     try {
-      const response = await this.fetchKick(`https://kick.com/api/v2/channels/${slug}`);
+      // v2.3.29 DÜZELTME: Yanlış endpoint kullanıyorduk. /api/v2/channels/{slug}
+      // (genel kanal bilgisi) thumbnail/source alanlarını artık boş döndürüyor.
+      // Kick Signal'ın kod tabanında görüldüğü gibi, doğru/özel endpoint
+      // /api/v2/channels/{slug}/livestream — yanıt yapısı da farklı: veri
+      // data.livestream altında DEĞİL, doğrudan data altında.
+      const response = await this.fetchKick(`https://kick.com/api/v2/channels/${slug}/livestream`);
       const data = await response.json();
-      const ls = data?.livestream;
-      if (!ls) return null;
+      const ls = data?.data;
+      if (!ls) {
+        KLog.warn('THM-01', `${slug}: response geldi ama 'data' alanı yok/boş (canlı değil mi, API şekli mi değişti?)`);
+        return null;
+      }
 
       let thumbnailUrl = '';
 
@@ -877,6 +954,12 @@ const KickAPI = {
         if (m) thumbnailUrl = `https://images.kick.com/video_thumbnails/${m[1]}/${m[2]}/720.webp`;
       }
 
+      if (!thumbnailUrl) {
+        KLog.warn('THM-02', `${slug}: livestream verisi var ama hiçbir stratejiyle thumbnail çıkarılamadı — thumbnail:${JSON.stringify(ls.thumbnail).slice(0,100)} source:${(ls.source||'').slice(0,60)}`);
+      } else {
+        KLog.debug('THM-03', `${slug}: thumbnail başarıyla alındı`);
+      }
+
       return {
         startTime: (() => {
           const t = ls.created_at || ls.start_time || null;
@@ -886,7 +969,7 @@ const KickAPI = {
         thumbnailUrl,
       };
     } catch (e) {
-      console.warn('[KickAlert] getChannelLiveDetails error:', e.message);
+      KLog.warn('THM-04', `${slug}: getChannelLiveDetails hatası — ${e.message}`);
       return null;
     }
   },

@@ -593,9 +593,30 @@
     "message": "Un problème est survenu lors du chargement de vos chaînes. Veuillez réessayer."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick n'a pas reconnu votre session bien que vous soyez connecté. Il s'agit généralement d'un problème temporaire du côté de Kick — cela devrait se résoudre de lui-même en quelques minutes."
+    "message": "Kick ne reconnaît pas votre session en ce moment, bien que vous soyez connecté. Cela se produit généralement lors d'une connexion via Google, Apple ou un autre compte social, en raison d'une incohérence sur les serveurs de Kick — ce n'est pas un bug de cette extension. Solution : déconnectez-vous de kick.com puis reconnectez-vous avec votre e-mail et votre mot de passe. Si vous n'avez pas de mot de passe (car vous vous êtes inscrit via Google/Apple), utilisez « Mot de passe oublié ? » sur l'écran de connexion pour en créer un. Si cela ne fonctionne pas, le problème se résout généralement de lui-même en quelques minutes."
   },
   "emailLoginNotice": {
-    "message": "Pour que KickAlert fonctionne de manière fiable, veuillez vous assurer d'être connecté à Kick avec un e-mail et un mot de passe (pas via « Continuer avec Google »)."
+    "message": "Pour que KickAlert fonctionne de manière fiable, nous recommandons de vous connecter à Kick avec un e-mail et un mot de passe. Se connecter avec « Google », « Apple » ou un autre compte social peut parfois empêcher l'extension de charger vos données, en raison d'une incohérence sur les serveurs de Kick."
+  },
+  "adBlockTitle": {
+    "message": "Blocage des publicités (expérimental)"
+  },
+  "adBlockWarning": {
+    "message": "Fonctionnalité expérimentale et non officielle — elle dépend de la structure interne de l'API de Kick et peut cesser de fonctionner sans préavis. En l'activant, vous acceptez cette responsabilité. Laissez-la désactivée pour continuer à utiliser KickAlert comme avant, sans impact."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Pertinent en ce moment :"
+  },
+  "emailLoginInfo": {
+    "message": "Astuce : KickAlert fonctionne le plus fiablement lorsque vous êtes connecté à Kick avec un e-mail et un mot de passe. Les connexions sociales comme Google ou Apple peuvent parfois entraîner des incohérences de session sur les serveurs de Kick."
+  },
+  "thumbnailsTitle": {
+    "message": "Aperçus des chaînes"
+  },
+  "thumbnailsWarning": {
+    "message": "Affiche une image d'aperçu en direct sous chaque chaîne en direct. Cela envoie une requête supplémentaire par chaîne en direct à chaque ouverture du popup, ce qui comporte un léger risque que Kick considère cette activité comme un comportement de bot."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "spectateurs"
   }
 }

@@ -213,6 +213,32 @@ body {
 }
 .opt-email-login-notice-close:hover { color: var(--text-primary); }
 
+/* v2.3.23: "Şu an ilgili" etiketi — session-rejected durumunda vurgu */
+.opt-email-login-notice-urgent {
+  display: inline-block;
+  font-weight: 600;
+  color: var(--red, #eb0400);
+  margin-right: 4px;
+}
+
+/* v2.3.23: Kalıcı, sessiz bilgi satırı — alarm değil, sadece referans.
+   Kapatma düğmesi yok, her zaman görünür. */
+.opt-email-login-info {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+/* Ad Block warning text (v2.3.18) — amber tint, stands out as a caution */
+.opt-adblock-warning {
+  color: #d97706 !important;
+}
+
 /* Channel Card */
 .channel-card.offline { opacity: 0.5; }
 .channel-card.offline:hover { opacity: 0.8; }
@@ -266,7 +292,11 @@ body {
   /* taşmıyorsa normal akış — ellipsis için parent text-overflow yeterli */
 }
 /* Taşan VE hover olunca kay */
-.channel-card:hover .marquee-text.is-overflowing > .marquee-inner {
+/* v2.4.4: Önceden .channel-card:hover tetikliyordu — thumbnail eklenince
+   kartın hover alanı büyüdü, thumbnail'e fare gelince de başlık kaymaya
+   başlıyordu ("görsel kıpırdıyor" hissi). Artık sadece üst bilgi satırına
+   (.card-top) hover gelince tetikleniyor — orijinal niyet buydu zaten. */
+.card-top:hover .marquee-text.is-overflowing > .marquee-inner {
   animation: ka-marquee 8s linear infinite;
 }
 /* Taşıyorsa ellipsis'i kapat (tam metin kayacak), taşmıyorsa ellipsis kalır */
@@ -681,13 +711,111 @@ body {
   background: rgba(83, 74, 183, 0.1); color: #534AB7; border-color: rgba(83, 74, 183, 0.25);
 }
 
-/* Stream Thumbnail Preview */
-.channel-thumbnail {
-  width: 100%; height: auto; border-radius: 4px;
-  margin: 4px 0 2px; display: block;
-  opacity: 0.85; transition: opacity 0.15s;
+/* Stream Thumbnail Preview (v2.3.30: 16:9 sabit oran + LIVE/izleyici overlay)
+   v2.3.33: Artık thumbnail tek başına değil, .channel-thumbnail-row içinde
+   sol tarafta dikey buton sütunuyla (.card-actions-col) yan yana duruyor —
+   böylece thumbnail tam genişlik kaplamıyor, ölçek küçülüyor ve boşluk azalıyor. */
+.channel-thumbnail-row {
+  display: flex; align-items: stretch; gap: 6px;
+  margin: 4px 0 2px;
 }
-.channel-thumbnail:hover { opacity: 1; }
+.card-actions-col {
+  display: flex; flex-direction: column; gap: 3px;
+  align-items: center; flex-shrink: 0;
+  padding-top: 1px;
+}
+.channel-thumbnail-wrap {
+  position: relative;
+  flex: 1; min-width: 0;
+  aspect-ratio: 16 / 9;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--bg-hover);
+}
+/* v2.4.5: Resim henüz gelmemişken (async fetch sürüyor) hafif bir pulse —
+   boş/donuk bir kutu yerine "bir şey yükleniyor" hissi versin. */
+.channel-thumbnail-wrap.is-loading {
+  animation: ka-thumb-pulse 1.4s ease-in-out infinite;
+}
+@keyframes ka-thumb-pulse {
+  0%, 100% { background: var(--bg-hover); }
+  50% { background: color-mix(in srgb, var(--bg-hover) 60%, var(--text-muted) 8%); }
+}
+.channel-thumbnail {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  /* v2.4.6: Yayın görseli hover'dan tamamen bağımsız olmalı — hiçbir zaman
+     opaklığı/keskinliği değişmemeli. Sadece bizim eklediğimiz rozetler
+     (LIVE, izleyici, bot skoru) hover'da şeffaftan opağa geçiyor. */
+  opacity: 1;
+}
+/* v2.4.3: Üç rozetin (LIVE, izleyici, bot skoru) fontu tutarsız görünüyordu —
+   font-family ve font-weight'i açıkça eşitliyoruz, tesadüfe bırakmıyoruz. */
+.channel-thumbnail-live,
+.channel-thumbnail-viewers,
+.channel-thumbnail-botscore .bot-score {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 700;
+}
+/* v2.4.4: Rozetler normalde ÇOK şeffaf (thumbnail'i engellemesinler diye),
+   fare üzerine gelince NET/opak oluyorlar (rahat okunsun diye). Metin her
+   zaman güçlü bir gölgeyle (text-shadow) okunur kalıyor — arka plan ne kadar
+   şeffaf olursa olsun, bu teknik çoğu video platformunda kullanılıyor. */
+.channel-thumbnail-live,
+.channel-thumbnail-viewers,
+.channel-thumbnail-botscore .bot-score {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.95), 0 0 4px rgba(0,0,0,0.75);
+}
+.channel-thumbnail-live {
+  position: absolute; top: 5px; left: 5px;
+  background: color-mix(in srgb, var(--red) 55%, transparent);
+  color: #fff;
+  font-size: 9px; letter-spacing: 0.3px;
+  padding: 1px 5px; border-radius: 3px;
+  transition: background 0.15s;
+}
+.channel-thumbnail-wrap:hover .channel-thumbnail-live {
+  background: color-mix(in srgb, var(--red) 95%, transparent);
+}
+.channel-thumbnail-viewers {
+  position: absolute; bottom: 5px; right: 5px;
+  background: rgba(0, 0, 0, 0.30); color: #fff;
+  font-size: 10px; padding: 1px 6px; border-radius: 3px;
+  transition: background 0.15s;
+}
+.channel-thumbnail-wrap:hover .channel-thumbnail-viewers {
+  background: rgba(0, 0, 0, 0.85);
+}
+/* v2.3.30: Bot skoru rozeti thumbnail üzerinde — sol altta, izleyici sayısıyla çakışmasın diye sağda değil solda */
+.channel-thumbnail-botscore {
+  position: absolute; bottom: 5px; left: 5px;
+  line-height: 0;
+}
+.channel-thumbnail-botscore .bot-score {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.35);
+  font-size: 10px;
+  /* v2.4.4: .bot-score temel sınıfı, kart üzerinde sparkline'ın yanında inline
+     kullanım için margin-left:4px taşıyor — thumbnail'de gereksiz sol boşluk
+     bırakıyordu, sıfırlıyoruz. */
+  margin-left: 0 !important;
+  /* v2.4.2: Arka plan artık renkli — aynı renk tonundaki metin
+     (örn. kırmızı zeminde kırmızı yazı) okunmaz olurdu, beyaza çeviriyoruz. */
+  color: #fff !important;
+}
+/* v2.4.4: Normalde çok şeffaf (%25-28), hover'da neredeyse opak (%85-88).
+   Renk sinyali (kırmızı/turuncu/sarı/yeşil) hep korunuyor, sadece opaklık değişiyor. */
+.channel-thumbnail-botscore .bot-score-very-low  { background: rgba(226, 75, 74, 0.26); }
+.channel-thumbnail-botscore .bot-score-low       { background: rgba(238, 130, 60, 0.26); }
+.channel-thumbnail-botscore .bot-score-medium    { background: rgba(186, 117, 23, 0.26); }
+.channel-thumbnail-botscore .bot-score-high      { background: rgba(82, 168, 80, 0.26); }
+.channel-thumbnail-botscore .bot-score-very-high { background: rgba(46, 160, 67, 0.28); }
+.channel-thumbnail-botscore .bot-score { transition: background 0.15s; }
+.channel-thumbnail-wrap:hover .channel-thumbnail-botscore .bot-score-very-low  { background: rgba(226, 75, 74, 0.85); }
+.channel-thumbnail-wrap:hover .channel-thumbnail-botscore .bot-score-low       { background: rgba(238, 130, 60, 0.85); }
+.channel-thumbnail-wrap:hover .channel-thumbnail-botscore .bot-score-medium   { background: rgba(186, 117, 23, 0.85); }
+.channel-thumbnail-wrap:hover .channel-thumbnail-botscore .bot-score-high    { background: rgba(82, 168, 80, 0.85); }
+.channel-thumbnail-wrap:hover .channel-thumbnail-botscore .bot-score-very-high { background: rgba(46, 160, 67, 0.88); }
 
 /* ─── Viewer Anomaly ─── */
 .viewer-anomaly {

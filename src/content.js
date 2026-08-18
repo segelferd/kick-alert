@@ -17,6 +17,18 @@
     if (video && video.muted) {
       video.muted = false;
       observer.disconnect();
+      // v2.3.27: Tarayıcının otomatik oynatma politikası, kullanıcı etkileşimi
+      // olmayan sekmelerde (örn. "Otomatik Aç" ile arka planda açılan sekmeler)
+      // sesi açma girişimini engelleyip videoyu DURDURUYOR — sessiz ama oynayan
+      // bir video yerine tamamen donmuş bir video elde ediyorduk. Kısa bir süre
+      // sonra videonun durdurulup durdurulmadığını kontrol ediyoruz; durduysa
+      // sessize geri dönüp oynatmayı devam ettiriyoruz — en azından akış kesilmesin.
+      setTimeout(() => {
+        if (video.paused) {
+          video.muted = true;
+          video.play().catch(() => {});
+        }
+      }, 300);
     }
   });
 
@@ -120,3 +132,64 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // Sessiz — sayfa context'i hatası kritik değil
   }
 })();
+
+// ─── 4) Reklam Engelleme (DENEYSEL, v2.3.18) — ayar köprüsü ───
+//
+// adblock-worker-hook.js (MAIN dünya) reklam mantığını çalıştırır, ama Chrome
+// storage'a MAIN dünyadan erişilemez. Bu köprü, ISOLATED dünyada storage'ı
+// okuyup postMessage + localStorage ile MAIN dünyaya iletir. Jeton (nonce)
+// sahte config mesajlarını engellemek için kullanılıyor (worker-hook.js
+// içindeki mantıkla birebir aynı doğrulama).
+(async function adBlockConfigBridge() {
+  try {
+    const result = await chrome.storage.local.get('adBlockEnabled');
+    const enabled = result.adBlockEnabled === true;
+    // localStorage bayrakları — worker sarmalama kararı document_start'ta,
+    // storage.local'ı bekleyemeden ÖNCE alınıyor, bu yüzden senkron okunabilir
+    // bir yere de yazmamız lazım.
+    try { localStorage.setItem('__ka_ab_video', enabled ? '1' : '0'); } catch (e) {}
+    try { localStorage.setItem('__ka_ab_vod', enabled ? '1' : '0'); } catch (e) {}
+
+    const nonce = (crypto?.randomUUID?.() || String(Date.now()) + Math.random());
+    window.postMessage({
+      source: 'ka-ab-cfg',
+      n: nonce,
+      settings: { enabled, blockVideoAds: enabled, blockVodAds: enabled },
+    }, '*');
+
+    // Ayar popup'tan değişirse (sayfa yeniden yüklenmeden), canlı güncelle
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area !== 'local' || !changes.adBlockEnabled) return;
+      const newEnabled = changes.adBlockEnabled.newValue === true;
+      try { localStorage.setItem('__ka_ab_video', newEnabled ? '1' : '0'); } catch (e) {}
+      try { localStorage.setItem('__ka_ab_vod', newEnabled ? '1' : '0'); } catch (e) {}
+      window.postMessage({
+        source: 'ka-ab-cfg',
+        n: nonce,
+        settings: { enabled: newEnabled, blockVideoAds: newEnabled, blockVodAds: newEnabled },
+      }, '*');
+    });
+  } catch (e) {
+    // Sessiz — reklam engelleme opsiyonel bir özellik, hata kritik değil
+  }
+})();
+
+// ─── 5) Reklam Engelleme (DENEYSEL, v2.3.19) — log köprüsü ───
+//
+// adblock-worker-hook.js (MAIN dünya, hatta bazı loglar onun içindeki AYRI
+// Worker thread'inde) kendi konsoluna yazıyor — bu, extension'ın arka plan
+// konsolundan tamamen kopuk, DevTools'ta ayrı context'ler gerektiriyor.
+// Bu köprü, o logları yakalayıp background.js'e iletir; background.js da
+// KLog'a yazar → test panelindeki TEK Aktivite Logu'nda hepsi bir arada görünür.
+window.addEventListener('message', (e) => {
+  if (e.source !== window) return;
+  const d = e.data;
+  if (d && d.source === 'ka-ab-log' && typeof d.text === 'string') {
+    chrome.runtime.sendMessage({
+      type: 'AD_BLOCK_LOG',
+      level: d.level || 'info',
+      code: d.code || 'ADB-00',
+      text: d.text,
+    }).catch(() => { /* SW uykuda olabilir, sorun değil — bu log kaybolur ama kritik değil */ });
+  }
+});

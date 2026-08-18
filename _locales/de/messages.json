@@ -593,9 +593,30 @@
     "message": "Beim Laden Ihrer Kanäle ist etwas schiefgelaufen. Bitte versuchen Sie es erneut."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick hat Ihre Sitzung nicht erkannt, obwohl Sie angemeldet sind. Dies liegt meist an einem vorübergehenden Problem bei Kick — es sollte sich innerhalb weniger Minuten von selbst lösen."
+    "message": "Kick erkennt Ihre Sitzung derzeit nicht, obwohl Sie angemeldet sind. Dies passiert meist bei einer Anmeldung über Google, Apple oder ein anderes soziales Konto, aufgrund einer Inkonsistenz auf den Servern von Kick — kein Fehler dieser Erweiterung. Lösung: Melden Sie sich bei kick.com ab und wieder mit E-Mail und Passwort an. Falls Sie kein Passwort haben (weil Sie sich über Google/Apple registriert haben), können Sie über „Passwort vergessen?\" auf der Anmeldeseite eines festlegen. Falls das nicht hilft, löst sich das Problem meist innerhalb weniger Minuten von selbst."
   },
   "emailLoginNotice": {
-    "message": "Damit KickAlert zuverlässig funktioniert, stellen Sie bitte sicher, dass Sie sich bei Kick mit E-Mail und Passwort anmelden (nicht über \"Mit Google fortfahren\")."
+    "message": "Damit KickAlert zuverlässig funktioniert, empfehlen wir die Anmeldung bei Kick mit E-Mail und Passwort. Die Anmeldung über „Google\", „Apple\" oder ein anderes soziales Konto kann aufgrund einer Inkonsistenz auf den Servern von Kick gelegentlich verhindern, dass die Erweiterung Ihre Daten laden kann."
+  },
+  "adBlockTitle": {
+    "message": "Werbeblockierung (experimentell)"
+  },
+  "adBlockWarning": {
+    "message": "Experimentell und inoffiziell — hängt von der internen API-Struktur von Kick ab und kann jederzeit ohne Vorankündigung nicht mehr funktionieren. Mit der Aktivierung übernehmen Sie diese Verantwortung. Lassen Sie es deaktiviert, um KickAlert unverändert wie bisher zu nutzen."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Gerade jetzt relevant:"
+  },
+  "emailLoginInfo": {
+    "message": "Tipp: KickAlert funktioniert am zuverlässigsten, wenn Sie sich bei Kick mit E-Mail und Passwort anmelden. Soziale Logins wie Google oder Apple können gelegentlich zu Sitzungsinkonsistenzen auf den Servern von Kick führen."
+  },
+  "thumbnailsTitle": {
+    "message": "Kanal-Vorschaubilder"
+  },
+  "thumbnailsWarning": {
+    "message": "Zeigt unter jedem Live-Kanal ein Live-Vorschaubild. Dies sendet bei jedem Öffnen des Popups eine zusätzliche Anfrage pro Live-Kanal, was ein geringes Risiko birgt, dass Kick diese Aktivität als botähnlich einstuft."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "Zuschauer"
   }
 }

@@ -1,0 +1,92 @@
+[
+  {
+    "id": 101,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||securepubads.g.doubleclick.net",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 102,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||pagead2.googlesyndication.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 103,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||googleadservices.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 104,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||tpc.googlesyndication.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 105,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||imasdk.googleapis.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 106,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||ad.doubleclick.net",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 107,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||cm.g.doubleclick.net",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 108,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||kickproduction.api.useinsider.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 109,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||adservice.google.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  },
+  {
+    "id": 110,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||googlesyndication.com",
+      "resourceTypes": ["script", "xmlhttprequest", "sub_frame", "image", "ping"]
+    }
+  }
+]

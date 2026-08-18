@@ -593,9 +593,30 @@
     "message": "채널을 불러오는 중 문제가 발생했습니다. 다시 시도하세요."
   },
   "fetchErrorSessionRejected": {
-    "message": "로그인되어 있음에도 Kick이 세션을 인식하지 못했습니다. 이는 보통 Kick 측의 일시적인 문제이며, 몇 분 내에 저절로 해결됩니다."
+    "message": "로그인되어 있음에도 Kick이 현재 세션을 인식하지 못하고 있습니다. 이는 보통 Google, Apple 또는 다른 소셜 계정으로 로그인했을 때 Kick 서버 자체의 불일치로 인해 발생하며, 이 확장 프로그램의 오류가 아닙니다. 해결 방법: kick.com에서 로그아웃한 후 이메일과 비밀번호로 다시 로그인해 보세요. 비밀번호가 없는 경우(Google/Apple로 가입했기 때문에) 로그인 화면의 \"비밀번호를 잊으셨나요?\"를 통해 설정할 수 있습니다. 그래도 해결되지 않으면 보통 몇 분 안에 저절로 해결됩니다."
   },
   "emailLoginNotice": {
-    "message": "KickAlert가 안정적으로 작동하려면 Kick에 \"Google로 계속하기\"가 아닌 이메일과 비밀번호로 로그인되어 있는지 확인해 주세요."
+    "message": "KickAlert가 안정적으로 작동하려면 Kick에 이메일과 비밀번호로 로그인하는 것을 권장합니다. \"Google\", \"Apple\" 또는 다른 소셜 계정으로 로그인하면 Kick 서버 자체의 불일치로 인해 확장 프로그램이 데이터를 불러오지 못할 수 있습니다."
+  },
+  "adBlockTitle": {
+    "message": "광고 차단 (실험적 기능)"
+  },
+  "adBlockWarning": {
+    "message": "실험적이며 비공식적인 기능입니다 — Kick의 내부 API 구조에 의존하므로 예고 없이 작동하지 않을 수 있습니다. 이 기능을 켜면 그 책임을 사용자가 지게 됩니다. 끄고 두면 KickAlert는 기존과 동일하게 영향 없이 작동합니다."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "지금 바로 관련 있음:"
+  },
+  "emailLoginInfo": {
+    "message": "팁: KickAlert는 Kick에 이메일과 비밀번호로 로그인되어 있을 때 가장 안정적으로 작동합니다. Google이나 Apple 같은 소셜 로그인은 Kick 서버에서 간헐적으로 세션 불일치를 일으킬 수 있습니다."
+  },
+  "thumbnailsTitle": {
+    "message": "채널 미리보기 이미지"
+  },
+  "thumbnailsWarning": {
+    "message": "각 라이브 채널 아래에 실시간 미리보기 이미지를 표시합니다. 팝업이 열릴 때마다 라이브 채널당 추가 요청을 보내며, 이로 인해 Kick이 이 활동을 봇처럼 감지할 약간의 위험이 있습니다."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "시청자"
   }
 }

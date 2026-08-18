@@ -593,9 +593,30 @@
     "message": "Kanallar yüklenirken bir şeyler ters gitti. Lütfen tekrar deneyin."
   },
   "fetchErrorSessionRejected": {
-    "message": "Giriş yapmış olmanıza rağmen Kick oturumunuzu tanımadı. Bu genellikle Kick tarafında geçici bir durumdur — birkaç dakika içinde kendiliğinden düzelir."
+    "message": "Giriş yapmış olmanıza rağmen Kick şu an oturumunuzu tanımıyor. Bu genellikle Google, Apple ya da başka bir sosyal hesapla giriş yapıldığında ortaya çıkan, Kick'in kendi sunucusundaki bir tutarsızlıktan kaynaklanıyor — eklentinin hatası değil. Çözüm: kick.com'dan çıkış yapıp e-posta adresiniz ve şifrenizle tekrar giriş yapmayı deneyin. Şifreniz yoksa (hesabınızı Google/Apple ile açtıysanız), giriş ekranındaki \"Şifremi unuttum\" bağlantısıyla bir tane oluşturabilirsiniz. İşe yaramazsa, sorun genellikle birkaç dakika içinde kendiliğinden düzeliyor."
   },
   "emailLoginNotice": {
-    "message": "KickAlert'in güvenilir çalışması için lütfen Kick'e Google ile değil, e-posta ve şifreyle giriş yaptığınızdan emin olun."
+    "message": "KickAlert'in güvenilir çalışması için Kick'e e-posta ve şifreyle giriş yapmanızı öneririz. \"Google\", \"Apple\" ya da başka bir sosyal hesapla giriş yapmak, Kick'in kendi sunucusundaki bir tutarsızlık yüzünden eklentinin veri çekmesini bazen engelleyebiliyor."
+  },
+  "adBlockTitle": {
+    "message": "Reklam Engelleme (Deneysel)"
+  },
+  "adBlockWarning": {
+    "message": "Deneysel ve resmi olmayan bir özelliktir — Kick'in iç API yapısına bağımlıdır ve haber vermeden bozulabilir. Bunu açarak bu sorumluluğu kabul etmiş olursunuz. Kapalı bırakırsanız KickAlert öncekiyle aynı, etkilenmeden çalışmaya devam eder."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Şu an tam olarak bu:"
+  },
+  "emailLoginInfo": {
+    "message": "İpucu: KickAlert, Kick'e e-posta ve şifreyle giriş yapıldığında en güvenilir şekilde çalışır. Google veya Apple gibi sosyal hesap girişleri, Kick'in sunucusunda zaman zaman oturum tutarsızlığına yol açabiliyor."
+  },
+  "thumbnailsTitle": {
+    "message": "Kanal Önizleme Resimleri"
+  },
+  "thumbnailsWarning": {
+    "message": "Her canlı kanalın altında bir önizleme resmi gösterir. Popup her açıldığında canlı kanal başına bir ek istek gönderir, bu da Kick'in bu aktiviteyi bot gibi algılama riskini az da olsa taşır."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "izleyici"
   }
 }

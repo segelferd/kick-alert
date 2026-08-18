@@ -593,9 +593,30 @@
     "message": "Algo salió mal al cargar tus canales. Inténtalo de nuevo."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick no reconoció tu sesión aunque has iniciado sesión. Esto suele ser algo temporal del lado de Kick — debería resolverse por sí solo en unos minutos."
+    "message": "Kick no reconoce tu sesión en este momento, aunque hayas iniciado sesión. Esto suele ocurrir al iniciar sesión con Google, Apple u otra cuenta social, debido a una inconsistencia en los servidores de Kick — no es un error de esta extensión. Solución: cierra sesión en kick.com y vuelve a iniciarla con tu correo y contraseña. Si no tienes contraseña (porque te registraste con Google/Apple), usa \"¿Olvidaste tu contraseña?\" en la pantalla de inicio de sesión para crear una. Si eso no ayuda, el problema suele resolverse por sí solo en unos minutos."
   },
   "emailLoginNotice": {
-    "message": "Para que KickAlert funcione de forma fiable, asegúrate de haber iniciado sesión en Kick con correo y contraseña (no con \"Continuar con Google\")."
+    "message": "Para que KickAlert funcione de forma fiable, recomendamos iniciar sesión en Kick con correo y contraseña. Iniciar sesión con \"Google\", \"Apple\" u otra cuenta social puede a veces impedir que la extensión cargue tus datos, debido a una inconsistencia en los servidores de Kick."
+  },
+  "adBlockTitle": {
+    "message": "Bloqueo de anuncios (experimental)"
+  },
+  "adBlockWarning": {
+    "message": "Función experimental y no oficial: depende de la estructura interna de la API de Kick y puede dejar de funcionar sin previo aviso. Al activarla, aceptas esa responsabilidad. Déjala desactivada para seguir usando KickAlert como antes, sin cambios."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Relevante ahora mismo:"
+  },
+  "emailLoginInfo": {
+    "message": "Consejo: KickAlert funciona de forma más fiable cuando has iniciado sesión en Kick con correo y contraseña. Los inicios de sesión sociales como Google o Apple pueden causar ocasionalmente inconsistencias de sesión en los servidores de Kick."
+  },
+  "thumbnailsTitle": {
+    "message": "Imágenes de vista previa del canal"
+  },
+  "thumbnailsWarning": {
+    "message": "Muestra una imagen de vista previa en vivo debajo de cada canal en directo. Esto envía una solicitud adicional por canal en directo cada vez que se abre la ventana emergente, lo que conlleva un pequeño riesgo de que Kick marque esta actividad como comportamiento de bot."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "espectadores"
   }
 }

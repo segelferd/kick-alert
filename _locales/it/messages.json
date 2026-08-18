@@ -593,9 +593,30 @@
     "message": "Qualcosa è andato storto durante il caricamento dei tuoi canali. Riprova."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick non ha riconosciuto la tua sessione anche se hai effettuato l'accesso. Di solito si tratta di un problema temporaneo lato Kick — dovrebbe risolversi da solo in pochi minuti."
+    "message": "Kick al momento non riconosce la tua sessione, anche se hai effettuato l'accesso. Questo accade solitamente accedendo con Google, Apple o un altro account social, a causa di un'incoerenza sui server di Kick — non è un bug di questa estensione. Soluzione: esci da kick.com e accedi di nuovo con e-mail e password. Se non hai una password (perché ti sei registrato con Google/Apple), usa \"Password dimenticata?\" nella schermata di accesso per crearne una. Se non funziona, il problema di solito si risolve da solo entro pochi minuti."
   },
   "emailLoginNotice": {
-    "message": "Per un funzionamento affidabile di KickAlert, assicurati di aver effettuato l'accesso a Kick con e-mail e password (non tramite \"Continua con Google\")."
+    "message": "Per un funzionamento affidabile di KickAlert, ti consigliamo di accedere a Kick con e-mail e password. Accedere con \"Google\", \"Apple\" o un altro account social può a volte impedire all'estensione di caricare i tuoi dati, a causa di un'incoerenza sui server di Kick."
+  },
+  "adBlockTitle": {
+    "message": "Blocco pubblicità (sperimentale)"
+  },
+  "adBlockWarning": {
+    "message": "Funzione sperimentale e non ufficiale — dipende dalla struttura interna dell'API di Kick e potrebbe smettere di funzionare senza preavviso. Attivandola, ti assumi questa responsabilità. Lasciala disattivata per continuare a usare KickAlert come prima, senza modifiche."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Rilevante proprio ora:"
+  },
+  "emailLoginInfo": {
+    "message": "Suggerimento: KickAlert funziona in modo più affidabile quando hai effettuato l'accesso a Kick con e-mail e password. Gli accessi social come Google o Apple possono occasionalmente causare incoerenze di sessione sui server di Kick."
+  },
+  "thumbnailsTitle": {
+    "message": "Immagini di anteprima canale"
+  },
+  "thumbnailsWarning": {
+    "message": "Mostra un'immagine di anteprima live sotto ogni canale live. Questo invia una richiesta aggiuntiva per canale live ogni volta che si apre il popup, il che comporta un piccolo rischio che Kick segnali questa attività come comportamento da bot."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "spettatori"
   }
 }

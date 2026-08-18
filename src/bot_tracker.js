@@ -17,6 +17,18 @@
 
 const PUSHER_URL = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
 
+// v2.3.20: Chrome'da bu dosya offscreen.html içinde, kendi ayrı DevTools
+// context'inde çalışıyor — arka plan servisi konsolundan kopuk. Önemli
+// olayları background.js'e iletir (Firefox'ta zaten background context'in
+// içinde olduğu için bu no-op'a yakın davranır, zararı yok).
+function relayLog(level, code, text) {
+  try {
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'OFFSCREEN_LOG', level, code, text }).catch(() => {});
+    }
+  } catch (e) {}
+}
+
 const TRACKING_WINDOW_MS = 15 * 60 * 1000;     // 15 dk sliding window
 const ACTIVE_CHATTER_MS = 5 * 60 * 1000;       // son 5 dk = aktif chatter
 const RECONNECT_INITIAL_MS = 1000;
@@ -48,6 +60,7 @@ const BotTracker = {
       this.connectionTimeoutTimer = setTimeout(() => {
         if (!this.isConnected) {
           console.warn('[KickAlert][BotTracker] Connection timeout');
+          relayLog('warn', 'BOT-01', 'BotTracker bağlantı zaman aşımı');
           try { this.ws?.close(); } catch {}
         }
       }, CONNECTION_TIMEOUT_MS);
@@ -60,6 +73,7 @@ const BotTracker = {
 
       this.ws.addEventListener('error', (err) => {
         console.warn('[KickAlert][BotTracker] WebSocket error');
+        relayLog('warn', 'BOT-02', 'BotTracker WebSocket hatası');
       });
 
       this.ws.addEventListener('close', () => {
@@ -79,6 +93,7 @@ const BotTracker = {
       return false;
     } catch (e) {
       console.warn('[KickAlert][BotTracker] ensureConnection error:', e.message);
+      relayLog('warn', 'BOT-03', 'BotTracker bağlantı kurma hatası: ' + e.message);
       this.isConnecting = false;
       return false;
     }
@@ -113,6 +128,7 @@ const BotTracker = {
       this.reconnectDelay = RECONNECT_INITIAL_MS;
       clearTimeout(this.connectionTimeoutTimer);
       console.debug('[KickAlert][BotTracker] Connection established');
+      relayLog('info', 'BOT-04', 'BotTracker bağlantısı kuruldu');
 
       for (const [chatroomId, info] of this.channels) {
         this._sendSubscribes(chatroomId, info.userId);

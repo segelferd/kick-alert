@@ -277,10 +277,17 @@
     <div class="options-body">
       <div class="opt-email-login-notice" id="opt-email-login-notice" style="display:none;">
         <span class="material-icons-outlined" style="font-size:16px;flex-shrink:0;">info</span>
-        <span class="opt-email-login-notice-text" data-i18n="emailLoginNotice">For KickAlert to work reliably, please make sure you're logged into Kick using email and password (not "Continue with Google").</span>
+        <span class="opt-email-login-notice-text">
+          <span id="opt-email-login-notice-urgent" class="opt-email-login-notice-urgent" style="display:none;" data-i18n="emailLoginNoticeUrgentTag">Relevant right now:</span>
+          <span data-i18n="emailLoginNotice">For KickAlert to work reliably, please make sure you're logged into Kick using email and password (not "Continue with Google").</span>
+        </span>
         <button id="opt-email-login-notice-close" class="opt-email-login-notice-close" aria-label="Close">
           <span class="material-icons-outlined" style="font-size:16px;">close</span>
         </button>
+      </div>
+      <div class="opt-email-login-info" id="opt-email-login-info" style="display:none;">
+        <span class="material-icons-outlined" style="font-size:14px;flex-shrink:0;">tips_and_updates</span>
+        <span data-i18n="emailLoginInfo">Tip: KickAlert works most reliably when you're logged into Kick with email and password rather than "Continue with Google."</span>
       </div>
       <div class="opt-section" id="lang-section">
         <div class="opt-dnd-header">
@@ -375,7 +382,7 @@
           <span data-i18n="showNotificationCheckbox">Show desktop notifications</span>
         </label>
         <div class="opt-slider-row opt-slider-row-compact">
-          <span class="opt-slider-label" data-i18n="autoOpenDelayLabel" title="Pusher event ile yayının video pipeline'ı hazır olması arasındaki güvenlik tamponu">Tab open delay</span>
+          <span class="opt-slider-label" data-i18n="autoOpenDelayLabel">Tab open delay</span>
           <input type="range" id="opt-auto-open-delay-slider" min="3" max="9" step="2" />
           <span id="opt-auto-open-delay-value" class="opt-slider-value"></span>
           <span class="opt-slider-unit">sec</span>
@@ -548,6 +555,30 @@
           </label>
         </div>
         <div style="font-size:11px;color:var(--text-muted);padding:4px 0 0 22px;line-height:1.5;" data-i18n="chatIntegrationDesc">When on, Chat tab appears above. After first install, refresh any open Kick tabs.</div>
+      </div>
+      <!-- Ad Block Section (v2.3.18, DENEYSEL) -->
+      <div class="opt-section">
+        <div class="opt-dnd-header">
+          <span class="material-icons-outlined" style="font-size:16px;">block</span>
+          <span data-i18n="adBlockTitle">Ad Blocking (Experimental)</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-ad-block" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="opt-adblock-warning" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
+      </div>
+      <!-- Channel Thumbnails Section (v2.3.26) -->
+      <div class="opt-section">
+        <div class="opt-dnd-header">
+          <span class="material-icons-outlined" style="font-size:16px;">image</span>
+          <span data-i18n="thumbnailsTitle">Channel Preview Images</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-channel-thumbnails" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="thumbnailsWarning">Shows a live preview image under each live channel. This sends one extra request per live channel each time the popup opens, which carries a small risk of Kick flagging the activity as bot-like.</div>
       </div>
       <!-- Cloud Sync Section -->
       <div class="opt-section">

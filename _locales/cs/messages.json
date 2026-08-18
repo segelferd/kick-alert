@@ -593,9 +593,30 @@
     "message": "Při načítání kanálů se něco pokazilo. Zkuste to znovu."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick nerozpoznal vaši relaci, i když jste přihlášeni. Obvykle jde o dočasný problém na straně Kick — měl by se sám vyřešit během několika minut."
+    "message": "Kick aktuálně nerozpoznává vaši relaci, i když jste přihlášeni. To se obvykle stává při přihlášení přes Google, Apple nebo jiný sociální účet kvůli nesrovnalosti na serverech Kick — nejde o chybu tohoto rozšíření. Řešení: odhlaste se z kick.com a znovu se přihlaste pomocí e-mailu a hesla. Pokud nemáte heslo (protože jste se zaregistrovali přes Google/Apple), použijte na přihlašovací obrazovce „Zapomenuté heslo?\" a jedno si vytvořte. Pokud to nepomůže, problém se obvykle sám vyřeší během několika minut."
   },
   "emailLoginNotice": {
-    "message": "Aby KickAlert fungoval spolehlivě, ujistěte se prosím, že jste na Kick přihlášeni pomocí e-mailu a hesla (nikoli přes „Pokračovat s Google“)."
+    "message": "Aby KickAlert fungoval spolehlivě, doporučujeme přihlásit se ke Kick pomocí e-mailu a hesla. Přihlášení přes „Google\", „Apple\" nebo jiný sociální účet může kvůli nesrovnalosti na serverech Kick občas znemožnit rozšíření načíst vaše data."
+  },
+  "adBlockTitle": {
+    "message": "Blokování reklam (experimentální)"
+  },
+  "adBlockWarning": {
+    "message": "Experimentální a neoficiální funkce — závisí na vnitřní struktuře API Kick a může kdykoli bez upozornění přestat fungovat. Jejím zapnutím přijímáte tuto odpovědnost. Ponechte ji vypnutou a KickAlert bude fungovat jako dříve, bez jakéhokoli vlivu."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Právě teď relevantní:"
+  },
+  "emailLoginInfo": {
+    "message": "Tip: KickAlert funguje nejspolehlivěji, když jste na Kick přihlášeni pomocí e-mailu a hesla. Sociální přihlášení jako Google nebo Apple mohou příležitostně způsobit nesrovnalosti relace na serverech Kick."
+  },
+  "thumbnailsTitle": {
+    "message": "Náhledové obrázky kanálu"
+  },
+  "thumbnailsWarning": {
+    "message": "Zobrazuje živý náhledový obrázek pod každým živým kanálem. Při každém otevření vyskakovacího okna se odešle jeden další požadavek na živý kanál, což s sebou nese malé riziko, že Kick tuto aktivitu vyhodnotí jako chování bota."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "diváků"
   }
 }

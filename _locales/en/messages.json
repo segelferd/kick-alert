@@ -593,9 +593,30 @@
     "message": "Something went wrong loading your channels. Please try again."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick didn't recognize your session even though you're logged in. This is usually temporary on Kick's side — it should resolve on its own within a few minutes."
+    "message": "Kick isn't recognizing your session right now, even though you're logged in. This usually happens when signed in via Google, Apple, or another social account, due to an inconsistency on Kick's own servers — it's not a bug in this extension. Fix: log out of kick.com and log back in with your email and password. If you don't have a password (because you signed up via Google/Apple), use \"Forgot password?\" on the login screen to set one. If that doesn't help, this usually resolves on its own within a few minutes."
   },
   "emailLoginNotice": {
-    "message": "For KickAlert to work reliably, please make sure you're logged into Kick with email and password (not \"Continue with Google\")."
+    "message": "For KickAlert to work reliably, we recommend logging into Kick with email and password. Signing in with \"Google,\" \"Apple,\" or another social account can sometimes prevent the extension from loading your data, due to an inconsistency on Kick's own servers."
+  },
+  "adBlockTitle": {
+    "message": "Ad Blocking (Experimental)"
+  },
+  "adBlockWarning": {
+    "message": "Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Relevant right now:"
+  },
+  "emailLoginInfo": {
+    "message": "Tip: KickAlert works most reliably when you're logged into Kick with email and password. Social logins like Google or Apple can occasionally cause session inconsistencies on Kick's servers."
+  },
+  "thumbnailsTitle": {
+    "message": "Channel Preview Images"
+  },
+  "thumbnailsWarning": {
+    "message": "Shows a live preview image under each live channel. This sends one extra request per live channel each time the popup opens, which carries a small risk of Kick flagging the activity as bot-like."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "viewers"
   }
 }

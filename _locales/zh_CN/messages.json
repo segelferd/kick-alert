@@ -593,9 +593,30 @@
     "message": "加载频道时出了点问题，请重试。"
   },
   "fetchErrorSessionRejected": {
-    "message": "您已登录，但 Kick 未能识别您的会话。这通常是 Kick 端的临时问题，几分钟内应会自行恢复。"
+    "message": "您已登录，但 Kick 当前未能识别您的会话。这通常发生在使用 Google、Apple 或其他社交账号登录时，是 Kick 服务器端的不一致问题所致——并非本扩展程序的错误。解决方法：从 kick.com 退出登录，然后使用邮箱和密码重新登录。如果您没有密码（因为是通过 Google/Apple 注册的），可以在登录页面点击\"忘记密码？\"来设置一个。如果仍未解决，该问题通常会在几分钟内自行恢复。"
   },
   "emailLoginNotice": {
-    "message": "为确保 KickAlert 稳定运行，请确认您是使用邮箱和密码登录 Kick 的（而非通过「使用 Google 继续」）。"
+    "message": "为确保 KickAlert 稳定运行，我们建议您使用邮箱和密码登录 Kick。使用\"Google\"、\"Apple\"或其他社交账号登录，有时会因 Kick 服务器端的不一致问题，导致扩展程序无法加载您的数据。"
+  },
+  "adBlockTitle": {
+    "message": "广告拦截（实验性）"
+  },
+  "adBlockWarning": {
+    "message": "这是一项实验性且非官方的功能——依赖 Kick 的内部 API 结构，可能会在没有通知的情况下失效。启用即表示您接受这一风险。保持关闭则 KickAlert 将和以前一样正常运行，不受影响。"
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "当前正相关："
+  },
+  "emailLoginInfo": {
+    "message": "提示：使用邮箱和密码登录 Kick 时，KickAlert 运行最为稳定可靠。Google 或 Apple 等社交登录方式偶尔会在 Kick 服务器端引发会话不一致问题。"
+  },
+  "thumbnailsTitle": {
+    "message": "频道预览图"
+  },
+  "thumbnailsWarning": {
+    "message": "在每个直播频道下方显示实时预览图。每次打开弹窗时，每个直播频道都会发送一次额外请求，这存在被 Kick 判定为机器人行为的轻微风险。"
+  },
+  "thumbnailViewersSuffix": {
+    "message": "观众"
   }
 }

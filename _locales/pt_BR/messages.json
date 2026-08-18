@@ -593,9 +593,30 @@
     "message": "Algo deu errado ao carregar seus canais. Tente novamente."
   },
   "fetchErrorSessionRejected": {
-    "message": "O Kick não reconheceu sua sessão mesmo estando conectado. Isso geralmente é algo temporário do lado do Kick — deve se resolver sozinho em alguns minutos."
+    "message": "O Kick não está reconhecendo sua sessão agora, mesmo estando conectado. Isso geralmente acontece ao entrar com Google, Apple ou outra conta social, devido a uma inconsistência nos servidores do Kick — não é um erro desta extensão. Solução: saia do kick.com e entre novamente com seu e-mail e senha. Se você não tiver uma senha (por ter se cadastrado via Google/Apple), use \"Esqueceu a senha?\" na tela de login para criar uma. Se isso não ajudar, o problema geralmente se resolve sozinho em alguns minutos."
   },
   "emailLoginNotice": {
-    "message": "Para que o KickAlert funcione de forma confiável, certifique-se de estar conectado ao Kick com e-mail e senha (não pelo \"Continuar com o Google\")."
+    "message": "Para que o KickAlert funcione de forma confiável, recomendamos entrar no Kick com e-mail e senha. Entrar com \"Google\", \"Apple\" ou outra conta social pode, às vezes, impedir que a extensão carregue seus dados, devido a uma inconsistência nos servidores do Kick."
+  },
+  "adBlockTitle": {
+    "message": "Bloqueio de anúncios (experimental)"
+  },
+  "adBlockWarning": {
+    "message": "Recurso experimental e não oficial — depende da estrutura interna da API do Kick e pode parar de funcionar sem aviso. Ao ativá-lo, você assume essa responsabilidade. Deixe desativado para continuar usando o KickAlert como antes, sem alterações."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Relevante agora:"
+  },
+  "emailLoginInfo": {
+    "message": "Dica: o KickAlert funciona de forma mais confiável quando você está conectado ao Kick com e-mail e senha. Logins sociais como Google ou Apple podem ocasionalmente causar inconsistências de sessão nos servidores do Kick."
+  },
+  "thumbnailsTitle": {
+    "message": "Imagens de prévia do canal"
+  },
+  "thumbnailsWarning": {
+    "message": "Mostra uma imagem de prévia ao vivo abaixo de cada canal ao vivo. Isso envia uma solicitação extra por canal ao vivo cada vez que o popup é aberto, o que traz um pequeno risco de o Kick sinalizar essa atividade como comportamento de bot."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "espectadores"
   }
 }

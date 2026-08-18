@@ -24,6 +24,16 @@ try {
 } catch {}
 function dbg(...args) { if (_OFFSCREEN_DEBUG) console.debug(...args); }
 
+// v2.3.20: offscreen.html kendi ayrı DevTools context'inde çalışıyor —
+// LiveTracker/BotTracker logları arka plan servisi konsolundan tamamen kopuktu.
+// Bu köprü, önemli olayları (uyarı/hata + kritik durum geçişleri) background.js'e
+// iletir → test panelindeki Aktivite Logu'nda tek yerde görünür.
+function relayLog(level, code, text) {
+  try {
+    chrome.runtime.sendMessage({ type: 'OFFSCREEN_LOG', level, code, text }).catch(() => {});
+  } catch (e) {}
+}
+
 // ═══════════════════════════════════════════════════════════════
 // AUDIO (existing — unchanged)
 // ═══════════════════════════════════════════════════════════════
@@ -93,6 +103,7 @@ const LiveTracker = {
       this.connectionTimeoutTimer = setTimeout(() => {
         if (!this.isConnected) {
           console.warn('[KickAlert][LiveTracker] connection timeout (10sn) — kapatılıp yeniden denenecek');
+          relayLog('warn', 'OFF-01', 'LiveTracker bağlantı zaman aşımı (10sn) — kapatılıp yeniden denenecek');
           try { this.ws?.close(); } catch {}
           // close event gelmezse manuel reset + reconnect garantisi
           this.isConnecting = false;
@@ -126,6 +137,7 @@ const LiveTracker = {
       this.isConnecting = false;
       clearTimeout(this.connectionTimeoutTimer);
       console.warn('[KickAlert][LiveTracker] connection error:', e.message);
+      relayLog('warn', 'OFF-02', 'LiveTracker bağlantı hatası: ' + e.message);
       this._scheduleReconnect();
     }
   },
@@ -224,6 +236,7 @@ const LiveTracker = {
       if (typeof code === 'number' && code >= 4000 && code <= 4099) {
         // Kalıcı hata — gerçek sorun, logla
         console.warn(`[KickAlert][LiveTracker] Pusher kalıcı hata (${code}): ${message}`);
+        relayLog('warn', 'OFF-03', `LiveTracker Pusher kalıcı hata (${code}): ${message}`);
       } else {
         // Geçici hata (4100+, 4201 pong, vb.) — reconnect zaten devrede, sessiz geç
         dbg(`[KickAlert][LiveTracker] Pusher geçici hata (${code ?? '?'}): ${message} — reconnect devrede`);
@@ -241,6 +254,7 @@ const LiveTracker = {
         const slug = this.channelIdToSlug[channelId];
         if (slug) {
           console.debug(`[KickAlert][LiveTracker] StreamerIsLive → ${slug} (SW'ye iletiliyor)`);
+          relayLog('info', 'OFF-04', `LiveTracker: StreamerIsLive → ${slug} (SW'ye iletiliyor)`);
           chrome.runtime.sendMessage({
             type: 'PUSHER_LIVE_EVENT',
             slug,
