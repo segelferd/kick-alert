@@ -14,6 +14,13 @@ Your favorite streamer goes live at 3 AM. You're asleep. You miss it. KickAlert 
 - **Per-channel sound control** — 4-state bell: main / secondary / silent / muted
 - **Dynamic tooltip** — hover the icon to see who's live without opening the popup
 
+### 🤖 Bot-Inflated Stream Detection
+A lightweight scoring model flags channels that might be running inflated viewer counts:
+- **Live bot-suspicion score** per channel, colour-coded (very low → very high)
+- **Multi-signal analysis** — viewer-to-chatter ratio, chat velocity, username patterns, message diversity
+- **Runs entirely client-side** — no chat data leaves the browser
+- Score badge shown inline on channel cards (always-on or anomaly-triggered, configurable)
+
 ### 💬 Chat Integration (optional)
 A dedicated Chat tab with **9 configurable filters** — take back control of any channel's chat:
 - **Bot filter** — hide known chat bots
@@ -42,6 +49,12 @@ A dedicated Chat tab with **9 configurable filters** — take back control of an
 - **Offline channels** — optionally show followed channels that aren't live, with last-seen info
 - **Search** — across Following and Auto-Launch tabs, including category names
 
+### 🖼️ Channel Preview Images (optional)
+- **Live thumbnail** on every live channel card — see the stream before you click through
+- **Viewer count and bot score overlaid** directly on the preview image
+- Loads progressively — the channel list renders immediately, thumbnails fill in as they arrive
+- Off by default — sends one extra request per live channel each time the popup opens
+
 ### 📺 Multi-Stream Viewer
 - Watch up to **4 Kick channels simultaneously** in a dedicated tab
 - Multiple layout options (solo, side-by-side, triple, 2×2 grid, focus)
@@ -51,7 +64,12 @@ A dedicated Chat tab with **9 configurable filters** — take back control of an
 - Automatically open streams in a new tab — per-channel toggle
 - **Duplicate tab guard** — won't open a tab if the stream is already open
 - **Suspend mode** — pause auto-launch temporarily
-- **Auto-unmute** — automatically unmute the player after launch
+- **Auto-unmute** — automatically unmute the player after launch; falls back to muted playback if the browser's autoplay policy blocks it
+
+### 🚫 Ad Blocking (experimental, optional)
+- Skips pre-roll and mid-roll ads on Kick streams
+- Off by default — one toggle in Settings to enable
+- Experimental: depends on Kick's internal player structure and may break without notice
 
 ### ⚙️ Settings
 - **Do Not Disturb** — schedule quiet hours; mute notifications, sounds, and auto-launch independently
@@ -87,6 +105,7 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 │   ├── chat.js          # Chat integration — 9 filters, highlights, mention alerts
 │   ├── bot_tracker.js   # Chat bot detection / health scoring
 │   ├── content.js       # Content script — auto-unmute + reliable live-status on kick.com
+│   ├── adblock-worker-hook.js  # MAIN-world hook — optional ad-block stream/VOD swap
 │   ├── storage.js       # Storage abstraction layer
 │   ├── kickapi.js       # Kick.com API client — Bearer auth, cursor pagination, backoff
 │   ├── multistream.js   # Multi-stream viewer page logic
@@ -103,6 +122,8 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 ├── _locales/            # 13 language files
 ├── icons/               # Extension icons
 ├── sounds/              # Default notification sounds
+├── rules/
+│   └── ad-domains.json  # DNR ruleset for optional ad blocking (disabled by default)
 ├── rules.json           # declarativeNetRequest rules (Referer header)
 └── manifest.json        # Manifest V3 (Chrome & Firefox builds kept in sync)
 ```
@@ -117,7 +138,7 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 | `cookies` | Read Kick.com session cookie for API auth (never sent elsewhere) |
 | `tabs` | Auto-launch, duplicate tab detection, multi-stream management |
 | `alarms` | Fallback periodic checks (MV3 workers sleep after ~30s) |
-| `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API |
+| `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API; optional ad-domain blocking ruleset (disabled by default) |
 | `scripting` | Inject content script into open kick.com tabs (reliability fallback) |
 | `host: kick.com` | Fetch followed channels & live status |
 | `host: ws-us2.pusher.com` | Real-time WebSocket live events |
