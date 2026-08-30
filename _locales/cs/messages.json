@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "diváků"
+  },
+  "groupFilterToggle": {
+    "message": "Filtrovat podle kategorie/skupiny"
+  },
+  "adBlockConfirmTitle": {
+    "message": "Zapnout blokování reklam?"
+  },
+  "adBlockConfirmBody": {
+    "message": "Tato funkce je experimentální a neoficiální — závisí na vnitřní struktuře API Kicku a může bez upozornění přestat fungovat, přičemž Kick může toto chování odhalit. Zapnutím přijímáte tato rizika."
+  },
+  "adBlockConfirmAccept": {
+    "message": "Rozumím, zapnout"
+  },
+  "cancel": {
+    "message": "Zrušit"
   }
 }

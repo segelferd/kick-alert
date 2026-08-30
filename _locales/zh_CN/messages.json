@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "观众"
+  },
+  "groupFilterToggle": {
+    "message": "按分类/分组筛选"
+  },
+  "adBlockConfirmTitle": {
+    "message": "要开启广告拦截吗？"
+  },
+  "adBlockConfirmBody": {
+    "message": "此功能为实验性且非官方功能——依赖于 Kick 的内部 API 结构，可能在没有通知的情况下失效，Kick 也可能检测到此行为。开启即表示您接受这些风险。"
+  },
+  "adBlockConfirmAccept": {
+    "message": "我了解，开启"
+  },
+  "cancel": {
+    "message": "取消"
   }
 }

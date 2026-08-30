@@ -53,6 +53,8 @@ const StorageKeys = {
   AD_BLOCK_ENABLED: 'adBlockEnabled',
   // v2.3.26: Kanal önizleme resimleri (thumbnail) - varsayılan kapalı
   CHANNEL_THUMBNAILS_ENABLED: 'channelThumbnailsEnabled',
+  // v2.4.4: Kategori/grup filtre çubuğunun açık/kapalı tercihi (dikey yer tasarrufu için varsayılan kapalı)
+  GROUP_FILTER_EXPANDED: 'groupFilterExpanded',
   // v2.3.23: "Session var ama Kick reddetti" durumu aktif mi (cihaza özel, internal)
   AUTH_SESSION_REJECTED: '_authSessionRejected',
 };
@@ -92,6 +94,7 @@ const StorageDefaults = {
   [StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED]: false,
   [StorageKeys.AD_BLOCK_ENABLED]: false,
   [StorageKeys.CHANNEL_THUMBNAILS_ENABLED]: false,
+  [StorageKeys.GROUP_FILTER_EXPANDED]: false,
   [StorageKeys.AUTH_SESSION_REJECTED]: false,
 };
 

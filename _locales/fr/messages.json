@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "spectateurs"
+  },
+  "groupFilterToggle": {
+    "message": "Filtrer par catégorie/groupe"
+  },
+  "adBlockConfirmTitle": {
+    "message": "Activer le blocage des publicités ?"
+  },
+  "adBlockConfirmBody": {
+    "message": "Cette fonctionnalité est expérimentale et non officielle — elle dépend de la structure interne de l'API de Kick et peut cesser de fonctionner sans préavis, et Kick pourrait détecter ce comportement. En l'activant, vous acceptez ces risques."
+  },
+  "adBlockConfirmAccept": {
+    "message": "J'ai compris, activer"
+  },
+  "cancel": {
+    "message": "Annuler"
   }
 }

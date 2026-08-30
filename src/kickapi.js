@@ -25,11 +25,24 @@ const KickAPI = {
     try {
       const cookies = await chrome.cookies.getAll({ domain: 'kick.com', name: 'session_token' });
       if (cookies.length === 0) return null;
+      // v2.4.3: CHIPS (partitionKey) teşhisi — Kick Signal v2.2.0 incelemesinden
+      // esinlenildi. Chrome'un bölümlenmiş çerez sistemi, bir çerezi sadece
+      // belirli bir üst-seviye bağlamda görünür kılabiliyor. Google/Apple OAuth
+      // girişi (yönlendirme/popup içeren bir akış) email/şifreden YAPISAL olarak
+      // farklı bir tarayıcı bağlamı yaratıyor — eğer sonuçtaki session_token
+      // farklı bir partitionKey ile işaretleniyorsa, bu daha önce hiç
+      // bakmadığımız bir ayrım noktası olabilir. NOT: Bu, bugüne kadar
+      // kanıtladığımız "Kick sunucu tarafı tutarsızlığı" sonucunu DEĞİŞTİRMEZ —
+      // sadece Kick'e sunulacak teşhis raporunu zenginleştirir.
+      const partitionKeyOf = (c) => {
+        try { return c.partitionKey ? JSON.stringify(c.partitionKey) : 'none'; }
+        catch { return 'n/a'; }
+      };
       if (cookies.length === 1) {
         // v2.3.22: tek cookie olsa bile teşhis için maskeli id'sini logla
         const val = decodeURIComponent(cookies[0].value);
         const userId = val.split('|')[0] || val.split('%7C')[0] || '?';
-        KLog.info('TOK-01', `session_token: tek aday, userId=${userId}, exp=${cookies[0].expirationDate}`);
+        KLog.info('TOK-01', `session_token: tek aday, userId=${userId}, exp=${cookies[0].expirationDate}, partitionKey=${partitionKeyOf(cookies[0])}`);
         return val;
       }
 
@@ -40,17 +53,17 @@ const KickAPI = {
       const candidates = cookies.map(c => {
         const val = decodeURIComponent(c.value);
         const userId = val.split('|')[0] || val.split('%7C')[0] || '?';
-        return { userId, exp: c.expirationDate, val };
+        return { userId, exp: c.expirationDate, val, partitionKey: partitionKeyOf(c) };
       });
       KLog.warn('TOK-02', `${cookies.length} adet session_token cookie: ` +
-        candidates.map(c => `[userId=${c.userId}, exp=${c.exp}]`).join(' vs '));
+        candidates.map(c => `[userId=${c.userId}, exp=${c.exp}, partitionKey=${c.partitionKey}]`).join(' vs '));
 
       const newest = cookies.reduce((best, c) =>
         (c.expirationDate ?? 0) > (best.expirationDate ?? 0) ? c : best
       );
       const chosenVal = decodeURIComponent(newest.value);
       const chosenUserId = chosenVal.split('|')[0] || chosenVal.split('%7C')[0] || '?';
-      KLog.warn('TOK-03', `Seçilen: userId=${chosenUserId}, exp=${newest.expirationDate} (en yüksek expirationDate mantığıyla)`);
+      KLog.warn('TOK-03', `Seçilen: userId=${chosenUserId}, exp=${newest.expirationDate}, partitionKey=${partitionKeyOf(newest)} (en yüksek expirationDate mantığıyla)`);
       return chosenVal;
     } catch { return null; }
   },

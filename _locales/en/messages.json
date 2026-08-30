@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "viewers"
+  },
+  "groupFilterToggle": {
+    "message": "Filter by category/group"
+  },
+  "adBlockConfirmTitle": {
+    "message": "Enable Ad Blocking?"
+  },
+  "adBlockConfirmBody": {
+    "message": "This is experimental and unofficial — it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks."
+  },
+  "adBlockConfirmAccept": {
+    "message": "I understand, enable it"
+  },
+  "cancel": {
+    "message": "Cancel"
   }
 }

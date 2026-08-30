@@ -29,14 +29,28 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
-  scrollbar-width: none;
   overflow-x: hidden;
   overflow-y: auto;
+  /* v2.4.3: Önceden scrollbar-width:none + width:0 ile TAMAMEN gizliydi.
+     Bu, .content-container'ın kullandığı ince/minimal scrollbar tasarımıyla
+     tutarsızdı — eğer dış seviyede scroll gerekirse (thumbnail modu gibi
+     içerik yüksekliğini artıran durumlarda), kullanıcı görünür bir scrollbar
+     olmadan "bir şeyler kayboldu/sığmıyor" hissi yaşıyordu. Artık aynı ince
+     scrollbar stilini kullanıyor. */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  width: 0;
-  display: none;
+  width: 5px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background: var(--border); border-radius: 4px;
 }
 
 body {
@@ -119,7 +133,11 @@ body {
 
 /* Content */
 .content-container {
-  max-height: 520px;
+  /* v2.4.3: 520px'den 480px'e düşürüldü. Thumbnail modu kart yüksekliğini
+     artırdığı için, .content-container'ın kendi (görünür, ince) scroll'u
+     erken devreye girsin diye — dış/tüm-popup seviyesinde taşmaya
+     (ve Chrome'un popup üst sınırına çarpmaya) daha az fırsat kalsın. */
+  max-height: 480px;
   overflow-y: auto;
   overflow-x: visible;
   scrollbar-width: thin;
@@ -629,6 +647,15 @@ body {
 .group-filter-bar {
   display: flex; gap: 6px; padding: 6px 8px; overflow-x: auto;
   scrollbar-width: none; flex-wrap: wrap;
+  /* v2.4.4: Açılır/kapanır davranış — display:none yerine max-height ile
+     yumuşak geçiş. JS bar'ı doldururken 'flex' set etmeye devam ediyor,
+     gerçek gizleme/gösterme bu max-height geçişiyle yapılıyor. */
+  max-height: 200px; opacity: 1;
+  transition: max-height .18s ease, opacity .15s ease, padding .18s ease;
+}
+.group-filter-bar.collapsed {
+  max-height: 0; opacity: 0; padding-top: 0; padding-bottom: 0;
+  overflow: hidden;
 }
 .group-filter-bar::-webkit-scrollbar { display: none; }
 .group-chip {
@@ -676,6 +703,25 @@ body {
   border-color: rgba(83,252,24,.4);
 }
 .sort-chip.sort-dir { margin-left: auto; }
+
+/* v2.4.4: Kategori/grup filtre açma-kapama butonu */
+.group-filter-toggle {
+  position: relative;
+}
+.group-filter-toggle .material-icons-outlined { font-size: 15px; }
+.group-filter-toggle.active {
+  background: rgba(83,252,24,.15); color: var(--accent);
+  border-color: rgba(83,252,24,.4);
+}
+.group-filter-badge {
+  position: absolute; top: -3px; right: -3px;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); border: 1.5px solid var(--bg-primary);
+}
+.follow-sort-sep {
+  width: 1px; height: 16px; background: var(--border);
+  margin: 0 2px; flex-shrink: 0;
+}
 
 /* Options — Groups Management */
 .opt-groups-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
@@ -884,6 +930,12 @@ body {
   line-height: 1 !important;
   width: 12px;
   height: 12px;
+  /* v2.5.0: Thumbnail bağlamında bazen ikon yerine ham "smart_toy" metni
+     (bozuk/garip karakterlerle) görünüyordu — .bot-score üzerindeki genel
+     font-family kuralı (v2.4.3) muhtemelen bu ligature'ı etkiliyordu.
+     Font'u burada açıkça ve kesin olarak sabitliyoruz, hiçbir üst kurala
+     bağımlı kalmasın. */
+  font-family: 'Material Icons' !important;
 }
 
 /* v2.3.0: Action row'da (sparkline'ın yanında) bot skor — seperatörsüz, sadece boşluk */
@@ -982,7 +1034,10 @@ body {
   background: rgba(255,255,255,0.03);
   border-radius: 6px;
   border: 1px solid rgba(255,255,255,0.06);
+  /* v2.4.7: DND/Anomaly ile aynı .disabled deseni, yumuşak geçiş için */
+  transition: opacity 0.15s ease;
 }
+#bot-score-info.disabled { opacity: 0.35; pointer-events: none; }
 [data-theme="light"] .bot-score-info {
   background: rgba(0,0,0,0.02);
   border-color: rgba(0,0,0,0.08);
@@ -1169,6 +1224,61 @@ body {
   box-shadow: 0 8px 32px rgba(0,0,0,0.5);
 }
 .vh-modal-box::-webkit-scrollbar { width: 0; display: none; }
+
+/* v2.4.8: Reklam Engelleme onay modalı — vh-modal ile aynı temel desen */
+.confirm-modal {
+  position: fixed; inset: 0; z-index: 10000;
+  display: flex; align-items: center; justify-content: center;
+}
+.confirm-modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.65);
+}
+.confirm-modal-box {
+  position: relative; z-index: 1;
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 300px;
+  max-width: calc(100vw - 24px);
+  padding: 20px 18px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  text-align: center;
+}
+.confirm-modal-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; margin: 0 auto 10px;
+  border-radius: 50%;
+  background: rgba(240, 160, 32, 0.15);
+  color: #F0A020;
+}
+.confirm-modal-icon .material-icons-outlined { font-size: 22px; }
+.confirm-modal-title {
+  font-size: 14px; font-weight: 700; color: var(--text-primary);
+  margin-bottom: 8px;
+}
+.confirm-modal-body {
+  font-size: 12px; color: var(--text-muted); line-height: 1.55;
+  margin-bottom: 16px;
+}
+.confirm-modal-actions {
+  display: flex; gap: 8px;
+}
+.confirm-modal-btn {
+  flex: 1; padding: 8px 10px; border-radius: 8px;
+  font-size: 12px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border);
+  transition: background 0.15s, border-color 0.15s;
+}
+.confirm-modal-btn-cancel {
+  background: transparent; color: var(--text-secondary);
+}
+.confirm-modal-btn-cancel:hover { background: var(--bg-hover); }
+.confirm-modal-btn-accept {
+  background: rgba(240, 160, 32, 0.15); color: #F0A020;
+  border-color: rgba(240, 160, 32, 0.4);
+}
+.confirm-modal-btn-accept:hover { background: rgba(240, 160, 32, 0.25); }
 .vh-modal-header {
   display: flex; align-items: center; justify-content: space-between;
   margin-bottom: 12px;
@@ -1321,7 +1431,7 @@ body {
 
 /* ─── Chat Panel ─── */
 .chat-section {
-  padding: 10px 12px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border);
 }
 .chat-section:last-child { border-bottom: none; }
@@ -1329,6 +1439,7 @@ body {
   display: flex; align-items: center; gap: 6px;
   font-size: 12px; font-weight: 600; color: var(--text-primary);
   margin-bottom: 6px;
+  transition: margin-bottom 0.15s ease;
 }
 .chat-section-header .toggle-switch { margin-left: auto; }
 .chat-input-row {
@@ -1395,7 +1506,42 @@ body {
   margin: 0;
   pointer-events: none;
 }
+/* v2.4.5: Açıklama satırı da artık kapalıyken gizleniyor — önceden "kullanıcı
+   ne olduğunu bilsin diye" hep görünür tutuluyordu, ama 6 filtrenin hepsi
+   kapalıyken (yaygın/varsayılan durum) bu 6 satır boşuna yer kaplıyordu.
+   Toggle açıldığında yumuşak geçişle geri geliyor. */
+.chat-section[data-collapsible="true"] .chat-section-desc {
+  max-height: 40px;
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.15s ease, padding 0.15s ease;
+  opacity: 1;
+}
+.chat-section[data-collapsible="true"][data-enabled="false"] .chat-section-desc {
+  max-height: 0;
+  opacity: 0;
+  padding: 0;
+}
+/* Kapalıyken header'ın altında gereksiz boşluk kalmasın */
+.chat-section[data-collapsible="true"][data-enabled="false"] .chat-section-header {
+  margin-bottom: 0;
+}
 /* Description row always stays visible, even when collapsed */
 .chat-section-desc {
   font-size: 10px; color: var(--text-muted); padding: 0 0 4px;
+}
+
+/* v2.4.6: Ayarlar sayfasında toggle kapalıyken saf bilgi metinlerini (Chat
+   Integration, Ad Block, Thumbnails, Cloud Sync) gizleyen paylaşılan sınıf —
+   Chat sekmesindeki filtre açıklamalarıyla aynı desen. Cloud Sync bloğu
+   (açıklama + Sync Now butonu) daha uzun olduğu için max-height cömert
+   tutuldu, kısa tek satırlık açıklamalarda fazlası zaten görünmüyor. */
+.opt-collapsible-desc {
+  max-height: 100px;
+  overflow: hidden;
+  transition: max-height 0.2s ease, opacity 0.15s ease;
+  opacity: 1;
+}
+.opt-collapsible-desc.collapsed {
+  max-height: 0;
+  opacity: 0;
 }

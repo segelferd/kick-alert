@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "시청자"
+  },
+  "groupFilterToggle": {
+    "message": "카테고리/그룹으로 필터링"
+  },
+  "adBlockConfirmTitle": {
+    "message": "광고 차단을 활성화하시겠습니까?"
+  },
+  "adBlockConfirmBody": {
+    "message": "이 기능은 실험적이며 비공식입니다 — Kick의 내부 API 구조에 의존하므로 예고 없이 작동을 멈출 수 있으며, Kick이 이 동작을 감지할 수도 있습니다. 활성화하면 이러한 위험을 감수하는 것에 동의하는 것입니다."
+  },
+  "adBlockConfirmAccept": {
+    "message": "이해했습니다, 활성화"
+  },
+  "cancel": {
+    "message": "취소"
   }
 }

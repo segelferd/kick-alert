@@ -105,6 +105,14 @@
         try { url = typeof input === 'string' ? input : (input && input.url) || ''; } catch (e) {}
         var p = origPageFetch.apply(this, arguments);
         if (!pageVod || !url || !PLAYBACK_PAGE_RE.test(url)) return p;
+        // v2.5.0: PureKick v10.15'in aynı sorununa karşı ekledikleri savunmadan
+        // esinlenildi. Ham istek (p) ağ hatasıyla reddederse, bizim eklediğimiz
+        // .then() zinciri bu reddi hiç yakalamadan çağırana (Kick'in kendi
+        // kodu) iletiyordu — Chrome bu durumda "Uncaught (in promise)" hatasını
+        // BİZİM yığın izimizle raporlayabiliyor, gerçek sebep bizim kodumuz
+        // olmasa bile. Sondaki .catch(rethrow) NİHAİ sonucu DEĞİŞTİRMİYOR
+        // (aynı hata çağırana yine gidiyor) — sadece ara adımları "tüketilmiş"
+        // işaretleyip yanlış atıf riskini azaltıyor.
         return p.then(function (resp) {
           try {
             return resp.clone().json().then(function (j) {
@@ -128,7 +136,7 @@
               }).catch(function () { return resp; });
             }).catch(function () { return resp; });
           } catch (e) { return resp; }
-        });
+        }).catch(function (e) { throw e; }); // v2.5.0: bkz. yukarıdaki yorum - nihai sonucu değiştirmiyor
       };
     }
   } catch (e) {}
@@ -248,16 +256,111 @@
       return changed;
     }
 
+    // v2.5.0: JWT-tabanlı slug ÇAPRAZ KONTROLÜ (Mo'Kick'in slug senkron
+    // düzeltmesinden esinlenildi). DAVRANIŞI DEĞİŞTİRMİYOR — hangi slug'ın
+    // kullanılacağına hâlâ KA_AB_SLUG karar veriyor. Bu sadece bir KANARYA:
+    // manifest URL'sindeki imzalı token'ın içine gömülü olabilecek yol
+    // bilgisini çözüp KA_AB_SLUG ile karşılaştırıyor, uyuşmazlık olursa
+    // logluyor. Kick'in token yapısını %100 doğrulayamadığımız için önce
+    // gerçek dünyada bu uyumsuzluk hiç oluyor mu diye VERİ topluyoruz —
+    // veri olmadan mevcut (zaten senkron/anlık çalışan) mekanizmayı
+    // riske atmıyoruz.
+    function slugFromManifestUrl(u) {
+      try {
+        var m = /[?&]token=([^&]+)/.exec(u);
+        if (!m) return null;
+        var parts = decodeURIComponent(m[1]).split('.');
+        if (parts.length < 2) return null;
+        var payload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+        while (payload.length % 4) payload += '=';
+        var json = JSON.parse(atob(payload));
+        var path = json && json['aws:ads-player-params'] && json['aws:ads-player-params'].urlPath;
+        if (typeof path !== 'string') return null;
+        var seg = path.split('/').filter(Boolean)[0];
+        return seg || null;
+      } catch (e) { return null; }
+    }
+
     if (origFetch) {
       self.fetch = function (input, init) {
         var url = typeof input === 'string' ? input : (input && input.url) || '';
         var fw = fixWasm(url);
         if (fw) return origFetch.call(self, fw, init);
 
+        if (/\.m3u8/i.test(url)) {
+          try {
+            var urlSlug = slugFromManifestUrl(url);
+            if (urlSlug && KA_AB_SLUG && urlSlug !== KA_AB_SLUG) {
+              log('KANARYA: manifest URL slug (' + urlSlug + ') != KA_AB_SLUG (' + KA_AB_SLUG + ') - inceleme gerekebilir');
+            }
+          } catch (e) {}
+        }
+
         var p = origFetch.apply(self, arguments);
         if (!enabled) return p;
 
-        if (/\.m3u8/i.test(url)) {
+        // v2.4.11: Segment-cerrahi (3. teknik) — master swap'tan BAĞIMSIZ çalışır.
+    // Medya playlist'inde (segment listesi) doğrudan gömülü SCTE-35 reklam
+    // işaretçilerini (#EXT-X-CUE-OUT/-IN, DATERANGE'da stitched-ad-break)
+    // tanıyıp SADECE o segmentleri çıkarır — ayrı bir "temiz kaynak" aramaya
+    // gerek yok. Master swap zaten başarılıysa burası muhtemelen hiç
+    // tetiklenmez (temiz kaynakta zaten bu işaretçiler yoktur) — bu, ek bir
+    // GÜVENLİK AĞI, ana yöntemin yerini almıyor.
+    //
+    // BİLİNÇLİ TEMKİNLİLİK: Diğer eklentilerde gördüğümüz daha agresif
+    // sezgisel yöntemleri (segment başlığı UUID'ye benziyorsa reklam say vb.)
+    // kasıtlı olarak KULLANMIYORUZ — yanlış pozitif riski (gerçek içeriği
+    // reklam sanıp atlamak), reklamı kaçırmaktan daha kötü bir kullanıcı
+     // deneyimi. Sadece açık, belirsizlik taşımayan CUE-OUT/CUE-IN ve
+    // DATERANGE class="...stitched-ad..." işaretçilerine güveniyoruz.
+    function stripAdSegments(txt) {
+      if (typeof txt !== 'string' || txt.length < 16) return null;
+      if (txt.indexOf('#EXTM3U') === -1) return null;
+      if (txt.indexOf('#EXT-X-STREAM-INF') !== -1) return null; // bu bir master, medya değil
+      if (txt.indexOf('#EXTINF') === -1) return null;
+      if (txt.indexOf('#EXT-X-CUE-OUT') === -1 && txt.indexOf('stitched-ad') === -1) return null; // hiç işaretçi yok, dokunma
+
+      var lines = txt.split('\n');
+      var outLines = [];
+      var inAdBreak = false;
+      var removedCount = 0;
+      var totalSegments = 0;
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i];
+        var trimmed = line.trim();
+
+        if (/^#EXT-X-CUE-OUT/i.test(trimmed)) { inAdBreak = true; outLines.push(line); continue; }
+        if (/^#EXT-X-CUE-IN/i.test(trimmed)) { inAdBreak = false; outLines.push(line); continue; }
+        if (/^#EXT-X-DATERANGE/i.test(trimmed)) {
+          if (/CLASS="[^"]*stitched-ad-break-start[^"]*"/i.test(trimmed)) inAdBreak = true;
+          else if (/CLASS="[^"]*stitched-ad-break-end[^"]*"/i.test(trimmed)) inAdBreak = false;
+          if (!inAdBreak) outLines.push(line);
+          continue;
+        }
+
+        if (trimmed.charAt(0) === '#' || trimmed === '') {
+          if (!inAdBreak) outLines.push(line);
+          continue;
+        }
+
+        // Bu bir segment URI'si (# ile başlamayan, boş olmayan satır)
+        totalSegments++;
+        if (inAdBreak) { removedCount++; continue; } // reklam segmenti - atla (kendisi + üstündeki #EXTINF zaten yukarıda eklendi/eklenmedi)
+        outLines.push(line);
+      }
+
+      // GÜVENLİK KONTROLÜ: hiç segment çıkarılmadıysa ya da TÜM segmentler
+      // çıkarılmış gibi görünüyorsa (parse hatası ihtimali), dokunma —
+      // orijinali kullan. Yarım/bozuk bir playlist döndürmek, reklam
+      // göstermekten çok daha kötü (akış tamamen durabilir).
+      if (removedCount === 0) return null;
+      if (removedCount >= totalSegments) return null;
+
+      return outLines.join('\n');
+    }
+
+    if (/\.m3u8/i.test(url)) {
           return p.then(function (resp) {
             return resp.clone().text().then(function (txt) {
               if (txt.indexOf('#EXT-X-STREAM-INF') !== -1) {
@@ -283,10 +386,18 @@
               }
               if (txt.indexOf('#EXT-X-CUE-OUT') !== -1 || txt.indexOf('stitched-ad') !== -1) {
                 post({ kaAbAdLeak: 1 });
+                try {
+                  var stripped = stripAdSegments(txt);
+                  if (stripped) {
+                    log('medya playlistinden reklam segmenti cikarildi (segment-cerrahi)');
+                    post({ kaAbSwapped: 1 }); // sayfa tarafı bunu 'adDetected' olarak yayınlayacak (mevcut bc.onmessage)
+                    return new Response(stripped, { status: resp.status, statusText: resp.statusText, headers: rebuildHeaders(resp) });
+                  }
+                } catch (e) { /* parse hatasi - orijinal akisa dokunulmadan devam */ }
               }
               return resp;
             }).catch(function () { return resp; });
-          });
+          }).catch(function (e) { throw e; }); // v2.5.0: ham istek reddi varsa - bkz. sayfa bağlamındaki aynı yorum
         }
 
         if (PLAYBACK_RE.test(url)) {
@@ -295,7 +406,7 @@
               if (!neutralizePlayback(j)) return resp;
               return new Response(JSON.stringify(j), { status: resp.status, statusText: resp.statusText, headers: rebuildHeaders(resp) });
             }).catch(function () { return resp; });
-          });
+          }).catch(function (e) { throw e; }); // v2.5.0: aynı savunma
         }
         return p;
       };
@@ -303,9 +414,40 @@
 
     try {
       var origOpen = XMLHttpRequest.prototype.open;
+      var origSend = XMLHttpRequest.prototype.send;
       XMLHttpRequest.prototype.open = function (method, url) {
-        try { var fw2 = fixWasm(String(url)); if (fw2) { url = fw2; arguments[1] = fw2; } } catch (e) {}
+        try {
+          var fw2 = fixWasm(String(url));
+          if (fw2) { url = fw2; arguments[1] = fw2; }
+        } catch (e) {}
+        // v2.4.11: /playback isteğinin bu XHR üzerinden gittiğini işaretle —
+        // send() içinde JSON temizliği yapabilmek için url'i saklıyoruz.
+        try { this.__kaAbUrl = String(url); } catch (e) {}
         return origOpen.apply(this, arguments);
+      };
+      // v2.4.11: IVS worker'ı /playback için normalde fetch() kullanıyor, ama
+      // XHR üzerinden gelme ihtimaline karşı (Kick tarafında değişebilir)
+      // aynı neutralizePlayback() temizliğini burada da uyguluyoruz. .m3u8
+      // değişimi (asenkron, "temiz kaynak" arama gerektiriyor) burada
+      // uygulanmıyor — sadece senkron JSON temizliği, düşük risk.
+      XMLHttpRequest.prototype.send = function () {
+        var xhr = this;
+        if (enabled && xhr.__kaAbUrl && PLAYBACK_RE.test(xhr.__kaAbUrl)) {
+          xhr.addEventListener('readystatechange', function () {
+            if (xhr.readyState !== 4) return;
+            try {
+              var txt = xhr.responseText;
+              if (!txt) return;
+              var j = JSON.parse(txt);
+              if (!neutralizePlayback(j)) return;
+              var patched = JSON.stringify(j);
+              Object.defineProperty(xhr, 'responseText', { value: patched, configurable: true });
+              Object.defineProperty(xhr, 'response', { value: patched, configurable: true });
+              log('XHR /playback JSON temizlendi');
+            } catch (e) { /* parse/patch hatasi - orijinal yanit dokunulmadan kalir */ }
+          });
+        }
+        return origSend.apply(this, arguments);
       };
     } catch (e) {}
 

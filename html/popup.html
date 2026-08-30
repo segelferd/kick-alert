@@ -52,6 +52,11 @@
         <button class="group-chip active" data-group="__all__" data-i18n="groupAll">All</button>
       </div>
       <div id="follow-sort-bar" class="follow-sort-bar">
+        <button id="group-filter-toggle" class="sort-chip group-filter-toggle" data-i18n-title="groupFilterToggle" title="Filter by category/group">
+          <span class="material-icons-outlined">filter_list</span>
+          <span id="group-filter-badge" class="group-filter-badge" style="display:none;"></span>
+        </button>
+        <span class="follow-sort-sep"></span>
         <span class="follow-sort-label" data-i18n="sortByLabel">Sort:</span>
         <button class="sort-chip" data-sort-by="kick" data-i18n-title="sortByKick" title="Kick default">
           <svg class="sort-kick-svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -361,7 +366,7 @@
         </div>
         <div style="font-size:11px;color:var(--text-muted);padding:4px 0 0 0;line-height:1.5;" data-i18n="botScoreAlwaysVisibleHint">When off, the score appears only during a spike.</div>
         <!-- v2.3.0: Formül + 5 tier renk açıklaması -->
-        <div class="bot-score-info">
+        <div class="bot-score-info" id="bot-score-info">
           <div class="bot-score-info-text" data-i18n="botScoreFormulaInfo">Score = chat health vs expected by viewer count. Logarithmic baseline normalizes small/large channels.</div>
           <div class="bot-score-tier-legend">
             <span class="bot-score bot-score-very-low" style="margin:0;">0-20</span>
@@ -554,7 +559,7 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div style="font-size:11px;color:var(--text-muted);padding:4px 0 0 22px;line-height:1.5;" data-i18n="chatIntegrationDesc">When on, Chat tab appears above. After first install, refresh any open Kick tabs.</div>
+        <div id="chat-integration-desc" class="opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:4px 0 0 22px;line-height:1.5;" data-i18n="chatIntegrationDesc">When on, Chat tab appears above. After first install, refresh any open Kick tabs.</div>
       </div>
       <!-- Ad Block Section (v2.3.18, DENEYSEL) -->
       <div class="opt-section">
@@ -566,7 +571,7 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="opt-adblock-warning" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
+        <div id="ad-block-desc" class="opt-adblock-warning opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
       </div>
       <!-- Channel Thumbnails Section (v2.3.26) -->
       <div class="opt-section">
@@ -578,7 +583,7 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="thumbnailsWarning">Shows a live preview image under each live channel. This sends one extra request per live channel each time the popup opens, which carries a small risk of Kick flagging the activity as bot-like.</div>
+        <div id="thumbnails-desc" class="opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="thumbnailsWarning">Shows a live preview image under each live channel. This sends one extra request per live channel each time the popup opens, which carries a small risk of Kick flagging the activity as bot-like.</div>
       </div>
       <!-- Cloud Sync Section -->
       <div class="opt-section">
@@ -590,13 +595,15 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="opt-cloud-sync-note" id="opt-cloud-sync-note" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;" data-i18n="cloudSyncNote">Sync settings across devices via your browser account. Custom sounds and notification history are not synced.</div>
-        <div style="padding:8px 0 0 22px;display:flex;align-items:center;gap:8px;">
-          <button id="opt-cloud-sync-now" class="opt-cloud-sync-now-btn">
-            <span class="material-icons-outlined" style="font-size:14px;">sync</span>
-            <span data-i18n="cloudSyncNowBtn">Sync Now</span>
-          </button>
-          <span id="opt-cloud-sync-now-status" style="font-size:11px;color:var(--text-muted);"></span>
+        <div id="cloud-sync-collapsible" class="opt-collapsible-desc">
+          <div class="opt-cloud-sync-note" id="opt-cloud-sync-note" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;" data-i18n="cloudSyncNote">Sync settings across devices via your browser account. Custom sounds and notification history are not synced.</div>
+          <div style="padding:8px 0 0 22px;display:flex;align-items:center;gap:8px;">
+            <button id="opt-cloud-sync-now" class="opt-cloud-sync-now-btn">
+              <span class="material-icons-outlined" style="font-size:14px;">sync</span>
+              <span data-i18n="cloudSyncNowBtn">Sync Now</span>
+            </button>
+            <span id="opt-cloud-sync-now-status" style="font-size:11px;color:var(--text-muted);"></span>
+          </div>
         </div>
       </div>
       <!-- Support & Info -->
@@ -637,6 +644,22 @@
       </div>
       <div id="vh-chart-labels" class="vh-chart-labels"></div>
       <div id="vh-no-data" class="vh-no-data" style="display:none" data-i18n="viewerHistoryNoData">Not enough data yet</div>
+    </div>
+  </div>
+
+  <!-- v2.4.8: Reklam Engelleme onay modalı - açarken sorumluluk onayı iste -->
+  <div id="adblock-confirm-modal" class="confirm-modal" style="display:none">
+    <div class="confirm-modal-backdrop"></div>
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-icon">
+        <span class="material-icons-outlined">warning_amber</span>
+      </div>
+      <div class="confirm-modal-title" data-i18n="adBlockConfirmTitle">Enable Ad Blocking?</div>
+      <div class="confirm-modal-body" data-i18n="adBlockConfirmBody">This is experimental and unofficial — it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks.</div>
+      <div class="confirm-modal-actions">
+        <button id="adblock-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel" data-i18n="cancel">Cancel</button>
+        <button id="adblock-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept" data-i18n="adBlockConfirmAccept">I understand, enable it</button>
+      </div>
     </div>
   </div>
 </body>

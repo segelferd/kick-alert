@@ -469,6 +469,8 @@ function removeThumbnailSkeleton(slug) {
 
 async function buildGroupFilterBar() {
   const bar = document.getElementById('group-filter-bar');
+  const toggleBtn = document.getElementById('group-filter-toggle');
+  const sep = document.querySelector('.follow-sort-sep');
   if (!bar) return;
   const groups = await Storage.getChannelGroups();
 
@@ -480,10 +482,16 @@ async function buildGroupFilterBar() {
   )].slice(0, 5); // Max 5 kategori chip
 
   if (groups.length === 0 && liveCategories.length === 0) {
+    // v2.4.4: Filtrelenecek hiçbir şey yoksa, hem çubuğu hem de açma
+    // butonunu tamamen gizle — boş bir panel için toggle göstermenin anlamı yok.
     bar.style.display = 'none';
+    if (toggleBtn) toggleBtn.style.display = 'none';
+    if (sep) sep.style.display = 'none';
     return;
   }
   bar.style.display = 'flex';
+  if (toggleBtn) toggleBtn.style.display = '';
+  if (sep) sep.style.display = '';
   const activeGroup = bar.querySelector('.group-chip.active')?.dataset.group || '__all__';
 
   bar.innerHTML = '';
@@ -507,9 +515,9 @@ async function buildGroupFilterBar() {
   // Kategori chip'leri — ayırıcı + canlı kategoriler
   if (liveCategories.length > 0) {
     if (groups.length > 0) {
-      const sep = document.createElement('span');
-      sep.className = 'group-chip-sep';
-      bar.appendChild(sep);
+      const sepChip = document.createElement('span');
+      sepChip.className = 'group-chip-sep';
+      bar.appendChild(sepChip);
     }
     for (const cat of liveCategories) {
       const chip = document.createElement('button');
@@ -521,11 +529,45 @@ async function buildGroupFilterBar() {
       bar.appendChild(chip);
     }
   }
+
+  // v2.4.4: Açık/kapalı durumunu kaydedilmiş tercihe göre uygula + badge'i güncelle
+  await applyGroupFilterBarState(activeGroup);
+}
+
+// v2.4.4: Kaydedilmiş açık/kapalı tercihini bar'a uygular, aktif filtre
+// "Tümü" değilse (yani gerçekten bir filtre uygulanıyorsa) küçük bir nokta
+// rozeti gösterir — çubuk kapalıyken bile kullanıcı filtre uygulandığını fark etsin.
+async function applyGroupFilterBarState(activeGroup) {
+  const bar = document.getElementById('group-filter-bar');
+  const toggleBtn = document.getElementById('group-filter-toggle');
+  const badge = document.getElementById('group-filter-badge');
+  if (!bar || !toggleBtn) return;
+
+  const expanded = await Storage.get(StorageKeys.GROUP_FILTER_EXPANDED);
+  bar.classList.toggle('collapsed', expanded !== true);
+  toggleBtn.classList.toggle('active', expanded === true);
+
+  const hasActiveFilter = activeGroup && activeGroup !== '__all__';
+  if (badge) badge.style.display = hasActiveFilter ? '' : 'none';
+}
+
+// v2.4.4: Toggle butonuna tıklanınca çağrılır — açık/kapalı durumu değiştirip kaydeder.
+async function toggleGroupFilterBar() {
+  const current = await Storage.get(StorageKeys.GROUP_FILTER_EXPANDED);
+  const next = current !== true;
+  await Storage.set(StorageKeys.GROUP_FILTER_EXPANDED, next);
+  const bar = document.getElementById('group-filter-bar');
+  const toggleBtn = document.getElementById('group-filter-toggle');
+  if (bar) bar.classList.toggle('collapsed', !next);
+  if (toggleBtn) toggleBtn.classList.toggle('active', next);
 }
 
 function setActiveGroup(group) {
   document.querySelectorAll('.group-chip').forEach(c => c.classList.remove('active'));
   document.querySelector(`.group-chip[data-group="${group}"]`)?.classList.add('active');
+  // v2.4.4: Filtre değişince badge'i de güncelle (çubuk kapalıyken bile doğru göstersin)
+  const badge = document.getElementById('group-filter-badge');
+  if (badge) badge.style.display = (group && group !== '__all__') ? '' : 'none';
   renderFollowing(group.startsWith('__cat__') ? group.replace('__cat__', '') : null);
 }
 
@@ -1208,6 +1250,12 @@ async function setupFollowSortBar() {
       await renderFollowing();
     });
   }
+
+  // v2.4.4: Kategori/grup filtre açma-kapama butonu
+  const groupFilterToggleBtn = document.getElementById('group-filter-toggle');
+  if (groupFilterToggleBtn) {
+    groupFilterToggleBtn.addEventListener('click', toggleGroupFilterBar);
+  }
 }
 
 // ─── History Clear ───
@@ -1349,6 +1397,7 @@ async function loadOptionsSettings() {
   optEl('opt-auto-refresh').checked = await Storage.getAutoRefreshPopup();
   // v2.3.0: Bot skorunu her zaman göster (default false)
   optEl('opt-bot-score-always-visible').checked = await Storage.getBotScoreAlwaysVisible();
+  optUpdateBotScoreInfoVisibility();
 
   const vol = await Storage.getSoundVolume();
   optEl('opt-volume-slider').value = vol;
@@ -1428,6 +1477,13 @@ async function loadOptionsSettings() {
   document.getElementById('chat-btn').style.display = chatEnabled ? '' : 'none';
   await loadChatSettings();
 
+  // v2.4.6: Sadece bilgi metni olan (kontrol içermeyen) 4 bölümün açıklamasını
+  // toggle kapalıyken gizle — Chat sekmesindeki filtre paterniyle aynı mantık.
+  syncCollapsibleDesc('opt-chat-integration', 'chat-integration-desc');
+  syncCollapsibleDesc('opt-ad-block', 'ad-block-desc');
+  syncCollapsibleDesc('opt-channel-thumbnails', 'thumbnails-desc');
+  syncCollapsibleDesc('opt-cloud-sync', 'cloud-sync-collapsible');
+
   // Theme
   const theme = await Storage.getTheme();
   document.querySelectorAll('.opt-theme-btn').forEach(b => {
@@ -1454,6 +1510,84 @@ function optUpdateDndVisibility() {
   if (body) body.classList.toggle('disabled', !on);
 }
 
+// v2.4.7: Bot Tespiti bölümündeki formül+renk lejantını, "her zaman göster"
+// toggle'ının durumuna göre soluklaştırır (DND/Anomaly ile aynı .disabled
+// deseni). NOT: Bu, özelliğin kendisini kapatmıyor — bot tespiti her zaman
+// çalışır, bu sadece rozetin popup'ta ne zaman göründüğünü değiştirir. Bu
+// yüzden GİZLEME değil SOLUKLAŞTIRMA kullanıyoruz — bilgi hâlâ okunabilir
+// kalmalı, sadece daha az öne çıkmalı.
+function optUpdateBotScoreInfoVisibility() {
+  const on = optEl('opt-bot-score-always-visible')?.checked;
+  const info = document.getElementById('bot-score-info');
+  if (info) info.classList.toggle('disabled', !on);
+}
+
+// v2.4.8: Reklam Engelleme AÇARKEN onay modalı gösterir, KAPATIRKEN doğrudan uygular.
+function setupAdBlockToggle() {
+  const checkbox = optEl('opt-ad-block');
+  const modal = document.getElementById('adblock-confirm-modal');
+  const backdrop = modal?.querySelector('.confirm-modal-backdrop');
+  const cancelBtn = document.getElementById('adblock-confirm-cancel');
+  const acceptBtn = document.getElementById('adblock-confirm-accept');
+  if (!checkbox || !modal) return;
+
+  async function applyEnabled(v) {
+    await Storage.set(StorageKeys.AD_BLOCK_ENABLED, v);
+    syncCollapsibleDesc('opt-ad-block', 'ad-block-desc');
+  }
+
+  function closeModal() {
+    modal.style.display = 'none';
+  }
+
+  function openModal() {
+    // v2.4.9: Bu modal #options-panel dışında olduğu için genel data-i18n
+    // tarayıcısı (applyOptionsI18n) buraya hiç bakmıyor — vh-modal'daki gibi
+    // doğrudan Utils.i18n() ile açılış anında çeviriyoruz.
+    const titleEl = modal.querySelector('.confirm-modal-title');
+    const bodyEl = modal.querySelector('.confirm-modal-body');
+    if (titleEl) titleEl.textContent = Utils.i18n('adBlockConfirmTitle') || 'Enable Ad Blocking?';
+    if (bodyEl) bodyEl.textContent = Utils.i18n('adBlockConfirmBody') || "This is experimental and unofficial — it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks.";
+    if (cancelBtn) cancelBtn.textContent = Utils.i18n('cancel') || 'Cancel';
+    if (acceptBtn) acceptBtn.textContent = Utils.i18n('adBlockConfirmAccept') || 'I understand, enable it';
+    modal.style.display = 'flex';
+  }
+
+  checkbox.addEventListener('change', async (e) => {
+    if (e.target.checked) {
+      // Kapalıdan açığa geçiş — anında uygulamadan ÖNCE onay iste.
+      // Checkbox'ı görsel olarak geri al, sadece onaylanırsa gerçekten aç.
+      checkbox.checked = false;
+      openModal();
+    } else {
+      // Açıktan kapalıya geçiş — onay gerekmiyor, hemen uygula.
+      await applyEnabled(false);
+    }
+  });
+
+  cancelBtn?.addEventListener('click', () => {
+    closeModal(); // checkbox zaten false, ek işlem yok
+  });
+  backdrop?.addEventListener('click', () => {
+    closeModal();
+  });
+  acceptBtn?.addEventListener('click', async () => {
+    checkbox.checked = true;
+    await applyEnabled(true);
+    closeModal();
+  });
+}
+
+// v2.4.6: Ayarlar sayfasında sadece bilgi metni içeren (kontrol taşımayan)
+// bölümlerin açıklamasını, ilişkili checkbox'ın durumuna göre gizler/gösterir.
+// checkboxId: durumu okunacak checkbox'ın id'si. descId: gizlenecek/gösterilecek elementin id'si.
+function syncCollapsibleDesc(checkboxId, descId) {
+  const checkbox = document.getElementById(checkboxId);
+  const desc = document.getElementById(descId);
+  if (!checkbox || !desc) return;
+  desc.classList.toggle('collapsed', !checkbox.checked);
+}
+
 function optUpdateSoundModeVisibility() {
   const isExtension = optEl('opt-sound-extension').checked;
   const settings = optEl('opt-extension-sound-settings');
@@ -1474,6 +1608,7 @@ function setupOptionsListeners() {
   // v2.3.0: Bot skor görünürlüğü değişince popup'ı anında yenile
   optBind('opt-bot-score-always-visible', async (v) => {
     await Storage.setBotScoreAlwaysVisible(v);
+    optUpdateBotScoreInfoVisibility();
     await renderFollowing();
   });
 
@@ -1569,7 +1704,10 @@ function setupOptionsListeners() {
   }
 
   // Cloud Sync listener
-  optBind('opt-cloud-sync', v => Storage.setCloudSyncEnabled(v));
+  optBind('opt-cloud-sync', v => {
+    Storage.setCloudSyncEnabled(v);
+    syncCollapsibleDesc('opt-cloud-sync', 'cloud-sync-collapsible');
+  });
 
   // v2.3.7: Manuel "Şimdi Senkronize Et" butonu — açma/kapama switch'inden
   // bağımsız, kullanıcı istediği an tetikleyebilir. pull+push birleştirme yapar.
@@ -1595,21 +1733,23 @@ function setupOptionsListeners() {
   // Ad Block (v2.3.18, DENEYSEL) — sadece storage'a yazıyoruz, DNR ruleset
   // toggle'ı background.js'teki storage.onChanged dinleyicisinde yapılıyor.
   // content.js/adblock-worker-hook.js tarafı da aynı dinleyiciyle canlı güncellenir.
-  optBind('opt-ad-block', async v => {
-    await Storage.set(StorageKeys.AD_BLOCK_ENABLED, v);
-  });
+  // v2.4.8: AÇARKEN onay modalı gösteriliyor (Mo'Kick'in "consent" ekranından
+  // esinlenildi) — KAPATIRKEN onay istenmiyor, anında uygulanıyor.
+  setupAdBlockToggle();
 
   // Channel Thumbnails (v2.3.26, DENEYSEL) — açılınca/kapanınca listeyi
   // hemen yeniden çiz, kullanıcı popup'ı kapatıp açmak zorunda kalmasın.
   optBind('opt-channel-thumbnails', async v => {
     await Storage.set(StorageKeys.CHANNEL_THUMBNAILS_ENABLED, v);
     await loadChannels();
+    syncCollapsibleDesc('opt-channel-thumbnails', 'thumbnails-desc');
   });
 
   // Chat Integration master switch
   optBind('opt-chat-integration', async v => {
     await Storage.setChatIntegrationEnabled(v);
     document.getElementById('chat-btn').style.display = v ? '' : 'none';
+    syncCollapsibleDesc('opt-chat-integration', 'chat-integration-desc');
     if (!v && document.querySelector('.tab-button[data-tab="chat-panel"].active')) {
       // If chat tab was active, switch back to following
       document.getElementById('following-btn').click();

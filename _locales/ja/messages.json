@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "視聴者"
+  },
+  "groupFilterToggle": {
+    "message": "カテゴリー/グループで絞り込む"
+  },
+  "adBlockConfirmTitle": {
+    "message": "広告ブロックを有効にしますか？"
+  },
+  "adBlockConfirmBody": {
+    "message": "この機能は実験的かつ非公式です — Kickの内部API構造に依存しており、予告なく動作しなくなる可能性があります。また、Kick側でこの挙動が検知される可能性もあります。有効にすることで、これらのリスクを承諾したものとみなされます。"
+  },
+  "adBlockConfirmAccept": {
+    "message": "理解しました、有効にする"
+  },
+  "cancel": {
+    "message": "キャンセル"
   }
 }

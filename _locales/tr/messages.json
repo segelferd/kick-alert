@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "izleyici"
+  },
+  "groupFilterToggle": {
+    "message": "Kategoriye/gruba göre filtrele"
+  },
+  "adBlockConfirmTitle": {
+    "message": "Reklam Engelleme Açılsın mı?"
+  },
+  "adBlockConfirmBody": {
+    "message": "Bu özellik deneysel ve resmi değildir — Kick'in dahili API yapısına bağlıdır ve haber vermeden bozulabilir, Kick bu davranışı işaretleyebilir. Açarak bu riskleri kabul etmiş olursunuz."
+  },
+  "adBlockConfirmAccept": {
+    "message": "Anladım, aç"
+  },
+  "cancel": {
+    "message": "İptal"
   }
 }

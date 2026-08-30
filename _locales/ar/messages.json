@@ -618,5 +618,20 @@
   },
   "thumbnailViewersSuffix": {
     "message": "مشاهد"
+  },
+  "groupFilterToggle": {
+    "message": "تصفية حسب الفئة/المجموعة"
+  },
+  "adBlockConfirmTitle": {
+    "message": "تفعيل حظر الإعلانات؟"
+  },
+  "adBlockConfirmBody": {
+    "message": "هذه الميزة تجريبية وغير رسمية — تعتمد على البنية الداخلية لواجهة برمجة تطبيقات Kick وقد تتوقف عن العمل دون سابق إنذار، وقد يكتشف Kick هذا السلوك. بتفعيلها، فإنك تقبل تحمل هذه المخاطر."
+  },
+  "adBlockConfirmAccept": {
+    "message": "فهمت، فعّل"
+  },
+  "cancel": {
+    "message": "إلغاء"
   }
 }
