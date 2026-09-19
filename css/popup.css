@@ -194,6 +194,12 @@ body {
 .opt-cloud-sync-now-btn:hover { color: var(--accent); border-color: var(--accent); }
 .opt-cloud-sync-now-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* v2.5.19: Varsayılanlara Sıfırla - yıkıcı işlem, görsel olarak ayırt edilsin */
+.opt-reset-defaults-btn { color: #e05252; border-color: rgba(224,82,82,0.4); }
+.opt-reset-defaults-btn:hover { color: #ff6b6b; border-color: #ff6b6b; background: rgba(224,82,82,0.08); }
+/* v2.5.19: Geri alma - dikkat çekici ama "tehlike" değil, nötr bir vurgu */
+.opt-restore-snapshot-btn { color: var(--accent); border-color: rgba(83,252,24,0.4); }
+
 /* Options tab notice dot (v2.3.15) */
 /* Options button frame — pulses red until the notice is dismissed (v2.3.17) */
 .menu-chip.options-notice-border {
@@ -571,6 +577,10 @@ body {
 .toggle-switch-sm input:checked + .toggle-slider::before { transform: translateX(16px); }
 .opt-dnd-body { padding-left: 4px; }
 .opt-dnd-body.disabled { opacity: 0.35; pointer-events: none; }
+/* v2.5.29: Chat Bildirim Sesi bölümü, Chat sekmesinde hiçbir bildirim açık
+   değilken TAMAMEN (ana toggle dahil) pasifleşiyor — .opt-dnd-body.disabled
+   ile AYNI değerler, tutarlılık için. */
+.opt-dnd-section.fully-disabled { opacity: 0.35; pointer-events: none; }
 .opt-dnd-time-row {
   display: flex; align-items: center; gap: 6px;
   margin-bottom: 6px; font-size: 12px;
@@ -837,6 +847,13 @@ body {
 .channel-thumbnail-botscore {
   position: absolute; bottom: 5px; left: 5px;
   line-height: 0;
+}
+/* v2.5.1: Thumbnail bağlamında rozet tek başına duruyor, önünde ayıracağı
+   bir şey yok — kart-içi görünümde kullanılan '·' ayırıcısı (.bot-score::before,
+   aşağıda tanımlı) burada yanlışlıkla "tek başına asılı nokta" olarak
+   görünüyordu. Sadece bu bağlamda kaldırıyoruz, diğer kullanımlara dokunmuyoruz. */
+.channel-thumbnail-botscore .bot-score::before {
+  content: none;
 }
 .channel-thumbnail-botscore .bot-score {
   box-shadow: 0 1px 3px rgba(0,0,0,0.35);
@@ -1544,4 +1561,136 @@ body {
 .opt-collapsible-desc.collapsed {
   max-height: 0;
   opacity: 0;
+}
+
+/* v2.5.9: Ayarlar sayfası artık 4 kategoriye (Genel, Bildirimler ve İzleme,
+   Ek Özellikler, Hesap) ayrılmış — 11 bölümün tek uzun, kategorisiz bir
+   listede olması yeni kullanıcı için taranması zor bir yapı oluşturuyordu.
+   Her grup açılır-kapanır; varsayılan olarak hepsi AÇIK (hiçbir ayar
+   "kayıp" hissi vermesin), kullanıcı istediğini kapatabilir, tercih
+   chrome.storage'da hatırlanıyor. */
+.opt-group {
+  margin-bottom: 4px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-tertiary, rgba(255,255,255,0.02));
+  border-left: 3px solid transparent;
+  transition: border-color 0.15s ease;
+}
+/* v2.5.11: Grup açıkken ince bir vurgu çizgisi - sadece chevron yönüne
+   değil, "bu açık" hissine ekstra bir görsel ipucu daha. */
+.opt-group:not(.collapsed) {
+  border-left-color: var(--accent);
+}
+.opt-group-header {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 10px 12px;
+  background: transparent; border: none; cursor: pointer;
+  font-family: inherit; font-size: 13px; font-weight: 600;
+  color: var(--text-primary); text-align: left;
+}
+.opt-group-header:hover { background: var(--bg-hover); }
+.opt-group-header .material-icons-outlined { font-size: 17px; color: var(--accent); flex-shrink: 0; }
+.opt-group-header span:nth-child(2) { flex: 1; }
+.opt-group-chevron {
+  transition: transform 0.15s ease;
+  color: var(--text-muted) !important;
+}
+.opt-group.collapsed .opt-group-chevron { transform: rotate(-90deg); }
+/* v2.5.11: Kapalı gruplarda kaç ayar barındırdığını gösteren küçük sayaç —
+   grup açıkken içerik zaten görünür olduğu için gizleniyor. */
+.opt-group-count {
+  display: none;
+  font-size: 10px; font-weight: 600; color: var(--text-muted);
+  background: rgba(255,255,255,0.08); border-radius: 8px;
+  padding: 1px 7px; margin-left: auto; margin-right: 4px;
+}
+.opt-group.collapsed .opt-group-count { display: inline-block; }
+.opt-group-body {
+  /* v2.5.10: Eskiden CSS grid (1fr/0fr) tekniği kullanılıyordu — bu teknik
+     SADECE tek bir çocuk elemanla doğru çalışır. .opt-group-body içinde
+     BİRDEN FAZLA .opt-section doğrudan çocuk olarak durduğu için, grid
+     fazladan çocukları örtük satırlara yerleştiriyor ve onlar toggle'dan
+     etkilenmiyordu — bu da yanlış daralma ve satırlar arası boşluk
+     sorununa yol açıyordu. Artık JS'in (setupOptGroups) hesapladığı gerçek
+     içerik yüksekliğini (scrollHeight) max-height'a atayan, daha sağlam
+     ve öngörülebilir bir teknik kullanıyoruz. */
+  overflow: hidden;
+  transition: max-height 0.2s ease;
+}
+.opt-group.collapsed .opt-group-body {
+  max-height: 0 !important;
+}
+
+/* v2.5.9: Deneysel özellikler (Reklam Engelleme, Kanal Önizlemeleri) için
+   görsel rozet — sadece parantez içi metin yerine, hızlı taramada fark
+   edilecek bir renk/şekil. */
+.opt-experimental-chip {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.03em;
+  padding: 2px 6px; border-radius: 4px; margin-left: 6px;
+  background: rgba(240, 160, 32, 0.15); color: #F0A020;
+  border: 1px solid rgba(240, 160, 32, 0.35);
+  text-transform: uppercase;
+}
+.opt-experimental-chip .material-icons-outlined { font-size: 13px; }
+
+/* v2.5.9: Ayarlar içi arama kutusu — 11+ bölüm arasında hızlı bulma için. */
+.opt-search-wrap {
+  position: relative; margin-bottom: 10px;
+}
+.opt-search-wrap .material-icons-outlined {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  font-size: 16px; color: var(--text-muted); pointer-events: none;
+}
+#opt-search-input {
+  width: 100%; padding: 8px 10px 8px 32px;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg-secondary); color: var(--text-primary);
+  font-size: 12px; font-family: inherit;
+}
+#opt-search-input:focus { outline: none; border-color: var(--accent); }
+.opt-section.opt-search-hidden,
+.opt-group.opt-search-hidden { display: none; }
+/* v2.5.11: Arama sonucunda eşleşen kelimenin vurgusu */
+mark.opt-search-highlight {
+  background: rgba(83,252,24,0.35);
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 1px;
+}
+
+/* v2.5.9: "Yenilikler" banner'ı - ilk kurulum/güncelleme sonrası bir kez gösterilir. */
+.whatsnew-banner {
+  display: flex; align-items: flex-start; gap: 8px;
+  margin: 8px 10px; padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(83,252,24,0.08); border: 1px solid rgba(83,252,24,0.25);
+}
+.whatsnew-banner .material-icons-outlined { color: var(--accent); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.whatsnew-banner-text { flex: 1; font-size: 12px; line-height: 1.5; color: var(--text-primary); }
+.whatsnew-banner-text a { color: var(--accent); text-decoration: underline; cursor: pointer; }
+.whatsnew-banner-close {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  color: var(--text-muted); flex-shrink: 0;
+}
+.whatsnew-banner-close .material-icons-outlined { font-size: 16px; }
+
+/* v2.5.16: Sürüm Geçmişi modalı */
+.release-history-box { max-width: 340px; text-align: left; }
+.release-history-box .confirm-modal-title { text-align: center; }
+.release-history-list {
+  max-height: 280px; overflow-y: auto;
+  margin: 10px 0; padding-right: 4px;
+  scrollbar-width: thin; scrollbar-color: #3a3a3e transparent;
+}
+.release-history-entry { margin-bottom: 14px; }
+.release-history-entry:last-child { margin-bottom: 0; }
+.release-history-version {
+  font-size: 12px; font-weight: 700; color: var(--accent);
+  margin-bottom: 4px;
+}
+.release-history-body {
+  font-size: 11px; color: var(--text-secondary); line-height: 1.6;
+  white-space: pre-line;
 }

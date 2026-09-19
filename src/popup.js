@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupTabs();
   setupMenu();
   setupSearch();
+  setupOptGroups();       // v2.5.9: Ayarlar kategori gruplarının açma/kapama mantığı
+  setupOptSearch();        // v2.5.9: Ayarlar içi arama
+  setupBotScoreFormulaToggle(); // v2.5.9: Bot skoru formül detayı
   setupFollowSortBar();
   setupHistoryClear();
   setupRateLink();
@@ -41,6 +44,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   await updateMenuState();
   await startAutoRefresh();
   await updateEmailLoginNoticeDot();
+  setupWhatsNewBannerButtons(); // v2.5.11: Banner butonlarını bir kez bağla
+  setupWhatsNewRelink();        // v2.5.11: Kalıcı "What's New" linki
+  setupReleaseHistoryModal();   // v2.5.16: Sürüm Geçmişi modalı
+  await checkWhatsNewBanner();   // v2.5.9: "Yenilikler" banner'ı
 });
 
 // v2.3.23: Popup açıkken arka planda "session reddedildi" durumu değişirse
@@ -332,6 +339,15 @@ async function renderFollowing(categoryFilter) {
   const el = document.getElementById('following-list');
   if (!el) return;
 
+  // v2.5.9: Test panelinden tetiklenen tek-seferlik "ilk kullanım önizlemesi" —
+  // gerçek takip verisine hiç dokunmadan, boş durum ekranını simüle eder.
+  // Okunduğu anda tüketilir (bir sonraki açılışta normale döner).
+  if (await Storage.get(StorageKeys.PREVIEW_FIRST_USE_STATE)) {
+    await Storage.set(StorageKeys.PREVIEW_FIRST_USE_STATE, false);
+    el.innerHTML = `<div class="empty-state">${Utils.i18n('noChannelsFollowedYet')}</div>`;
+    return;
+  }
+
   const showOffline = await Storage.getShowOfflineChannels();
   const favs = await Storage.getFavoriteChannels();
   const groupMap = await Storage.getChannelGroupMap();
@@ -355,8 +371,12 @@ async function renderFollowing(categoryFilter) {
   await buildGroupFilterBar();
 
   if (list.length === 0) {
-    dbg(`[KickAlert] List EMPTY — showing noLiveStreams message`);
-    el.innerHTML = `<div class="empty-state">${Utils.i18n('noLiveStreams')}</div>`;
+    // v2.5.9: Hiç takip edilen kanal yoksa (yeni kullanıcı), "canlı yayın yok"
+    // mesajı yanıltıcı/çıkmaz sokak oluyordu — ne yapması gerektiğini
+    // söylemiyordu. Bu iki durumu ayırıyoruz.
+    const msgKey = allChannels.length === 0 ? 'noChannelsFollowedYet' : 'noLiveStreams';
+    dbg(`[KickAlert] List EMPTY — showing ${msgKey} message`);
+    el.innerHTML = `<div class="empty-state">${Utils.i18n(msgKey)}</div>`;
     return;
   }
 
@@ -578,7 +598,7 @@ async function renderAutoLaunch() {
   if (!el) return;
 
   if (allChannels.length === 0) {
-    el.innerHTML = `<div class="empty-state">${Utils.i18n('noLiveStreams')}</div>`;
+    el.innerHTML = `<div class="empty-state">${Utils.i18n('noChannelsFollowedYet')}</div>`;
     return;
   }
 
@@ -1213,6 +1233,282 @@ function setupSearch() {
   });
 }
 
+// v2.5.9: "Yenilikler" banner'ı — ilk kurulum ya da güncelleme sonrası bir kez
+// gösterilir. Aynı sürüm için tekrar gösterilmez (kapatınca sürüm numarası
+// kaydediliyor). #options-panel dışında olduğu için genel i18n tarayıcısı
+// buraya bakmıyor — viewer-history-modal/onay modalındaki gibi doğrudan
+// Utils.i18n() ile dolduruyoruz.
+function showWhatsNewBanner() {
+  const banner = document.getElementById('whatsnew-banner');
+  const textEl = document.getElementById('whatsnew-banner-text');
+  if (!banner || !textEl) return;
+  textEl.innerHTML = Utils.i18n('whatsNewBannerText') || '';
+  banner.style.display = 'flex';
+}
+
+// v2.5.11: Banner'ın buton dinleyicileri artık SADECE BİR KEZ (init sırasında)
+// bağlanıyor — showWhatsNewBanner() tekrar tekrar çağrılabildiği için (kalıcı
+// "What's New" linkinden), dinleyicileri her seferinde yeniden eklemek
+// birikip çift tetiklenmeye yol açardı.
+function setupWhatsNewBannerButtons() {
+  const banner = document.getElementById('whatsnew-banner');
+  if (!banner) return;
+  // v2.5.16: KRİTİK DÜZELTME. "Ayarlar" linki (#whatsnew-settings-link),
+  // banner metninin İÇİNDE (i18n metninden innerHTML ile) DİNAMİK olarak
+  // oluşturuluyor — showWhatsNewBanner() çağrılana kadar DOM'da HİÇ YOK.
+  // Buraya doğrudan addEventListener bağlamak, setup anında elementi
+  // bulamayıp SESSİZCE hiçbir şey yapmıyordu (linke tıklayınca hiçbir tepki
+  // vermiyordu). Artık olay temsili (event delegation) kullanıyoruz — banner
+  // kapsayıcısı (her zaman DOM'da var) dinliyor, tıklanan elementin linke
+  // ait olup olmadığını o an kontrol ediyor. İçerik ne zaman oluşursa
+  // oluşsun çalışır.
+  banner.addEventListener('click', async (e) => {
+    if (!e.target.closest('#whatsnew-settings-link')) return;
+    e.preventDefault();
+    banner.style.display = 'none';
+    await Storage.set(StorageKeys.WHATSNEW_DISMISSED_VERSION, chrome.runtime.getManifest().version);
+    showOptionsPanel();
+  });
+  document.getElementById('whatsnew-banner-close')?.addEventListener('click', async () => {
+    banner.style.display = 'none';
+    await Storage.set(StorageKeys.WHATSNEW_DISMISSED_VERSION, chrome.runtime.getManifest().version);
+  });
+}
+
+async function checkWhatsNewBanner() {
+  try {
+    const currentVersion = chrome.runtime.getManifest().version;
+    const dismissedVersion = await Storage.get(StorageKeys.WHATSNEW_DISMISSED_VERSION);
+    if (dismissedVersion === currentVersion) return;
+    showWhatsNewBanner();
+  } catch (e) {}
+}
+
+// v2.5.11: Support & Info'daki kalıcı "What's New" linki — banner'ı daha
+// önce kapatmış olsa bile, merak eden kullanıcı istediği zaman tekrar
+// görebilsin. Ayarlar'dan ana ekrana dönüp orada gösteriyoruz (banner'ın
+// doğal yeri orası).
+// v2.5.16: Sürüm Geçmişi modalı — merak eden kullanıcılar için, sadece son
+// sürümün değil, birkaç önceki kilometre taşının kısa özeti. #options-panel
+// dışında olduğu için genel i18n tarayıcısı buraya bakmıyor — açılış anında
+// doğrudan Utils.i18n() ile dolduruyoruz (viewer-history-modal deseniyle aynı).
+function openReleaseHistoryModal() {
+  const modal = document.getElementById('release-history-modal');
+  const list = document.getElementById('release-history-list');
+  if (!modal || !list) return;
+  list.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const label = Utils.i18n(`releaseHistoryV${i}Label`);
+    const body = Utils.i18n(`releaseHistoryV${i}Body`);
+    if (!label) continue;
+    const entry = document.createElement('div');
+    entry.className = 'release-history-entry';
+    entry.innerHTML = `<div class="release-history-version"></div><div class="release-history-body"></div>`;
+    entry.querySelector('.release-history-version').textContent = label;
+    entry.querySelector('.release-history-body').textContent = body || '';
+    list.appendChild(entry);
+  }
+  const titleEl = modal.querySelector('.confirm-modal-title');
+  const closeBtn = document.getElementById('release-history-close');
+  if (titleEl) titleEl.textContent = Utils.i18n('releaseHistoryTitle') || 'Release History';
+  if (closeBtn) closeBtn.textContent = Utils.i18n('close') || 'Close';
+  modal.style.display = 'flex';
+}
+
+function setupReleaseHistoryModal() {
+  const modal = document.getElementById('release-history-modal');
+  if (!modal) return;
+  document.getElementById('release-history-close')?.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+  modal.querySelector('.confirm-modal-backdrop')?.addEventListener('click', () => {
+    modal.style.display = 'none';
+  });
+}
+
+function setupWhatsNewRelink() {
+  document.getElementById('whatsnew-relink')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    openReleaseHistoryModal();
+  });
+}
+
+// v2.5.9: Ayarlar kategori gruplarının açma/kapama mantığı. Varsayılan hepsi
+// AÇIK (hiçbir ayar "kayıp" hissi vermesin) — kullanıcı kapattığını
+// chrome.storage'da hatırlıyoruz, bir sonraki açılışta korunuyor.
+// v2.5.10: Tüm grupların (collapsed olmayanların) max-height'ını GERÇEK,
+// o anki scrollHeight'a göre yeniden hesaplar. Options paneli display:none'dan
+// display:block'a geçtiği her an çağrılmalı — aksi halde panel gizliyken
+// yapılan ilk ölçüm (scrollHeight=0) kalıcı olarak yanlış kalır.
+function refreshAllOptGroupHeights() {
+  document.querySelectorAll('#options-panel .opt-group').forEach(group => {
+    if (group.classList.contains('collapsed')) return;
+    const body = group.querySelector('.opt-group-body');
+    if (body) body.style.maxHeight = body.scrollHeight + 'px';
+  });
+}
+
+function setupOptGroups() {
+  const groups = document.querySelectorAll('.opt-group');
+  if (!groups.length) return;
+
+  // v2.5.11: Her grubun içindeki .opt-section sayısını, kapalıyken
+  // gösterilen küçük sayaca yaz — kullanıcı kapalı bir grupta ne kadar
+  // ayar olduğunu tahmin etmek zorunda kalmasın.
+  groups.forEach(group => {
+    const countEl = group.querySelector('.opt-group-count');
+    if (countEl) countEl.textContent = group.querySelectorAll('.opt-section').length;
+  });
+
+  // v2.5.10: Grubun gerçek içerik yüksekliğini (scrollHeight) ölçüp
+  // max-height'a atar — CSS grid tekniğinin aksine, içinde kaç .opt-section
+  // olursa olsun doğru çalışır.
+  function setExpanded(group, expanded) {
+    const body = group.querySelector('.opt-group-body');
+    if (!body) return;
+    if (expanded) {
+      group.classList.remove('collapsed');
+      body.style.maxHeight = body.scrollHeight + 'px';
+    } else {
+      // Geçiş animasyonunun düzgün çalışması için önce GERÇEK açık
+      // yüksekliği sabitleyip, hemen ardından collapsed class'ını ekliyoruz
+      // (CSS !important zaten 0'a indiriyor, animasyon buradan başlıyor).
+      body.style.maxHeight = body.scrollHeight + 'px';
+      requestAnimationFrame(() => group.classList.add('collapsed'));
+    }
+  }
+
+  // v2.5.10: Bir grup AÇIKKEN, içindeki bir alt-toggle (örn. Reklam
+  // Engelleme açıklaması) yükseklik değiştirirse, üst grubun sabitlenmiş
+  // max-height'ı bayat kalıp yeni içeriği kırpabilirdi — bu yüzden grup
+  // içindeki her tıklama/değişiklikten sonra yüksekliği tazeliyoruz.
+  function refreshIfExpanded(group) {
+    if (!group || group.classList.contains('collapsed')) return;
+    const body = group.querySelector('.opt-group-body');
+    if (!body) return;
+    setTimeout(() => { body.style.maxHeight = body.scrollHeight + 'px'; }, 220);
+  }
+
+  Storage.get(StorageKeys.OPT_GROUP_COLLAPSED_STATE).then(state => {
+    const collapsedMap = state && typeof state === 'object' ? state : {};
+    groups.forEach(group => {
+      const key = group.dataset.groupKey || group.id;
+      setExpanded(group, !collapsedMap[key]);
+    });
+  });
+
+  groups.forEach(group => {
+    const header = group.querySelector('.opt-group-header');
+    const body = group.querySelector('.opt-group-body');
+    if (header) {
+      header.addEventListener('click', async () => {
+        const willCollapse = !group.classList.contains('collapsed');
+        setExpanded(group, !willCollapse);
+        const key = group.dataset.groupKey || group.id;
+        const state = await Storage.get(StorageKeys.OPT_GROUP_COLLAPSED_STATE);
+        const collapsedMap = state && typeof state === 'object' ? { ...state } : {};
+        collapsedMap[key] = willCollapse;
+        await Storage.set(StorageKeys.OPT_GROUP_COLLAPSED_STATE, collapsedMap);
+      });
+    }
+    if (body) {
+      body.addEventListener('click', () => refreshIfExpanded(group));
+      body.addEventListener('change', () => refreshIfExpanded(group));
+    }
+  });
+}
+
+// v2.5.9: Ayarlar içi arama — 11+ bölüm arasında hızlı bulma için. Eşleşmeyen
+// opt-section'ları (ve içinde hiç eşleşme kalmayan grupları) gizler.
+// v2.5.11: Önceki aramadan kalan vurgulamaları temizler (metni orijinal
+// haline döndürür) — TreeWalker ile sadece <mark> etiketlerini "unwrap"
+// ediyoruz, input/checkbox gibi form elementlerine HİÇ dokunmuyoruz.
+function clearOptSearchHighlights(root) {
+  root.querySelectorAll('mark.opt-search-highlight').forEach(mark => {
+    const parent = mark.parentNode;
+    parent.replaceChild(document.createTextNode(mark.textContent), mark);
+    parent.normalize();
+  });
+}
+
+// v2.5.11: Bir bölüm içindeki SADECE metin düğümlerini (TreeWalker ile)
+// tarayıp eşleşen kelimeyi <mark> ile sarar. input/button/select gibi form
+// elementlerinin İÇİNDEKİ metne (örn. buton etiketleri) dokunmuyoruz ki
+// tıklama/etkileşim mantığı hiç bozulmasın — sadece düz metin (label,
+// açıklama) düğümlerini işliyoruz.
+function highlightOptSearchMatches(section, query) {
+  if (!query) return;
+  const walker = document.createTreeWalker(section, NodeFilter.SHOW_TEXT, {
+    acceptNode(node) {
+      if (!node.nodeValue || !node.nodeValue.toLowerCase().includes(query)) return NodeFilter.FILTER_REJECT;
+      const tag = node.parentElement && node.parentElement.tagName;
+      if (tag === 'SCRIPT' || tag === 'STYLE' || tag === 'MARK') return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  const targets = [];
+  let n;
+  while ((n = walker.nextNode())) targets.push(n);
+
+  targets.forEach(node => {
+    const text = node.nodeValue;
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(query);
+    if (idx === -1) return;
+    const before = text.slice(0, idx);
+    const matchText = text.slice(idx, idx + query.length);
+    const after = text.slice(idx + query.length);
+    const mark = document.createElement('mark');
+    mark.className = 'opt-search-highlight';
+    mark.textContent = matchText;
+    const frag = document.createDocumentFragment();
+    if (before) frag.appendChild(document.createTextNode(before));
+    frag.appendChild(mark);
+    if (after) frag.appendChild(document.createTextNode(after));
+    node.parentNode.replaceChild(frag, node);
+  });
+}
+
+function setupOptSearch() {
+  const input = document.getElementById('opt-search-input');
+  if (!input) return;
+  input.addEventListener('input', () => {
+    const q = input.value.toLowerCase().trim();
+    document.querySelectorAll('#options-panel .opt-group').forEach(group => {
+      let anyVisible = false;
+      group.querySelectorAll('.opt-section').forEach(section => {
+        clearOptSearchHighlights(section); // önce her zaman temizle - eski vurgular birikmesin
+        const text = section.textContent.toLowerCase();
+        const match = !q || text.includes(q);
+        section.classList.toggle('opt-search-hidden', !match);
+        if (match) anyVisible = true;
+        if (match && q) highlightOptSearchMatches(section, q);
+      });
+      group.classList.toggle('opt-search-hidden', !anyVisible);
+      // Arama sırasında eşleşen gruplar otomatik açılsın, sonuç gizli kalmasın
+      if (q && anyVisible) group.classList.remove('collapsed');
+      // v2.5.10: Filtreleme, görünür bölüm sayısını değiştirdiği için grup
+      // yüksekliğini (max-height) YENİDEN hesaplamamız lazım — yoksa
+      // gizlenen/gösterilen bölümler eski (bayat) yükseklikte kırpılır/boşluk
+      // bırakır. Sadece açık (collapsed olmayan) gruplar için gerekli.
+      if (!group.classList.contains('collapsed')) {
+        const body = group.querySelector('.opt-group-body');
+        if (body) body.style.maxHeight = body.scrollHeight + 'px';
+      }
+    });
+  });
+}
+
+// v2.5.9: Bot skoru formül detayının açılıp kapanması
+function setupBotScoreFormulaToggle() {
+  const btn = document.getElementById('bot-score-formula-toggle');
+  const detail = document.getElementById('bot-score-formula-detail');
+  if (!btn || !detail) return;
+  btn.addEventListener('click', () => {
+    detail.classList.toggle('collapsed');
+  });
+}
+
 // ─── v2.3.5: Follow tab sort bar ───
 async function setupFollowSortBar() {
   const bar = document.getElementById('follow-sort-bar');
@@ -1299,9 +1595,19 @@ function showOptionsPanel() {
   document.querySelector('.menu-container').style.display = 'none';
   document.querySelector('.tabs-container').style.display = 'none';
   document.querySelector('.content-container').style.display = 'none';
+  // v2.5.9: Yenilikler banner'ı da diğer ana ekran elementleriyle birlikte gizlensin
+  const wnBanner = document.getElementById('whatsnew-banner');
+  if (wnBanner) wnBanner.style.display = 'none';
   renderLangSelector();
   applyOptionsI18n();
   loadOptionsSettings();
+  // v2.5.10: KRİTİK — setupOptGroups() sayfa yüklenirken (DOMContentLoaded'da)
+  // çalışıyor, ama o an #options-panel hâlâ display:none. Gizli bir
+  // elementin scrollHeight'ı HER ZAMAN 0 döner, bu yüzden tüm gruplar
+  // yanlışlıkla max-height:0 ile başlıyordu. Panel görünür olduktan SONRA
+  // (bir sonraki frame'de, layout tamamlansın diye) yükseklikleri
+  // yeniden hesaplıyoruz.
+  requestAnimationFrame(() => refreshAllOptGroupHeights());
   setupOptionsListeners();
   setupEmailLoginNotice();
 }
@@ -1489,6 +1795,42 @@ async function loadOptionsSettings() {
   document.querySelectorAll('.opt-theme-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.theme === theme);
   });
+
+  // v2.5.29: Chat Bildirim Sesi — chatSettings'i Ayarlar panelinde ayrıca
+  // okuyoruz (Chat sekmesinden bağımsız bir görünüm burası).
+  const chatSettingsForOpt = await Storage.getChatSettings();
+  const optMentionSoundOn = chatSettingsForOpt?.mentionSoundEnabled !== false;
+  if (optEl('opt-chat-mention-sound-enabled')) optEl('opt-chat-mention-sound-enabled').checked = optMentionSoundOn;
+  if (optEl('opt-chat-mention-sound-smart')) optEl('opt-chat-mention-sound-smart').checked = !!chatSettingsForOpt?.mentionSoundSmart;
+  optUpdateChatNotifSoundBodyVisibility();
+  updateChatNotifSoundSectionState(chatSettingsForOpt);
+
+  await updateBackupRestoreUI(); // v2.5.19: son yedek zamanı + geri alma butonu durumu
+}
+
+// v2.5.19: Options paneli her açıldığında çağrılır — "son yedek" göstergesini
+// ve "Son Değişikliği Geri Al" butonunun görünürlüğünü günceller.
+async function updateBackupRestoreUI() {
+  const infoEl = document.getElementById('opt-last-export-info');
+  if (infoEl) {
+    const ts = await getLastExportTimestamp();
+    if (ts) {
+      const days = Math.floor((Date.now() - ts) / 86400000);
+      const dateStr = new Date(ts).toLocaleDateString();
+      let text;
+      if (days <= 0) text = Utils.i18n('lastExportToday') || `Last backup: today (${dateStr})`;
+      else text = (Utils.i18n('lastExportDaysAgo', [String(days)]) || `Last backup: ${days} days ago (${dateStr})`);
+      infoEl.textContent = text;
+    } else {
+      infoEl.textContent = Utils.i18n('lastExportNever') || 'No backup taken yet';
+    }
+  }
+
+  const restoreWrap = document.getElementById('opt-restore-snapshot-wrap');
+  if (restoreWrap) {
+    const hasSnapshot = await hasPreChangeSnapshot();
+    restoreWrap.style.display = hasSnapshot ? 'block' : 'none';
+  }
 }
 
 function optPopulateDndSelects() {
@@ -1586,6 +1928,15 @@ function syncCollapsibleDesc(checkboxId, descId) {
   const desc = document.getElementById(descId);
   if (!checkbox || !desc) return;
   desc.classList.toggle('collapsed', !checkbox.checked);
+  // v2.5.13: KRİTİK DÜZELTME. Bu fonksiyon bazen (örn. Reklam Engelleme onay
+  // modalının "Anladım, aç" butonundan) DOĞRUDAN çağrılıyor — normal bir
+  // checkbox 'change' event'i tetiklenmeden. Grup yüksekliğini SADECE
+  // 'change' event'ine bağlı dinleyiciyle yeniliyorduk, bu yüzden bu yoldan
+  // açılan açıklamalar üst grubun (bayat kalan) max-height'ı tarafından
+  // KIRPILIYORDU — açıklama görünür oluyordu ama grup içindeki SONRAKİ
+  // bölümler (örn. Kanal Önizleme Resimleri) görünmez oluyordu. Artık her
+  // çağrıda doğrudan tazeliyoruz, çağıran yol ne olursa olsun.
+  setTimeout(refreshAllOptGroupHeights, 220);
 }
 
 function optUpdateSoundModeVisibility() {
@@ -1629,6 +1980,17 @@ function setupOptionsListeners() {
   optBind('opt-dnd-mute-notif', v => Storage.setDndMuteNotif(v));
   optBind('opt-dnd-mute-sound', v => Storage.setDndMuteSound(v));
   optBind('opt-dnd-mute-autolaunch', v => Storage.setDndMuteAutolaunch(v));
+
+  // v2.5.29: Chat Bildirim Sesi — optBind KULLANILMIYOR çünkü chatSettings
+  // tek bir obje (ayrı bir StorageKey değil), Storage.updateChatSetting()
+  // ile yazılıyor (chat.js/popup.js'in geri kalanıyla aynı desen).
+  optEl('opt-chat-mention-sound-enabled')?.addEventListener('change', async e => {
+    await Storage.updateChatSetting('mentionSoundEnabled', e.target.checked);
+    optUpdateChatNotifSoundBodyVisibility();
+  });
+  optEl('opt-chat-mention-sound-smart')?.addEventListener('change', async e => {
+    await Storage.updateChatSetting('mentionSoundSmart', e.target.checked);
+  });
 
   // Anomaly listeners
   optEl('opt-anomaly-enabled').addEventListener('change', async e => {
@@ -1729,6 +2091,114 @@ function setupOptionsListeners() {
       setTimeout(() => { syncNowStatus.textContent = ''; }, 4000);
     });
   }
+
+  // v2.5.17: Ayarları Dışa Aktar — tüm tercihleri bir .json dosyası olarak indirir.
+  const exportBtn = document.getElementById('opt-export-settings');
+  const importBtn = document.getElementById('opt-import-settings');
+  const importFileInput = document.getElementById('opt-import-file-input');
+  const importExportStatus = document.getElementById('opt-import-export-status');
+
+  function showImportExportStatus(text, isError) {
+    if (!importExportStatus) return;
+    importExportStatus.textContent = text;
+    importExportStatus.style.color = isError ? 'var(--red, #e05252)' : 'var(--accent)';
+    setTimeout(() => { importExportStatus.textContent = ''; }, 5000);
+  }
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', async () => {
+      try {
+        const exportObj = await exportSettingsToObject();
+        const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const dateStr = new Date().toISOString().slice(0, 10);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `kickalert-settings-${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        showImportExportStatus(Utils.i18n('exportSettingsSuccess') || 'Downloaded!', false);
+      } catch (e) {
+        showImportExportStatus(Utils.i18n('exportSettingsFail') || 'Export failed', true);
+      }
+    });
+  }
+
+  // v2.5.17: Ayarları İçe Aktar — dosya seçtirip, ONAY ALDIKTAN SONRA
+  // (mevcut ayarların üzerine yazılacağı açıkça belirtilerek) uyguluyoruz.
+  let pendingImportObj = null;
+  if (importBtn && importFileInput) {
+    importBtn.addEventListener('click', () => importFileInput.click());
+    importFileInput.addEventListener('change', async () => {
+      const file = importFileInput.files[0];
+      importFileInput.value = ''; // aynı dosyayı tekrar seçebilsin diye sıfırla
+      if (!file) return;
+      try {
+        const text = await file.text();
+        const parsed = JSON.parse(text);
+        if (!parsed || parsed.kickAlertSettingsExport !== true) {
+          showImportExportStatus(Utils.i18n('importSettingsInvalid') || 'Not a valid KickAlert settings file', true);
+          return;
+        }
+        pendingImportObj = parsed;
+        document.getElementById('import-confirm-modal').style.display = 'flex';
+      } catch (e) {
+        showImportExportStatus(Utils.i18n('importSettingsInvalid') || 'Not a valid KickAlert settings file', true);
+      }
+    });
+  }
+  document.getElementById('import-confirm-cancel')?.addEventListener('click', () => {
+    pendingImportObj = null;
+    document.getElementById('import-confirm-modal').style.display = 'none';
+  });
+  document.getElementById('import-confirm-modal')?.querySelector('.confirm-modal-backdrop')?.addEventListener('click', () => {
+    pendingImportObj = null;
+    document.getElementById('import-confirm-modal').style.display = 'none';
+  });
+  document.getElementById('import-confirm-accept')?.addEventListener('click', async () => {
+    document.getElementById('import-confirm-modal').style.display = 'none';
+    if (!pendingImportObj) return;
+    const result = await importSettingsFromObject(pendingImportObj);
+    pendingImportObj = null;
+    if (result.ok) {
+      showImportExportStatus(Utils.i18n('importSettingsSuccess') || `Imported! Reloading...`, false);
+      setTimeout(() => location.reload(), 1200);
+    } else {
+      showImportExportStatus(Utils.i18n('importSettingsFail') || 'Import failed — file may be corrupted', true);
+    }
+  });
+
+  // v2.5.19: "Son Değişikliği Geri Al" — import ya da reset öncesindeki
+  // duruma tek tıkla döner. Kullanıldıktan sonra yedek temizlenir (tek seferlik).
+  document.getElementById('opt-restore-snapshot')?.addEventListener('click', async () => {
+    const result = await restorePreChangeSnapshot();
+    if (result.ok) {
+      showImportExportStatus(Utils.i18n('restoreSnapshotSuccess') || 'Restored! Reloading...', false);
+      setTimeout(() => location.reload(), 1200);
+    } else {
+      showImportExportStatus(Utils.i18n('restoreSnapshotFail') || 'Nothing to restore', true);
+    }
+  });
+
+  // v2.5.19: Varsayılanlara Sıfırla — mevcut yıkıcı-onay desenini (import-confirm)
+  // aynen tekrar kullanıyor, ayrı bir modal ile.
+  document.getElementById('opt-reset-defaults')?.addEventListener('click', () => {
+    document.getElementById('reset-confirm-modal').style.display = 'flex';
+  });
+  document.getElementById('reset-confirm-cancel')?.addEventListener('click', () => {
+    document.getElementById('reset-confirm-modal').style.display = 'none';
+  });
+  document.getElementById('reset-confirm-modal')?.querySelector('.confirm-modal-backdrop')?.addEventListener('click', () => {
+    document.getElementById('reset-confirm-modal').style.display = 'none';
+  });
+  document.getElementById('reset-confirm-accept')?.addEventListener('click', async () => {
+    document.getElementById('reset-confirm-modal').style.display = 'none';
+    await resetSettingsToDefaults();
+    showImportExportStatus(Utils.i18n('resetDefaultsSuccess') || 'Reset! Reloading...', false);
+    setTimeout(() => location.reload(), 1200);
+  });
 
   // Ad Block (v2.3.18, DENEYSEL) — sadece storage'a yazıyoruz, DNR ruleset
   // toggle'ı background.js'teki storage.onChanged dinleyicisinde yapılıyor.
@@ -2334,6 +2804,26 @@ function syncChatSectionStates(s) {
   });
 }
 
+// v2.5.29: Ana ses toggle'ı kapalıyken, alt seçenek (akıllı mod) kapsayıcısını
+// pasifleştir — optUpdateDndVisibility() ile BİREBİR AYNI desen
+// (.opt-dnd-body.disabled), tüm Options sayfası tutarlı olsun diye.
+function optUpdateChatNotifSoundBodyVisibility() {
+  const on = optEl('opt-chat-mention-sound-enabled')?.checked;
+  const body = optEl('opt-chat-notif-sound-body');
+  if (body) body.classList.toggle('disabled', !on);
+}
+
+// v2.5.29: Chat sekmesinde Tag/Yayıncı Mesajı bildirimlerinden EN AZ BİRİ
+// açık değilse, TÜM bölümü (ana toggle dahil) .fully-disabled ile pasifleştir.
+function updateChatNotifSoundSectionState(chatSettings) {
+  const section = document.getElementById('opt-chat-notif-sound-section');
+  const disabledNote = document.getElementById('opt-chat-notif-sound-disabled-note');
+  if (!section) return;
+  const anyEnabled = !!(chatSettings?.tagEnabled || chatSettings?.broadcasterNotif);
+  section.classList.toggle('fully-disabled', !anyEnabled);
+  if (disabledNote) disabledNote.style.display = anyEnabled ? 'none' : 'inline';
+}
+
 async function loadChatSettings() {
   const s = await Storage.getChatSettings();
 
@@ -2359,6 +2849,8 @@ async function loadChatSettings() {
   set('chat-fav-enabled', 'checked', !!s.favEnabled);
   set('chat-tag-enabled', 'checked', !!s.tagEnabled);
   set('chat-broadcaster-notif', 'checked', !!s.broadcasterNotif);
+  // v2.5.28: Ses ayarları artık Ayarlar > Bildirimler ve İzleme'de
+  // ("Chat Bildirim Sesi" bölümü) - render'ı orada, loadOptionsSettings'te.
 
   // Text input
   set('chat-tag-username', 'value', s.tagUsername || '');
@@ -2434,6 +2926,8 @@ function setupChatHandlers() {
   bindFlag('chat-fav-enabled', 'favEnabled');
   bindFlag('chat-tag-enabled', 'tagEnabled');
   bindFlag('chat-broadcaster-notif', 'broadcasterNotif');
+  // v2.5.28: Ses ayarlarının event listener'ları artık Ayarlar panelinde
+  // (setupOptionsListeners) - Chat sekmesinde sadece açma/kapama kalıyor.
 
   // Tag username (debounced)
   let tagTimeout;

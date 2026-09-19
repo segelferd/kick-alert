@@ -599,10 +599,10 @@
     "message": "Damit KickAlert zuverlässig funktioniert, empfehlen wir die Anmeldung bei Kick mit E-Mail und Passwort. Die Anmeldung über „Google\", „Apple\" oder ein anderes soziales Konto kann aufgrund einer Inkonsistenz auf den Servern von Kick gelegentlich verhindern, dass die Erweiterung Ihre Daten laden kann."
   },
   "adBlockTitle": {
-    "message": "Werbeblockierung (experimentell)"
+    "message": "Werbeblockierung"
   },
   "adBlockWarning": {
-    "message": "Experimentell und inoffiziell — hängt von der internen API-Struktur von Kick ab und kann jederzeit ohne Vorankündigung nicht mehr funktionieren. Mit der Aktivierung übernehmen Sie diese Verantwortung. Lassen Sie es deaktiviert, um KickAlert unverändert wie bisher zu nutzen."
+    "message": "Experimentell und inoffiziell — hängt von der internen API-Struktur von Kick ab und kann jederzeit ohne Vorankündigung nicht mehr funktionieren. Mit der Aktivierung übernehmen Sie diese Verantwortung. Lassen Sie es deaktiviert, um KickAlert unverändert wie bisher zu nutzen. Damit dies wirksam wird, müssen geöffnete Kick-Tabs neu geladen werden."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Gerade jetzt relevant:"
@@ -633,5 +633,155 @@
   },
   "cancel": {
     "message": "Abbrechen"
+  },
+  "experimentalChip": {
+    "message": "EXPERIMENTELL"
+  },
+  "botScoreSimpleInfo": {
+    "message": "Schätzt anhand der Chat-Aktivität, ob die Zuschauerzahl eines Kanals echt aussieht."
+  },
+  "botScoreFormulaLink": {
+    "message": "Wie wird das berechnet?"
+  },
+  "noChannelsFollowedYet": {
+    "message": "Du folgst noch niemandem. Folge einem Kanal auf Kick, und er erscheint hier automatisch."
+  },
+  "whatsNewBannerText": {
+    "message": "Neu: Werbeblocker wurde verbessert, die Einstellungen sind jetzt in Kategorien unterteilt, und ein Fehler bei den Kanalvorschauen wurde behoben. Schau dir die <a id=\"whatsnew-settings-link\">Einstellungen</a> an."
+  },
+  "optGroupGeneral": {
+    "message": "Allgemein"
+  },
+  "optGroupNotifications": {
+    "message": "Benachrichtigungen & Überwachung"
+  },
+  "optGroupFeatures": {
+    "message": "Zusätzliche Funktionen"
+  },
+  "optGroupAccount": {
+    "message": "Konto & Synchronisierung"
+  },
+  "optSearchPlaceholder": {
+    "message": "Einstellungen durchsuchen..."
+  },
+  "whatsNewRelink": {
+    "message": "Neuigkeiten"
+  },
+  "releaseHistoryTitle": {
+    "message": "Versionsverlauf"
+  },
+  "close": {
+    "message": "Schließen"
+  },
+  "releaseHistoryV0Label": {
+    "message": "v2.5 — Werbeblocker-Härtung & Einstellungs-Redesign"
+  },
+  "releaseHistoryV0Body": {
+    "message": "• Drei neue Werbeblocker-Ebenen: GPT/IMA-SDK-Attrappe, segmentbasierte Filterung und Erkennung von Kicks eigenem „Schwarzbild“-Übergang\n• VOD-Suche nach werbefreier Quelle ist schneller und sicherer\n• Einstellungen in aufklappbare Kategorien mit Suche neu organisiert\n• „Neuigkeiten“-Banner und dieser Verlauf\n• Sicherung & Wiederherstellung: exportiere/importiere alle deine Einstellungen als Datei (mit einem einmaligen Rückgängig-Sicherheitsnetz und einer Option „Auf Standard zurücksetzen“)\n• Behoben: Werbe-Ausblendung hatte visuell keine Wirkung (CSS-Regel erreichte die Seite nie) und lief nur, wenn unsere eigene Erkennung ausgelöst wurde — funktioniert jetzt unabhängig und erfasst mehr Werbe-Overlays"
+  },
+  "releaseHistoryV1Label": {
+    "message": "v2.4.0 — Kanalvorschauen & Werbeblocker"
+  },
+  "releaseHistoryV1Body": {
+    "message": "• Kanalvorschaubilder in der Liste „Gefolgt“\n• Werbeblocker (experimentell) für Livestreams und VODs\n• Bot-Erkennung für Zuschauerzahlen"
+  },
+  "releaseHistoryV2Label": {
+    "message": "v2.3.0 — Chat-Integration"
+  },
+  "releaseHistoryV2Body": {
+    "message": "• Chat-Tab: Bot-/Spam-/Duplikat-/Schlüsselwortfilterung, Favoriten, Erwähnungen\n• Nicht-stören-Zeitplan\n• Erkennung von Zuschaueranomalien"
+  },
+  "settingsBackupTitle": {
+    "message": "Sicherung & Wiederherstellung"
+  },
+  "settingsBackupDesc": {
+    "message": "Lade alle deine Einstellungen als Datei herunter oder stelle sie aus einem früheren Backup wieder her — nützlich, wenn du keine Cloud-Synchronisierung verwendest."
+  },
+  "exportSettingsBtn": {
+    "message": "Einstellungen exportieren"
+  },
+  "importSettingsBtn": {
+    "message": "Einstellungen importieren"
+  },
+  "exportSettingsSuccess": {
+    "message": "Heruntergeladen!"
+  },
+  "exportSettingsFail": {
+    "message": "Export fehlgeschlagen"
+  },
+  "importSettingsInvalid": {
+    "message": "Keine gültige KickAlert-Einstellungsdatei"
+  },
+  "importSettingsSuccess": {
+    "message": "Importiert! Wird neu geladen..."
+  },
+  "importSettingsFail": {
+    "message": "Import fehlgeschlagen — Datei könnte beschädigt sein"
+  },
+  "importConfirmTitle": {
+    "message": "Einstellungen importieren?"
+  },
+  "importConfirmBody": {
+    "message": "Dadurch werden deine aktuellen Einstellungen (Benachrichtigungen, Sounds, Nicht stören, Chat-Filter und mehr) mit denen aus dieser Datei überschrieben. Dies kann nicht rückgängig gemacht werden."
+  },
+  "importConfirmAccept": {
+    "message": "Überschreiben und importieren"
+  },
+  "lastExportToday": {
+    "message": "Letztes Backup: heute"
+  },
+  "lastExportDaysAgo": {
+    "message": "Letztes Backup: vor $1 Tagen"
+  },
+  "lastExportNever": {
+    "message": "Noch kein Backup erstellt"
+  },
+  "restoreSnapshotBtn": {
+    "message": "Letzte Änderung rückgängig machen"
+  },
+  "restoreSnapshotSuccess": {
+    "message": "Wiederhergestellt! Wird neu geladen..."
+  },
+  "restoreSnapshotFail": {
+    "message": "Nichts zum Wiederherstellen"
+  },
+  "resetDefaultsTitle": {
+    "message": "Auf Standard zurücksetzen"
+  },
+  "resetDefaultsDesc": {
+    "message": "Lösche alle deine Einstellungen und beginne von vorn. Erwäge, zuerst ein Backup zu exportieren."
+  },
+  "resetDefaultsBtn": {
+    "message": "Alles zurücksetzen"
+  },
+  "resetConfirmTitle": {
+    "message": "Wirklich alles zurücksetzen?"
+  },
+  "resetConfirmBody": {
+    "message": "Dadurch werden alle deine Einstellungen gelöscht und auf die Standardwerte zurückgesetzt. Dies kann nicht rückgängig gemacht werden (du kannst es aber direkt danach einmal mit „Letzte Änderung rückgängig machen“ rückgängig machen)."
+  },
+  "resetConfirmAccept": {
+    "message": "Alles zurücksetzen"
+  },
+  "resetDefaultsSuccess": {
+    "message": "Zurückgesetzt! Wird neu geladen..."
+  },
+  "chatReplyNotifTitle": {
+    "message": "$1 hat dir geantwortet"
+  },
+  "chatMentionSoundSmart": {
+    "message": "Spiele den Benachrichtigungston nur ab, wenn du nicht aktiv zuschaust (Tab im Hintergrund oder Chat hochgescrollt) — gilt für Erwähnungen, Antworten und Streamer-Nachrichten."
+  },
+  "chatMentionSoundEnabled": {
+    "message": "Auch einen Ton abspielen (aus = nur stumme Popup-Benachrichtigung)"
+  },
+  "chatNotifSoundTitle": {
+    "message": "Chat-Benachrichtigungston"
+  },
+  "chatNotifSoundDesc": {
+    "message": "Toneinstellungen für die Erwähnungs- und Streamer-Nachrichten-Benachrichtigungen im Chat-Tab."
+  },
+  "chatNotifSoundDisabledNote": {
+    "message": " Aktiviere zuerst „Erwähnungsbenachrichtigung\" oder „Streamer-Nachrichtenbenachrichtigung\" im Chat-Tab."
   }
 }

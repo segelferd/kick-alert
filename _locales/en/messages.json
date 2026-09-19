@@ -599,10 +599,10 @@
     "message": "For KickAlert to work reliably, we recommend logging into Kick with email and password. Signing in with \"Google,\" \"Apple,\" or another social account can sometimes prevent the extension from loading your data, due to an inconsistency on Kick's own servers."
   },
   "adBlockTitle": {
-    "message": "Ad Blocking (Experimental)"
+    "message": "Ad Blocking"
   },
   "adBlockWarning": {
-    "message": "Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected."
+    "message": "Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected. Open Kick tabs must be refreshed for this to take effect."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Relevant right now:"
@@ -633,5 +633,155 @@
   },
   "cancel": {
     "message": "Cancel"
+  },
+  "experimentalChip": {
+    "message": "EXPERIMENTAL"
+  },
+  "botScoreSimpleInfo": {
+    "message": "Estimates whether a channel's viewer count looks genuine, based on chat activity."
+  },
+  "botScoreFormulaLink": {
+    "message": "How is this calculated?"
+  },
+  "noChannelsFollowedYet": {
+    "message": "You're not following anyone yet. Follow a channel on Kick and it'll show up here automatically."
+  },
+  "whatsNewBannerText": {
+    "message": "New: Ad-blocking is stronger, settings are now organized into categories, and channel previews got a fix. Check out <a id=\"whatsnew-settings-link\">Settings</a> to explore."
+  },
+  "optGroupGeneral": {
+    "message": "General"
+  },
+  "optGroupNotifications": {
+    "message": "Notifications & Monitoring"
+  },
+  "optGroupFeatures": {
+    "message": "Additional Features"
+  },
+  "optGroupAccount": {
+    "message": "Account & Sync"
+  },
+  "optSearchPlaceholder": {
+    "message": "Search settings..."
+  },
+  "whatsNewRelink": {
+    "message": "What's New"
+  },
+  "releaseHistoryTitle": {
+    "message": "Release History"
+  },
+  "close": {
+    "message": "Close"
+  },
+  "releaseHistoryV0Label": {
+    "message": "v2.5 — Ad-block hardening & settings redesign"
+  },
+  "releaseHistoryV0Body": {
+    "message": "• Three new ad-blocking layers: GPT/IMA SDK stub, segment-level filtering, and detection of Kick's own \"black slate\" transition overlay\n• VOD ad-free lookup is faster and safer (time budget, thumbnail-based fast path)\n• Settings reorganized into collapsible categories, with search\n• \"What's New\" banner and this history view\n• Backup & Restore: export/import all your settings as a file (with a one-time undo safety net and a \"Reset to Defaults\" option)\n• Fixed ad-hiding not actually working visually (the CSS rule never reached the page) and only running when our own ad detection had fired — now works independently and catches more ad control overlays"
+  },
+  "releaseHistoryV1Label": {
+    "message": "v2.4.0 — Channel Previews & Ad Blocking"
+  },
+  "releaseHistoryV1Body": {
+    "message": "• Channel Preview Images in the Following list\n• Ad Blocking (experimental) for live streams and VODs\n• Bot Detection scoring for viewer counts"
+  },
+  "releaseHistoryV2Label": {
+    "message": "v2.3.0 — Chat Integration"
+  },
+  "releaseHistoryV2Body": {
+    "message": "• Chat tab: bot/spam/duplicate/keyword filtering, favorites, mentions\n• Do Not Disturb scheduling\n• Viewer anomaly detection"
+  },
+  "settingsBackupTitle": {
+    "message": "Backup & Restore"
+  },
+  "settingsBackupDesc": {
+    "message": "Download all your preferences as a file, or restore them from a previous backup — useful if you're not using Cloud Sync."
+  },
+  "exportSettingsBtn": {
+    "message": "Export Settings"
+  },
+  "importSettingsBtn": {
+    "message": "Import Settings"
+  },
+  "exportSettingsSuccess": {
+    "message": "Downloaded!"
+  },
+  "exportSettingsFail": {
+    "message": "Export failed"
+  },
+  "importSettingsInvalid": {
+    "message": "Not a valid KickAlert settings file"
+  },
+  "importSettingsSuccess": {
+    "message": "Imported! Reloading..."
+  },
+  "importSettingsFail": {
+    "message": "Import failed — file may be corrupted"
+  },
+  "importConfirmTitle": {
+    "message": "Import Settings?"
+  },
+  "importConfirmBody": {
+    "message": "This will overwrite your current preferences (notifications, sounds, DND, chat filters, and more) with the ones from this file. This cannot be undone."
+  },
+  "importConfirmAccept": {
+    "message": "Overwrite and Import"
+  },
+  "lastExportToday": {
+    "message": "Last backup: today"
+  },
+  "lastExportDaysAgo": {
+    "message": "Last backup: $1 days ago"
+  },
+  "lastExportNever": {
+    "message": "No backup taken yet"
+  },
+  "restoreSnapshotBtn": {
+    "message": "Undo Last Change"
+  },
+  "restoreSnapshotSuccess": {
+    "message": "Restored! Reloading..."
+  },
+  "restoreSnapshotFail": {
+    "message": "Nothing to restore"
+  },
+  "resetDefaultsTitle": {
+    "message": "Reset to Defaults"
+  },
+  "resetDefaultsDesc": {
+    "message": "Clear all your preferences and start fresh. Consider exporting a backup first."
+  },
+  "resetDefaultsBtn": {
+    "message": "Reset Everything"
+  },
+  "resetConfirmTitle": {
+    "message": "Reset Everything?"
+  },
+  "resetConfirmBody": {
+    "message": "This will clear all your preferences and return them to their default values. This cannot be undone (but you can undo it once, right after, using \"Undo Last Change\")."
+  },
+  "resetConfirmAccept": {
+    "message": "Reset Everything"
+  },
+  "resetDefaultsSuccess": {
+    "message": "Reset! Reloading..."
+  },
+  "chatReplyNotifTitle": {
+    "message": "$1 replied to you"
+  },
+  "chatMentionSoundSmart": {
+    "message": "Only play the notification sound when you're not actively watching (tab hidden or chat scrolled up) — applies to tags, replies, and streamer messages."
+  },
+  "chatMentionSoundEnabled": {
+    "message": "Also play a sound (off = silent popup notification only)"
+  },
+  "chatNotifSoundTitle": {
+    "message": "Chat Notification Sound"
+  },
+  "chatNotifSoundDesc": {
+    "message": "Sound settings for the Chat tab's tag and streamer-message notifications."
+  },
+  "chatNotifSoundDisabledNote": {
+    "message": " Turn on \"Tag notification\" or \"Streamer message notification\" in the Chat tab first."
   }
 }

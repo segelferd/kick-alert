@@ -42,6 +42,7 @@ const SoundPaths = {
   DEFAULT: '../sounds/new_live_sub.mp3',
   NEW_LIVE_MAIN: '../sounds/new_live_main.mp3',
   NEW_LIVE_SUB: '../sounds/new_live_sub.mp3',
+  CHAT_MENTION: '../sounds/chat_mention.mp3',
 };
 
 setInterval(async () => {

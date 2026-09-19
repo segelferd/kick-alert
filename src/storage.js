@@ -55,8 +55,16 @@ const StorageKeys = {
   CHANNEL_THUMBNAILS_ENABLED: 'channelThumbnailsEnabled',
   // v2.4.4: Kategori/grup filtre çubuğunun açık/kapalı tercihi (dikey yer tasarrufu için varsayılan kapalı)
   GROUP_FILTER_EXPANDED: 'groupFilterExpanded',
+  // v2.5.9: "Yenilikler" banner'ının son görüldüğü sürüm + Ayarlar grup açık/kapalı durumları
+  WHATSNEW_DISMISSED_VERSION: 'whatsnewDismissedVersion',
+  OPT_GROUP_COLLAPSED_STATE: 'optGroupCollapsedState',
+  PREVIEW_FIRST_USE_STATE: 'previewFirstUseState',
   // v2.3.23: "Session var ama Kick reddetti" durumu aktif mi (cihaza özel, internal)
   AUTH_SESSION_REJECTED: '_authSessionRejected',
+  // v2.5.19: İçe aktarmadan hemen önceki durumun güvenlik-ağı yedeği (internal,
+  // dışa aktarılmaz) + en son dışa aktarma zaman damgası (internal)
+  PRE_IMPORT_SNAPSHOT: '_preImportSnapshot',
+  LAST_EXPORT_TIMESTAMP: '_lastExportTimestamp',
 };
 
 // Keys that should NOT be synced (too large, device-specific, or internal)
@@ -95,6 +103,9 @@ const StorageDefaults = {
   [StorageKeys.AD_BLOCK_ENABLED]: false,
   [StorageKeys.CHANNEL_THUMBNAILS_ENABLED]: false,
   [StorageKeys.GROUP_FILTER_EXPANDED]: false,
+  [StorageKeys.WHATSNEW_DISMISSED_VERSION]: '',
+  [StorageKeys.OPT_GROUP_COLLAPSED_STATE]: {},
+  [StorageKeys.PREVIEW_FIRST_USE_STATE]: false,
   [StorageKeys.AUTH_SESSION_REJECTED]: false,
 };
 
@@ -617,3 +628,120 @@ const Storage = {
     await this.set(StorageKeys.BOT_SCORES, scores);
   },
 };
+
+// v2.5.17: Ayarları Dışa/İçe Aktar — kullanıcı eklentiyi yeniden kurduğunda
+// (Bulut Senkronu kullanmıyorsa) tüm tercihlerini bir dosyadan geri
+// yükleyebilsin. BİLİNÇLİ OLARAK HARİÇ TUTULANLAR:
+//   - SUSPEND_FROM_DATE: belirli bir tarihe kadar geçerli, geri yüklenince
+//     bayat/anlamsız bir zaman damgası olurdu
+//   - NOTIFICATION_HISTORY, VIEWER_HISTORY: ayar değil, geçmiş kayıt/önbellek
+//   - CHATROOM_ID_CACHE, BOT_SCORES: dahili önbellekler (_ önekli)
+//   - EMAIL_LOGIN_NOTICE_DISMISSED, AUTH_SESSION_REJECTED: zaten "cihaza özel,
+//     senkronize edilmez" olarak işaretli
+//   - WHATSNEW_DISMISSED_VERSION, OPT_GROUP_COLLAPSED_STATE,
+//     PREVIEW_FIRST_USE_STATE: tercih değil, arayüz durumu/onboarding bayrağı
+const EXPORTABLE_SETTINGS_KEYS = [
+  StorageKeys.SHOW_NOTIFICATION, StorageKeys.SOUND_VOLUME, StorageKeys.RESET_SUSPEND_ON_RESTART,
+  StorageKeys.DUPLICATE_TAB_GUARD, StorageKeys.AUTO_OPEN_CHANNELS, StorageKeys.AUTO_UNMUTE,
+  StorageKeys.CHECK_INTERVAL, StorageKeys.SHOW_OFFLINE_CHANNELS, StorageKeys.AUTO_REFRESH_POPUP,
+  StorageKeys.CUSTOM_SOUND_MAIN, StorageKeys.CUSTOM_SOUND_SUB, StorageKeys.USER_LANGUAGE,
+  StorageKeys.USE_BROWSER_LANGUAGE, StorageKeys.DND_ENABLED, StorageKeys.DND_START, StorageKeys.DND_END,
+  StorageKeys.DND_MUTE_NOTIF, StorageKeys.DND_MUTE_SOUND, StorageKeys.DND_MUTE_AUTOLAUNCH,
+  StorageKeys.SOUND_MODE, StorageKeys.CHANNEL_SOUND_MODE, StorageKeys.FAVORITE_CHANNELS,
+  StorageKeys.CLOUD_SYNC_ENABLED, StorageKeys.THEME, StorageKeys.CHANNEL_GROUPS,
+  StorageKeys.CHANNEL_GROUP_MAP, StorageKeys.ANOMALY_SETTINGS, StorageKeys.NOTIF_DELAY,
+  StorageKeys.AUTO_OPEN_DELAY, StorageKeys.FOLLOW_SORT_BY, StorageKeys.FOLLOW_SORT_DIR,
+  StorageKeys.CHAT_INTEGRATION_ENABLED, StorageKeys.CHAT_SETTINGS, StorageKeys.BOT_TRACKER_ENABLED,
+  StorageKeys.BOT_TRACKER_NOTIFY, StorageKeys.BOT_SCORE_ALWAYS_VISIBLE, StorageKeys.AD_BLOCK_ENABLED,
+  StorageKeys.CHANNEL_THUMBNAILS_ENABLED, StorageKeys.GROUP_FILTER_EXPANDED,
+];
+
+const SETTINGS_EXPORT_FORMAT_VERSION = 1;
+
+async function exportSettingsToObject() {
+  const data = await new Promise(resolve => chrome.storage.local.get(EXPORTABLE_SETTINGS_KEYS, resolve));
+  // v2.5.19: En son dışa aktarma zamanını kaydet - kullanıcı "en son ne zaman
+  // yedek aldım?" diye merak ettiğinde gösterebilelim.
+  await new Promise(resolve => chrome.storage.local.set({ [StorageKeys.LAST_EXPORT_TIMESTAMP]: Date.now() }, resolve));
+  return {
+    kickAlertSettingsExport: true,
+    exportFormatVersion: SETTINGS_EXPORT_FORMAT_VERSION,
+    extensionVersion: chrome.runtime.getManifest().version,
+    exportedAt: new Date().toISOString(),
+    settings: data,
+  };
+}
+
+async function getLastExportTimestamp() {
+  const result = await new Promise(resolve => chrome.storage.local.get(StorageKeys.LAST_EXPORT_TIMESTAMP, resolve));
+  return result[StorageKeys.LAST_EXPORT_TIMESTAMP] || null;
+}
+
+// v2.5.19: İçe aktarma ve Sıfırlama gibi YIKICI (mevcut ayarların üzerine
+// yazan) işlemlerden HEMEN ÖNCE çağrılır — sadece DEĞİŞECEK anahtarların
+// MEVCUT değerlerini bir "geri al" yedeği olarak saklar. Sonradan
+// restorePreChangeSnapshot() ile tek tıkla geri alınabilir. Kendisi
+// EXPORTABLE_SETTINGS_KEYS'in dışında (internal), dışa aktarılmaz.
+async function createPreChangeSnapshot(affectedKeys) {
+  const current = await new Promise(resolve => chrome.storage.local.get(affectedKeys, resolve));
+  await new Promise(resolve => chrome.storage.local.set({
+    [StorageKeys.PRE_IMPORT_SNAPSHOT]: { timestamp: Date.now(), keys: current },
+  }, resolve));
+}
+
+async function hasPreChangeSnapshot() {
+  const result = await new Promise(resolve => chrome.storage.local.get(StorageKeys.PRE_IMPORT_SNAPSHOT, resolve));
+  return !!(result[StorageKeys.PRE_IMPORT_SNAPSHOT] && result[StorageKeys.PRE_IMPORT_SNAPSHOT].keys);
+}
+
+// Döndürür: { ok: true } ya da { ok: false, error: 'NO_SNAPSHOT' }
+// Tek seferlik "geri al" — kullanıldıktan sonra yedek temizlenir (üst üste
+// geri almanın anlamı olmadığı için, established "undo" mantığıyla tutarlı).
+async function restorePreChangeSnapshot() {
+  const result = await new Promise(resolve => chrome.storage.local.get(StorageKeys.PRE_IMPORT_SNAPSHOT, resolve));
+  const snapshot = result[StorageKeys.PRE_IMPORT_SNAPSHOT];
+  if (!snapshot || !snapshot.keys) return { ok: false, error: 'NO_SNAPSHOT' };
+  await new Promise(resolve => chrome.storage.local.set(snapshot.keys, resolve));
+  await new Promise(resolve => chrome.storage.local.remove(StorageKeys.PRE_IMPORT_SNAPSHOT, resolve));
+  return { ok: true };
+}
+
+// Döndürür: { ok: true, importedCount } ya da { ok: false, error }
+async function importSettingsFromObject(obj) {
+  if (!obj || obj.kickAlertSettingsExport !== true || typeof obj.settings !== 'object') {
+    return { ok: false, error: 'INVALID_FILE' };
+  }
+  if (typeof obj.exportFormatVersion !== 'number' || obj.exportFormatVersion > SETTINGS_EXPORT_FORMAT_VERSION) {
+    return { ok: false, error: 'UNSUPPORTED_VERSION' };
+  }
+  // Sadece bilinen, dışa aktarılabilir anahtarları yaz — dosyada başka/zararlı
+  // bir anahtar olsa bile (elle düzenlenmiş olabilir) yoksayılır.
+  const toWrite = {};
+  let importedCount = 0;
+  for (const key of EXPORTABLE_SETTINGS_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(obj.settings, key)) {
+      toWrite[key] = obj.settings[key];
+      importedCount++;
+    }
+  }
+  if (importedCount === 0) return { ok: false, error: 'EMPTY' };
+  // v2.5.19: Üzerine yazmadan HEMEN ÖNCE, sadece değişecek anahtarların
+  // mevcut halini yedekle — kullanıcı yanlış dosyayı seçtiyse tek tıkla geri dönebilsin.
+  await createPreChangeSnapshot(Object.keys(toWrite));
+  await new Promise(resolve => chrome.storage.local.set(toWrite, resolve));
+  return { ok: true, importedCount };
+}
+
+// v2.5.19: Tüm dışa aktarılabilir ayarları varsayılan değerlerine döndürür.
+// Aynı güvenlik-ağı mekanizmasını (createPreChangeSnapshot) kullanır.
+async function resetSettingsToDefaults() {
+  const toWrite = {};
+  for (const key of EXPORTABLE_SETTINGS_KEYS) {
+    if (Object.prototype.hasOwnProperty.call(StorageDefaults, key)) {
+      toWrite[key] = StorageDefaults[key];
+    }
+  }
+  await createPreChangeSnapshot(Object.keys(toWrite));
+  await new Promise(resolve => chrome.storage.local.set(toWrite, resolve));
+  return { ok: true };
+}

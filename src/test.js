@@ -758,6 +758,31 @@ async function diagSetInterval() {
   setTimeout(() => refreshDiagStatus(), 500);
 }
 
+// ─── v2.5.9: İlk Kullanım / UX Önizleme ───
+async function diagPreviewFirstUse() {
+  const statusEl = document.getElementById('preview-first-use-status');
+  try {
+    await chrome.storage.local.set({
+      previewFirstUseState: true,
+      whatsnewDismissedVersion: '', // banner'ı da bu açılışta göster
+    });
+    dlog('🎬 İlk kullanım önizlemesi hazırlandı (banner + boş durum) — gerçek takip verisi ETKİLENMEDİ', 'ok');
+    if (statusEl) statusEl.textContent = '✅ Hazır — şimdi eklenti popup\'ını (yeniden) aç, bir kerelik gösterilecek.';
+  } catch (e) {
+    dlog('❌ Önizleme hazırlanamadı: ' + e.message, 'error');
+    if (statusEl) statusEl.textContent = '❌ Hata: ' + e.message;
+  }
+}
+
+async function diagResetOptGroups() {
+  try {
+    await chrome.storage.local.set({ optGroupCollapsedState: {} });
+    dlog('↺ Ayarlar grup açık/kapalı durumları sıfırlandı — tüm gruplar tekrar açık başlayacak', 'ok');
+  } catch (e) {
+    dlog('❌ Sıfırlanamadı: ' + e.message, 'error');
+  }
+}
+
 // ─── Eklentiyi yeniden başlat ───
 async function diagReloadExt() {
   if (!confirm('Eklenti yeniden başlatılacak. Devam?')) return;
@@ -1388,6 +1413,8 @@ function initDiagnosticPanel() {
   document.getElementById('btn-diag-channels')?.addEventListener('click', diagChannels);
   document.getElementById('btn-diag-bot-scores')?.addEventListener('click', diagBotScores);
   document.getElementById('btn-diag-set-interval')?.addEventListener('click', diagSetInterval);
+  document.getElementById('btn-preview-first-use')?.addEventListener('click', diagPreviewFirstUse);
+  document.getElementById('btn-preview-reset-groups')?.addEventListener('click', diagResetOptGroups);
   document.getElementById('btn-diag-reload-ext')?.addEventListener('click', diagReloadExt);
 
   // Health header tek-tık yenileme: hem stats hem cookies

@@ -599,10 +599,10 @@
     "message": "KickAlertが正常に動作するために、Kickにはメールアドレスとパスワードでログインすることをお勧めします。「Google」や「Apple」、その他のソーシャルアカウントでログインすると、Kickのサーバー側の不整合により、拡張機能がデータを読み込めなくなることがあります。"
   },
   "adBlockTitle": {
-    "message": "広告ブロック（実験的機能）"
+    "message": "広告ブロック"
   },
   "adBlockWarning": {
-    "message": "これは実験的かつ非公式な機能です。KickのAPI内部構造に依存しているため、予告なく動作しなくなる可能性があります。有効にする場合は、その点をご了承のうえご利用ください。オフのままにすれば、KickAlertはこれまでどおり影響を受けずに動作します。"
+    "message": "これは実験的かつ非公式な機能です。KickのAPI内部構造に依存しているため、予告なく動作しなくなる可能性があります。有効にする場合は、その点をご了承のうえご利用ください。オフのままにすれば、KickAlertはこれまでどおり影響を受けずに動作します。 反映させるには、開いているKickのタブを更新してください。"
   },
   "emailLoginNoticeUrgentTag": {
     "message": "今まさに関係しています:"
@@ -633,5 +633,155 @@
   },
   "cancel": {
     "message": "キャンセル"
+  },
+  "experimentalChip": {
+    "message": "実験的機能"
+  },
+  "botScoreSimpleInfo": {
+    "message": "チャットの活動をもとに、チャンネルの視聴者数が本物らしいかどうかを推定します。"
+  },
+  "botScoreFormulaLink": {
+    "message": "どのように計算されますか？"
+  },
+  "noChannelsFollowedYet": {
+    "message": "まだ誰もフォローしていません。Kickでチャンネルをフォローすると、自動的にここに表示されます。"
+  },
+  "whatsNewBannerText": {
+    "message": "新機能：広告ブロックが強化され、設定がカテゴリー別に整理され、チャンネルプレビューの不具合が修正されました。<a id=\"whatsnew-settings-link\">設定</a>を確認してみてください。"
+  },
+  "optGroupGeneral": {
+    "message": "一般"
+  },
+  "optGroupNotifications": {
+    "message": "通知とモニタリング"
+  },
+  "optGroupFeatures": {
+    "message": "追加機能"
+  },
+  "optGroupAccount": {
+    "message": "アカウントと同期"
+  },
+  "optSearchPlaceholder": {
+    "message": "設定を検索..."
+  },
+  "whatsNewRelink": {
+    "message": "新機能"
+  },
+  "releaseHistoryTitle": {
+    "message": "リリース履歴"
+  },
+  "close": {
+    "message": "閉じる"
+  },
+  "releaseHistoryV0Label": {
+    "message": "v2.5 — 広告ブロック強化と設定の再設計"
+  },
+  "releaseHistoryV0Body": {
+    "message": "• 3つの新しい広告ブロック層：GPT/IMA SDKスタブ、セグメントレベルのフィルタリング、Kick独自の「ブラックスレート」遷移オーバーレイの検出\n• VOD広告なしソース検索がより高速かつ安全に\n• 設定が折りたたみ可能なカテゴリーに再編成され、検索機能を追加\n• 「新機能」バナーとこの履歴表示\n• バックアップと復元：すべての設定をファイルとしてエクスポート/インポート（一度だけ元に戻せる安全機能と「初期設定に戻す」オプション付き）\n• 広告非表示が視覚的に機能しておらず（CSSルールがページに届いていなかった）、独自の検出が発動した時のみ動作していた問題を修正 — 現在は独立して動作し、より多くの広告コントロールを検出"
+  },
+  "releaseHistoryV1Label": {
+    "message": "v2.4.0 — チャンネルプレビューと広告ブロック"
+  },
+  "releaseHistoryV1Body": {
+    "message": "• フォロー中リストのチャンネルプレビュー画像\n• ライブ配信とVOD向けの広告ブロック（実験的機能）\n• 視聴者数のボット検出スコア"
+  },
+  "releaseHistoryV2Label": {
+    "message": "v2.3.0 — チャット統合"
+  },
+  "releaseHistoryV2Body": {
+    "message": "• チャットタブ：ボット/スパム/重複/キーワードフィルタリング、お気に入り、メンション\n• 通知オフのスケジュール設定\n• 視聴者異常検知"
+  },
+  "settingsBackupTitle": {
+    "message": "バックアップと復元"
+  },
+  "settingsBackupDesc": {
+    "message": "すべての設定をファイルとしてダウンロードするか、以前のバックアップから復元できます — クラウド同期を使用していない場合に便利です。"
+  },
+  "exportSettingsBtn": {
+    "message": "設定をエクスポート"
+  },
+  "importSettingsBtn": {
+    "message": "設定をインポート"
+  },
+  "exportSettingsSuccess": {
+    "message": "ダウンロードしました！"
+  },
+  "exportSettingsFail": {
+    "message": "エクスポートに失敗しました"
+  },
+  "importSettingsInvalid": {
+    "message": "有効なKickAlert設定ファイルではありません"
+  },
+  "importSettingsSuccess": {
+    "message": "インポートしました！再読み込み中..."
+  },
+  "importSettingsFail": {
+    "message": "インポートに失敗しました — ファイルが破損している可能性があります"
+  },
+  "importConfirmTitle": {
+    "message": "設定をインポートしますか？"
+  },
+  "importConfirmBody": {
+    "message": "これにより、現在の設定（通知、サウンド、通知オフ、チャットフィルターなど）がこのファイルの内容で上書きされます。この操作は元に戻せません。"
+  },
+  "importConfirmAccept": {
+    "message": "上書きしてインポート"
+  },
+  "lastExportToday": {
+    "message": "最終バックアップ：今日"
+  },
+  "lastExportDaysAgo": {
+    "message": "最終バックアップ：$1日前"
+  },
+  "lastExportNever": {
+    "message": "まだバックアップが取られていません"
+  },
+  "restoreSnapshotBtn": {
+    "message": "最後の変更を元に戻す"
+  },
+  "restoreSnapshotSuccess": {
+    "message": "復元しました！再読み込み中..."
+  },
+  "restoreSnapshotFail": {
+    "message": "復元するものがありません"
+  },
+  "resetDefaultsTitle": {
+    "message": "初期設定に戻す"
+  },
+  "resetDefaultsDesc": {
+    "message": "すべての設定を消去して最初からやり直します。先にバックアップをエクスポートすることをお勧めします。"
+  },
+  "resetDefaultsBtn": {
+    "message": "すべてリセット"
+  },
+  "resetConfirmTitle": {
+    "message": "すべてリセットしますか？"
+  },
+  "resetConfirmBody": {
+    "message": "これにより、すべての設定が消去され、初期値に戻ります。この操作は元に戻せません（ただし、直後に一度だけ「最後の変更を元に戻す」で元に戻すことができます）。"
+  },
+  "resetConfirmAccept": {
+    "message": "すべてリセット"
+  },
+  "resetDefaultsSuccess": {
+    "message": "リセットしました！再読み込み中..."
+  },
+  "chatReplyNotifTitle": {
+    "message": "$1 さんが返信しました"
+  },
+  "chatMentionSoundSmart": {
+    "message": "アクティブに見ていないとき（タブが非表示、またはチャットがスクロールされているとき）のみ通知音を再生します — タグ付け、返信、配信者のメッセージに適用されます。"
+  },
+  "chatMentionSoundEnabled": {
+    "message": "音も再生する（オフ＝サイレントなポップアップ通知のみ）"
+  },
+  "chatNotifSoundTitle": {
+    "message": "チャット通知サウンド"
+  },
+  "chatNotifSoundDesc": {
+    "message": "チャットタブのタグ付けと配信者メッセージ通知の音声設定。"
+  },
+  "chatNotifSoundDisabledNote": {
+    "message": " 先にChatタブで「タグ通知」または「配信者メッセージ通知」をオンにしてください。"
   }
 }

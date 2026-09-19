@@ -1996,7 +1996,13 @@ async function playSound(type) {
   if (soundMode === 'windows') return;
 
   const volume = (await Storage.getSoundVolume()) / 100;
-  const customFile = await Storage.getCustomSoundFile(type === 'NEW_LIVE_MAIN' ? 'main' : 'sub');
+  // v2.5.22: CHAT_MENTION (Mo'Kick'ten ödünç alınan bahsedilme sesi) sabit
+  // bir dosya kullanıyor — main/sub'ın kullanıcı tarafından yüklenmiş özel
+  // dosyasını YANLIŞLIKLA burada kullanmayalım diye customFile aramasını
+  // sadece main/sub tipleri için yapıyoruz.
+  const customFile = (type === 'CHAT_MENTION')
+    ? null
+    : await Storage.getCustomSoundFile(type === 'NEW_LIVE_MAIN' ? 'main' : 'sub');
 
   if (chrome.offscreen) {
     // Chrome: use offscreen document for audio
@@ -2015,6 +2021,7 @@ async function playSound(type) {
       const SoundPaths = {
         NEW_LIVE_MAIN: chrome.runtime.getURL('sounds/new_live_main.mp3'),
         NEW_LIVE_SUB: chrome.runtime.getURL('sounds/new_live_sub.mp3'),
+        CHAT_MENTION: chrome.runtime.getURL('sounds/chat_mention.mp3'),
       };
       const src = customFile?.dataUrl || SoundPaths[type] || SoundPaths.NEW_LIVE_SUB;
       const audio = new Audio(src);
@@ -2787,11 +2794,30 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const fromUser = msg.fromUser || 'Someone';
         const channel = msg.channel || '';
         const message = msg.message || '';
+        const isReply = msg.isReply === true;
 
-        const title = Utils.i18n('chatTagNotifTitle', [fromUser]) || `@${fromUser} mentioned you`;
+        // v2.5.23: Birine yanıt olarak gelen mesajlar, düz @etiketlemeden
+        // ayrı bir başlıkla gösteriliyor — kullanıcı hangisi olduğunu
+        // hemen anlasın (Mo'Kick'te de bu ayrım var).
+        const title = isReply
+          ? (Utils.i18n('chatReplyNotifTitle', [fromUser]) || `${fromUser} replied to you`)
+          : (Utils.i18n('chatTagNotifTitle', [fromUser]) || `@${fromUser} mentioned you`);
         const body = (channel ? `[${channel}] ` : '') + message;
 
         const id = `kickalert-tag-${Date.now()}`;
+        // v2.5.25: KRİTİK DÜZELTME. Ana "canlı yayın" bildirimleri
+        // soundMode==='extension' iken silent:true kullanıyor (kendi sesimiz
+        // çalacağı için Windows'un kendi bildirim sesi susturuluyor) — ama bu
+        // TAG bildiriminde unutulmuş, hep silent:false kalmıştı.
+        // v2.5.27: chatSettings'i (mentionSoundEnabled dahil) SİLENT
+        // hesaplamasından ÖNCE okuyoruz — kullanıcı "sadece popup" seçtiyse,
+        // sistem bildirimi de sessiz olmalı (yoksa bizim sesimiz çalmasa
+        // bile Windows'un kendi varsayılan sesi çalıp "sessiz" isteğini
+        // ihlal ederdi).
+        const soundModeForTag = await Storage.getSoundMode();
+        const chatSettingsForSound = await Storage.getChatSettings();
+        const soundEnabled = chatSettingsForSound?.mentionSoundEnabled !== false;
+        const smartMode = chatSettingsForSound?.mentionSoundSmart === true;
         const notifOptions = {
           type: 'basic',
           iconUrl: chrome.runtime.getURL('icons/icon128.png'),
@@ -2799,13 +2825,23 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           message: body.substring(0, 200),
         };
         if (!isFirefox) {
-          notifOptions.silent = false;
+          notifOptions.silent = !soundEnabled || soundModeForTag === 'extension';
           if (channel) {
             notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
           }
         }
 
         chrome.notifications.create(id, notifOptions);
+        // v2.5.22: Mo'Kick'ten ödünç alınan bahsedilme sesi — sistem
+        // bildiriminin varsayılan (sessiz olabilen) sesinden ayrı olarak.
+        // v2.5.24: "Akıllı mod" açıksa, SADECE kullanıcı sekmeyi izlemiyorsa
+        // (tab hidden) ya da sohbeti kaydırmışsa (chatScrolledUp) çal —
+        // aksi halde (varsayılan) her zaman çal, davranış değişmesin.
+        // v2.5.27: mentionSoundEnabled === false ise ("sadece popup" seçilmiş)
+        // hiç ses çalınmıyor, akıllı mod kontrolü bile yapılmıyor.
+        if (soundEnabled && (!smartMode || msg.tabHidden === true || msg.chatScrolledUp === true)) {
+          playSound('CHAT_MENTION');
+        }
 
         // Track for click handling — reuse notifiedLives structure
         if (channel) {
@@ -2841,6 +2877,14 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const body = message;
 
         const id = `kickalert-broadcaster-${Date.now()}`;
+        // v2.5.25: Aynı düzeltme - kendi sesimizin Windows'un kendi bildirim
+        // sesiyle çakışmaması için.
+        // v2.5.27: chatSettings'i silent hesaplamasından ÖNCE oku - "sadece
+        // popup" seçiliyse sistem bildirimi de sessiz olmalı.
+        const soundModeForBroadcaster = await Storage.getSoundMode();
+        const chatSettingsForSound2 = await Storage.getChatSettings();
+        const soundEnabled2 = chatSettingsForSound2?.mentionSoundEnabled !== false;
+        const smartMode2 = chatSettingsForSound2?.mentionSoundSmart === true;
         const notifOptions = {
           type: 'basic',
           iconUrl: chrome.runtime.getURL('icons/icon128.png'),
@@ -2848,13 +2892,19 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           message: body.substring(0, 200),
         };
         if (!isFirefox) {
-          notifOptions.silent = false;
+          notifOptions.silent = !soundEnabled2 || soundModeForBroadcaster === 'extension';
           if (channel) {
             notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
           }
         }
 
         chrome.notifications.create(id, notifOptions);
+        // v2.5.22: Aynı bahsedilme sesi, yayıncı mesajı bildirimi için de.
+        // v2.5.24: Akıllı mod kontrolü burada da aynı şekilde uygulanıyor.
+        // v2.5.27: mentionSoundEnabled === false ise hiç ses çalınmıyor.
+        if (soundEnabled2 && (!smartMode2 || msg.tabHidden === true || msg.chatScrolledUp === true)) {
+          playSound('CHAT_MENTION');
+        }
 
         if (channel) {
           const state = await getPersistedState();

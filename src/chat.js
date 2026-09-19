@@ -52,6 +52,9 @@
   let settings   = null;
   let chatRoot   = null;
   let chatObs    = null;
+  // v2.5.24: Akıllı bahsedilme sesi modu için - kullanıcı sohbeti alttan
+  // ne kadar kaydırmış (aşağıda değilse, en son mesajları kaçırıyor olabilir).
+  let isScrolledUp = false;
   const dupMap   = new Map();
   let stylesInjected = false;
 
@@ -87,6 +90,24 @@
 
   // ─── Helpers ───
   const norm = s => (s || '').toLowerCase().replace(/-/g, '_').trim();
+
+  // v2.5.23: Kick'in native "yanıt veriyor" göstergesi — mesajın en üstünde,
+  // eğri ok ikonlu bir buton içinde, kime yanıt verildiğini gösterir. Sabit
+  // bir CSS class'ına DEĞİL, semantik ve değişmesi daha düşük ihtimalli olan
+  // data-ic-icon="ArrowCurveLeft" özniteliğine dayanıyoruz (kullanıcının
+  // gerçek Elements çıktısıyla doğrulanmıştır). İlk <span> her zaman
+  // ORİJİNAL (yanıtlanan) mesajın sahibinin kullanıcı adını taşıyor.
+  function getReplyTargetUsername(node) {
+    try {
+      const icon = node.querySelector('svg[data-ic-icon="ArrowCurveLeft"]');
+      if (!icon) return null;
+      const btn = icon.closest('button');
+      const nameSpan = btn && btn.querySelector('span.ml-1 > span');
+      return nameSpan ? norm(nameSpan.textContent) : null;
+    } catch (_) {
+      return null;
+    }
+  }
 
   function msgHash(text, node) {
     const t = text.toLowerCase().replace(/\s+/g, '').substring(0, 100);
@@ -192,6 +213,8 @@
         tagEnabled: false,
         tagUsername: '',
         broadcasterNotif: false,
+        mentionSoundSmart: false, // v2.5.24: false = her zaman çal (mevcut davranış korunuyor)
+        mentionSoundEnabled: true, // v2.5.27: true = ses de çalsın (mevcut davranış korunuyor)
       };
       settings = Object.assign(defaults, r.chatSettings || {});
       // First run: persist defaults so popup and content script stay in sync
@@ -203,7 +226,19 @@
   }
 
   // ─── Process message ───
-  function processMessage(node, isNew) {
+  // v2.5.26: KRİTİK DÜZELTME. Kick'in sohbeti "virtualized" (DOM node'larını
+  // geri dönüştüren) bir liste kullanıyor — kullanıcı sohbetin EN ALTINDA
+  // (canlı akışı takip ederken, yani "kaydırılmamış" durumda) iken, YENİ bir
+  // mesaj genellikle mevcut bir node'un data-index'i değiştirilerek (recycled)
+  // gösteriliyor, YENİ bir DOM elementi eklenerek değil. Biz "recycled"
+  // node'ları HER ZAMAN isNew=false sayıyorduk — bu da tag/yanıt/yayıncı
+  // bildirimlerinin (hepsi isNew şartına bağlı) TAM DA kullanıcının en çok
+  // önemsediği anda (sohbeti canlı takip ederken) hiç tetiklenmemesine yol
+  // açıyordu. Node başına SON İŞLENEN İÇERİĞİ saklayıp, recycled bir node
+  // GERÇEKTEN FARKLI bir mesaj içeriyorsa bunu YENİ MESAJ sayıyoruz.
+  const lastSeenContent = new WeakMap();
+
+  function processMessage(node, isNew, isPriming) {
     if (!node || !node.hasAttribute || !node.hasAttribute('data-index')) return;
 
     node.classList.remove(
@@ -219,6 +254,17 @@
     const blurMode = !!settings.filterBlur;
 
     if (!username || !text) return;
+
+    // v2.5.26: recycled (isNew=false) bir node'un içeriği, o node için EN SON
+    // gördüğümüzden FARKLIYSA, bu aslında yeni bir mesajdır — isNew'ı buna
+    // göre düzeltiyoruz. PRIMING modunda (ilk toplu tarama) bu kontrol
+    // ATLANIR — aksi halde lastSeenContent boş olduğu için TÜM mevcut
+    // (eski) mesajlar yanlışlıkla "yeni" sayılırdı.
+    const contentKey = username + '\u0001' + text;
+    if (!isPriming && !isNew && lastSeenContent.get(node) !== contentKey) {
+      isNew = true;
+    }
+    lastSeenContent.set(node, contentKey);
 
     // 1. Bot filter
     if (settings.botFilter && (settings.botList || []).length) {
@@ -298,10 +344,14 @@
       }
     }
 
-    // 8. Tag/mention notification
+    // 8. Tag/mention notification (+ v2.5.23: birine YANIT olarak gelen
+    // mesajlar da aynı şekilde bildiriliyor — Mo'Kick'te de aynı davranış var)
     if (settings.tagEnabled && settings.tagUsername && isNew) {
       const me = norm(settings.tagUsername);
-      if (me && text.toLowerCase().includes(me)) {
+      const isTextMention = me && text.toLowerCase().includes(me);
+      const replyTarget = getReplyTargetUsername(node);
+      const isReplyToMe = me && replyTarget === me;
+      if (isTextMention || isReplyToMe) {
         node.classList.add('ka-mention');
         if (canNotify('tag')) {
           try {
@@ -310,6 +360,9 @@
               channel: slug,
               fromUser: username,
               message: text.substring(0, 200),
+              isReply: isReplyToMe && !isTextMention,
+              tabHidden: document.hidden,
+              chatScrolledUp: isScrolledUp,
             });
           } catch (_) {}
         }
@@ -327,6 +380,8 @@
               channel: slug,
               fromUser: rawUser,
               message: text.substring(0, 200),
+              tabHidden: document.hidden,
+              chatScrolledUp: isScrolledUp,
             });
           } catch (_) {}
         }
@@ -338,6 +393,15 @@
   function startObserver(root) {
     chatObs && chatObs.disconnect();
     chatRoot = root;
+
+    // v2.5.24: Sohbetin alttan uzaklığını izle - akıllı bahsedilme sesi
+    // modu için. Basit bir eşik (100px) kullanıyoruz, hassas bir ölçüm
+    // gerekmiyor, sadece "kullanıcı en son mesajları takip ediyor mu" sinyali.
+    const SCROLL_THRESHOLD = 100;
+    root.addEventListener('scroll', () => {
+      const distanceFromBottom = root.scrollHeight - root.scrollTop - root.clientHeight;
+      isScrolledUp = distanceFromBottom > SCROLL_THRESHOLD;
+    }, { passive: true });
 
     chatObs = new MutationObserver(mutations => {
       const recycled = new Set();
@@ -376,7 +440,10 @@
       attributeFilter: ['data-index'],
     });
 
-    root.querySelectorAll(MSG_SEL).forEach(n => processMessage(n, false));
+    // v2.5.26: İlk toplu tarama, PRIMING modunda (3. parametre) çağrılıyor —
+    // yoksa lastSeenContent boş olduğu için TÜM mevcut (eski) mesajlar
+    // yanlışlıkla "yeni mesaj" sayılıp bildirim yağmuruna yol açardı.
+    root.querySelectorAll(MSG_SEL).forEach(n => processMessage(n, false, true));
     console.debug('[KickAlert Chat] observer started on ' + slug);
   }
 
@@ -451,9 +518,18 @@
     } catch (_) {}
   });
 
-  // SPA navigation
+  // v2.5.12: SPA navigasyon tespiti — eskiden document.body'nin TÜM alt
+  // ağacını (subtree:true), sayfa açık olduğu sürece HİÇ DURMADAN izleyen
+  // bir MutationObserver kullanıyorduk, sadece URL değişip değişmediğini
+  // kontrol etmek için. Bu, Kick'in kendi React uygulamasının YOĞUN DOM
+  // değişikliği yaptığı anlarda (örn. yayın kapanışı — oynatıcı kaldırılıp
+  // "offline" kapağı eklenirken) gereksiz ek yük bindiriyor olabilirdi —
+  // tam da kullanıcının "yayın kapanınca oynatıcı takılı kalıyor" raporuyla
+  // aynı zamanlamada. Artık History API'sini doğrudan kancalayan, DOM'a hiç
+  // dokunmayan bir yönteme geçiyoruz (adblock-worker-hook.js'te zaten
+  // kullandığımız aynı desen) — sıfır sürekli DOM izleme maliyeti.
   let lastUrl = location.href;
-  new MutationObserver(() => {
+  function checkSpaNavigation() {
     if (location.href === lastUrl) return;
     lastUrl = location.href;
     const newSlug = location.pathname.replace(/^\/+|\/+$/g, '').split('/')[0].toLowerCase();
@@ -464,7 +540,20 @@
     if (enabled) {
       setTimeout(() => waitForChat(startObserver), 600);
     }
-  }).observe(document.body, { childList: true, subtree: true });
+  }
+  try {
+    ['pushState', 'replaceState'].forEach(m => {
+      const orig = history[m];
+      if (typeof orig === 'function') {
+        history[m] = function () {
+          const r = orig.apply(this, arguments);
+          try { checkSpaNavigation(); } catch (e) {}
+          return r;
+        };
+      }
+    });
+    window.addEventListener('popstate', checkSpaNavigation);
+  } catch (e) {}
 
   // Init
   loadThrottle();

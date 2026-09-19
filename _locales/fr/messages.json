@@ -599,10 +599,10 @@
     "message": "Pour que KickAlert fonctionne de manière fiable, nous recommandons de vous connecter à Kick avec un e-mail et un mot de passe. Se connecter avec « Google », « Apple » ou un autre compte social peut parfois empêcher l'extension de charger vos données, en raison d'une incohérence sur les serveurs de Kick."
   },
   "adBlockTitle": {
-    "message": "Blocage des publicités (expérimental)"
+    "message": "Blocage des publicités"
   },
   "adBlockWarning": {
-    "message": "Fonctionnalité expérimentale et non officielle — elle dépend de la structure interne de l'API de Kick et peut cesser de fonctionner sans préavis. En l'activant, vous acceptez cette responsabilité. Laissez-la désactivée pour continuer à utiliser KickAlert comme avant, sans impact."
+    "message": "Fonctionnalité expérimentale et non officielle — elle dépend de la structure interne de l'API de Kick et peut cesser de fonctionner sans préavis. En l'activant, vous acceptez cette responsabilité. Laissez-la désactivée pour continuer à utiliser KickAlert comme avant, sans impact. Les onglets Kick ouverts doivent être actualisés pour que cela prenne effet."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Pertinent en ce moment :"
@@ -633,5 +633,155 @@
   },
   "cancel": {
     "message": "Annuler"
+  },
+  "experimentalChip": {
+    "message": "EXPÉRIMENTAL"
+  },
+  "botScoreSimpleInfo": {
+    "message": "Estime si le nombre de spectateurs d'une chaîne semble authentique, en fonction de l'activité du chat."
+  },
+  "botScoreFormulaLink": {
+    "message": "Comment est-ce calculé ?"
+  },
+  "noChannelsFollowedYet": {
+    "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
+  },
+  "whatsNewBannerText": {
+    "message": "Nouveau : le blocage des publicités est renforcé, les paramètres sont désormais organisés par catégories, et un bug des aperçus de chaîne a été corrigé. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
+  },
+  "optGroupGeneral": {
+    "message": "Général"
+  },
+  "optGroupNotifications": {
+    "message": "Notifications et surveillance"
+  },
+  "optGroupFeatures": {
+    "message": "Fonctionnalités supplémentaires"
+  },
+  "optGroupAccount": {
+    "message": "Compte et synchronisation"
+  },
+  "optSearchPlaceholder": {
+    "message": "Rechercher dans les paramètres..."
+  },
+  "whatsNewRelink": {
+    "message": "Nouveautés"
+  },
+  "releaseHistoryTitle": {
+    "message": "Historique des versions"
+  },
+  "close": {
+    "message": "Fermer"
+  },
+  "releaseHistoryV0Label": {
+    "message": "v2.5 — Renforcement du blocage des publicités et refonte des paramètres"
+  },
+  "releaseHistoryV0Body": {
+    "message": "• Trois nouvelles couches de blocage des publicités : SDK GPT/IMA factice, filtrage au niveau des segments, détection de l'écran de transition « noir » propre à Kick\n• Recherche de source VOD sans publicité plus rapide et plus sûre\n• Paramètres réorganisés en catégories repliables, avec recherche\n• Bannière « Nouveautés » et cet historique\n• Sauvegarde et restauration : exportez/importez tous vos paramètres sous forme de fichier (avec un filet de sécurité annulable une fois et une option « Réinitialiser aux valeurs par défaut »)\n• Correction : le masquage des publicités n'avait visuellement aucun effet (la règle CSS n'atteignait jamais la page) et ne fonctionnait que lorsque notre propre détection s'était déclenchée — fonctionne désormais indépendamment et capture davantage de superpositions publicitaires"
+  },
+  "releaseHistoryV1Label": {
+    "message": "v2.4.0 — Aperçus de chaîne et blocage des publicités"
+  },
+  "releaseHistoryV1Body": {
+    "message": "• Images d'aperçu de chaîne dans la liste \"Suivis\"\n• Blocage des publicités (expérimental) pour les diffusions en direct et les VOD\n• Score de détection de bots pour le nombre de spectateurs"
+  },
+  "releaseHistoryV2Label": {
+    "message": "v2.3.0 — Intégration du chat"
+  },
+  "releaseHistoryV2Body": {
+    "message": "• Onglet chat : filtrage bot/spam/doublons/mots-clés, favoris, mentions\n• Programmation Ne pas déranger\n• Détection d'anomalies de spectateurs"
+  },
+  "settingsBackupTitle": {
+    "message": "Sauvegarde et restauration"
+  },
+  "settingsBackupDesc": {
+    "message": "Téléchargez toutes vos préférences sous forme de fichier, ou restaurez-les à partir d'une sauvegarde précédente — utile si vous n'utilisez pas la synchronisation cloud."
+  },
+  "exportSettingsBtn": {
+    "message": "Exporter les paramètres"
+  },
+  "importSettingsBtn": {
+    "message": "Importer les paramètres"
+  },
+  "exportSettingsSuccess": {
+    "message": "Téléchargé !"
+  },
+  "exportSettingsFail": {
+    "message": "Échec de l'exportation"
+  },
+  "importSettingsInvalid": {
+    "message": "Ce n'est pas un fichier de paramètres KickAlert valide"
+  },
+  "importSettingsSuccess": {
+    "message": "Importé ! Rechargement..."
+  },
+  "importSettingsFail": {
+    "message": "Échec de l'importation — le fichier est peut-être corrompu"
+  },
+  "importConfirmTitle": {
+    "message": "Importer les paramètres ?"
+  },
+  "importConfirmBody": {
+    "message": "Cela remplacera vos préférences actuelles (notifications, sons, ne pas déranger, filtres de chat, etc.) par celles de ce fichier. Cette action est irréversible."
+  },
+  "importConfirmAccept": {
+    "message": "Écraser et importer"
+  },
+  "lastExportToday": {
+    "message": "Dernière sauvegarde : aujourd'hui"
+  },
+  "lastExportDaysAgo": {
+    "message": "Dernière sauvegarde : il y a $1 jours"
+  },
+  "lastExportNever": {
+    "message": "Aucune sauvegarde effectuée pour l'instant"
+  },
+  "restoreSnapshotBtn": {
+    "message": "Annuler la dernière modification"
+  },
+  "restoreSnapshotSuccess": {
+    "message": "Restauré ! Rechargement..."
+  },
+  "restoreSnapshotFail": {
+    "message": "Rien à restaurer"
+  },
+  "resetDefaultsTitle": {
+    "message": "Réinitialiser aux valeurs par défaut"
+  },
+  "resetDefaultsDesc": {
+    "message": "Efface toutes tes préférences et repars de zéro. Pense à exporter une sauvegarde d'abord."
+  },
+  "resetDefaultsBtn": {
+    "message": "Tout réinitialiser"
+  },
+  "resetConfirmTitle": {
+    "message": "Tout réinitialiser ?"
+  },
+  "resetConfirmBody": {
+    "message": "Cela effacera toutes vos préférences et les ramènera à leurs valeurs par défaut. Cette action est irréversible (mais vous pouvez l'annuler une fois, juste après, avec « Annuler la dernière modification »)."
+  },
+  "resetConfirmAccept": {
+    "message": "Tout réinitialiser"
+  },
+  "resetDefaultsSuccess": {
+    "message": "Réinitialisé ! Rechargement..."
+  },
+  "chatReplyNotifTitle": {
+    "message": "$1 vous a répondu"
+  },
+  "chatMentionSoundSmart": {
+    "message": "Ne jouez le son de notification que lorsque vous ne regardez pas activement (onglet masqué ou chat défilé) — s'applique aux mentions, réponses et messages du streamer."
+  },
+  "chatMentionSoundEnabled": {
+    "message": "Jouer aussi un son (désactivé = notification popup silencieuse uniquement)"
+  },
+  "chatNotifSoundTitle": {
+    "message": "Son des notifications de chat"
+  },
+  "chatNotifSoundDesc": {
+    "message": "Paramètres sonores pour les notifications de mention et de message du streamer de l'onglet Chat."
+  },
+  "chatNotifSoundDisabledNote": {
+    "message": " Activez d'abord la « Notification de mention » ou la « Notification de message du streamer » dans l'onglet Chat."
   }
 }

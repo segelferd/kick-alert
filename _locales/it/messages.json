@@ -599,10 +599,10 @@
     "message": "Per un funzionamento affidabile di KickAlert, ti consigliamo di accedere a Kick con e-mail e password. Accedere con \"Google\", \"Apple\" o un altro account social può a volte impedire all'estensione di caricare i tuoi dati, a causa di un'incoerenza sui server di Kick."
   },
   "adBlockTitle": {
-    "message": "Blocco pubblicità (sperimentale)"
+    "message": "Blocco pubblicità"
   },
   "adBlockWarning": {
-    "message": "Funzione sperimentale e non ufficiale — dipende dalla struttura interna dell'API di Kick e potrebbe smettere di funzionare senza preavviso. Attivandola, ti assumi questa responsabilità. Lasciala disattivata per continuare a usare KickAlert come prima, senza modifiche."
+    "message": "Funzione sperimentale e non ufficiale — dipende dalla struttura interna dell'API di Kick e potrebbe smettere di funzionare senza preavviso. Attivandola, ti assumi questa responsabilità. Lasciala disattivata per continuare a usare KickAlert come prima, senza modifiche. Le schede Kick aperte devono essere aggiornate affinché ciò abbia effetto."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Rilevante proprio ora:"
@@ -633,5 +633,155 @@
   },
   "cancel": {
     "message": "Annulla"
+  },
+  "experimentalChip": {
+    "message": "SPERIMENTALE"
+  },
+  "botScoreSimpleInfo": {
+    "message": "Stima se il numero di spettatori di un canale sembra genuino, in base all'attività della chat."
+  },
+  "botScoreFormulaLink": {
+    "message": "Come viene calcolato?"
+  },
+  "noChannelsFollowedYet": {
+    "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
+  },
+  "whatsNewBannerText": {
+    "message": "Novità: il blocco degli annunci è più solido, le impostazioni ora sono organizzate in categorie ed è stato risolto un bug nelle anteprime dei canali. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
+  },
+  "optGroupGeneral": {
+    "message": "Generale"
+  },
+  "optGroupNotifications": {
+    "message": "Notifiche e monitoraggio"
+  },
+  "optGroupFeatures": {
+    "message": "Funzionalità aggiuntive"
+  },
+  "optGroupAccount": {
+    "message": "Account e sincronizzazione"
+  },
+  "optSearchPlaceholder": {
+    "message": "Cerca nelle impostazioni..."
+  },
+  "whatsNewRelink": {
+    "message": "Novità"
+  },
+  "releaseHistoryTitle": {
+    "message": "Cronologia versioni"
+  },
+  "close": {
+    "message": "Chiudi"
+  },
+  "releaseHistoryV0Label": {
+    "message": "v2.5 — Rafforzamento del blocco annunci e nuove impostazioni"
+  },
+  "releaseHistoryV0Body": {
+    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari"
+  },
+  "releaseHistoryV1Label": {
+    "message": "v2.4.0 — Anteprime canale e blocco annunci"
+  },
+  "releaseHistoryV1Body": {
+    "message": "• Immagini di anteprima canale nell'elenco Seguiti\n• Blocco annunci (sperimentale) per live e VOD\n• Punteggio di rilevamento bot per il conteggio spettatori"
+  },
+  "releaseHistoryV2Label": {
+    "message": "v2.3.0 — Integrazione chat"
+  },
+  "releaseHistoryV2Body": {
+    "message": "• Scheda chat: filtro bot/spam/duplicati/parole chiave, preferiti, menzioni\n• Pianificazione Non Disturbare\n• Rilevamento anomalie spettatori"
+  },
+  "settingsBackupTitle": {
+    "message": "Backup e ripristino"
+  },
+  "settingsBackupDesc": {
+    "message": "Scarica tutte le tue preferenze come file, oppure ripristinale da un backup precedente — utile se non usi la sincronizzazione cloud."
+  },
+  "exportSettingsBtn": {
+    "message": "Esporta impostazioni"
+  },
+  "importSettingsBtn": {
+    "message": "Importa impostazioni"
+  },
+  "exportSettingsSuccess": {
+    "message": "Scaricato!"
+  },
+  "exportSettingsFail": {
+    "message": "Esportazione non riuscita"
+  },
+  "importSettingsInvalid": {
+    "message": "Non è un file di impostazioni KickAlert valido"
+  },
+  "importSettingsSuccess": {
+    "message": "Importato! Ricaricamento..."
+  },
+  "importSettingsFail": {
+    "message": "Importazione non riuscita — il file potrebbe essere danneggiato"
+  },
+  "importConfirmTitle": {
+    "message": "Importare le impostazioni?"
+  },
+  "importConfirmBody": {
+    "message": "Questo sovrascriverà le tue preferenze attuali (notifiche, suoni, non disturbare, filtri chat e altro) con quelle di questo file. Questa azione non può essere annullata."
+  },
+  "importConfirmAccept": {
+    "message": "Sovrascrivi e importa"
+  },
+  "lastExportToday": {
+    "message": "Ultimo backup: oggi"
+  },
+  "lastExportDaysAgo": {
+    "message": "Ultimo backup: $1 giorni fa"
+  },
+  "lastExportNever": {
+    "message": "Nessun backup ancora effettuato"
+  },
+  "restoreSnapshotBtn": {
+    "message": "Annulla ultima modifica"
+  },
+  "restoreSnapshotSuccess": {
+    "message": "Ripristinato! Ricaricamento..."
+  },
+  "restoreSnapshotFail": {
+    "message": "Niente da ripristinare"
+  },
+  "resetDefaultsTitle": {
+    "message": "Ripristina predefiniti"
+  },
+  "resetDefaultsDesc": {
+    "message": "Cancella tutte le tue preferenze e ricomincia da capo. Valuta di esportare prima un backup."
+  },
+  "resetDefaultsBtn": {
+    "message": "Ripristina tutto"
+  },
+  "resetConfirmTitle": {
+    "message": "Ripristinare tutto?"
+  },
+  "resetConfirmBody": {
+    "message": "Questo cancellerà tutte le tue preferenze e le riporterà ai valori predefiniti. Questa azione non può essere annullata (ma puoi annullarla una volta, subito dopo, usando \"Annulla ultima modifica\")."
+  },
+  "resetConfirmAccept": {
+    "message": "Ripristina tutto"
+  },
+  "resetDefaultsSuccess": {
+    "message": "Ripristinato! Ricaricamento..."
+  },
+  "chatReplyNotifTitle": {
+    "message": "Ti ha risposto $1"
+  },
+  "chatMentionSoundSmart": {
+    "message": "Riproduci il suono di notifica solo quando non stai guardando attivamente (scheda in background o chat scorsa) — vale per menzioni, risposte e messaggi dello streamer."
+  },
+  "chatMentionSoundEnabled": {
+    "message": "Riproduci anche un suono (disattivato = solo notifica popup silenziosa)"
+  },
+  "chatNotifSoundTitle": {
+    "message": "Suono notifiche chat"
+  },
+  "chatNotifSoundDesc": {
+    "message": "Impostazioni audio per le notifiche di menzione e messaggio dello streamer nella scheda Chat."
+  },
+  "chatNotifSoundDisabledNote": {
+    "message": " Attiva prima \"Notifica menzione\" o \"Notifica messaggio streamer\" nella scheda Chat."
   }
 }

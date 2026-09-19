@@ -150,6 +150,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     try { localStorage.setItem('__ka_ab_video', enabled ? '1' : '0'); } catch (e) {}
     try { localStorage.setItem('__ka_ab_vod', enabled ? '1' : '0'); } catch (e) {}
 
+    // v2.5.14: TEŞHİS LOGU — chrome.storage.local'dan GERÇEKTE ne okunduğunu
+    // ve localStorage'a ne yazıldığını görmemiz için.
+    try { console.log('[KickAlert][AdBlock][TEŞHİS]', 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0')); } catch (e) {}
+    try {
+      chrome.runtime.sendMessage({
+        type: 'AD_BLOCK_LOG', level: 'info', code: 'ADB-09',
+        text: 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0'),
+      }).catch(() => {});
+    } catch (e) {}
+
     const nonce = (crypto?.randomUUID?.() || String(Date.now()) + Math.random());
     window.postMessage({
       source: 'ka-ab-cfg',

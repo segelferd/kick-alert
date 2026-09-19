@@ -32,6 +32,15 @@
   var pageVod = true; // geçmiş yayın (VOD) ayrı bayrak
   try { pageVod = localStorage.getItem('__ka_ab_vod') !== '0'; } catch (e) {}
 
+  // v2.5.14: TEŞHİS LOGU — koşulsuz çalışır, bu script'in gerçekten
+  // çalıştığını ve localStorage'dan ne okuduğunu kesin olarak görmemiz için.
+  try {
+    var __diagRaw = null;
+    try { __diagRaw = localStorage.getItem('__ka_ab_video'); } catch (e) { __diagRaw = 'OKUMA HATASI'; }
+    try { console.log('[KickAlert][AdBlock][TEŞHİS]', 'worker-hook.js calisti, __ka_ab_video=' + JSON.stringify(__diagRaw) + ' pageEnabled=' + pageEnabled + ' pageVod=' + pageVod); } catch (e) {}
+    window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-09', text: 'worker-hook.js calisti, __ka_ab_video=' + JSON.stringify(__diagRaw) + ' pageEnabled=' + pageEnabled + ' pageVod=' + pageVod }, '*');
+  } catch (e) {}
+
   function vodUrlBildir(u) {
     if (!u) return;
     try { window.__ka_ab_vodUrl = u; } catch (e) {}
@@ -40,7 +49,6 @@
 
   var PLAYBACK_PAGE_RE = /\/api\/v\d+\/stream\/[0-9a-f-]+\/playback(\?|$)/i;
   var STITCHED_RE      = /\/api\/v\d+\/stream\/manifest\.m3u8/i;
-  var vodList = { slug: '', ts: 0, items: null };
 
   function slugNow() {
     try { return window.location.pathname.split('/').filter(Boolean)[0] || ''; } catch (e) { return ''; }
@@ -68,33 +76,145 @@
     return changed;
   }
 
+  var vodListCache = new Map(); // slug -> {ts, items} — v2.5.3: Mo'Kick v3.2.8'den esinlenildi
+  var vodListInFlight = new Map(); // slug -> promise
+
+  // v2.5.3: Eskiden vodList/vodListInFlight TEK SLOTLUYDU (sadece bir slug'ı
+  // hatırlayabiliyordu). Kullanıcı hızlıca iki farklı kanal arasında geçiş
+  // yaparsa (örn. iki VOD sekmesi), tek-slotlu yapı YANLIŞ kanalın verisini/
+  // in-flight promise'ini döndürebilirdi. Artık her slug kendi kaydını taşıyor.
   function getVodList(slug, origFetch) {
-    if (vodList.items && vodList.slug === slug && (Date.now() - vodList.ts) < 60000) return Promise.resolve(vodList.items);
+    var cached = vodListCache.get(slug);
+    if (cached && (Date.now() - cached.ts) < 60000) return Promise.resolve(cached.items);
     if (!slug) return Promise.resolve([]);
-    return origFetch.call(window, 'https://kick.com/api/v2/channels/' + slug + '/videos')
-      .then(function (r) { return r.json(); })
-      .then(function (j) {
-        var arr = Array.isArray(j) ? j : ((j && j.data) || []);
-        vodList = { slug: slug, ts: Date.now(), items: arr };
-        return arr;
+    var inFlight = vodListInFlight.get(slug);
+    if (inFlight) return inFlight;
+
+    function attempt(retriesLeft) {
+      return origFetch.call(window, 'https://kick.com/api/v2/channels/' + slug + '/videos')
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          var arr = Array.isArray(j) ? j : ((j && j.data) || []);
+          vodListCache.set(slug, { ts: Date.now(), items: arr });
+          return arr;
+        })
+        .catch(function (err) {
+          if (retriesLeft > 0) {
+            return new Promise(function (resolve) { setTimeout(resolve, 250); }).then(function () { return attempt(retriesLeft - 1); });
+          }
+          throw err;
+        });
+    }
+
+    var p = attempt(1).catch(function () { return []; }).finally(function () {
+      if (vodListInFlight.get(slug) === p) vodListInFlight.delete(slug);
+    });
+    vodListInFlight.set(slug, p);
+    return p;
+  }
+
+  function primeVodCatalog(slug, origFetch) {
+    if (!slug) return;
+    var cached = vodListCache.get(slug);
+    if (cached && (Date.now() - cached.ts) < 60000) return;
+    getVodList(slug, origFetch).catch(function () {});
+  }
+
+  function isVodPage() {
+    try { return /\/videos\/[0-9a-f-]{8,}/i.test(window.location.pathname); } catch (e) { return false; }
+  }
+
+  (function setupVodPriming() {
+    var lastPrimedSlug = '';
+    function prime() {
+      try {
+        if (!pageVod || !isVodPage()) return;
+        var slug = slugNow();
+        if (!slug || slug === lastPrimedSlug) return;
+        lastPrimedSlug = slug;
+        // v2.5.2: origPageFetch bu noktada henüz atanmamış olabilir (aşağıda
+        // tanımlanıyor) — ama 'var' hoisting + setTimeout ile bir sonraki
+        // tick'e ertelendiği için, bu fonksiyon GERÇEKTEN çalıştığında script
+        // tamamen yüklenmiş, origPageFetch atanmış olacak.
+        if (typeof origPageFetch === 'function') primeVodCatalog(slug, origPageFetch);
+      } catch (e) {}
+    }
+    setTimeout(prime, 0);
+    try {
+      ['pushState', 'replaceState'].forEach(function (m) {
+        var orig = history[m];
+        if (typeof orig === 'function') { history[m] = function () { var r = orig.apply(this, arguments); try { prime(); } catch (e) {} return r; }; }
       });
+      window.addEventListener('popstate', prime);
+    } catch (e) {}
+  })();
+
+  // v2.5.2: Mo'Kick v3.2.4'ten esinlenildi. Slug'ı sadece sayfa URL'sinden değil,
+  // ÖNCE yanıtın kendi payload'ından çıkarmayı dene — hangi VOD'un işlendiğine
+  // dair en güvenilir kaynak bu, URL ile senkronizasyon gecikmesi riski taşımıyor.
+  function slugFromPayload(json) {
+    try {
+      var vs = json && json.video_session;
+      var candidates = [
+        vs && vs.livestream && vs.livestream.channel && vs.livestream.channel.slug,
+        vs && vs.channel && vs.channel.slug,
+        json && json.livestream && json.livestream.channel && json.livestream.channel.slug,
+        json && json.channel && json.channel.slug,
+      ];
+      for (var i = 0; i < candidates.length; i++) {
+        if (typeof candidates[i] === 'string' && candidates[i]) return candidates[i];
+      }
+    } catch (e) {}
+    return null;
   }
 
   function cleanVodSource(vs, slug, origFetch) {
     var want = Number(vs && vs.video_duration);
     if (!want || !slug) return Promise.resolve(null);
     return getVodList(slug, origFetch).then(function (arr) {
-      var cands = arr.filter(function (x) {
+      var scored = arr.map(function (x) {
         var d = Number(x && x.duration);
-        return d && Math.abs(Math.round(d / 1000) - want) <= 1;
+        return { entry: x, diff: d ? Math.abs(Math.round(d / 1000) - want) : Infinity };
       });
-      if (cands.length > 1 && vs.video_title) {
-        var t = cands.filter(function (x) { return String(x.session_title || '') === String(vs.video_title); });
+      var title = vs && vs.video_title;
+      var sameTitle = function (s) { return title && String(s.entry.session_title || '') === String(title); };
+
+      // v2.5.2: Önce SIKI tolerans (1sn) dene. Bulunamazsa GEVŞEK tolerans
+      // (5sn) ile dene AMA sadece başlık da eşleşiyorsa — yanlış pozitif
+      // riskini artırmadan daha fazla eşleşme yakalıyoruz.
+      var cands = scored.filter(function (s) { return s.diff <= 1; }).map(function (s) { return s.entry; });
+      if (!cands.length) {
+        cands = scored.filter(function (s) { return s.diff <= 5 && sameTitle(s); }).map(function (s) { return s.entry; });
+      }
+      if (cands.length > 1 && title) {
+        var t = cands.filter(function (x) { return String(x.session_title || '') === String(title); });
         if (t.length) cands = t;
       }
       var src = cands[0] && cands[0].source;
       return (typeof src === 'string' && /^https:\/\/[^/]+\.kick\.com\/.+\.m3u8/i.test(src)) ? src : null;
     }).catch(function () { return null; });
+  }
+
+  // v2.5.3: Mo'Kick v3.2.8'den esinlenildi. Kick'in thumbnail URL'si genelde
+  // aynı depolama alanının bir alt yolu — bu yoldan doğrudan reklamsız master'ı
+  // TAHMİN edebiliyoruz, katalog aramaya (getVodList, bir ağ isteği daha) hiç
+  // gerek kalmadan. Sadece hızlı bir DENEME — tutmazsa cleanVodSource'a (asıl
+  // katalog araması) düşülüyor, hiçbir davranış kaybı yok.
+  function deriveSourceFromThumbnail(pu) {
+    try {
+      var thumb = pu && pu.thumbnail;
+      if (typeof thumb !== 'string' || !thumb) return null;
+      var marker = '/media/thumbnails/';
+      var cut = thumb.indexOf(marker);
+      if (cut === -1) return null;
+      var derived = thumb.slice(0, cut) + '/media/hls/master.m3u8';
+      if (!/^https:\/\/[^/]+\.kick\.com\//i.test(derived)) return null; // güvenlik: sadece kick.com'a ait host
+      return derived;
+    } catch (e) { return null; }
+  }
+
+  function isVodUrlPage() {
+    try { return /\/videos\/[0-9a-f-]{8,}/i.test(window.location.pathname); } catch (e) { return false; }
   }
 
   try {
@@ -119,11 +239,48 @@
               var vs = j && j.video_session, pu = j && j.playback_url;
               var touched = neutralizeAds(j);
               var isVod = vs && String(vs.video_stream_status || '').toLowerCase() === 'vod';
+
+              // v2.5.3: Mo'Kick'in kenar durumu — VOD sayfasındayız ama akış
+              // hâlâ CANLI (henüz VOD'a dönüşmemiş). Reklamsız kaynak aramanın
+              // bir anlamı yok, sadece izleme oturumunu temizleyip dokunmadan geç.
+              if (!isVod && pu && isVodUrlPage() && pu.vod_session) {
+                pu.vod_session = '';
+                try { console.log('[KickAlert][AdBlock] VOD sayfasinda ama akis hala canli, sadece oturum temizlendi'); } catch (e) {}
+                return jsonResponse(j, resp);
+              }
+
               if (isVod && pu && typeof pu.vod === 'string') vodUrlBildir(pu.vod);
               if (!isVod || !pu || typeof pu.vod !== 'string' || !STITCHED_RE.test(pu.vod)) {
                 return touched ? jsonResponse(j, resp) : resp;
               }
-              return cleanVodSource(vs, slugNow(), origPageFetch).then(function (clean) {
+
+              // v2.5.3: Önce HIZLI yolu dene (thumbnail'den türetme, ağ isteği yok).
+              // Tutmazsa asıl katalog aramasına (cleanVodSource) düş.
+              var derivedFast = deriveSourceFromThumbnail(pu);
+              var sourcePromise = derivedFast
+                ? Promise.resolve(derivedFast)
+                : cleanVodSource(vs, (slugFromPayload(j) || slugNow()), origPageFetch);
+              if (derivedFast) { try { console.log('[KickAlert][AdBlock] VOD kaynagi thumbnail\'den turetildi (hizli yol):', derivedFast); } catch (e) {} }
+
+              return sourcePromise
+                .then(function (result) {
+                  return new Promise(function (resolve) {
+                    var settled = false;
+                    var timer = setTimeout(function () {
+                      if (settled) return;
+                      settled = true;
+                      try { console.log('[KickAlert][AdBlock] VOD temiz kaynak arama zaman asimina ugradi (2.5sn), orijinal kullanildi'); } catch (e) {}
+                      resolve(null);
+                    }, 2500); // v2.5.2: Mo'Kick'in swapBudgetMs'inden esinlenildi — arama asla akışı süresiz bekletmesin
+                    Promise.resolve(result).then(function (v) {
+                      if (settled) return;
+                      settled = true;
+                      clearTimeout(timer);
+                      resolve(v);
+                    });
+                  });
+                })
+                .then(function (clean) {
                 if (!clean) { try { console.log('[KickAlert][AdBlock] VOD temiz kaynak bulunamadi, dokunulmadi'); } catch (e) {} return touched ? jsonResponse(j, resp) : resp; }
                 pu.vod = clean;
                 vodUrlBildir(clean);
@@ -325,29 +482,58 @@
       var inAdBreak = false;
       var removedCount = 0;
       var totalSegments = 0;
+      // v2.5.4: KRİTİK GÜVENLİK DÜZELTMESİ. Bir CUE-OUT'un karşılığı olan
+      // CUE-IN bu manifest içinde HİÇ gelmezse (örn. yayıncı tam bir reklam
+      // arası SIRASINDA yayını kapatırsa), eski kod listenin SONUNA kadar her
+      // şeyi reklam sayıp siliyordu — bu da oynatıcının "akış bitti" sinyalini
+      // hiç görmemesine, sonsuza kadar reklam bekliyormuş gibi DONMASINA yol
+      // açabiliyordu (kullanıcı raporu: yayın kapanınca "offline" yerine
+      // reklam ekranında donuk kalıyor). Artık kapanmamış bir arayı, kapanana
+      // KADAR geçici bir tampona alıyoruz; liste kapanmadan biterse o
+      // segmentleri SİLMİYORUZ, olduğu gibi geri koyuyoruz — bir sonraki
+      // manifest yenilemesinde (eğer reklam gerçekten devam ediyorsa) zaten
+      // yakalanacak. Riski dengelenmiş: en kötü ihtimalle birkaç saniyelik
+      // reklam görünür, ama oynatıcı asla donmaz.
+      var pendingAdLines = [];
+      var pendingAdCount = 0;
 
       for (var i = 0; i < lines.length; i++) {
         var line = lines[i];
         var trimmed = line.trim();
 
-        if (/^#EXT-X-CUE-OUT/i.test(trimmed)) { inAdBreak = true; outLines.push(line); continue; }
-        if (/^#EXT-X-CUE-IN/i.test(trimmed)) { inAdBreak = false; outLines.push(line); continue; }
+        if (/^#EXT-X-CUE-OUT/i.test(trimmed)) { inAdBreak = true; pendingAdLines.push(line); continue; }
+        if (/^#EXT-X-CUE-IN/i.test(trimmed)) {
+          inAdBreak = false;
+          removedCount += pendingAdCount; // ara düzgün kapandı - şimdi kalıcı olarak sil
+          pendingAdLines = []; pendingAdCount = 0;
+          outLines.push(line);
+          continue;
+        }
         if (/^#EXT-X-DATERANGE/i.test(trimmed)) {
-          if (/CLASS="[^"]*stitched-ad-break-start[^"]*"/i.test(trimmed)) inAdBreak = true;
-          else if (/CLASS="[^"]*stitched-ad-break-end[^"]*"/i.test(trimmed)) inAdBreak = false;
+          if (/CLASS="[^"]*stitched-ad-break-start[^"]*"/i.test(trimmed)) { inAdBreak = true; pendingAdLines.push(line); continue; }
+          else if (/CLASS="[^"]*stitched-ad-break-end[^"]*"/i.test(trimmed)) {
+            inAdBreak = false;
+            removedCount += pendingAdCount;
+            pendingAdLines = []; pendingAdCount = 0;
+          }
           if (!inAdBreak) outLines.push(line);
           continue;
         }
 
         if (trimmed.charAt(0) === '#' || trimmed === '') {
-          if (!inAdBreak) outLines.push(line);
+          if (inAdBreak) pendingAdLines.push(line); else outLines.push(line);
           continue;
         }
 
         // Bu bir segment URI'si (# ile başlamayan, boş olmayan satır)
+        if (inAdBreak) { totalSegments++; pendingAdCount++; pendingAdLines.push(line); continue; }
         totalSegments++;
-        if (inAdBreak) { removedCount++; continue; } // reklam segmenti - atla (kendisi + üstündeki #EXTINF zaten yukarıda eklendi/eklenmedi)
         outLines.push(line);
+      }
+
+      // Liste, ara HÂLÂ AÇIKKEN bitti — kapanmamış kısmı silmeden geri koy.
+      if (inAdBreak && pendingAdLines.length) {
+        pendingAdLines.forEach(function (l) { outLines.push(l); });
       }
 
       // GÜVENLİK KONTROLÜ: hiç segment çıkarılmadıysa ya da TÜM segmentler
@@ -357,6 +543,63 @@
       if (removedCount === 0) return null;
       if (removedCount >= totalSegments) return null;
 
+      return outLines.join('\n');
+    }
+
+    // v2.5.3: Mo'Kick v3.2.8'den esinlenildi — İKİNCİL, DAR KAPSAMLI bir yedek.
+    // stripAdSegments (yukarıda) açık SCTE-35 işaretçilerine bakıyor; bu bulunamazsa,
+    // segment URI'sinin HOST'una bakıp kick.com'a ait olmayanları (yabancı/reklam
+    // sunucusu) çıkarıyoruz. BİLİNÇLİ TEMKİNLİLİK: Bu kontrolü SADECE Mo'Kick'in
+    // belirlediği VOD-özel URL deseninde (VOD_STITCH_RE) çalıştırıyoruz — canlı
+    // yayının genel .m3u8'lerinde DEĞİL. Sebep: Kick'in kendi CDN'i her zaman
+    // *.kick.com olmayabilir; bunu genel olarak uygularsak meşru segmentleri
+    // yanlışlıkla "yabancı" sayıp akışı bozma riski taşırdık. Dar kapsam, bu
+    // riski en aza indiriyor.
+    var VOD_STITCH_RE = /production-kick-vod|\/api\/v1\/stream\/manifest\.m3u8/i;
+    var KICK_HOST_RE = /(^|\.)kick\.com$/i;
+    function isKickSegmentUri(uri, baseUrl) {
+      try { return KICK_HOST_RE.test(new URL(uri, baseUrl).hostname); } catch (e) { return false; }
+    }
+    function stripForeignHostSegments(txt, baseUrl) {
+      if (typeof txt !== 'string' || txt.indexOf('#EXTINF') === -1) return null;
+      var lines = txt.split('\n');
+      var outLines = [];
+      var pending = [];
+      var removed = 0, kept = 0;
+
+      function flushPending() {
+        // kept===0 ise (henüz hiç meşru segment eklenmediyse) sarkan
+        // #EXT-X-DISCONTINUITY etiketlerini de at — anlamsız kalırlardı
+        var flushable = kept ? pending : pending.filter(function (p) { return p.trim() !== '#EXT-X-DISCONTINUITY'; });
+        flushable.forEach(function (p) { outLines.push(p); });
+        pending = [];
+      }
+
+      for (var i = 0; i < lines.length; i++) {
+        var line = lines[i], trimmed = line.trim();
+        if (!trimmed) continue;
+        if (trimmed.charAt(0) === '#') {
+          if (trimmed.indexOf('#EXTINF') === 0 || trimmed.indexOf('#EXT-X-BYTERANGE') === 0 ||
+              trimmed.indexOf('#EXT-X-PROGRAM-DATE-TIME') === 0 || trimmed === '#EXT-X-DISCONTINUITY') {
+            pending.push(line);
+            continue;
+          }
+          flushPending();
+          outLines.push(line);
+          continue;
+        }
+        if (isKickSegmentUri(trimmed, baseUrl)) {
+          flushPending();
+          outLines.push(line);
+          kept++;
+          continue;
+        }
+        pending = []; // yabancı segment - hem kendisi hem üzerindeki #EXTINF vs. atılır
+        removed++;
+      }
+      flushPending();
+
+      if (!removed || !kept) return null; // ya hiç yabancı yok ya da HEPSİ yabancı (şüpheli) - dokunma
       return outLines.join('\n');
     }
 
@@ -392,6 +635,17 @@
                     log('medya playlistinden reklam segmenti cikarildi (segment-cerrahi)');
                     post({ kaAbSwapped: 1 }); // sayfa tarafı bunu 'adDetected' olarak yayınlayacak (mevcut bc.onmessage)
                     return new Response(stripped, { status: resp.status, statusText: resp.statusText, headers: rebuildHeaders(resp) });
+                  }
+                } catch (e) { /* parse hatasi - orijinal akisa dokunulmadan devam */ }
+              } else if (VOD_STITCH_RE.test(url)) {
+                // v2.5.3: Açık CUE-OUT işaretçisi yoktu ama bu VOD-özel bir istek —
+                // host-bazlı yedek tekniği dene.
+                try {
+                  var strippedHost = stripForeignHostSegments(txt, resp.url || url);
+                  if (strippedHost) {
+                    log('VOD playlistinden yabanci-host segmenti cikarildi (host-bazli yedek)');
+                    post({ kaAbSwapped: 1 });
+                    return new Response(strippedHost, { status: resp.status, statusText: resp.statusText, headers: rebuildHeaders(resp) });
                   }
                 } catch (e) { /* parse hatasi - orijinal akisa dokunulmadan devam */ }
               }
@@ -457,16 +711,16 @@
   }
 
   var SHIM_TEMPLATE = '(' + kaAbWorkerShim.toString() + ')();\n;\n';
-
-  function readSync(u) {
-    try { var x = new XMLHttpRequest(); x.open('GET', u, false); x.send(); if (x.status === 200 || x.status === 0) return x.responseText || null; } catch (e) {}
-    return null;
-  }
   function baseOf(u) {
     try { var abs = new URL(u, window.location.href).href; return abs.slice(0, abs.lastIndexOf('/') + 1); } catch (e) { return window.location.origin + '/'; }
   }
   function currentSlug() {
     try { return (window.location.pathname.split('/').filter(Boolean)[0] || ''); } catch (e) { return ''; }
+  }
+
+  function readSync(u) {
+    try { var x = new XMLHttpRequest(); x.open('GET', u, false); x.send(); if (x.status === 200 || x.status === 0) return x.responseText || null; } catch (e) {}
+    return null;
   }
 
   function KaAbWorker(scriptURL, options) {
@@ -476,6 +730,16 @@
       try { videoOn = localStorage.getItem('__ka_ab_video') === '1'; } catch (e) {}
       var isModule = options && options.type === 'module';
       if (videoOn && !isModule && /amazon-ivs|\/ivs\//i.test(url)) {
+        // v2.5.7: v2.5.3'te importScripts() yaklaşımına geçmiştik (senkron
+        // indirmeyi ortadan kaldırmak için) — ama bu, worker'ın script URL'sinin
+        // sarmalama anında HÂLÂ geçerli/erişilebilir olduğunu varsayıyordu.
+        // Yayın bitip yeni bir worker denemesi olduğunda bu URL geçersiz kalırsa,
+        // importScripts() worker'ı SESSİZCE ÇÖKERTİYOR — Kick'in sayfası o
+        // worker'dan beklediği mesajları hiç alamayıp donuk kalabiliyor
+        // (kullanıcı raporu: yayın bitince "Ad" ekranında/boş ekranda dakikalarca
+        // takılı kalma). Eski, daha sağlam yönteme (script'i senkron indirip
+        // shim'in içine GÖMME) geri dönüyoruz — indirme başarısız olursa
+        // sarmalamayı hiç denemeyip orijinal worker'a düşüyoruz.
         var src = readSync(url);
         if (src) {
           var base = baseOf(url);
@@ -489,6 +753,7 @@
           try { window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-05', text: 'IVS oynatıcı worker\'ı sarmalandı (slug=' + currentSlug() + ')' }, '*'); } catch (e) {}
           return new OrigWorker(URL.createObjectURL(blob), options);
         }
+        try { console.log('[KickAlert][AdBlock] worker script indirilemedi, sarmalanmadan gecildi'); } catch (e) {}
       }
     } catch (e) {
       try { console.log('[KickAlert][AdBlock] wrap hatasi, passthrough:', String(e).slice(0, 100)); } catch (er) {}
