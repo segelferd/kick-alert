@@ -112,6 +112,29 @@ const StorageDefaults = {
 let _syncEnabled = false;
 let _syncListenerAttached = false;
 
+// v2.5.42: chatSettings için yazma kuyruğu. updateChatSetting/setChatSettings
+// read-modify-write yaptığından, art arda hızlı çağrılar (ör. bir checkbox
+// + nickname aynı anda) birbirinin yazdığını eski bir okumayla ezebiliyordu.
+// Tüm chatSettings yazmalarını tek bir zincirden geçirerek sıralı hale getiriyoruz.
+let _chatSettingsWriteChain = Promise.resolve();
+
+// v2.5.43: Aynı sorun chatSettings dışında da vardı — favoriler, kanal grupları,
+// kanal başına ses modu, auto-open listesi, chatroom/channel_id cache, bot skorları
+// ve bildirim geçmişi de hepsi TEK bir storage anahtarındaki objeyi "oku → değiştir →
+// geri yaz" şeklinde güncelliyor. İki çağrı üst üste binerse (ör. hızlıca iki
+// favori yıldızına tıklamak, ya da iki Kick sekmesini aynı anda açıp her ikisinin
+// content script'inin channel_id'yi aynı anda cache'lemeye çalışması) biri
+// diğerinin yazdığını eski bir kopyayla ezip kaybediyordu.
+// Genel amaçlı, anahtar bazlı bir yazma kuyruğu: aynı storage key'e yapılan
+// tüm oku-değiştir-yaz işlemlerini sıraya sokar, farklı key'ler birbirini beklemez.
+const _keyWriteChains = new Map();
+function _withKeyLock(key, task) {
+  const prev = _keyWriteChains.get(key) || Promise.resolve();
+  const next = prev.then(task, task); // önceki başarısız olsa bile devam et
+  _keyWriteChains.set(key, next.catch(() => {}));
+  return next;
+}
+
 const Storage = {
   async get(key) {
     const result = await chrome.storage.local.get(key);
@@ -272,13 +295,15 @@ const Storage = {
     return channels[slug] === true;
   },
   async setAutoOpenChannel(slug, enabled) {
-    const channels = await this.getAutoOpenChannels();
-    if (enabled) {
-      channels[slug] = true;
-    } else {
-      delete channels[slug]; // BUG 11 FIX: Remove instead of storing false
-    }
-    return this.set(StorageKeys.AUTO_OPEN_CHANNELS, channels);
+    return _withKeyLock(StorageKeys.AUTO_OPEN_CHANNELS, async () => {
+      const channels = await this.getAutoOpenChannels();
+      if (enabled) {
+        channels[slug] = true;
+      } else {
+        delete channels[slug]; // BUG 11 FIX: Remove instead of storing false
+      }
+      return this.set(StorageKeys.AUTO_OPEN_CHANNELS, channels);
+    });
   },
 
   async getAutoUnmute() { return this.get(StorageKeys.AUTO_UNMUTE); },
@@ -289,10 +314,12 @@ const Storage = {
 
   async getNotificationHistory() { return this.get(StorageKeys.NOTIFICATION_HISTORY); },
   async addNotificationHistory(entry) {
-    const history = await this.getNotificationHistory();
-    history.unshift(entry);
-    if (history.length > 100) history.length = 100;
-    return this.set(StorageKeys.NOTIFICATION_HISTORY, history);
+    return _withKeyLock(StorageKeys.NOTIFICATION_HISTORY, async () => {
+      const history = await this.getNotificationHistory();
+      history.unshift(entry);
+      if (history.length > 100) history.length = 100;
+      return this.set(StorageKeys.NOTIFICATION_HISTORY, history);
+    });
   },
 
   async getShowOfflineChannels() { return this.get(StorageKeys.SHOW_OFFLINE_CHANNELS); },
@@ -344,13 +371,15 @@ const Storage = {
   },
 
   async setChannelSoundMode(slug, mode) {
-    const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
-    if (mode === 'silent') {
-      delete modes[slug]; // silent is default, don't store
-    } else {
-      modes[slug] = mode;
-    }
-    return this.set(StorageKeys.CHANNEL_SOUND_MODE, modes);
+    return _withKeyLock(StorageKeys.CHANNEL_SOUND_MODE, async () => {
+      const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
+      if (mode === 'silent') {
+        delete modes[slug]; // silent is default, don't store
+      } else {
+        modes[slug] = mode;
+      }
+      return this.set(StorageKeys.CHANNEL_SOUND_MODE, modes);
+    });
   },
 
   async getFavoriteChannels() {
@@ -361,14 +390,16 @@ const Storage = {
     return favs[slug] === true;
   },
   async toggleFavoriteChannel(slug) {
-    const favs = await this.getFavoriteChannels();
-    if (favs[slug]) {
-      delete favs[slug];
-    } else {
-      favs[slug] = true;
-    }
-    await this.set(StorageKeys.FAVORITE_CHANNELS, favs);
-    return !!favs[slug];
+    return _withKeyLock(StorageKeys.FAVORITE_CHANNELS, async () => {
+      const favs = await this.getFavoriteChannels();
+      if (favs[slug]) {
+        delete favs[slug];
+      } else {
+        favs[slug] = true;
+      }
+      await this.set(StorageKeys.FAVORITE_CHANNELS, favs);
+      return !!favs[slug];
+    });
   },
 
   async getTheme() { return (await this.get(StorageKeys.THEME)) || 'dark'; },
@@ -377,21 +408,29 @@ const Storage = {
   // ─── Channel Groups ───
   async getChannelGroups() { return (await this.get(StorageKeys.CHANNEL_GROUPS)) || []; },
   async setChannelGroups(groups) { return this.set(StorageKeys.CHANNEL_GROUPS, groups); },
+  // v2.5.43: Bu üçü CHANNEL_GROUPS ve/veya CHANNEL_GROUP_MAP'i birlikte
+  // okuyup değiştirdiği için tek bir ortak kilit anahtarı kullanıyoruz —
+  // yoksa örn. bir kanalı gruba atarken aynı anda bir grup silinirse ikisi
+  // birbirinin yazdığını eski bir kopyayla ezebilir.
   async addChannelGroup(name) {
-    const groups = await this.getChannelGroups();
-    if (!groups.includes(name)) groups.push(name);
-    return this.setChannelGroups(groups);
+    return _withKeyLock('_channelGroupsLock', async () => {
+      const groups = await this.getChannelGroups();
+      if (!groups.includes(name)) groups.push(name);
+      return this.setChannelGroups(groups);
+    });
   },
   async removeChannelGroup(name) {
-    let groups = await this.getChannelGroups();
-    groups = groups.filter(g => g !== name);
-    await this.setChannelGroups(groups);
-    // Also unassign channels from deleted group
-    const map = await this.getChannelGroupMap();
-    for (const slug of Object.keys(map)) {
-      if (map[slug] === name) delete map[slug];
-    }
-    return this.set(StorageKeys.CHANNEL_GROUP_MAP, map);
+    return _withKeyLock('_channelGroupsLock', async () => {
+      let groups = await this.getChannelGroups();
+      groups = groups.filter(g => g !== name);
+      await this.setChannelGroups(groups);
+      // Also unassign channels from deleted group
+      const map = await this.getChannelGroupMap();
+      for (const slug of Object.keys(map)) {
+        if (map[slug] === name) delete map[slug];
+      }
+      return this.set(StorageKeys.CHANNEL_GROUP_MAP, map);
+    });
   },
   async getChannelGroupMap() { return (await this.get(StorageKeys.CHANNEL_GROUP_MAP)) || {}; },
   async getChannelGroup(slug) {
@@ -399,13 +438,15 @@ const Storage = {
     return map[slug] || null;
   },
   async setChannelGroup(slug, groupName) {
-    const map = await this.getChannelGroupMap();
-    if (groupName) {
-      map[slug] = groupName;
-    } else {
-      delete map[slug];
-    }
-    return this.set(StorageKeys.CHANNEL_GROUP_MAP, map);
+    return _withKeyLock('_channelGroupsLock', async () => {
+      const map = await this.getChannelGroupMap();
+      if (groupName) {
+        map[slug] = groupName;
+      } else {
+        delete map[slug];
+      }
+      return this.set(StorageKeys.CHANNEL_GROUP_MAP, map);
+    });
   },
 
   /**
@@ -537,8 +578,9 @@ const Storage = {
         }
       }
       if (migrated) {
-        // Persist migrated flags so this runs only once
-        try { await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: merged }); } catch (_) {}
+        // Persist migrated flags so this runs only once. Yazma kuyruğuna alınıyor
+        // ki eş zamanlı bir updateChatSetting çağrısıyla çakışıp birbirini ezmesin.
+        try { await this.setChatSettings(merged); } catch (_) {}
       }
     }
 
@@ -546,14 +588,28 @@ const Storage = {
   },
 
   async setChatSettings(settings) {
-    await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: settings });
+    // Kuyruğa al: önceki bir updateChatSetting/setChatSettings çağrısı henüz
+    // bitmemişse, bu yazma onun tamamlanmasını bekler (stale-overwrite'ı önler).
+    const task = _chatSettingsWriteChain.then(() =>
+      chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: settings })
+    );
+    _chatSettingsWriteChain = task.catch(() => {});
+    return task;
   },
 
   async updateChatSetting(key, value) {
-    const current = await this.getChatSettings();
-    current[key] = value;
-    await this.setChatSettings(current);
-    return current;
+    // Okuma + değiştirme + yazmayı ATOMİK yapmak için tek adımı da kuyruğa alıyoruz.
+    // Böylece iki updateChatSetting çağrısı üst üste bindiğinde, ikincisi
+    // birincinin yazdığı güncel veriyi okur; eski (stale) bir kopyayı geri yazıp
+    // öncekini ezmez.
+    const task = _chatSettingsWriteChain.then(async () => {
+      const current = await this.getChatSettings();
+      current[key] = value;
+      await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: current });
+      return current;
+    });
+    _chatSettingsWriteChain = task.catch(() => {});
+    return task;
   },
 
   // ─── v2.3.0: Bot Tracker ───
@@ -589,9 +645,13 @@ const Storage = {
     return cache[slug] || null;
   },
   async setChatroomId(slug, chatroomId) {
-    const cache = await this.getChatroomIdCache();
-    cache[slug] = chatroomId;
-    await this.set(StorageKeys.CHATROOM_ID_CACHE, cache);
+    // v2.5.43: İki Kick sekmesi aynı anda açılırsa her ikisinin content
+    // script'i bu cache'i eş zamanlı güncelleyebiliyordu — kilitlendi.
+    return _withKeyLock(StorageKeys.CHATROOM_ID_CACHE, async () => {
+      const cache = await this.getChatroomIdCache();
+      cache[slug] = chatroomId;
+      await this.set(StorageKeys.CHATROOM_ID_CACHE, cache);
+    });
   },
 
   // v2.3.1 Plan F: channel_id cache (slug → channelId) — Pusher subscribe için.
@@ -604,9 +664,11 @@ const Storage = {
     return cache[slug] || null;
   },
   async setChannelId(slug, channelId) {
-    const cache = await this.getChannelIdCache();
-    cache[slug] = channelId;
-    await this.set('channelIdCache', cache);
+    return _withKeyLock('channelIdCache', async () => {
+      const cache = await this.getChannelIdCache();
+      cache[slug] = channelId;
+      await this.set('channelIdCache', cache);
+    });
   },
 
   // bot scores: { slug → { score, msgPerMin, ratio, computedAt } }
@@ -618,14 +680,18 @@ const Storage = {
     return scores[slug] || null;
   },
   async setBotScore(slug, scoreData) {
-    const scores = await this.getBotScores();
-    scores[slug] = scoreData;
-    await this.set(StorageKeys.BOT_SCORES, scores);
+    return _withKeyLock(StorageKeys.BOT_SCORES, async () => {
+      const scores = await this.getBotScores();
+      scores[slug] = scoreData;
+      await this.set(StorageKeys.BOT_SCORES, scores);
+    });
   },
   async removeBotScore(slug) {
-    const scores = await this.getBotScores();
-    delete scores[slug];
-    await this.set(StorageKeys.BOT_SCORES, scores);
+    return _withKeyLock(StorageKeys.BOT_SCORES, async () => {
+      const scores = await this.getBotScores();
+      delete scores[slug];
+      await this.set(StorageKeys.BOT_SCORES, scores);
+    });
   },
 };
 
@@ -658,11 +724,45 @@ const EXPORTABLE_SETTINGS_KEYS = [
 
 const SETTINGS_EXPORT_FORMAT_VERSION = 1;
 
+// v2.5.38: chrome.storage.local.get/set için, chrome.runtime.lastError'ı
+// kontrol edip reddeden küçük bir sarmalayıcı. Önceki hali (çıplak
+// `new Promise(resolve => chrome.storage.local.set(data, resolve))`) bir
+// kota/izin hatasında lastError set edilse bile resolve() çağrılmaya
+// devam ettiği için "sessizce başarılı gibi görünme" riski taşıyordu;
+// bazı durumlarda ise callback hiç tetiklenmeyip Promise sonsuza kadar
+// askıda kalabiliyordu. Bu, özellikle Ayarları İçe Aktar akışında
+// kullanıcıya hiçbir hata göstermeden "hiçbir şey olmamış" bir deneyime
+// yol açabiliyordu.
+function storageGet(keys) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(keys, (result) => {
+      if (chrome.runtime.lastError) { reject(new Error(chrome.runtime.lastError.message || 'storage.get failed')); return; }
+      resolve(result);
+    });
+  });
+}
+function storageSet(items) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(items, () => {
+      if (chrome.runtime.lastError) { reject(new Error(chrome.runtime.lastError.message || 'storage.set failed')); return; }
+      resolve();
+    });
+  });
+}
+function storageRemove(keys) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.remove(keys, () => {
+      if (chrome.runtime.lastError) { reject(new Error(chrome.runtime.lastError.message || 'storage.remove failed')); return; }
+      resolve();
+    });
+  });
+}
+
 async function exportSettingsToObject() {
-  const data = await new Promise(resolve => chrome.storage.local.get(EXPORTABLE_SETTINGS_KEYS, resolve));
+  const data = await storageGet(EXPORTABLE_SETTINGS_KEYS);
   // v2.5.19: En son dışa aktarma zamanını kaydet - kullanıcı "en son ne zaman
   // yedek aldım?" diye merak ettiğinde gösterebilelim.
-  await new Promise(resolve => chrome.storage.local.set({ [StorageKeys.LAST_EXPORT_TIMESTAMP]: Date.now() }, resolve));
+  await storageSet({ [StorageKeys.LAST_EXPORT_TIMESTAMP]: Date.now() });
   return {
     kickAlertSettingsExport: true,
     exportFormatVersion: SETTINGS_EXPORT_FORMAT_VERSION,
@@ -673,7 +773,7 @@ async function exportSettingsToObject() {
 }
 
 async function getLastExportTimestamp() {
-  const result = await new Promise(resolve => chrome.storage.local.get(StorageKeys.LAST_EXPORT_TIMESTAMP, resolve));
+  const result = await storageGet(StorageKeys.LAST_EXPORT_TIMESTAMP);
   return result[StorageKeys.LAST_EXPORT_TIMESTAMP] || null;
 }
 
@@ -683,14 +783,14 @@ async function getLastExportTimestamp() {
 // restorePreChangeSnapshot() ile tek tıkla geri alınabilir. Kendisi
 // EXPORTABLE_SETTINGS_KEYS'in dışında (internal), dışa aktarılmaz.
 async function createPreChangeSnapshot(affectedKeys) {
-  const current = await new Promise(resolve => chrome.storage.local.get(affectedKeys, resolve));
-  await new Promise(resolve => chrome.storage.local.set({
+  const current = await storageGet(affectedKeys);
+  await storageSet({
     [StorageKeys.PRE_IMPORT_SNAPSHOT]: { timestamp: Date.now(), keys: current },
-  }, resolve));
+  });
 }
 
 async function hasPreChangeSnapshot() {
-  const result = await new Promise(resolve => chrome.storage.local.get(StorageKeys.PRE_IMPORT_SNAPSHOT, resolve));
+  const result = await storageGet(StorageKeys.PRE_IMPORT_SNAPSHOT);
   return !!(result[StorageKeys.PRE_IMPORT_SNAPSHOT] && result[StorageKeys.PRE_IMPORT_SNAPSHOT].keys);
 }
 
@@ -698,11 +798,11 @@ async function hasPreChangeSnapshot() {
 // Tek seferlik "geri al" — kullanıldıktan sonra yedek temizlenir (üst üste
 // geri almanın anlamı olmadığı için, established "undo" mantığıyla tutarlı).
 async function restorePreChangeSnapshot() {
-  const result = await new Promise(resolve => chrome.storage.local.get(StorageKeys.PRE_IMPORT_SNAPSHOT, resolve));
+  const result = await storageGet(StorageKeys.PRE_IMPORT_SNAPSHOT);
   const snapshot = result[StorageKeys.PRE_IMPORT_SNAPSHOT];
   if (!snapshot || !snapshot.keys) return { ok: false, error: 'NO_SNAPSHOT' };
-  await new Promise(resolve => chrome.storage.local.set(snapshot.keys, resolve));
-  await new Promise(resolve => chrome.storage.local.remove(StorageKeys.PRE_IMPORT_SNAPSHOT, resolve));
+  await storageSet(snapshot.keys);
+  await storageRemove(StorageKeys.PRE_IMPORT_SNAPSHOT);
   return { ok: true };
 }
 
@@ -727,8 +827,15 @@ async function importSettingsFromObject(obj) {
   if (importedCount === 0) return { ok: false, error: 'EMPTY' };
   // v2.5.19: Üzerine yazmadan HEMEN ÖNCE, sadece değişecek anahtarların
   // mevcut halini yedekle — kullanıcı yanlış dosyayı seçtiyse tek tıkla geri dönebilsin.
-  await createPreChangeSnapshot(Object.keys(toWrite));
-  await new Promise(resolve => chrome.storage.local.set(toWrite, resolve));
+  try {
+    await createPreChangeSnapshot(Object.keys(toWrite));
+    await storageSet(toWrite);
+  } catch (e) {
+    // v2.5.38: Artık storage yazma hatası (kota aşımı, izin sorunu vb.)
+    // burada YAKALANIYOR ve çağıran tarafa açıkça bildiriliyor — sessizce
+    // "hiçbir şey olmamış" gibi görünmüyor.
+    return { ok: false, error: (e && e.message) || 'STORAGE_WRITE_FAILED' };
+  }
   return { ok: true, importedCount };
 }
 
@@ -741,7 +848,11 @@ async function resetSettingsToDefaults() {
       toWrite[key] = StorageDefaults[key];
     }
   }
-  await createPreChangeSnapshot(Object.keys(toWrite));
-  await new Promise(resolve => chrome.storage.local.set(toWrite, resolve));
+  try {
+    await createPreChangeSnapshot(Object.keys(toWrite));
+    await storageSet(toWrite);
+  } catch (e) {
+    return { ok: false, error: (e && e.message) || 'STORAGE_WRITE_FAILED' };
+  }
   return { ok: true };
 }

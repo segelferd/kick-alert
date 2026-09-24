@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>KickAlert — Backup &amp; Restore</title>
+  <link rel="stylesheet" href="../css/popup.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
+  <style>
+    /* v2.5.38: Bu sayfa bir sekmede açılır (popup DEĞİL), çünkü Firefox
+       extension popup'ları bir <input type="file"> ya da indirme diyaloğu
+       açıldığında otomatik kapanıyor (bkz. Mozilla Bugzilla #1658694,
+       #1292701) — bu da içe/dışa aktarmanın "hiçbir şey olmamış gibi"
+       sessizce başarısız görünmesine yol açıyordu. */
+    body {
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    .backup-page-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: var(--text-primary);
+    }
+    .backup-page-title img { width: 24px; height: 24px; }
+  </style>
+</head>
+<body>
+  <div class="backup-page-title">
+    <img src="../icons/icon48.png" alt="">
+    <span data-i18n="settingsBackupTitle">Backup &amp; Restore</span>
+  </div>
+
+  <div class="opt-section">
+    <div style="font-size:12px;color:var(--text-muted);padding-bottom:10px;line-height:1.5;" data-i18n="settingsBackupDesc">Download all your preferences as a file, or restore them from a previous backup — useful if you're not using Cloud Sync.</div>
+    <div id="opt-last-export-info" style="font-size:11px;color:var(--text-muted);padding-bottom:8px;"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button id="opt-export-settings" class="opt-cloud-sync-now-btn">
+        <span class="material-icons-outlined" style="font-size:14px;">download</span>
+        <span data-i18n="exportSettingsBtn">Export Settings</span>
+      </button>
+      <button id="opt-import-settings" class="opt-cloud-sync-now-btn">
+        <span class="material-icons-outlined" style="font-size:14px;">upload</span>
+        <span data-i18n="importSettingsBtn">Import Settings</span>
+      </button>
+      <input type="file" id="opt-import-file-input" accept="application/json,.json" style="display:none;" />
+    </div>
+    <div id="opt-restore-snapshot-wrap" style="padding-top:8px;display:none;">
+      <button id="opt-restore-snapshot" class="opt-cloud-sync-now-btn opt-restore-snapshot-btn">
+        <span class="material-icons-outlined" style="font-size:14px;">undo</span>
+        <span data-i18n="restoreSnapshotBtn">Undo Last Change</span>
+      </button>
+    </div>
+    <div id="opt-import-export-status" style="font-size:12px;padding-top:8px;"></div>
+  </div>
+
+  <script src="../src/storage.js"></script>
+  <script src="../src/utils.js"></script>
+  <script src="../src/backup.js"></script>
+
+  <!-- İçe Aktar onay modalı -->
+  <div id="import-confirm-modal" class="confirm-modal" style="display:none">
+    <div class="confirm-modal-backdrop"></div>
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-icon"><span class="material-icons-outlined">warning_amber</span></div>
+      <div class="confirm-modal-title" data-i18n="importConfirmTitle">Import Settings?</div>
+      <div class="confirm-modal-body" data-i18n="importConfirmBody">This will overwrite your current preferences (notifications, sounds, DND, chat filters, and more) with the ones from this file. This cannot be undone.</div>
+      <div class="confirm-modal-actions">
+        <button id="import-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel" data-i18n="cancel">Cancel</button>
+        <button id="import-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept" data-i18n="importConfirmAccept">Overwrite and Import</button>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

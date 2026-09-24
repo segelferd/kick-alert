@@ -1,0 +1,755 @@
+{
+  "anomalyAlertLabel": {
+    "message": "Upozornenie"
+  },
+  "anomalyDesc": {
+    "message": "Zisťuje neobvyklé nárasty počtu divákov. U nových streamov porovnáva s priemerom predchádzajúcich, u prebiehajúcich kontroluje rýchlosť zmeny. Bez histórie žiadne upozornenie."
+  },
+  "anomalyDropEnabled": {
+    "message": "Upozorniť pri abnormálnom poklese divákov"
+  },
+  "anomalyDropSettings": {
+    "message": "Detekcia poklesu"
+  },
+  "anomalyDropTitle": {
+    "message": "Podozrivý pokles divákov"
+  },
+  "anomalyModeBadge": {
+    "message": "Iba odznak v popupe"
+  },
+  "anomalyModeBoth": {
+    "message": "Desktopové oznámenie + odznak v popupe"
+  },
+  "anomalyModeNotif": {
+    "message": "Iba desktopové oznámenie"
+  },
+  "anomalyNote": {
+    "message": "Nový stream (< 10 min): porovnáva s priemerom predchádzajúcich streamov. Prebiehajúci stream: kontroluje rýchlosť zmeny. Bez histórie žiadne upozornenie."
+  },
+  "anomalyNotifyMode": {
+    "message": "Režim oznámení"
+  },
+  "anomalySensitivity": {
+    "message": "Citlivosť"
+  },
+  "anomalySpikeSettings": {
+    "message": "Prahy detekcie nárastu"
+  },
+  "anomalySpikeTitle": {
+    "message": "Podozrivý nárast divákov"
+  },
+  "anomalyPlateauTitle": {
+    "message": "Podozrivo stabilní diváci"
+  },
+  "anomalyPlateauBody": {
+    "message": "$1 min stabilné · ~$2 divákov"
+  },
+  "anomalySmoothTitle": {
+    "message": "Podozrivo lineárny rast"
+  },
+  "anomalySmoothBody": {
+    "message": "+$1 % za $2 min · $3 → $4"
+  },
+  "anomalyThreshold": {
+    "message": "Prah upozornenia"
+  },
+  "anomalyTitle": {
+    "message": "Detekcia anomálií divákov"
+  },
+  "anomalyWarnLabel": {
+    "message": "Varovanie"
+  },
+  "appDescription": {
+    "message": "Žiadne ninja streamy o 3. ráno už nezmeškáš — KickAlert zachytí každé prekvapivé vysielanie ;)"
+  },
+  "appName": {
+    "message": "KickAlert"
+  },
+  "autoLaunch": {
+    "message": "Automatické spustenie"
+  },
+  "autoLaunchButtonTooltip": {
+    "message": "Prepnúť správanie automatického spustenia"
+  },
+  "autoLaunchSettings": {
+    "message": "Nastavenia automatického spustenia"
+  },
+  "autoLaunchTab": {
+    "message": "Automatické spustenie"
+  },
+  "autoRefreshPopup": {
+    "message": "Automaticky obnovovať kartu Sledované"
+  },
+  "autoUnmuteCheckbox": {
+    "message": "Automaticky zapnúť zvuk po automatickom spustení<br />(Poznámka: nezobrazí sa vizuálne na posuvníku hlasitosti)"
+  },
+  "bellMain": {
+    "message": "Hlavný zvuk"
+  },
+  "bellMuted": {
+    "message": "Bez oznámenia"
+  },
+  "bellSilent": {
+    "message": "Tiché oznámenie"
+  },
+  "bellSub": {
+    "message": "Vedľajší zvuk"
+  },
+  "cardModeCompact": {
+    "message": "Kompaktný"
+  },
+  "cardModeDetail": {
+    "message": "Podrobný"
+  },
+  "cardModeLabel": {
+    "message": "Zobrazenie kariet"
+  },
+  "chatActiveChannel": {
+    "message": "Aktívny kanál"
+  },
+  "chatBotFilter": {
+    "message": "Filter botov"
+  },
+  "chatBotFilterDesc": {
+    "message": "Skryť správy od botov. Kliknutím na štítok odstrániš."
+  },
+  "chatBotPlaceholder": {
+    "message": "Pridať meno bota..."
+  },
+  "chatEmojiSpam": {
+    "message": "Filter spamu emoji"
+  },
+  "chatFavPlaceholder": {
+    "message": "Pridať používateľské meno..."
+  },
+  "chatFavoriteDesc": {
+    "message": "Správy obľúbených sú zvýraznené ich vlastnou farbou Kick."
+  },
+  "chatFavoriteUsers": {
+    "message": "Obľúbení používatelia"
+  },
+  "chatFilterBlur": {
+    "message": "Rozmazať"
+  },
+  "chatFilterHide": {
+    "message": "Skryť"
+  },
+  "chatFilterMode": {
+    "message": "Režim filtra"
+  },
+  "chatFilterModeDesc": {
+    "message": "Skryť odstráni správu. Rozmazať ju stlmí — pre zobrazenie prejdi myšou."
+  },
+  "chatIntegrationDesc": {
+    "message": "Po zapnutí sa vyššie zobrazí karta Chat. Po prvej inštalácii obnov všetky otvorené karty Kick."
+  },
+  "chatIntegrationTitle": {
+    "message": "Integrácia chatu"
+  },
+  "chatKeywordDesc": {
+    "message": "Správy obsahujúce tieto slová sú zvýraznené zelenou."
+  },
+  "chatKeywordHighlight": {
+    "message": "Zvýraznenie kľúčových slov"
+  },
+  "chatKeywordPlaceholder": {
+    "message": "Pridať slovo..."
+  },
+  "chatNoChannel": {
+    "message": "Žiadny aktívny kanál Kick"
+  },
+  "chatRepeatDesc": {
+    "message": "Skryje, keď ten istý používateľ pošle rovnakú správu 3-krát alebo viackrát."
+  },
+  "chatRepeatFilter": {
+    "message": "Filter opakovaných správ"
+  },
+  "chatTab": {
+    "message": "Chat"
+  },
+  "chatTagDesc": {
+    "message": "Dostaneš oznámenie, keď ťa niekto označí."
+  },
+  "chatTagNotif": {
+    "message": "Oznámenie o zmienke"
+  },
+  "chatTagNotifTitle": {
+    "message": "@$1 ťa spomenul(a)"
+  },
+  "chatTagPlaceholder": {
+    "message": "Tvoje používateľské meno na Kick..."
+  },
+  "chatUserFilter": {
+    "message": "Filter používateľov"
+  },
+  "chatUserPlaceholder": {
+    "message": "Pridať používateľské meno..."
+  },
+  "chatWordFilter": {
+    "message": "Filter slov"
+  },
+  "chatWordPlaceholder": {
+    "message": "Pridať slovo..."
+  },
+  "checkInterval": {
+    "message": "Interval kontroly"
+  },
+  "clearHistory": {
+    "message": "Vymazať"
+  },
+  "cloudSyncNote": {
+    "message": "Synchronizuj nastavenia medzi zariadeniami cez účet prehliadača. Vlastné zvuky a história oznámení sa nesynchronizujú."
+  },
+  "cloudSyncTitle": {
+    "message": "Cloudová synchronizácia"
+  },
+  "customSoundButtonClear": {
+    "message": "[Vymazať]"
+  },
+  "customSoundButtonTest": {
+    "message": "[Test]"
+  },
+  "customSoundLimitNote": {
+    "message": "Nahraj zvukové súbory do $1 MB."
+  },
+  "customSoundMainLabel": {
+    "message": "Hlavný zvuk"
+  },
+  "customSoundStatusErrorQuota": {
+    "message": "Chyba: prekročená kvóta úložiska"
+  },
+  "customSoundStatusErrorSave": {
+    "message": "Chyba: uloženie súboru zlyhalo"
+  },
+  "customSoundStatusErrorTooLarge": {
+    "message": "Chyba: veľkosť súboru $1 MB prekračuje limit"
+  },
+  "customSoundStatusUnset": {
+    "message": "Nenastavené"
+  },
+  "customSoundSubLabel": {
+    "message": "Vedľajší zvuk"
+  },
+  "displaySettings": {
+    "message": "Nastavenia zobrazenia"
+  },
+  "dndEnd": {
+    "message": "Koniec"
+  },
+  "dndMuteAutoLaunch": {
+    "message": "Pozastaviť automatické spustenie"
+  },
+  "dndMuteNotifications": {
+    "message": "Stlmiť oznámenia"
+  },
+  "dndMuteSound": {
+    "message": "Stlmiť zvuky"
+  },
+  "dndStart": {
+    "message": "Začiatok"
+  },
+  "dndTitle": {
+    "message": "Nerušiť"
+  },
+  "duplicateTabGuard": {
+    "message": "Ochrana pred duplicitnými kartami"
+  },
+  "duplicateTabGuardButtonTooltip": {
+    "message": "Prepnúť ochranu pred duplicitnými kartami pri automatickom spustení. Keď je zapnutá, nová karta sa neotvorí, ak je karta pre daný stream už otvorená."
+  },
+  "errorLoadingHistory": {
+    "message": "Chyba pri načítaní histórie."
+  },
+  "fetchError": {
+    "message": "Načítanie kanálov zlyhalo. Skontroluj, či si prihlásený(á) na Kick, a skús to znova."
+  },
+  "fetchErrorBlocked": {
+    "message": "Tvoje pripojenie bolo dočasne zablokované. Počkaj pár minút alebo skús VPN."
+  },
+  "following": {
+    "message": "Sledované"
+  },
+  "groupAddPlaceholder": {
+    "message": "Nová skupina..."
+  },
+  "groupAll": {
+    "message": "Všetky"
+  },
+  "groupAssign": {
+    "message": "Priradiť skupinu"
+  },
+  "groupsTitle": {
+    "message": "Skupiny kanálov"
+  },
+  "history": {
+    "message": "História oznámení"
+  },
+  "historyGroupOlder": {
+    "message": "Skôr"
+  },
+  "historyGroupThisWeek": {
+    "message": "Tento týždeň"
+  },
+  "historyGroupToday": {
+    "message": "Dnes"
+  },
+  "historyGroupYesterday": {
+    "message": "Včera"
+  },
+  "langBrowserNoteSupported": {
+    "message": "Používa sa jazyk prehliadača: $1"
+  },
+  "langBrowserNoteUnsupported": {
+    "message": "Jazyk prehliadača nie je podporovaný — používa sa angličtina"
+  },
+  "langSectionTitle": {
+    "message": "Jazyk"
+  },
+  "lastStream": {
+    "message": "Posledný stream"
+  },
+  "noDataYet": {
+    "message": "Zatiaľ nedostatok údajov"
+  },
+  "noHistoryYet": {
+    "message": "Zatiaľ žiadna história."
+  },
+  "noLiveStreams": {
+    "message": "Žiadne živé vysielania."
+  },
+  "notifButtonMute": {
+    "message": "Stlmiť"
+  },
+  "notifButtonOpen": {
+    "message": "Otvoriť"
+  },
+  "notifDelayLabel": {
+    "message": "Upozorniť po začatí streamu"
+  },
+  "autoOpenDelayLabel": {
+    "message": "Oneskorenie otvorenia karty"
+  },
+  "notifDelayUnit": {
+    "message": "min"
+  },
+  "notifDelayNow": {
+    "message": "Teraz"
+  },
+  "notifStartedStreaming": {
+    "message": "$1 začal(a) vysielať"
+  },
+  "notificationSettings": {
+    "message": "Nastavenia oznámení"
+  },
+  "notificationSoundVolume": {
+    "message": "Hlasitosť zvuku"
+  },
+  "onlySwitchChannels": {
+    "message": "Upozorňovať iba na zapnuté kanály"
+  },
+  "options": {
+    "message": "Nastavenia"
+  },
+  "optionsBack": {
+    "message": "Späť"
+  },
+  "optionsButtonTooltip": {
+    "message": "Otvoriť stránku nastavení"
+  },
+  "refresh": {
+    "message": "Obnoviť"
+  },
+  "refreshButtonTooltip": {
+    "message": "Obnoviť obsah karty"
+  },
+  "resetSuspendOnRestartCheckbox": {
+    "message": "Pri reštarte prehliadača obnoviť nastavenia automatického spustenia na Zapnuté"
+  },
+  "searchChannels": {
+    "message": "Hľadať kanály..."
+  },
+  "sensitivityAvg": {
+    "message": "Vyvážená"
+  },
+  "sensitivityMax": {
+    "message": "Prísna"
+  },
+  "sensitivityMin": {
+    "message": "Citlivá"
+  },
+  "showNotificationCheckbox": {
+    "message": "Zobrazovať desktopové oznámenia"
+  },
+  "showOfflineChannels": {
+    "message": "Zobraziť offline kanály na karte Sledované"
+  },
+  "silentForOthers": {
+    "message": "Tiché oznámenia pre ostatné kanály"
+  },
+  "soundModeExtension": {
+    "message": "Zvuky rozšírenia"
+  },
+  "soundModeExtensionTooltip": {
+    "message": "Nápadné vlastné upozornenia — ťažko ich prehliadnuť"
+  },
+  "soundModeWindows": {
+    "message": "Zvuky Windows"
+  },
+  "soundModeWindowsTooltip": {
+    "message": "Štandardný systémový zvuk — môže zaniknúť v pozadí"
+  },
+  "testSoundVolume": {
+    "message": "[Test]"
+  },
+  "themeDark": {
+    "message": "Tmavá"
+  },
+  "themeLabel": {
+    "message": "Motív"
+  },
+  "themeLight": {
+    "message": "Svetlá"
+  },
+  "tooltipLiveCount": {
+    "message": "$1 naživo"
+  },
+  "tooltipMore": {
+    "message": "+$1 ďalších"
+  },
+  "tooltipNoLive": {
+    "message": "KickAlert — Žiadne živé vysielania"
+  },
+  "viewerTrendTitle": {
+    "message": "Trend divákov"
+  },
+  "chatBroadcasterNotif": {
+    "message": "Oznámenie o správe strímera"
+  },
+  "chatBroadcasterDesc": {
+    "message": "Dostaneš oznámenie, keď strímer napíše do chatu. Max. 1 oznámenie za minútu."
+  },
+  "chatBroadcasterNotifTitle": {
+    "message": "$1 napísal(a) do chatu"
+  },
+  "chatWordFilterDesc": {
+    "message": "Správy obsahujúce tieto slová sú skryté alebo rozmazané."
+  },
+  "chatUserFilterDesc": {
+    "message": "Správy od uvedených používateľov sú skryté alebo rozmazané."
+  },
+  "chatEmojiSpamDesc": {
+    "message": "Stlmí správy s nadmerným počtom emoji (pre zobrazenie prejdi myšou)."
+  },
+  "anomalyAgeLabel": {
+    "message": "naživo už $1 min"
+  },
+  "anomalyObsLabel": {
+    "message": "sledované $1 min"
+  },
+  "anomalyWindowLabel": {
+    "message": "posledných $1 min"
+  },
+  "botScoreTooltip": {
+    "message": "Skóre podozrenia na bota: $1 %"
+  },
+  "botTrackerSettings": {
+    "message": "Detekcia botov"
+  },
+  "botScoreAlwaysVisibleLabel": {
+    "message": "Zobrazovať skóre botov na všetkých živých kanáloch"
+  },
+  "botScoreAlwaysVisibleHint": {
+    "message": "Keď je vypnuté, skóre sa zobrazí iba počas nárastu."
+  },
+  "botScoreFormulaInfo": {
+    "message": "Skóre = stav chatu voči očakávanému počtu divákov. Logaritmický základ normalizuje malé/veľké kanály."
+  },
+  "chatChipRemoveTooltip": {
+    "message": "Kliknutím odstrániš"
+  },
+  "timeAgoDay": {
+    "message": "pred $1 d"
+  },
+  "timeAgoHour": {
+    "message": "pred $1 h"
+  },
+  "timeAgoMin": {
+    "message": "pred $1 min"
+  },
+  "timeAgoJustNow": {
+    "message": "Práve teraz"
+  },
+  "viewerHistoryNoData": {
+    "message": "Zatiaľ nedostatok údajov"
+  },
+  "vhPeak": {
+    "message": "Vrchol"
+  },
+  "vhLow": {
+    "message": "Minimum"
+  },
+  "vhAvg": {
+    "message": "Priemer"
+  },
+  "vhWatched": {
+    "message": "Sledované"
+  },
+  "vhPeakAt": {
+    "message": "vrchol"
+  },
+  "trendStable": {
+    "message": "stabilné"
+  },
+  "vhAvgAll": {
+    "message": "Priemer (všetky)"
+  },
+  "vhAvgRecent": {
+    "message": "Priemer (posledných 6)"
+  },
+  "vhTrendGeneral": {
+    "message": "Celkovo"
+  },
+  "vhTrendRecent": {
+    "message": "Teraz"
+  },
+  "sortByLabel": {
+    "message": "Zoradiť:"
+  },
+  "sortByKick": {
+    "message": "Predvolené Kick"
+  },
+  "sortByAlphabetic": {
+    "message": "Abecedne"
+  },
+  "sortByLiveTime": {
+    "message": "Čas vysielania"
+  },
+  "sortByViewers": {
+    "message": "Diváci"
+  },
+  "sortDirToggle": {
+    "message": "Zmeniť smer"
+  },
+  "cloudSyncNowBtn": {
+    "message": "Synchronizovať teraz"
+  },
+  "cloudSyncNowRunning": {
+    "message": "Synchronizuje sa..."
+  },
+  "cloudSyncNowSuccess": {
+    "message": "Zosynchronizované!"
+  },
+  "cloudSyncNowFail": {
+    "message": "Synchronizácia zlyhala"
+  },
+  "cloudSyncNowDisabled": {
+    "message": "Najprv zapni synchronizáciu"
+  },
+  "fetchErrorOffline": {
+    "message": "Zdá sa, že si offline. Skontroluj internetové pripojenie a skús to znova."
+  },
+  "fetchErrorRateLimited": {
+    "message": "Kick dočasne obmedzuje požiadavky. Toto sa vyrieši automaticky — počkaj chvíľu."
+  },
+  "fetchErrorServerError": {
+    "message": "Na serveroch Kick je momentálne problém. Skús to znova o pár minút."
+  },
+  "fetchErrorUnknown": {
+    "message": "Pri načítaní tvojich kanálov sa niečo pokazilo. Skús to znova."
+  },
+  "fetchErrorSessionRejected": {
+    "message": "Kick momentálne nerozpoznáva tvoju reláciu, hoci si prihlásený(á). Zvyčajne sa to stáva pri prihlásení cez Google, Apple alebo iný sociálny účet kvôli nezrovnalosti na serveroch Kick — nejde o chybu tohto rozšírenia. Riešenie: odhlás sa z kick.com a znova sa prihlás pomocou e-mailu a hesla. Ak nemáš heslo (lebo si sa zaregistroval(a) cez Google/Apple), použi na prihlasovacej obrazovke \"Zabudnuté heslo?\" a nastav si ho. Ak to nepomôže, zvyčajne sa to samo vyrieši do pár minút."
+  },
+  "emailLoginNotice": {
+    "message": "Aby KickAlert fungoval spoľahlivo, odporúčame prihlásiť sa na Kick pomocou e-mailu a hesla. Prihlásenie cez \"Google\", \"Apple\" alebo iný sociálny účet môže niekedy zabrániť rozšíreniu načítať tvoje údaje kvôli nezrovnalosti na serveroch Kick."
+  },
+  "adBlockTitle": {
+    "message": "Blokovanie reklám"
+  },
+  "adBlockWarning": {
+    "message": "Experimentálna a neoficiálna funkcia — závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať. Zapnutím prijímaš túto zodpovednosť. Ak ju necháš vypnutú, KickAlert bude fungovať ako doteraz, bez zmeny. Aby sa zmena prejavila, treba obnoviť otvorené karty Kick."
+  },
+  "emailLoginNoticeUrgentTag": {
+    "message": "Práve teraz sa to týka teba:"
+  },
+  "emailLoginInfo": {
+    "message": "Tip: KickAlert funguje najspoľahlivejšie, keď si prihlásený(á) na Kick pomocou e-mailu a hesla. Sociálne prihlásenia ako Google alebo Apple môžu občas spôsobiť nezrovnalosti relácie na serveroch Kick."
+  },
+  "thumbnailsTitle": {
+    "message": "Náhľadové obrázky kanálov"
+  },
+  "thumbnailsWarning": {
+    "message": "Zobrazuje náhľadový obrázok naživo pod každým živým kanálom. Pri každom otvorení popupu sa odošle jedna dodatočná požiadavka na kanál, čo nesie malé riziko, že Kick označí túto aktivitu za podobnú botovi."
+  },
+  "thumbnailViewersSuffix": {
+    "message": "divákov"
+  },
+  "groupFilterToggle": {
+    "message": "Filtrovať podľa kategórie/skupiny"
+  },
+  "adBlockConfirmTitle": {
+    "message": "Zapnúť blokovanie reklám?"
+  },
+  "adBlockConfirmBody": {
+    "message": "Ide o experimentálnu a neoficiálnu funkciu — závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať, pričom Kick môže toto správanie odhaliť. Zapnutím preberáš zodpovednosť za tieto riziká."
+  },
+  "adBlockConfirmAccept": {
+    "message": "Rozumiem, zapnúť"
+  },
+  "cancel": {
+    "message": "Zrušiť"
+  },
+  "experimentalChip": {
+    "message": "EXPERIMENTÁLNE"
+  },
+  "botScoreSimpleInfo": {
+    "message": "Odhaduje, či počet divákov kanála pôsobí reálne, na základe aktivity v chate."
+  },
+  "botScoreFormulaLink": {
+    "message": "Ako sa to počíta?"
+  },
+  "noChannelsFollowedYet": {
+    "message": "Zatiaľ nikoho nesleduješ. Sleduj kanál na Kick a automaticky sa zobrazí tu."
+  },
+  "whatsNewBannerText": {
+    "message": "Novinka: blokovanie reklám je silnejšie, nastavenia sú teraz usporiadané do kategórií a náhľady kanálov dostali opravu. Pozri si <a id=\"whatsnew-settings-link\">Nastavenia</a>."
+  },
+  "optGroupGeneral": {
+    "message": "Všeobecné"
+  },
+  "optGroupNotifications": {
+    "message": "Oznámenia a monitorovanie"
+  },
+  "optGroupFeatures": {
+    "message": "Ďalšie funkcie"
+  },
+  "optGroupAccount": {
+    "message": "Účet a synchronizácia"
+  },
+  "optSearchPlaceholder": {
+    "message": "Hľadať v nastaveniach..."
+  },
+  "whatsNewRelink": {
+    "message": "Čo je nové"
+  },
+  "releaseHistoryTitle": {
+    "message": "História verzií"
+  },
+  "close": {
+    "message": "Zavrieť"
+  },
+  "releaseHistoryV0Label": {
+    "message": "v2.5 — Blokovanie reklám, oznámenia chatu a prepracované nastavenia"
+  },
+  "releaseHistoryV0Body": {
+    "message": "• Tri nové vrstvy blokovania reklám: náhrada GPT/IMA SDK, filtrovanie na úrovni segmentov a detekcia vlastného prechodového prekrytia \"čiernej obrazovky\" Kicku\n• Vyhľadávanie zdroja VOD bez reklám je rýchlejšie a bezpečnejšie\n• Nastavenia prepracované do zbaliteľných kategórií s vyhľadávaním\n• Banner \"Čo je nové\" a toto zobrazenie histórie\n• Zálohovanie a obnovenie: exportuj/importuj všetky svoje nastavenia ako súbor (s jednorazovou poistkou na vrátenie späť a možnosťou \"Obnoviť na predvolené\")\n• Opravené skrývanie reklám, ktoré vizuálne vôbec nefungovalo (pravidlo CSS sa nikdy nedostalo na stránku) a fungovalo len pri aktivácii našej vlastnej detekcie — teraz funguje nezávisle a zachytí viac reklamných prekrytí\n• Chat: odpoveď na tvoju správu ťa teraz upozorní rovnako ako zmienka @\n• Vyskakovacie okno a zvuk oznámení chatu sa teraz dajú zapínať nezávisle (s voliteľným zvukovým režimom \"len keď nesleduješ\") — tento režim teraz rozpoznáva aj to, keď je skrytý vlastný chatovací panel Kicku (režim divadla/celej obrazovky), nielen kartu na pozadí alebo odscrollovanie\n• Opravené oznámenia chatu, ktoré sa nespúšťali pri aktívnom sledovaní živého chatu, a kolízia zvuku rozšírenia s vlastným oznamovacím zvukom Windows\n• Pridaná slovenčina ako novo podporovaný jazyk\n• Skontrolované všetky preklady vo všetkých 14 jazykoch z hľadiska presnosti a prirodzenosti — opravených niekoľko chybných prekladov a nezrovnalostí v oslovovaní"
+  },
+  "releaseHistoryV1Label": {
+    "message": "v2.4.0 — Náhľady kanálov a blokovanie reklám"
+  },
+  "releaseHistoryV1Body": {
+    "message": "• Náhľadové obrázky kanálov v zozname Sledované\n• Blokovanie reklám (experimentálne) pre živé vysielania a VOD\n• Skóre detekcie botov pre počty divákov"
+  },
+  "releaseHistoryV2Label": {
+    "message": "v2.3.0 — Integrácia chatu"
+  },
+  "releaseHistoryV2Body": {
+    "message": "• Karta chatu: filtrovanie botov/spamu/duplicít/kľúčových slov, obľúbené, zmienky\n• Plánovanie režimu Nerušiť\n• Detekcia anomálií divákov"
+  },
+  "settingsBackupTitle": {
+    "message": "Zálohovanie a obnovenie"
+  },
+  "settingsBackupDesc": {
+    "message": "Ulož všetky svoje nastavenia do súboru, alebo obnov predchádzajúce uloženie. Užitočné bez cloudovej synchronizácie."
+  },
+  "exportSettingsBtn": {
+    "message": "Exportovať nastavenia"
+  },
+  "importSettingsBtn": {
+    "message": "Importovať nastavenia"
+  },
+  "exportSettingsSuccess": {
+    "message": "Stiahnuté!"
+  },
+  "exportSettingsFail": {
+    "message": "Export zlyhal"
+  },
+  "importSettingsInvalid": {
+    "message": "Nejde o platný súbor nastavení KickAlert"
+  },
+  "importSettingsSuccess": {
+    "message": "Importované! Znovu sa načítava..."
+  },
+  "importSettingsFail": {
+    "message": "Import zlyhal — súbor môže byť poškodený"
+  },
+  "importConfirmTitle": {
+    "message": "Importovať nastavenia?"
+  },
+  "importConfirmBody": {
+    "message": "Týmto sa prepíšu tvoje aktuálne nastavenia (oznámenia, zvuky, Nerušiť, filtre chatu a ďalšie) tými zo súboru. Toto sa nedá vrátiť späť (ale hneď potom to môžeš raz vrátiť pomocou \"Vrátiť poslednú zmenu\")."
+  },
+  "importConfirmAccept": {
+    "message": "Prepísať a importovať"
+  },
+  "lastExportToday": {
+    "message": "Posledná záloha: dnes"
+  },
+  "lastExportDaysAgo": {
+    "message": "Posledná záloha: pred $1 dňami"
+  },
+  "lastExportNever": {
+    "message": "Zatiaľ nebola vytvorená žiadna záloha"
+  },
+  "restoreSnapshotBtn": {
+    "message": "Vrátiť poslednú zmenu"
+  },
+  "restoreSnapshotSuccess": {
+    "message": "Obnovené! Znovu sa načítava..."
+  },
+  "restoreSnapshotFail": {
+    "message": "Nič na obnovenie"
+  },
+  "resetDefaultsTitle": {
+    "message": "Obnoviť na predvolené"
+  },
+  "resetDefaultsDesc": {
+    "message": "Vymaž všetky svoje nastavenia a začni odznova. Zváž najprv export zálohy."
+  },
+  "resetDefaultsBtn": {
+    "message": "Resetovať všetko"
+  },
+  "resetConfirmTitle": {
+    "message": "Resetovať všetko?"
+  },
+  "resetConfirmBody": {
+    "message": "Týmto sa vymažú všetky tvoje nastavenia a vrátia sa na predvolené hodnoty. Toto sa nedá vrátiť späť (ale hneď potom to môžeš raz vrátiť pomocou \"Vrátiť poslednú zmenu\")."
+  },
+  "resetConfirmAccept": {
+    "message": "Resetovať všetko"
+  },
+  "resetDefaultsSuccess": {
+    "message": "Resetované! Znovu sa načítava..."
+  },
+  "chatReplyNotifTitle": {
+    "message": "$1 ti odpovedal(a)"
+  },
+  "chatMentionSoundSmart": {
+    "message": "Iba keď aktívne nesleduješ (karta na pozadí, chat odscrollovaný, alebo je skrytý vlastný chatovací panel Kicku) — platí pre zmienky, odpovede a správy strímera."
+  },
+  "chatMentionSoundEnabled": {
+    "message": "Prehrať aj zvuk"
+  },
+  "chatNotifSoundTitle": {
+    "message": "Oznámenia chatu"
+  },
+  "chatNotifSoundDesc": {
+    "message": "Nastavenia oznámení pre upozornenia na zmienky a správy strímera na karte Chat."
+  },
+  "chatNotifSoundDisabledNote": {
+    "message": " Najprv zapni \"Oznámenie o zmienke\" alebo \"Oznámenie o správe strímera\" na karte Chat."
+  },
+  "chatShowPopup": {
+    "message": "Zobraziť vyskakovacie oznámenie"
+  }
+}

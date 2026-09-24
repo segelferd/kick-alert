@@ -1796,10 +1796,12 @@ async function loadOptionsSettings() {
     b.classList.toggle('active', b.dataset.theme === theme);
   });
 
-  // v2.5.29: Chat Bildirim Sesi — chatSettings'i Ayarlar panelinde ayrıca
+  // v2.5.30: Chat Bildirimleri — chatSettings'i Ayarlar panelinde ayrıca
   // okuyoruz (Chat sekmesinden bağımsız bir görünüm burası).
   const chatSettingsForOpt = await Storage.getChatSettings();
+  const optShowPopupOn = chatSettingsForOpt?.showPopupNotification !== false;
   const optMentionSoundOn = chatSettingsForOpt?.mentionSoundEnabled !== false;
+  if (optEl('opt-chat-show-popup')) optEl('opt-chat-show-popup').checked = optShowPopupOn;
   if (optEl('opt-chat-mention-sound-enabled')) optEl('opt-chat-mention-sound-enabled').checked = optMentionSoundOn;
   if (optEl('opt-chat-mention-sound-smart')) optEl('opt-chat-mention-sound-smart').checked = !!chatSettingsForOpt?.mentionSoundSmart;
   optUpdateChatNotifSoundBodyVisibility();
@@ -1981,9 +1983,12 @@ function setupOptionsListeners() {
   optBind('opt-dnd-mute-sound', v => Storage.setDndMuteSound(v));
   optBind('opt-dnd-mute-autolaunch', v => Storage.setDndMuteAutolaunch(v));
 
-  // v2.5.29: Chat Bildirim Sesi — optBind KULLANILMIYOR çünkü chatSettings
+  // v2.5.30: Chat Bildirimleri — optBind KULLANILMIYOR çünkü chatSettings
   // tek bir obje (ayrı bir StorageKey değil), Storage.updateChatSetting()
   // ile yazılıyor (chat.js/popup.js'in geri kalanıyla aynı desen).
+  optEl('opt-chat-show-popup')?.addEventListener('change', async e => {
+    await Storage.updateChatSetting('showPopupNotification', e.target.checked);
+  });
   optEl('opt-chat-mention-sound-enabled')?.addEventListener('change', async e => {
     await Storage.updateChatSetting('mentionSoundEnabled', e.target.checked);
     optUpdateChatNotifSoundBodyVisibility();
@@ -2092,83 +2097,40 @@ function setupOptionsListeners() {
     });
   }
 
-  // v2.5.17: Ayarları Dışa Aktar — tüm tercihleri bir .json dosyası olarak indirir.
+  // v2.5.17: Ayarları Dışa/İçe Aktar.
+  // v2.5.38: Bu artık popup İÇİNDE yapılmıyor — Firefox, bir extension
+  // popup'ı içinde <input type="file"> veya indirme diyaloğu açıldığında
+  // popup'ı otomatik kapatıyor (Mozilla Bugzilla #1658694, #1292701).
+  // Bunun sonucu: kullanıcı "İçe Aktar"a tıklayıp dosya seçse bile popup
+  // zaten kapandığı için 'change' olayı hiç tetiklenmiyor, ayarlar
+  // sessizce hiç yüklenmiyordu. Çözüm: bu iki butonu, kendi sekmesinde
+  // açılan bağımsız bir sayfaya (html/backup.html, src/backup.js)
+  // yönlendiriyoruz — sekmeler bu şekilde kapanmaz.
   const exportBtn = document.getElementById('opt-export-settings');
   const importBtn = document.getElementById('opt-import-settings');
-  const importFileInput = document.getElementById('opt-import-file-input');
   const importExportStatus = document.getElementById('opt-import-export-status');
-
   function showImportExportStatus(text, isError) {
     if (!importExportStatus) return;
     importExportStatus.textContent = text;
     importExportStatus.style.color = isError ? 'var(--red, #e05252)' : 'var(--accent)';
     setTimeout(() => { importExportStatus.textContent = ''; }, 5000);
   }
-
-  if (exportBtn) {
-    exportBtn.addEventListener('click', async () => {
-      try {
-        const exportObj = await exportSettingsToObject();
-        const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const dateStr = new Date().toISOString().slice(0, 10);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `kickalert-settings-${dateStr}.json`;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(() => URL.revokeObjectURL(url), 2000);
-        showImportExportStatus(Utils.i18n('exportSettingsSuccess') || 'Downloaded!', false);
-      } catch (e) {
-        showImportExportStatus(Utils.i18n('exportSettingsFail') || 'Export failed', true);
-      }
+  function openBackupPage() {
+    // v2.5.41: Sekme (tabs.create) YERİNE, tarayıcı çerçevesi (adres çubuğu,
+    // sekme şeridi) OLMAYAN bağımsız bir PENCERE açıyoruz. Firefox'un
+    // popup'ı kapatma davranışı (bkz. üstteki not) SADECE browserAction
+    // popup'ına özgü — chrome.windows.create ile açılan bir pencere bu
+    // sorunu YAŞAMAZ, VE kullanıcıya "yeni bir web sekmesine gittim" hissi
+    // vermez, eklentinin kendi küçük bir penceresi gibi görünür.
+    chrome.windows.create({
+      url: chrome.runtime.getURL('html/backup.html'),
+      type: 'popup',
+      width: 480,
+      height: 620,
     });
   }
-
-  // v2.5.17: Ayarları İçe Aktar — dosya seçtirip, ONAY ALDIKTAN SONRA
-  // (mevcut ayarların üzerine yazılacağı açıkça belirtilerek) uyguluyoruz.
-  let pendingImportObj = null;
-  if (importBtn && importFileInput) {
-    importBtn.addEventListener('click', () => importFileInput.click());
-    importFileInput.addEventListener('change', async () => {
-      const file = importFileInput.files[0];
-      importFileInput.value = ''; // aynı dosyayı tekrar seçebilsin diye sıfırla
-      if (!file) return;
-      try {
-        const text = await file.text();
-        const parsed = JSON.parse(text);
-        if (!parsed || parsed.kickAlertSettingsExport !== true) {
-          showImportExportStatus(Utils.i18n('importSettingsInvalid') || 'Not a valid KickAlert settings file', true);
-          return;
-        }
-        pendingImportObj = parsed;
-        document.getElementById('import-confirm-modal').style.display = 'flex';
-      } catch (e) {
-        showImportExportStatus(Utils.i18n('importSettingsInvalid') || 'Not a valid KickAlert settings file', true);
-      }
-    });
-  }
-  document.getElementById('import-confirm-cancel')?.addEventListener('click', () => {
-    pendingImportObj = null;
-    document.getElementById('import-confirm-modal').style.display = 'none';
-  });
-  document.getElementById('import-confirm-modal')?.querySelector('.confirm-modal-backdrop')?.addEventListener('click', () => {
-    pendingImportObj = null;
-    document.getElementById('import-confirm-modal').style.display = 'none';
-  });
-  document.getElementById('import-confirm-accept')?.addEventListener('click', async () => {
-    document.getElementById('import-confirm-modal').style.display = 'none';
-    if (!pendingImportObj) return;
-    const result = await importSettingsFromObject(pendingImportObj);
-    pendingImportObj = null;
-    if (result.ok) {
-      showImportExportStatus(Utils.i18n('importSettingsSuccess') || `Imported! Reloading...`, false);
-      setTimeout(() => location.reload(), 1200);
-    } else {
-      showImportExportStatus(Utils.i18n('importSettingsFail') || 'Import failed — file may be corrupted', true);
-    }
-  });
+  exportBtn?.addEventListener('click', openBackupPage);
+  importBtn?.addEventListener('click', openBackupPage);
 
   // v2.5.19: "Son Değişikliği Geri Al" — import ya da reset öncesindeki
   // duruma tek tıkla döner. Kullanıldıktan sonra yedek temizlenir (tek seferlik).
@@ -2929,14 +2891,32 @@ function setupChatHandlers() {
   // v2.5.28: Ses ayarlarının event listener'ları artık Ayarlar panelinde
   // (setupOptionsListeners) - Chat sekmesinde sadece açma/kapama kalıyor.
 
-  // Tag username (debounced)
-  let tagTimeout;
-  document.getElementById('chat-tag-username')?.addEventListener('input', e => {
+  // Tag username (debounced while typing, ama popup kapanmadan HEMEN flush edilir)
+  // v2.5.42: Popup, kullanıcı başka yere tıklayınca ya da tarayıcı kapanınca anında
+  // yok oluyor. 500ms'lik setTimeout popup ile birlikte öldüğü için yazılan
+  // kullanıcı adı hiç kaydedilmiyordu. Şimdi blur / visibilitychange / pagehide
+  // anında bekleyen değeri senkron olarak kaydediyoruz.
+  let tagTimeout = null;
+  let tagPendingValue = null;
+  const tagInputEl = document.getElementById('chat-tag-username');
+  const flushTagUsername = () => {
+    if (tagTimeout === null) return; // bekleyen değişiklik yok
     clearTimeout(tagTimeout);
-    tagTimeout = setTimeout(async () => {
-      await Storage.updateChatSetting('tagUsername', e.target.value.trim());
-    }, 500);
+    tagTimeout = null;
+    const val = tagPendingValue;
+    tagPendingValue = null;
+    Storage.updateChatSetting('tagUsername', val);
+  };
+  tagInputEl?.addEventListener('input', e => {
+    tagPendingValue = e.target.value.trim();
+    clearTimeout(tagTimeout);
+    tagTimeout = setTimeout(flushTagUsername, 500);
   });
+  tagInputEl?.addEventListener('blur', flushTagUsername);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushTagUsername();
+  });
+  window.addEventListener('pagehide', flushTagUsername);
 
   // List add/remove handlers
   setupListHandler('chat-bot-input', 'chat-bot-add', 'chat-bot-chips', 'botList');

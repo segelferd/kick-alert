@@ -3,7 +3,7 @@
     "message": "Alarm"
   },
   "anomalyDesc": {
-    "message": "Anormal izleyici artışlarını tespit eder. Yeni yayınlarda geçmiş ortalamaya, devam eden yayınlarda artış hızına bakar. Geçmiş olmadan uyarı üretmez."
+    "message": "Olağandışı izleyici sayısı artışlarını tespit eder. Yeni yayınlarda geçmiş ortalamaya, devam eden yayınlarda değişim hızına bakar. Geçmiş veri olmadan uyarı üretmez."
   },
   "anomalyDropEnabled": {
     "message": "Anormal izleyici düşüşünü bildir"
@@ -15,16 +15,16 @@
     "message": "Şüpheli İzleyici Düşüşü"
   },
   "anomalyModeBadge": {
-    "message": "Sadece popup badge"
+    "message": "Sadece popup'ta rozet"
   },
   "anomalyModeBoth": {
-    "message": "Masaüstü bildirimi + popup badge"
+    "message": "Masaüstü bildirimi + popup'ta rozet"
   },
   "anomalyModeNotif": {
     "message": "Sadece masaüstü bildirimi"
   },
   "anomalyNote": {
-    "message": "Yeni yayın (< 10 dk): önceki yayın ortalamasıyla kıyaslar. Devam eden yayın: artış hızına bakar. Geçmiş olmadan uyarı üretmez."
+    "message": "Yeni yayın (< 10 dk): geçmiş yayın ortalamalarıyla karşılaştırır. Devam eden yayın: değişim hızını kontrol eder. Geçmiş veri olmadan uyarı üretmez."
   },
   "anomalyNotifyMode": {
     "message": "Bildirim modu"
@@ -103,7 +103,7 @@
     "message": "Kompakt"
   },
   "cardModeDetail": {
-    "message": "Detay"
+    "message": "Detaylı"
   },
   "cardModeLabel": {
     "message": "Kart görünümü"
@@ -142,7 +142,7 @@
     "message": "Filtre modu"
   },
   "chatFilterModeDesc": {
-    "message": "Gizle mesajı kaldırır. Bulanıklaştır soldurur — üzerine gel görmek için."
+    "message": "Gizle mesajı kaldırır. Bulanıklaştır soldurur — görmek için üzerine gel."
   },
   "chatIntegrationDesc": {
     "message": "Açıkken yukarıda Chat sekmesi görünür. İlk kurulum sonrası Kick sekmelerini yenileyin."
@@ -172,16 +172,16 @@
     "message": "Chat"
   },
   "chatTagDesc": {
-    "message": "Birisi kullanıcı adınızı etiketlediğinde bildirim alın."
+    "message": "Birisi kullanıcı adını etiketlediğinde bildirim al."
   },
   "chatTagNotif": {
     "message": "Tag bildirimi"
   },
   "chatTagNotifTitle": {
-    "message": "@$1 sizi etiketledi"
+    "message": "@$1 seni etiketledi"
   },
   "chatTagPlaceholder": {
-    "message": "Kick kullanıcı adınız..."
+    "message": "Kick kullanıcı adın..."
   },
   "chatUserFilter": {
     "message": "Kullanıcı filtresi"
@@ -202,7 +202,7 @@
     "message": "Temizle"
   },
   "cloudSyncNote": {
-    "message": "Ayarları tarayıcı hesabınız üzerinden cihazlar arasında senkronize edin. Özel sesler ve bildirim geçmişi senkronize edilmez."
+    "message": "Ayarları tarayıcı hesabın üzerinden cihazlar arasında senkronize et. Özel sesler ve bildirim geçmişi senkronize edilmez."
   },
   "cloudSyncTitle": {
     "message": "Bulut Senkronizasyonu"
@@ -265,11 +265,10 @@
     "message": "Geçmiş yüklenemedi."
   },
   "fetchError": {
-    "message": "Kanallar yüklenemedi. Kick'e giriş yaptığınızdan emin olun ve tekrar deneyin."
+    "message": "Kanallar yüklenemedi. Kick'e giriş yaptığından emin ol ve tekrar dene."
   },
   "fetchErrorBlocked": {
-    "message": "Bağlantınız geçici olarak engellendi. Birkaç dakika bekleyin veya VPN deneyin.",
-    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+    "message": "Bağlantın geçici olarak engellendi. Birkaç dakika bekle veya VPN dene."
   },
   "following": {
     "message": "Takip Edilenler"
@@ -432,8 +431,7 @@
     "description": "Chat integration — chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
-    "message": "Yayıncı sohbete yazdığında bildirim alın. Dakikada en fazla 1 bildirim.",
-    "description": "Chat integration — chatBroadcasterDesc"
+    "message": "Yayıncı sohbete yazdığında bildirim al. Dakikada en fazla 1 bildirim."
   },
   "chatBroadcasterNotifTitle": {
     "message": "$1 sohbete yazdı",
@@ -578,22 +576,22 @@
     "message": "Senkronizasyon başarısız"
   },
   "cloudSyncNowDisabled": {
-    "message": "Önce senkronu açın"
+    "message": "Önce senkronu aç"
   },
   "fetchErrorOffline": {
-    "message": "İnternet bağlantınız yok gibi görünüyor. Bağlantınızı kontrol edip tekrar deneyin."
+    "message": "İnternet bağlantın yok gibi görünüyor. Bağlantını kontrol edip tekrar dene."
   },
   "fetchErrorRateLimited": {
-    "message": "Kick geçici olarak istekleri sınırlıyor. Bu kendiliğinden düzelir — lütfen biraz bekleyin."
+    "message": "Kick geçici olarak istekleri sınırlıyor. Bu kendiliğinden düzelir — biraz bekle."
   },
   "fetchErrorServerError": {
-    "message": "Kick'in sunucularında şu an bir sorun var. Birkaç dakika sonra tekrar deneyin."
+    "message": "Kick'in sunucularında şu an bir sorun var. Birkaç dakika sonra tekrar dene."
   },
   "fetchErrorUnknown": {
-    "message": "Kanallar yüklenirken bir şeyler ters gitti. Lütfen tekrar deneyin."
+    "message": "Kanallar yüklenirken bir şeyler ters gitti. Tekrar dene."
   },
   "fetchErrorSessionRejected": {
-    "message": "Giriş yapmış olmanıza rağmen Kick şu an oturumunuzu tanımıyor. Bu genellikle Google, Apple ya da başka bir sosyal hesapla giriş yapıldığında ortaya çıkan, Kick'in kendi sunucusundaki bir tutarsızlıktan kaynaklanıyor — eklentinin hatası değil. Çözüm: kick.com'dan çıkış yapıp e-posta adresiniz ve şifrenizle tekrar giriş yapmayı deneyin. Şifreniz yoksa (hesabınızı Google/Apple ile açtıysanız), giriş ekranındaki \"Şifremi unuttum\" bağlantısıyla bir tane oluşturabilirsiniz. İşe yaramazsa, sorun genellikle birkaç dakika içinde kendiliğinden düzeliyor."
+    "message": "Giriş yapmış olmana rağmen Kick şu an oturumunu tanımıyor. Bu genellikle Kick'in kendi sunucusundaki bir tutarsızlıktan kaynaklanıyor; Google, Apple ya da başka bir sosyal hesapla giriş yapıldığında sık görülür — eklentinin hatası değil. Çözüm: kick.com'dan çıkış yapıp e-posta adresin ve şifrenle tekrar giriş yapmayı dene. Şifren yoksa (hesabını Google/Apple ile açtıysan), giriş ekranındaki \"Şifremi unuttum\" bağlantısıyla bir tane oluşturabilirsin. İşe yaramazsa, sorun genellikle birkaç dakika içinde kendiliğinden düzeliyor."
   },
   "emailLoginNotice": {
     "message": "KickAlert'in güvenilir çalışması için Kick'e e-posta ve şifreyle giriş yapmanızı öneririz. \"Google\", \"Apple\" ya da başka bir sosyal hesapla giriş yapmak, Kick'in kendi sunucusundaki bir tutarsızlık yüzünden eklentinin veri çekmesini bazen engelleyebiliyor."
@@ -602,7 +600,7 @@
     "message": "Reklam Engelleme"
   },
   "adBlockWarning": {
-    "message": "Deneysel ve resmi olmayan bir özelliktir — Kick'in iç API yapısına bağımlıdır ve haber vermeden bozulabilir. Bunu açarak bu sorumluluğu kabul etmiş olursunuz. Kapalı bırakırsanız KickAlert öncekiyle aynı, etkilenmeden çalışmaya devam eder. Etkili olması için açık Kick sekmelerini yenilemeniz gerekir."
+    "message": "Deneysel ve resmi olmayan bir özelliktir — Kick'in iç API yapısına bağımlıdır ve haber vermeden bozulabilir. Bunu açarak bu sorumluluğu kabul etmiş olursun. Kapalı bırakırsan KickAlert öncekiyle aynı, etkilenmeden çalışmaya devam eder. Etkili olması için açık Kick sekmelerini yenilemen gerekir."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Şu an tam olarak bu:"
@@ -614,7 +612,7 @@
     "message": "Kanal Önizleme Resimleri"
   },
   "thumbnailsWarning": {
-    "message": "Her canlı kanalın altında bir önizleme resmi gösterir. Popup her açıldığında canlı kanal başına bir ek istek gönderir, bu da Kick'in bu aktiviteyi bot gibi algılama riskini az da olsa taşır."
+    "message": "Her canlı kanalın altında bir önizleme resmi gösterir. Popup her açıldığında canlı kanal başına bir ek istek gönderir — bu da Kick'in bu hareketi bot sanma riskini biraz artırır."
   },
   "thumbnailViewersSuffix": {
     "message": "izleyici"
@@ -626,7 +624,7 @@
     "message": "Reklam Engelleme Açılsın mı?"
   },
   "adBlockConfirmBody": {
-    "message": "Bu özellik deneysel ve resmi değildir — Kick'in dahili API yapısına bağlıdır ve haber vermeden bozulabilir, Kick bu davranışı işaretleyebilir. Açarak bu riskleri kabul etmiş olursunuz."
+    "message": "Bu özellik deneysel ve resmi değildir — Kick'in dahili API yapısına bağlıdır, haber vermeden bozulabilir ve Kick bu davranışı fark edip engelleyebilir. Açarak bu riskleri kabul etmiş olursun."
   },
   "adBlockConfirmAccept": {
     "message": "Anladım, aç"
@@ -674,10 +672,10 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Reklam engelleme güçlendirmesi ve ayarlar tasarımı"
+    "message": "v2.5 — Reklam engelleme, Chat bildirimleri ve ayarlar tasarımı"
   },
   "releaseHistoryV0Body": {
-    "message": "• Üç yeni reklam engelleme katmanı: GPT/IMA SDK sahtesi, segment-seviyesi filtreleme, ve Kick'in kendi \"siyah slate\" geçiş katmanının tespiti\n• VOD reklamsız kaynak arama daha hızlı ve güvenli (zaman bütçesi, thumbnail-bazlı hızlı yol)\n• Ayarlar açılır-kapanır kategorilere ayrıldı, arama eklendi\n• \"Yenilikler\" banner'ı ve bu geçmiş görünümü\n• Yedekleme ve Geri Yükleme: tüm ayarlarını bir dosya olarak dışa/içe aktar (bir kereliğine geri alma güvenlik ağı ve \"Varsayılanlara Sıfırla\" seçeneğiyle birlikte)\n• Reklam gizlemenin görsel olarak hiç çalışmadığı (CSS kuralı sayfaya hiç ulaşmıyordu) ve sadece kendi tespitimiz tetiklenince çalıştığı sorunlar düzeltildi — artık bağımsız çalışıyor ve daha fazla reklam kontrol katmanını yakalıyor"
+    "message": "• Üç yeni reklam engelleme katmanı: GPT/IMA SDK sahtesi, segment-seviyesi filtreleme, ve Kick'in kendi \"siyah slate\" geçiş katmanının tespiti\n• VOD reklamsız kaynak arama daha hızlı ve güvenli (zaman bütçesi, thumbnail-bazlı hızlı yol)\n• Ayarlar açılır-kapanır kategorilere ayrıldı, arama eklendi\n• \"Yenilikler\" banner'ı ve bu geçmiş görünümü\n• Yedekleme ve Geri Yükleme: tüm ayarlarını bir dosya olarak dışa/içe aktar (bir kereliğine geri alma güvenlik ağı ve \"Varsayılanlara Sıfırla\" seçeneğiyle birlikte)\n• Reklam gizleme iki köklü sorundan kurtuldu: görsel olarak hiç çalışmıyordu (CSS kuralı sayfaya hiç ulaşmıyordu) ve sadece kendi tespitimiz tetiklenince devreye giriyordu. Artık ikisinden de bağımsız çalışıyor ve daha fazla reklam kontrol katmanını yakalıyor\n• Chat: birine yanıt verildiğinde artık @etiketleme gibi bildirim geliyor\n• Chat bildirim penceresi ve sesi artık bağımsız açılıp kapatılabiliyor, isteğe bağlı \"sadece izlemiyorken çal\" modu eklendi\n• Sohbeti aktif takip ederken bildirimlerin sessizce hiç gelmemesi ve bizim sesimizle Windows'un kendi bildirim sesinin çakışması sorunları düzeltildi\n• \"Akıllı\" ses modu artık Kick'in kendi sohbet panelinin gizlendiğini de (theater/tam ekran) algılıyor, sadece sekme arka planda ya da kaydırılmışken değil\n• Yeni desteklenen dil: Slovakça\n• 14 dilin tamamındaki çeviriler doğruluk ve doğallık açısından gözden geçirildi — birkaç yanlış çeviri ve resmi/samimi hitap tutarsızlığı düzeltildi"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — Kanal Önizlemeleri ve Reklam Engelleme"
@@ -695,7 +693,7 @@
     "message": "Yedekleme ve Geri Yükleme"
   },
   "settingsBackupDesc": {
-    "message": "Tüm tercihlerini bir dosya olarak indir, ya da önceki bir yedekten geri yükle — Bulut Senkronu kullanmıyorsan işine yarar."
+    "message": "Tüm ayarlarını bir dosyaya kaydet, ya da önceki bir kayıttan geri yükle. Bulut Senkronu kullanmıyorsan işine yarar."
   },
   "exportSettingsBtn": {
     "message": "Ayarları Dışa Aktar"
@@ -722,7 +720,7 @@
     "message": "Ayarlar İçe Aktarılsın mı?"
   },
   "importConfirmBody": {
-    "message": "Bu işlem, mevcut tercihlerinin (bildirimler, sesler, Rahatsız Etme, sohbet filtreleri ve daha fazlası) üzerine bu dosyadakileri yazacak. Bu işlem geri alınamaz."
+    "message": "Bu işlem, mevcut tercihlerinin (bildirimler, sesler, Rahatsız Etme, sohbet filtreleri ve daha fazlası) yerine bu dosyadakileri yazacak. Bu işlem geri alınamaz (ama hemen ardından \"Son Değişikliği Geri Al\" ile bir kereliğine geri alabilirsin)."
   },
   "importConfirmAccept": {
     "message": "Üzerine Yaz ve İçe Aktar"
@@ -758,7 +756,7 @@
     "message": "Her Şey Sıfırlansın mı?"
   },
   "resetConfirmBody": {
-    "message": "Bu işlem tüm tercihlerini temizleyip varsayılan değerlerine döndürecek. Bu işlem geri alınamaz (ama hemen ardından \"Son Değişikliği Geri Al\" ile bir kereliğine geri alabilirsin)."
+    "message": "Bu işlem tüm tercihlerini temizleyip varsayılan değerlerine döndürecek ve geri alınamaz (ama hemen ardından \"Son Değişikliği Geri Al\" ile bir kereliğine geri alabilirsin)."
   },
   "resetConfirmAccept": {
     "message": "Her Şeyi Sıfırla"
@@ -767,21 +765,24 @@
     "message": "Sıfırlandı! Yenileniyor..."
   },
   "chatReplyNotifTitle": {
-    "message": "$1 size yanıt verdi"
+    "message": "$1 sana yanıt verdi"
   },
   "chatMentionSoundSmart": {
-    "message": "Bildirim sesini sadece aktif olarak izlemiyorken çal (sekme arka planda ya da sohbet kaydırılmışken) — etiketleme, yanıt, ve yayıncı mesajları için geçerli."
+    "message": "Sadece aktif olarak izlemiyorken (sekme arka planda, sohbet kaydırılmış, ya da Kick'in kendi sohbet paneli kapalıyken) — etiketleme, yanıt, ve yayıncı mesajları için geçerli."
   },
   "chatMentionSoundEnabled": {
-    "message": "Ses de çalsın (kapalıysa sadece sessiz popup bildirimi gelir)"
+    "message": "Ses de çalsın"
   },
   "chatNotifSoundTitle": {
-    "message": "Chat Bildirim Sesi"
+    "message": "Chat Bildirimleri"
   },
   "chatNotifSoundDesc": {
-    "message": "Chat sekmesindeki etiketlenme ve yayıncı mesajı bildirimleri için ses ayarları."
+    "message": "Chat sekmesindeki etiketlenme ve yayıncı mesajı bildirimleri için ayarlar."
   },
   "chatNotifSoundDisabledNote": {
     "message": " Önce Chat sekmesinde \"Tag bildirimi\" ya da \"Yayıncı mesajı bildirimi\"ni açman gerekiyor."
+  },
+  "chatShowPopup": {
+    "message": "Bildirim penceresi göster"
   }
 }

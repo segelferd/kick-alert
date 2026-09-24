@@ -3,7 +3,7 @@
     "message": "Upozornění"
   },
   "anomalyDesc": {
-    "message": "Detekuje neobvyklé skoky sledovanosti. Porovnává s průměry minulých streamů nebo kontroluje rychlost změny. Bez předchozí historie žádné upozornění."
+    "message": "Zjišťuje neobvyklé nárůsty počtu diváků. U nových streamů porovnává s průměrem předchozích, u probíhajících kontroluje rychlost změny. Bez historie žádné upozornění."
   },
   "anomalyDropEnabled": {
     "message": "Upozornit na abnormální pokles sledovanosti"
@@ -15,16 +15,16 @@
     "message": "Podezřelý pokles sledovanosti"
   },
   "anomalyModeBadge": {
-    "message": "Pouze odznak v popup okně"
+    "message": "Pouze odznak v popupu"
   },
   "anomalyModeBoth": {
-    "message": "Oznámení na ploše + odznak v popup okně"
+    "message": "Desktopové oznámení + odznak v popupu"
   },
   "anomalyModeNotif": {
-    "message": "Pouze oznámení na ploše"
+    "message": "Pouze desktopové oznámení"
   },
   "anomalyNote": {
-    "message": "Nový stream (< 10 min): porovnání s průměry. Probíhající stream: kontrola rychlosti změny. Bez předchozí historie žádné upozornění."
+    "message": "Nový stream (< 10 min): porovnává s průměrem předchozích streamů. Probíhající stream: kontroluje rychlost změny. Bez historie žádné upozornění."
   },
   "anomalyNotifyMode": {
     "message": "Režim oznámení"
@@ -58,7 +58,7 @@
     "message": "Práh upozornění"
   },
   "anomalyTitle": {
-    "message": "Detekce anomálií sledovanosti"
+    "message": "Detekce anomálií diváků"
   },
   "anomalyWarnLabel": {
     "message": "Varování"
@@ -103,7 +103,7 @@
     "message": "Kompaktní"
   },
   "cardModeDetail": {
-    "message": "Detailní"
+    "message": "Podrobný"
   },
   "cardModeLabel": {
     "message": "Zobrazení karet"
@@ -314,7 +314,7 @@
     "message": "Poslední stream"
   },
   "noDataYet": {
-    "message": "Zatím není dostatek dat"
+    "message": "Zatím nedostatek dat"
   },
   "noHistoryYet": {
     "message": "Zatím žádná historie."
@@ -329,7 +329,7 @@
     "message": "Otevřít"
   },
   "notifDelayLabel": {
-    "message": "Oznámit po zahájení streamu"
+    "message": "Upozornit po zahájení streamu"
   },
   "autoOpenDelayLabel": {
     "message": "Zpoždění otevření"
@@ -425,7 +425,7 @@
     "message": "KickAlert — Žádné živé streamy"
   },
   "viewerTrendTitle": {
-    "message": "Trend sledovanosti"
+    "message": "Trend diváků"
   },
   "chatBroadcasterNotif": {
     "message": "Oznámení zprávy streamera",
@@ -644,10 +644,10 @@
     "message": "Jak se to počítá?"
   },
   "noChannelsFollowedYet": {
-    "message": "Zatím nikoho nesleduješ. Sleduj kanál na Kicku a automaticky se zobrazí zde."
+    "message": "Zatím nikoho nesledujete. Sledujte kanál na Kicku a automaticky se zobrazí zde."
   },
   "whatsNewBannerText": {
-    "message": "Novinky: blokování reklam je nyní silnější, nastavení jsou rozdělena do kategorií a byla opravena chyba v náhledech kanálů. Podívej se do <a id=\"whatsnew-settings-link\">Nastavení</a>."
+    "message": "Novinky: blokování reklam je nyní silnější, nastavení jsou rozdělena do kategorií a byla opravena chyba v náhledech kanálů. Podívejte se do <a id=\"whatsnew-settings-link\">Nastavení</a>."
   },
   "optGroupGeneral": {
     "message": "Obecné"
@@ -674,10 +674,10 @@
     "message": "Zavřít"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Vylepšení blokování reklam a nové nastavení"
+    "message": "v2.5 — Blokování reklam, oznámení chatu a přepracovaná nastavení"
   },
   "releaseHistoryV0Body": {
-    "message": "• Tři nové vrstvy blokování reklam: falešné GPT/IMA SDK, filtrování na úrovni segmentů a detekce vlastního přechodového překrytí Kicku \"černá obrazovka\"\n• Vyhledávání zdroje VOD bez reklam je rychlejší a bezpečnější\n• Nastavení reorganizována do sbalitelných kategorií s vyhledáváním\n• Banner \"Novinky\" a tento přehled historie\n• Zálohování a obnovení: export/import všech nastavení jako soubor (s jednorázovou pojistkou pro vrácení zpět a možností \"Obnovit výchozí nastavení\")\n• Opraveno: skrývání reklam vizuálně nefungovalo (CSS pravidlo se na stránku vůbec nedostalo) a fungovalo pouze při aktivaci naší vlastní detekce — nyní funguje nezávisle a zachytí více reklamních překryvů"
+    "message": "• Tři nové vrstvy blokování reklam: falešné GPT/IMA SDK, filtrování na úrovni segmentů a detekce vlastního přechodového překrytí Kicku \"černá obrazovka\"\n• Vyhledávání zdroje VOD bez reklam je rychlejší a bezpečnější\n• Nastavení reorganizována do sbalitelných kategorií s vyhledáváním\n• Banner \"Novinky\" a tento přehled historie\n• Zálohování a obnovení: export/import všech nastavení jako soubor (s jednorázovou pojistkou pro vrácení zpět a možností \"Obnovit výchozí nastavení\")\n• Opraveno: skrývání reklam vizuálně nefungovalo (CSS pravidlo se na stránku vůbec nedostalo) a fungovalo pouze při aktivaci naší vlastní detekce — nyní funguje nezávisle a zachytí více reklamních překryvů\n• Chat: odpověď na vaši zprávu teď spustí oznámení stejně jako zmínka @\n• Vyskakovací okno a zvuk oznámení chatu lze nyní zapínat nezávisle (s volitelným zvukovým režimem \"pouze když nesledujete\") — tento režim nyní rozpoznává i to, když je skrytý vlastní chatovací panel Kicku (režim divadla/celé obrazovky), nejen kartu na pozadí nebo odscrollování\n• Opraveno: oznámení chatu se nespouštěla při aktivním sledování živého chatu a zvuk rozšíření kolidoval s vlastním oznamovacím zvukem Windows\n• Přidána slovenština jako nově podporovaný jazyk\n• Zkontrolovány všechny překlady ve všech 14 jazycích z hlediska přesnosti a přirozenosti — opraveno několik chybných překladů a nesrovnalostí v oslovování (ty/vy)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — Náhledy kanálů a blokování reklam"
@@ -695,7 +695,7 @@
     "message": "Zálohování a obnovení"
   },
   "settingsBackupDesc": {
-    "message": "Stáhni si všechna svá nastavení jako soubor, nebo je obnov z předchozí zálohy — užitečné, pokud nepoužíváš cloudovou synchronizaci."
+    "message": "Uložte všechna svá nastavení do souboru, nebo obnovte předchozí uložení. Užitečné bez cloudové synchronizace."
   },
   "exportSettingsBtn": {
     "message": "Exportovat nastavení"
@@ -722,7 +722,7 @@
     "message": "Importovat nastavení?"
   },
   "importConfirmBody": {
-    "message": "Tímto přepíšeš svá aktuální nastavení (oznámení, zvuky, nerušit, chatové filtry a další) těmi z tohoto souboru. Tuto akci nelze vrátit zpět."
+    "message": "Tímto přepíšete svá aktuální nastavení (oznámení, zvuky, nerušit, chatové filtry a další) těmi z tohoto souboru. Tuto akci nelze vrátit zpět (ale hned poté ji můžete jednou vrátit pomocí \"Vrátit poslední změnu\")."
   },
   "importConfirmAccept": {
     "message": "Přepsat a importovat"
@@ -749,7 +749,7 @@
     "message": "Obnovit výchozí nastavení"
   },
   "resetDefaultsDesc": {
-    "message": "Vymaž všechna svá nastavení a začni od začátku. Nejprve zvaž export zálohy."
+    "message": "Vymažte všechna svá nastavení a začněte od začátku. Nejprve zvažte export zálohy."
   },
   "resetDefaultsBtn": {
     "message": "Resetovat vše"
@@ -758,7 +758,7 @@
     "message": "Resetovat vše?"
   },
   "resetConfirmBody": {
-    "message": "Tímto se vymažou všechna tvá nastavení a vrátí se na výchozí hodnoty. Tuto akci nelze vrátit zpět (ale hned poté ji můžeš jednou vrátit pomocí \"Vrátit poslední změnu\")."
+    "message": "Tímto se vymažou všechna vaše nastavení a vrátí se na výchozí hodnoty. Tuto akci nelze vrátit zpět (ale hned poté ji můžete jednou vrátit pomocí \"Vrátit poslední změnu\")."
   },
   "resetConfirmAccept": {
     "message": "Resetovat vše"
@@ -770,18 +770,21 @@
     "message": "$1 vám odpověděl"
   },
   "chatMentionSoundSmart": {
-    "message": "Přehrát zvuk oznámení pouze když aktivně nesleduješ (karta skrytá nebo chat odscrollovaný) — platí pro zmínky, odpovědi a zprávy stremera."
+    "message": "Pouze když aktivně nesledujete (karta na pozadí, chat odscrollovaný, nebo je skrytý vlastní chatovací panel Kicku) — platí pro zmínky, odpovědi a zprávy stremera."
   },
   "chatMentionSoundEnabled": {
-    "message": "Přehrát i zvuk (vypnuto = pouze tiché vyskakovací oznámení)"
+    "message": "Přehrát i zvuk"
   },
   "chatNotifSoundTitle": {
-    "message": "Zvuk oznámení chatu"
+    "message": "Oznámení chatu"
   },
   "chatNotifSoundDesc": {
-    "message": "Nastavení zvuku pro oznámení o zmínkách a zprávách stremera na kartě Chat."
+    "message": "Nastavení oznámení pro upozornění na zmínky a zprávy stremera na kartě Chat."
   },
   "chatNotifSoundDisabledNote": {
-    "message": " Nejprve zapni \"Oznámení o zmínce\" nebo \"Oznámení o zprávě stremera\" na kartě Chat."
+    "message": " Nejprve zapněte \"Oznámení o zmínce\" nebo \"Oznámení o zprávě stremera\" na kartě Chat."
+  },
+  "chatShowPopup": {
+    "message": "Zobrazit vyskakovací oznámení"
   }
 }

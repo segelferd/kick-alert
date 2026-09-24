@@ -483,30 +483,33 @@
           <span data-i18n="autoRefreshPopup">Auto-refresh Following tab</span>
         </label>
       </div>
-      <!-- v2.5.29: Chat Bildirim Sesi — Bildirim Ayarları'nın hemen ardına,
-           DND ile BİREBİR AYNI yapıda (ana toggle-switch + opt-row alt
-           seçenek + .disabled deseni) taşındı. Tutarlılık için tüm Options
-           sayfası aynı görsel dili kullanmalı. Chat sekmesinde Tag/Yayıncı
-           Mesajı bildirimlerinden EN AZ BİRİ açık değilse, section'ın TAMAMI
-           (ana toggle dahil) .fully-disabled ile pasifleşiyor. -->
+      <!-- v2.5.30: Chat Bildirimleri — Mo'Kick'in "Push Bildirimleri" (popup) /
+           "Bildirim Sesi" (ses) ayrımından esinlenerek, artık İKİ BAĞIMSIZ
+           eş-değer seçenek var (header'da TEK bir "master" toggle yok).
+           Chat sekmesinde Tag/Yayıncı Mesajı bildirimlerinden EN AZ BİRİ açık
+           değilse, section'ın TAMAMI .fully-disabled ile pasifleşiyor. -->
       <div class="opt-section">
         <div class="opt-dnd-section" id="opt-chat-notif-sound-section">
           <div class="opt-dnd-header">
             <span class="material-icons-outlined" style="font-size:16px;">notifications_active</span>
-            <span data-i18n="chatNotifSoundTitle">Chat Notification Sound</span>
-            <label class="toggle-switch toggle-switch-sm">
-              <input type="checkbox" id="opt-chat-mention-sound-enabled" />
-              <span class="toggle-slider"></span>
-            </label>
+            <span data-i18n="chatNotifSoundTitle">Chat Notifications</span>
           </div>
           <div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 22px;line-height:1.5;">
-            <span data-i18n="chatNotifSoundDesc">Sound settings for the Chat tab's tag and streamer-message notifications.</span>
+            <span data-i18n="chatNotifSoundDesc">Notification settings for the Chat tab's tag and streamer-message alerts.</span>
             <span id="opt-chat-notif-sound-disabled-note" style="display:none;color:#e0a952;" data-i18n="chatNotifSoundDisabledNote"> Turn on "Tag notification" or "Streamer message notification" in the Chat tab first.</span>
           </div>
-          <div class="opt-dnd-body" id="opt-chat-notif-sound-body">
+          <label class="opt-row">
+            <input type="checkbox" id="opt-chat-show-popup" />
+            <span data-i18n="chatShowPopup">Show a notification popup</span>
+          </label>
+          <label class="opt-row">
+            <input type="checkbox" id="opt-chat-mention-sound-enabled" />
+            <span data-i18n="chatMentionSoundEnabled">Also play a sound</span>
+          </label>
+          <div class="opt-dnd-body" id="opt-chat-notif-sound-body" style="margin-left:22px;">
             <label class="opt-row">
               <input type="checkbox" id="opt-chat-mention-sound-smart" />
-              <span data-i18n="chatMentionSoundSmart">Only play the notification sound when you're not actively watching (tab hidden or chat scrolled up) — applies to tags, replies, and streamer messages.</span>
+              <span data-i18n="chatMentionSoundSmart">Only when you're not actively watching (tab in background, chat scrolled up, or Kick's own chat panel hidden) — applies to tags, replies, and streamer messages.</span>
             </label>
           </div>
         </div>
@@ -707,7 +710,6 @@
             <span class="material-icons-outlined" style="font-size:14px;">upload</span>
             <span data-i18n="importSettingsBtn">Import Settings</span>
           </button>
-          <input type="file" id="opt-import-file-input" accept="application/json,.json" style="display:none;" />
         </div>
         <!-- v2.5.19: Son değişiklik öncesine dönme (güvenlik ağı) - sadece bir yedek varken görünür -->
         <div id="opt-restore-snapshot-wrap" style="padding:6px 0 0 22px;display:none;">
@@ -807,22 +809,6 @@
       </div>
     </div>
   </div>
-  <!-- v2.5.17: Ayarları İçe Aktar onay modalı - mevcut ayarların üzerine yazılacağını açıkça belirtiyor -->
-  <div id="import-confirm-modal" class="confirm-modal" style="display:none">
-    <div class="confirm-modal-backdrop"></div>
-    <div class="confirm-modal-box">
-      <div class="confirm-modal-icon">
-        <span class="material-icons-outlined">warning_amber</span>
-      </div>
-      <div class="confirm-modal-title" data-i18n="importConfirmTitle">Import Settings?</div>
-      <div class="confirm-modal-body" data-i18n="importConfirmBody">This will overwrite your current preferences (notifications, sounds, DND, chat filters, and more) with the ones from this file. This cannot be undone.</div>
-      <div class="confirm-modal-actions">
-        <button id="import-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel" data-i18n="cancel">Cancel</button>
-        <button id="import-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept" data-i18n="importConfirmAccept">Overwrite and Import</button>
-      </div>
-    </div>
-  </div>
-
   <!-- v2.5.19: Varsayılanlara Sıfırla onay modalı -->
   <div id="reset-confirm-modal" class="confirm-modal" style="display:none">
     <div class="confirm-modal-backdrop"></div>

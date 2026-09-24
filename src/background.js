@@ -2814,32 +2814,40 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         // sistem bildirimi de sessiz olmalı (yoksa bizim sesimiz çalmasa
         // bile Windows'un kendi varsayılan sesi çalıp "sessiz" isteğini
         // ihlal ederdi).
+        // v2.5.30: Mo'Kick'in "Push Bildirimleri" / "Bildirim Sesi" ayrımından
+        // esinlenerek, showPopupNotification (popup göster) ve
+        // mentionSoundEnabled (ses çal) artık TAMAMEN BAĞIMSIZ iki eksen.
         const soundModeForTag = await Storage.getSoundMode();
         const chatSettingsForSound = await Storage.getChatSettings();
+        const showPopup = chatSettingsForSound?.showPopupNotification !== false;
         const soundEnabled = chatSettingsForSound?.mentionSoundEnabled !== false;
         const smartMode = chatSettingsForSound?.mentionSoundSmart === true;
-        const notifOptions = {
-          type: 'basic',
-          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-          title: title,
-          message: body.substring(0, 200),
-        };
-        if (!isFirefox) {
-          notifOptions.silent = !soundEnabled || soundModeForTag === 'extension';
-          if (channel) {
-            notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
-          }
-        }
+        // v2.5.30: Akıllı mod artık ÜÇ sinyali birlikte değerlendiriyor -
+        // sekme arka planda, sohbet kaydırılmış, YA DA Kick'in kendi sohbet
+        // paneli (theater/tam ekran modunda) kapalı - Mo'Kick'teki
+        // "play_when_closed/scrolled" ayarlarının ikisini birden, TEK bir
+        // "akıllı mod" checkbox'ı altında (özet kalması için) topluyoruz.
+        const notWatching = msg.tabHidden === true || msg.chatScrolledUp === true || msg.chatHidden === true;
 
-        chrome.notifications.create(id, notifOptions);
-        // v2.5.22: Mo'Kick'ten ödünç alınan bahsedilme sesi — sistem
-        // bildiriminin varsayılan (sessiz olabilen) sesinden ayrı olarak.
-        // v2.5.24: "Akıllı mod" açıksa, SADECE kullanıcı sekmeyi izlemiyorsa
-        // (tab hidden) ya da sohbeti kaydırmışsa (chatScrolledUp) çal —
-        // aksi halde (varsayılan) her zaman çal, davranış değişmesin.
-        // v2.5.27: mentionSoundEnabled === false ise ("sadece popup" seçilmiş)
-        // hiç ses çalınmıyor, akıllı mod kontrolü bile yapılmıyor.
-        if (soundEnabled && (!smartMode || msg.tabHidden === true || msg.chatScrolledUp === true)) {
+        if (showPopup) {
+          const notifOptions = {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+            title: title,
+            message: body.substring(0, 200),
+          };
+          if (!isFirefox) {
+            notifOptions.silent = !soundEnabled || soundModeForTag === 'extension';
+            if (channel) {
+              notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
+            }
+          }
+          chrome.notifications.create(id, notifOptions);
+        }
+        // v2.5.22: Mo'Kick'ten ödünç alınan bahsedilme sesi — popup
+        // gösterilsin ya da gösterilmesin, ses BAĞIMSIZ olarak çalabilir
+        // (Mo'Kick'te de bu iki ayar birbirinden ayrı).
+        if (soundEnabled && (!smartMode || notWatching)) {
           playSound('CHAT_MENTION');
         }
 
@@ -2881,28 +2889,33 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         // sesiyle çakışmaması için.
         // v2.5.27: chatSettings'i silent hesaplamasından ÖNCE oku - "sadece
         // popup" seçiliyse sistem bildirimi de sessiz olmalı.
+        // v2.5.30: showPopupNotification ve chatHidden desteği (bkz. TAG handler).
         const soundModeForBroadcaster = await Storage.getSoundMode();
         const chatSettingsForSound2 = await Storage.getChatSettings();
+        const showPopup2 = chatSettingsForSound2?.showPopupNotification !== false;
         const soundEnabled2 = chatSettingsForSound2?.mentionSoundEnabled !== false;
         const smartMode2 = chatSettingsForSound2?.mentionSoundSmart === true;
-        const notifOptions = {
-          type: 'basic',
-          iconUrl: chrome.runtime.getURL('icons/icon128.png'),
-          title: title,
-          message: body.substring(0, 200),
-        };
-        if (!isFirefox) {
-          notifOptions.silent = !soundEnabled2 || soundModeForBroadcaster === 'extension';
-          if (channel) {
-            notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
-          }
-        }
+        const notWatching2 = msg.tabHidden === true || msg.chatScrolledUp === true || msg.chatHidden === true;
 
-        chrome.notifications.create(id, notifOptions);
+        if (showPopup2) {
+          const notifOptions = {
+            type: 'basic',
+            iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+            title: title,
+            message: body.substring(0, 200),
+          };
+          if (!isFirefox) {
+            notifOptions.silent = !soundEnabled2 || soundModeForBroadcaster === 'extension';
+            if (channel) {
+              notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
+            }
+          }
+          chrome.notifications.create(id, notifOptions);
+        }
         // v2.5.22: Aynı bahsedilme sesi, yayıncı mesajı bildirimi için de.
         // v2.5.24: Akıllı mod kontrolü burada da aynı şekilde uygulanıyor.
         // v2.5.27: mentionSoundEnabled === false ise hiç ses çalınmıyor.
-        if (soundEnabled2 && (!smartMode2 || msg.tabHidden === true || msg.chatScrolledUp === true)) {
+        if (soundEnabled2 && (!smartMode2 || notWatching2)) {
           playSound('CHAT_MENTION');
         }
 

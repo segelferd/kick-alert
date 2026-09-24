@@ -7,7 +7,14 @@ follows them.
 
 ## v2.5.x — Ad-block hardening, VOD improvements, settings redesign
 
+### Storage / data integrity
+- Fixed the same lost-update race found in the Chat tab's settings across the rest of the extension: favorite channels, per-channel sound mode, channel groups, the auto-open list, the chatroom/channel ID cache, bot scores, and notification history all updated their shared storage entry by reading it, changing one field, and writing the whole thing back — if two of these fired close together (rapid-clicking multiple favorite stars, opening two Kick tabs at once, several followed channels going live together) the slower write could silently overwrite the faster one's change with stale data. All of these now go through the same per-key write queue as the Chat tab fix, so concurrent updates to the same storage entry can no longer clobber each other
+
 ### Chat integration
+- Fixed the Chat tab's Kick username field (used for @mention detection) silently failing to save if you typed it and then clicked away or closed the browser within half a second — the save was debounced by 500ms, and closing the extension popup destroys that pending timer along with the unsaved value. It's now also flushed immediately when the popup loses focus or closes, in addition to the debounced save while typing
+- Fixed a rare but real data-loss bug in the Chat tab: any two settings changed in quick succession (e.g. typing your username right after toggling a filter, or clicking two toggles fast) could race against each other, since each save read-modified-wrote the whole chat settings object independently — the slower one could silently overwrite the faster one's change with stale data. All chat-tab settings writes are now serialized so this can no longer happen
+- Adapted three settings from Mo'Kick's more granular notification options, kept summarized: an independent "show a notification popup" toggle (separate from sound — you can now have sound without a popup, a silent popup, both, or neither, with the message still highlighted in chat either way), and "smart mode" now also detects when Kick's own chat panel itself is hidden (theater/fullscreen), not just tab-hidden or scrolled
+- Skipped Mo'Kick's "covered by another element" condition — it's specific to their own injected overlay UI and has no equivalent in our architecture
 - Repositioned the "Chat Notification Sound" section right after the main Notification Settings (previously separated by Do Not Disturb) and rebuilt it to match the rest of Settings exactly: a toggle switch in the section header (identical to Do Not Disturb's), a standard checkbox for the "smart mode" sub-option, and the same disabled-state styling used throughout — the whole section now visually grays out until a chat notification is enabled in the Chat tab
 - Moved the tag/reply/streamer-message sound settings ("also play a sound", "smart mode") out of the Chat tab into a dedicated "Chat Notification Sound" section under Settings → Notifications & Monitoring — the Chat tab now only has the on/off switches. The new section is visually grayed out until at least one of the two notifications is enabled in the Chat tab
 - Added a dedicated toggle to choose whether tag/reply/streamer-message notifications play a sound or stay a silent popup only — off by default is no longer possible without this control, and turning it off now also silences the system notification itself (previously the OS's own default sound could still play even with the extension's sound skipped)
@@ -35,7 +42,25 @@ follows them.
 - Replaced a broad, always-on DOM observer with lightweight, event-driven navigation detection to reduce overhead during high-DOM-churn moments (e.g. stream transitions)
 - All ad-blocking log output now also appears directly in the page's own DevTools console, not just the extension's background console
 
-### Interface
+### Localization
+- Full line-by-line audit: read every one of the 251 strings in all 14 languages (not a sample) after the previous pass still missed things
+- Found a systemic Title Case leak in French, Spanish, and Portuguese (English "Auto Launch"-style capitalization carried over into feature titles where these languages only capitalize the first word) — fixed 22 strings across the three languages
+- Korean: three strings used the second-person pronoun "당신" (you), which reads distant/unnatural in Korean UI copy where it's normally dropped or replaced with a polite address term — reworded
+- Korean, German, Czech: caught three more formal/informal register slips that the previous regex-based pass missed because they were verb conjugations, not the pronoun itself (e.g. German "Aktiviere" vs "Aktivieren Sie")
+- German, French, Spanish, Portuguese, Italian, Arabic: fixed six instances where "Following" (the tab name) was left untranslated or unspecified in a string that referenced it
+- Italian: fixed a notification title with reversed word order ("Ti ha risposto $1" → "$1 ti ha risposto") inconsistent with its sibling notification strings
+- Russian: fixed a wrong part of speech ("ЭКСПЕРИМЕНТ", a noun, used for the English adjective "EXPERIMENTAL")
+- All languages: removed a redundant release-history bullet that restated the same fact twice, sourced from the English original itself
+- Reviewed all 13 remaining languages the same way as Turkish (word order, calque phrasing, formal/informal consistency), not just for correctness but for how a native speaker would actually write it
+- Fixed a redundant release-history bullet (the same "popup/sound independence" fact was stated twice) — this existed in the English source itself and had propagated into all 13 translations; merged into one line everywhere, including the source
+- Korean: `chatFilterModeDesc` had no verb conjugation at all (noun-form fragments strung together, a literal word-for-word artifact) — rewritten as a complete, natural sentence
+- German: `chatFilterModeDesc` used "überfahren" for "hover" — the wrong verb (it normally means "to run over/collide with"); replaced with "darüberfahren". `thumbnailsWarning`'s "was...birgt, dass" clause was restructured for a more natural flow
+- Russian: fixed a formal/informal (вы/ты) inconsistency within the same release-history paragraph
+- Reworked the Turkish translation for natural phrasing — several strings had followed English word order too closely (verb placement, "için" clause order, compound sentences that read as calques rather than natural Turkish), and the formal/informal address (siz/sen) wasn't consistent with the app's own casual tone (its own tagline addresses the user as "sen"). About 20 strings rewritten, mostly in error messages, confirmation dialogs, and the release history
+- Fixed formal/informal address inconsistency: newer strings (Backup & Restore, Chat Notifications, Release History) had been written in a different register than the rest of each language — Czech (8 strings ty→vy), German (9 strings du→Sie), French (1 string tu→vous), Russian (1 string ты→вы), and Chinese (7 strings 您→你) were standardized to match the majority register already used throughout each language. Spanish, Portuguese, Italian, Slovak, Japanese, Korean, and Arabic were already internally consistent
+- Added Slovak (sk) as a new supported language — all 251 strings translated
+- Audited all languages for structural and semantic correctness: found and fixed ~19 strings across 12 languages that had never been translated (left as English) since the anomaly-detection/card-view features were added; fixed a Japanese terminology inconsistency (two different translations for "Auto Launch"), a Chinese mistranslation (a statistics term used out of context), and a French gender-agreement error
+- Backfilled the "What's New" release history with everything from v2.5.21 through v2.5.30 that had gone unrecorded (reply notifications, independent popup/sound toggles, smart sound mode, the recycled-DOM-node and Windows-sound-clash fixes) — it only had the ad-blocking and settings-redesign entries before
 - Added Backup & Restore: export all settings to a file, or import them back — useful when reinstalling without Cloud Sync
 - Backup & Restore now shows when you last backed up, offers a one-time "Undo Last Change" safety net after any import or reset, and includes a "Reset to Defaults" option
 - Settings page reorganized into four collapsible categories: General, Notifications & Monitoring, Additional Features, Account & Sync
@@ -48,7 +73,17 @@ follows them.
 - Fixed a display glitch in the bot-score badge on channel thumbnails
 - Fixed the "What's New" settings link not responding to clicks
 
+### Interface
+- Fixed the Backup & Restore page showing raw icon names ("download", "upload", "undo") as text instead of icons — the page was missing the font `<link>` tags that popup.html has; it only linked the CSS, not the icon font itself
+- Export/Import now open in a small borderless popup window (via chrome.windows.create) instead of a full browser tab — it works around the same Firefox popup-closing issue, but no longer feels like navigating away to a webpage. No new permission needed
+- Simplified the Backup & Restore description into two short sentences instead of one long run-on sentence, in all 14 languages
+- Fixed a logical contradiction: the Import confirmation said "this cannot be undone" while the same screen has an "Undo Last Change" button that does exactly that — now matches the wording already used on the Reset confirmation ("cannot be undone, but you can undo it once right after")
+- Backfilled the "What's New" release history again — v2.5.30 (independent popup/sound toggles, chat-panel-hidden detection) through v2.5.33 (Slovak language, translation quality pass) had gone unrecorded
+
 ### Firefox
+- Fixed the new Backup & Restore page saying "Imported!/Restored! Reloading..." without actually reloading — the message was carried over from the old popup flow but the reload call itself was dropped when the UI moved to its own tab, leaving stale info (last backup time, Undo button visibility) on screen after a successful import or undo
+- Fixed Export/Import Settings silently doing nothing on Firefox: opening a native file picker (or a download) from inside an extension's toolbar popup causes Firefox to close the popup immediately (Mozilla Bugzilla #1658694, #1292701) — so the file was never actually selected, and settings appeared to import successfully on Chrome but not take effect at all on Firefox. Export/Import now open in their own tab (html/backup.html), which isn't subject to this behavior
+- Added proper error handling to the underlying storage read/write calls (storage.js) — a quota or permission failure during import now surfaces a clear error message instead of the operation silently hanging
 - Fixed a missing-dependency load order issue in `background.scripts`
 - Removed an invalid `offscreen` permission from the Firefox manifest
 

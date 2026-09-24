@@ -3,7 +3,7 @@
     "message": "警报"
   },
   "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+    "message": "检测异常的观众数量激增。对新直播比较过往平均值，对进行中的直播检查变化率。没有历史数据则不会提醒。"
   },
   "anomalyDropEnabled": {
     "message": "通知异常观众下降"
@@ -15,19 +15,19 @@
     "message": "可疑观众急降"
   },
   "anomalyModeBadge": {
-    "message": "Badge in popup only"
+    "message": "仅弹窗中的徽章"
   },
   "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
+    "message": "桌面通知 + 弹窗中的徽章"
   },
   "anomalyModeNotif": {
-    "message": "Desktop notification only"
+    "message": "仅桌面通知"
   },
   "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+    "message": "新直播（< 10 分钟）：与过往直播平均值比较。进行中的直播：检查变化率。没有历史数据则不会提醒。"
   },
   "anomalyNotifyMode": {
-    "message": "Notification mode"
+    "message": "通知模式"
   },
   "anomalySensitivity": {
     "message": "灵敏度"
@@ -55,10 +55,10 @@
     "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
   },
   "anomalyThreshold": {
-    "message": "Alert threshold"
+    "message": "提醒阈值"
   },
   "anomalyTitle": {
-    "message": "Viewer anomaly detection"
+    "message": "观众异常检测"
   },
   "anomalyWarnLabel": {
     "message": "警告"
@@ -100,13 +100,13 @@
     "message": "次提示音"
   },
   "cardModeCompact": {
-    "message": "Compact"
+    "message": "紧凑"
   },
   "cardModeDetail": {
-    "message": "Detail"
+    "message": "详细"
   },
   "cardModeLabel": {
-    "message": "Card view"
+    "message": "卡片视图"
   },
   "chatActiveChannel": {
     "message": "活动频道"
@@ -265,11 +265,10 @@
     "message": "加载历史记录出错。"
   },
   "fetchError": {
-    "message": "加载频道失败。请确认您已登录 Kick 并重试。"
+    "message": "加载频道失败。请确认你已登录 Kick 并重试。"
   },
   "fetchErrorBlocked": {
-    "message": "您的连接已被临时阻止。请等待几分钟或尝试使用 VPN。",
-    "description": "Popup error when API returns 403 (connection/IP block, e.g. Cloudflare bot detection). Distinct from fetchError which is for 401 (auth required)."
+    "message": "你的连接已被临时阻止。请等待几分钟或尝试使用 VPN。"
   },
   "following": {
     "message": "关注列表"
@@ -290,16 +289,16 @@
     "message": "通知历史"
   },
   "historyGroupOlder": {
-    "message": "Earlier"
+    "message": "更早"
   },
   "historyGroupThisWeek": {
-    "message": "This week"
+    "message": "本周"
   },
   "historyGroupToday": {
-    "message": "Today"
+    "message": "今天"
   },
   "historyGroupYesterday": {
-    "message": "Yesterday"
+    "message": "昨天"
   },
   "langBrowserNoteSupported": {
     "message": "正在使用浏览器语言：$1"
@@ -311,10 +310,10 @@
     "message": "语言"
   },
   "lastStream": {
-    "message": "Last stream"
+    "message": "上次直播"
   },
   "noDataYet": {
-    "message": "Not enough data yet"
+    "message": "数据尚不充分"
   },
   "noHistoryYet": {
     "message": "暂无历史记录。"
@@ -329,7 +328,7 @@
     "message": "打开"
   },
   "notifDelayLabel": {
-    "message": "Notify after stream starts"
+    "message": "直播开始后通知"
   },
   "autoOpenDelayLabel": {
     "message": "标签打开延迟"
@@ -425,7 +424,7 @@
     "message": "KickAlert — 没有直播"
   },
   "viewerTrendTitle": {
-    "message": "Viewer Trend"
+    "message": "观众趋势"
   },
   "chatBroadcasterNotif": {
     "message": "主播消息通知",
@@ -581,7 +580,7 @@
     "message": "请先开启同步"
   },
   "fetchErrorOffline": {
-    "message": "您似乎已离线。请检查网络连接后重试。"
+    "message": "你似乎已离线。请检查网络连接后重试。"
   },
   "fetchErrorRateLimited": {
     "message": "Kick 暂时限制了请求频率，这会自动恢复 — 请稍候。"
@@ -593,19 +592,19 @@
     "message": "加载频道时出了点问题，请重试。"
   },
   "fetchErrorSessionRejected": {
-    "message": "您已登录，但 Kick 当前未能识别您的会话。这通常发生在使用 Google、Apple 或其他社交账号登录时，是 Kick 服务器端的不一致问题所致——并非本扩展程序的错误。解决方法：从 kick.com 退出登录，然后使用邮箱和密码重新登录。如果您没有密码（因为是通过 Google/Apple 注册的），可以在登录页面点击\"忘记密码？\"来设置一个。如果仍未解决，该问题通常会在几分钟内自行恢复。"
+    "message": "你已登录，但 Kick 当前未能识别你的会话。这通常发生在使用 Google、Apple 或其他社交账号登录时，是 Kick 服务器端的不一致问题所致——并非本扩展程序的错误。解决方法：从 kick.com 退出登录，然后使用邮箱和密码重新登录。如果你没有密码（因为是通过 Google/Apple 注册的），可以在登录页面点击\"忘记密码？\"来设置一个。如果仍未解决，该问题通常会在几分钟内自行恢复。"
   },
   "emailLoginNotice": {
-    "message": "为确保 KickAlert 稳定运行，我们建议您使用邮箱和密码登录 Kick。使用\"Google\"、\"Apple\"或其他社交账号登录，有时会因 Kick 服务器端的不一致问题，导致扩展程序无法加载您的数据。"
+    "message": "为确保 KickAlert 稳定运行，我们建议你使用邮箱和密码登录 Kick。使用\"Google\"、\"Apple\"或其他社交账号登录，有时会因 Kick 服务器端的不一致问题，导致扩展程序无法加载你的数据。"
   },
   "adBlockTitle": {
     "message": "广告拦截"
   },
   "adBlockWarning": {
-    "message": "这是一项实验性且非官方的功能——依赖 Kick 的内部 API 结构，可能会在没有通知的情况下失效。启用即表示您接受这一风险。保持关闭则 KickAlert 将和以前一样正常运行，不受影响。 需要刷新已打开的 Kick 标签页才能生效。"
+    "message": "这是一项实验性且非官方的功能——依赖 Kick 的内部 API 结构，可能会在没有通知的情况下失效。启用即表示你接受这一风险。保持关闭则 KickAlert 将和以前一样正常运行，不受影响。 需要刷新已打开的 Kick 标签页才能生效。"
   },
   "emailLoginNoticeUrgentTag": {
-    "message": "当前正相关："
+    "message": "当前适用："
   },
   "emailLoginInfo": {
     "message": "提示：使用邮箱和密码登录 Kick 时，KickAlert 运行最为稳定可靠。Google 或 Apple 等社交登录方式偶尔会在 Kick 服务器端引发会话不一致问题。"
@@ -626,7 +625,7 @@
     "message": "要开启广告拦截吗？"
   },
   "adBlockConfirmBody": {
-    "message": "此功能为实验性且非官方功能——依赖于 Kick 的内部 API 结构，可能在没有通知的情况下失效，Kick 也可能检测到此行为。开启即表示您接受这些风险。"
+    "message": "此功能为实验性且非官方功能——依赖于 Kick 的内部 API 结构，可能在没有通知的情况下失效，Kick 也可能检测到此行为。开启即表示你接受这些风险。"
   },
   "adBlockConfirmAccept": {
     "message": "我了解，开启"
@@ -674,10 +673,10 @@
     "message": "关闭"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — 广告拦截强化与设置重新设计"
+    "message": "v2.5 — 广告拦截、聊天通知与设置重新设计"
   },
   "releaseHistoryV0Body": {
-    "message": "• 三个新的广告拦截层：GPT/IMA SDK 模拟、分段级过滤、以及对 Kick 自身\"黑屏\"过渡遮罩的检测\n• VOD 无广告源查找更快更安全\n• 设置重新组织为可折叠分类，并加入搜索功能\n• \"新功能\"横幅和此历史记录视图\n• 备份与恢复：将所有设置导出/导入为文件（附带一次性撤销安全网和\"恢复默认设置\"选项）\n• 修复了广告隐藏在视觉上不起作用（CSS 规则从未到达页面）且仅在我们自己的检测触发时才运行的问题——现在独立运行并捕获更多广告控制层"
+    "message": "• 三个新的广告拦截层：GPT/IMA SDK 模拟、分段级过滤、以及对 Kick 自身\"黑屏\"过渡遮罩的检测\n• VOD 无广告源查找更快更安全\n• 设置重新组织为可折叠分类，并加入搜索功能\n• \"新功能\"横幅和此历史记录视图\n• 备份与恢复：将所有设置导出/导入为文件（附带一次性撤销安全网和\"恢复默认设置\"选项）\n• 修复了广告隐藏在视觉上不起作用（CSS 规则从未到达页面）且仅在我们自己的检测触发时才运行的问题——现在独立运行并捕获更多广告控制层\n• 聊天：现在有人回复你的消息时也会像 @提及 一样收到通知\n• 聊天通知弹窗和声音现在可以独立开关（并新增可选的\"仅在未观看时\"播放声音模式）——该模式现在也能检测 Kick 自己的聊天面板是否被隐藏（剧场/全屏模式），不仅仅是标签页在后台或已滚动\n• 修复了在积极关注直播聊天时通知不会触发、以及插件声音与 Windows 自带通知声音冲突的问题\n• 新增支持斯洛伐克语\n• 对全部 14 种语言的翻译进行了准确性和自然度审查——修正了多处误译和敬语/口语不一致的问题"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — 频道预览与广告拦截"
@@ -695,7 +694,7 @@
     "message": "备份与恢复"
   },
   "settingsBackupDesc": {
-    "message": "将所有偏好设置下载为文件，或从之前的备份中恢复——如果你不使用云同步会很有用。"
+    "message": "将所有设置保存为文件，或从之前的保存中恢复。不使用云同步时很有用。"
   },
   "exportSettingsBtn": {
     "message": "导出设置"
@@ -722,7 +721,7 @@
     "message": "要导入设置吗？"
   },
   "importConfirmBody": {
-    "message": "这将用此文件中的设置覆盖你当前的偏好设置（通知、声音、免打扰、聊天过滤器等）。此操作无法撤销。"
+    "message": "这将用此文件中的设置覆盖你当前的偏好设置（通知、声音、免打扰、聊天过滤器等）。此操作无法撤销（但之后可以立即使用\"撤销上次更改\"撤销一次）。"
   },
   "importConfirmAccept": {
     "message": "覆盖并导入"
@@ -770,18 +769,21 @@
     "message": "$1 回复了你"
   },
   "chatMentionSoundSmart": {
-    "message": "仅在你未主动观看时（标签页隐藏或聊天已滚动）播放通知声音——适用于标记、回复和主播消息。"
+    "message": "仅在你未主动观看时（标签页在后台、聊天已滚动、或 Kick 自己的聊天面板被隐藏）——适用于标记、回复和主播消息。"
   },
   "chatMentionSoundEnabled": {
-    "message": "同时播放声音（关闭 = 仅显示静音弹窗通知）"
+    "message": "同时播放声音"
   },
   "chatNotifSoundTitle": {
-    "message": "聊天通知声音"
+    "message": "聊天通知"
   },
   "chatNotifSoundDesc": {
-    "message": "聊天标签页中标记和主播消息通知的声音设置。"
+    "message": "聊天标签页中标记和主播消息提醒的通知设置。"
   },
   "chatNotifSoundDisabledNote": {
     "message": " 请先在聊天标签页中开启\"标记通知\"或\"主播消息通知\"。"
+  },
+  "chatShowPopup": {
+    "message": "显示通知弹窗"
   }
 }

@@ -58,6 +58,20 @@
   const dupMap   = new Map();
   let stylesInjected = false;
 
+  // v2.5.30: Kick'in KENDİ sohbet paneli tam ekran/theater modunda kapalı mı?
+  // Mo'Kick'in kodunda GÜVENİLİR bir kaynak olarak kullanılan native
+  // data-chat="true/false" özniteliğine dayanıyoruz (tahmin değil, Kick'in
+  // kendi React state'inin dışarı yansıttığı GERÇEK bir sinyal). Element
+  // bulunamazsa (öznitelik hiç yoksa) güvenli tarafta kalıp "açık" varsayıyoruz.
+  function isKickChatHidden() {
+    try {
+      const el = document.querySelector('[data-chat]');
+      return el ? el.getAttribute('data-chat') === 'false' : false;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // Throttle: prevent notification flood (same type within NOTIF_THROTTLE_MS).
   // Backed by chrome.storage.local so the throttle survives page refresh and
   // SW restarts. Read once at init, write-through on each notification.
@@ -215,6 +229,7 @@
         broadcasterNotif: false,
         mentionSoundSmart: false, // v2.5.24: false = her zaman çal (mevcut davranış korunuyor)
         mentionSoundEnabled: true, // v2.5.27: true = ses de çalsın (mevcut davranış korunuyor)
+        showPopupNotification: true, // v2.5.30: true = popup göster (mevcut davranış korunuyor)
       };
       settings = Object.assign(defaults, r.chatSettings || {});
       // First run: persist defaults so popup and content script stay in sync
@@ -363,6 +378,7 @@
               isReply: isReplyToMe && !isTextMention,
               tabHidden: document.hidden,
               chatScrolledUp: isScrolledUp,
+              chatHidden: isKickChatHidden(),
             });
           } catch (_) {}
         }
@@ -382,6 +398,7 @@
               message: text.substring(0, 200),
               tabHidden: document.hidden,
               chatScrolledUp: isScrolledUp,
+              chatHidden: isKickChatHidden(),
             });
           } catch (_) {}
         }

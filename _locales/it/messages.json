@@ -3,7 +3,7 @@
     "message": "Allerta"
   },
   "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+    "message": "Rileva picchi insoliti nel numero di spettatori. Confronta con le medie degli stream passati per i nuovi stream, o con il tasso di variazione per quelli in corso. Nessun avviso senza cronologia precedente."
   },
   "anomalyDropEnabled": {
     "message": "Notifica calo anomalo degli spettatori"
@@ -15,19 +15,19 @@
     "message": "Calo sospetto di spettatori"
   },
   "anomalyModeBadge": {
-    "message": "Badge in popup only"
+    "message": "Solo badge nel popup"
   },
   "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
+    "message": "Notifica desktop + badge nel popup"
   },
   "anomalyModeNotif": {
-    "message": "Desktop notification only"
+    "message": "Solo notifica desktop"
   },
   "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+    "message": "Nuovo stream (< 10 min): confronta con le medie degli stream passati. Stream in corso: controlla il tasso di variazione. Nessun avviso senza cronologia precedente."
   },
   "anomalyNotifyMode": {
-    "message": "Notification mode"
+    "message": "Modalità notifica"
   },
   "anomalySensitivity": {
     "message": "Sensibilità"
@@ -39,26 +39,24 @@
     "message": "Picco sospetto di spettatori"
   },
   "anomalyPlateauTitle": {
-    "message": "Spettatori Costanti Sospetti",
-    "description": "Plateau detection notification title (suspicious bot-held viewer count)."
+    "message": "Spettatori costanti sospetti"
   },
   "anomalyPlateauBody": {
     "message": "$1 min stabile · ~$2 spettatori",
     "description": "Plateau detection body. $1 = plateau duration in minutes, $2 = average viewer count."
   },
   "anomalySmoothTitle": {
-    "message": "Crescita Lineare Sospetta",
-    "description": "Smoothness detection notification title (suspicious linear bot growth)."
+    "message": "Crescita lineare sospetta"
   },
   "anomalySmoothBody": {
     "message": "+$1% in $2 min · $3 → $4",
     "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
   },
   "anomalyThreshold": {
-    "message": "Alert threshold"
+    "message": "Soglia di avviso"
   },
   "anomalyTitle": {
-    "message": "Viewer anomaly detection"
+    "message": "Rilevamento anomalie spettatori"
   },
   "anomalyWarnLabel": {
     "message": "Avviso"
@@ -100,13 +98,13 @@
     "message": "Suono secondario"
   },
   "cardModeCompact": {
-    "message": "Compact"
+    "message": "Compatto"
   },
   "cardModeDetail": {
-    "message": "Detail"
+    "message": "Dettaglio"
   },
   "cardModeLabel": {
-    "message": "Card view"
+    "message": "Visualizzazione a schede"
   },
   "chatActiveChannel": {
     "message": "Canale attivo"
@@ -290,16 +288,16 @@
     "message": "Cronologia notifiche"
   },
   "historyGroupOlder": {
-    "message": "Earlier"
+    "message": "In precedenza"
   },
   "historyGroupThisWeek": {
-    "message": "This week"
+    "message": "Questa settimana"
   },
   "historyGroupToday": {
-    "message": "Today"
+    "message": "Oggi"
   },
   "historyGroupYesterday": {
-    "message": "Yesterday"
+    "message": "Ieri"
   },
   "langBrowserNoteSupported": {
     "message": "Lingua del browser in uso: $1"
@@ -311,10 +309,10 @@
     "message": "Lingua"
   },
   "lastStream": {
-    "message": "Last stream"
+    "message": "Ultimo stream"
   },
   "noDataYet": {
-    "message": "Not enough data yet"
+    "message": "Dati non ancora sufficienti"
   },
   "noHistoryYet": {
     "message": "Nessuna cronologia."
@@ -329,7 +327,7 @@
     "message": "Apri"
   },
   "notifDelayLabel": {
-    "message": "Notify after stream starts"
+    "message": "Notifica dopo l'inizio dello stream"
   },
   "autoOpenDelayLabel": {
     "message": "Ritardo apertura"
@@ -425,7 +423,7 @@
     "message": "KickAlert — Nessuno streaming live"
   },
   "viewerTrendTitle": {
-    "message": "Viewer Trend"
+    "message": "Tendenza spettatori"
   },
   "chatBroadcasterNotif": {
     "message": "Notifica messaggio dello streamer",
@@ -674,10 +672,10 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Rafforzamento del blocco annunci e nuove impostazioni"
+    "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"
   },
   "releaseHistoryV0Body": {
-    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari"
+    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari\n• Chat: rispondere al tuo messaggio ora avvisa come una menzione @\n• Popup e suono delle notifiche chat ora si attivano in modo indipendente (con una modalità audio opzionale \"solo quando non stai guardando\") — questa modalità ora rileva anche quando il pannello chat di Kick stesso è nascosto (modalità teatro/schermo intero), non solo scheda in background o scorsa\n• Risolto: le notifiche chat non scattavano seguendo attivamente la chat dal vivo, e il suono dell'estensione entrava in conflitto con quello di Windows\n• Aggiunto lo slovacco come nuova lingua supportata\n• Riviste tutte le traduzioni nelle 14 lingue per accuratezza e naturalezza — corretti diversi errori di traduzione e incoerenze di registro"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — Anteprime canale e blocco annunci"
@@ -689,13 +687,13 @@
     "message": "v2.3.0 — Integrazione chat"
   },
   "releaseHistoryV2Body": {
-    "message": "• Scheda chat: filtro bot/spam/duplicati/parole chiave, preferiti, menzioni\n• Pianificazione Non Disturbare\n• Rilevamento anomalie spettatori"
+    "message": "• Scheda chat: filtro bot/spam/duplicati/parole chiave, preferiti, menzioni\n• Pianificazione non disturbare\n• Rilevamento anomalie spettatori"
   },
   "settingsBackupTitle": {
     "message": "Backup e ripristino"
   },
   "settingsBackupDesc": {
-    "message": "Scarica tutte le tue preferenze come file, oppure ripristinale da un backup precedente — utile se non usi la sincronizzazione cloud."
+    "message": "Salva tutte le tue impostazioni in un file, oppure ripristina un salvataggio precedente. Utile senza sincronizzazione cloud."
   },
   "exportSettingsBtn": {
     "message": "Esporta impostazioni"
@@ -722,7 +720,7 @@
     "message": "Importare le impostazioni?"
   },
   "importConfirmBody": {
-    "message": "Questo sovrascriverà le tue preferenze attuali (notifiche, suoni, non disturbare, filtri chat e altro) con quelle di questo file. Questa azione non può essere annullata."
+    "message": "Questo sovrascriverà le tue preferenze attuali (notifiche, suoni, non disturbare, filtri chat e altro) con quelle di questo file. Questa azione non può essere annullata (ma puoi annullarla una volta, subito dopo, usando \"Annulla ultima modifica\")."
   },
   "importConfirmAccept": {
     "message": "Sovrascrivi e importa"
@@ -767,21 +765,24 @@
     "message": "Ripristinato! Ricaricamento..."
   },
   "chatReplyNotifTitle": {
-    "message": "Ti ha risposto $1"
+    "message": "$1 ti ha risposto"
   },
   "chatMentionSoundSmart": {
-    "message": "Riproduci il suono di notifica solo quando non stai guardando attivamente (scheda in background o chat scorsa) — vale per menzioni, risposte e messaggi dello streamer."
+    "message": "Solo quando non stai guardando attivamente (scheda in background, chat scorsa, o il pannello chat di Kick nascosto) — vale per menzioni, risposte e messaggi dello streamer."
   },
   "chatMentionSoundEnabled": {
-    "message": "Riproduci anche un suono (disattivato = solo notifica popup silenziosa)"
+    "message": "Riproduci anche un suono"
   },
   "chatNotifSoundTitle": {
-    "message": "Suono notifiche chat"
+    "message": "Notifiche chat"
   },
   "chatNotifSoundDesc": {
-    "message": "Impostazioni audio per le notifiche di menzione e messaggio dello streamer nella scheda Chat."
+    "message": "Impostazioni di notifica per gli avvisi di menzione e messaggio dello streamer nella scheda Chat."
   },
   "chatNotifSoundDisabledNote": {
     "message": " Attiva prima \"Notifica menzione\" o \"Notifica messaggio streamer\" nella scheda Chat."
+  },
+  "chatShowPopup": {
+    "message": "Mostra una notifica popup"
   }
 }

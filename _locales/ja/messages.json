@@ -3,7 +3,7 @@
     "message": "アラート"
   },
   "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+    "message": "異常な視聴者数の急増を検知します。新しい配信では過去の配信の平均と比較し、進行中の配信では変化率を確認します。過去の履歴がない場合は通知されません。"
   },
   "anomalyDropEnabled": {
     "message": "異常な視聴者数の減少を通知"
@@ -15,19 +15,19 @@
     "message": "不審な視聴者急減"
   },
   "anomalyModeBadge": {
-    "message": "Badge in popup only"
+    "message": "ポップアップ内のバッジのみ"
   },
   "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
+    "message": "デスクトップ通知＋ポップアップ内のバッジ"
   },
   "anomalyModeNotif": {
-    "message": "Desktop notification only"
+    "message": "デスクトップ通知のみ"
   },
   "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+    "message": "新規配信（10分未満）：過去の配信平均と比較します。進行中の配信：変化率を確認します。過去の履歴がない場合は通知されません。"
   },
   "anomalyNotifyMode": {
-    "message": "Notification mode"
+    "message": "通知モード"
   },
   "anomalySensitivity": {
     "message": "感度"
@@ -55,10 +55,10 @@
     "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
   },
   "anomalyThreshold": {
-    "message": "Alert threshold"
+    "message": "アラートしきい値"
   },
   "anomalyTitle": {
-    "message": "Viewer anomaly detection"
+    "message": "視聴者異常検知"
   },
   "anomalyWarnLabel": {
     "message": "警告"
@@ -79,7 +79,7 @@
     "message": "自動入場設定"
   },
   "autoLaunchTab": {
-    "message": "自動起動"
+    "message": "自動入場"
   },
   "autoRefreshPopup": {
     "message": "フォロー中タブを自動更新"
@@ -100,13 +100,13 @@
     "message": "サブサウンド"
   },
   "cardModeCompact": {
-    "message": "Compact"
+    "message": "コンパクト"
   },
   "cardModeDetail": {
-    "message": "Detail"
+    "message": "詳細"
   },
   "cardModeLabel": {
-    "message": "Card view"
+    "message": "カード表示"
   },
   "chatActiveChannel": {
     "message": "アクティブチャンネル"
@@ -241,7 +241,7 @@
     "message": "終了"
   },
   "dndMuteAutoLaunch": {
-    "message": "自動起動を一時停止"
+    "message": "自動入場を一時停止"
   },
   "dndMuteNotifications": {
     "message": "通知をミュート"
@@ -290,16 +290,16 @@
     "message": "通知履歴"
   },
   "historyGroupOlder": {
-    "message": "Earlier"
+    "message": "それ以前"
   },
   "historyGroupThisWeek": {
-    "message": "This week"
+    "message": "今週"
   },
   "historyGroupToday": {
-    "message": "Today"
+    "message": "今日"
   },
   "historyGroupYesterday": {
-    "message": "Yesterday"
+    "message": "昨日"
   },
   "langBrowserNoteSupported": {
     "message": "ブラウザの言語を使用中: $1"
@@ -311,10 +311,10 @@
     "message": "言語"
   },
   "lastStream": {
-    "message": "Last stream"
+    "message": "前回の配信"
   },
   "noDataYet": {
-    "message": "Not enough data yet"
+    "message": "まだ十分なデータがありません"
   },
   "noHistoryYet": {
     "message": "まだ履歴がありません。"
@@ -329,7 +329,7 @@
     "message": "開く"
   },
   "notifDelayLabel": {
-    "message": "Notify after stream starts"
+    "message": "配信開始後に通知"
   },
   "autoOpenDelayLabel": {
     "message": "タブを開く遅延"
@@ -425,7 +425,7 @@
     "message": "KickAlert — ライブ配信なし"
   },
   "viewerTrendTitle": {
-    "message": "Viewer Trend"
+    "message": "視聴者トレンド"
   },
   "chatBroadcasterNotif": {
     "message": "配信者メッセージ通知",
@@ -674,10 +674,10 @@
     "message": "閉じる"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — 広告ブロック強化と設定の再設計"
+    "message": "v2.5 — 広告ブロック、チャット通知、設定画面の刷新"
   },
   "releaseHistoryV0Body": {
-    "message": "• 3つの新しい広告ブロック層：GPT/IMA SDKスタブ、セグメントレベルのフィルタリング、Kick独自の「ブラックスレート」遷移オーバーレイの検出\n• VOD広告なしソース検索がより高速かつ安全に\n• 設定が折りたたみ可能なカテゴリーに再編成され、検索機能を追加\n• 「新機能」バナーとこの履歴表示\n• バックアップと復元：すべての設定をファイルとしてエクスポート/インポート（一度だけ元に戻せる安全機能と「初期設定に戻す」オプション付き）\n• 広告非表示が視覚的に機能しておらず（CSSルールがページに届いていなかった）、独自の検出が発動した時のみ動作していた問題を修正 — 現在は独立して動作し、より多くの広告コントロールを検出"
+    "message": "• 3つの新しい広告ブロック層：GPT/IMA SDKスタブ、セグメントレベルのフィルタリング、Kick独自の「ブラックスレート」遷移オーバーレイの検出\n• VOD広告なしソース検索がより高速かつ安全に\n• 設定が折りたたみ可能なカテゴリーに再編成され、検索機能を追加\n• 「新機能」バナーとこの履歴表示\n• バックアップと復元：すべての設定をファイルとしてエクスポート/インポート（一度だけ元に戻せる安全機能と「初期設定に戻す」オプション付き）\n• 広告非表示が視覚的に機能しておらず（CSSルールがページに届いていなかった）、独自の検出が発動した時のみ動作していた問題を修正 — 現在は独立して動作し、より多くの広告コントロールを検出\n• チャット：あなたのメッセージへの返信も、@メンションと同じように通知されるようになりました\n• チャット通知のポップアップとサウンドを個別にオン/オフできるようになり（「見ていないときだけ再生」する任意のサウンドモードも追加）、このモードはKick自体のチャットパネルが非表示（シアター/全画面表示）の場合も検知するようになりました（タブの非表示やスクロールだけでなく）\n• ライブチャットをアクティブに見ている間に通知が鳴らない問題と、拡張機能の音とWindows自体の通知音が重なる問題を修正\n• 新しくスロバキア語のサポートを追加\n• 全14言語の翻訳を正確さと自然さの観点で見直し、いくつかの誤訳と敬語レベルの不整合を修正"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — チャンネルプレビューと広告ブロック"
@@ -695,7 +695,7 @@
     "message": "バックアップと復元"
   },
   "settingsBackupDesc": {
-    "message": "すべての設定をファイルとしてダウンロードするか、以前のバックアップから復元できます — クラウド同期を使用していない場合に便利です。"
+    "message": "すべての設定をファイルに保存するか、以前の保存から復元できます。クラウド同期を使っていない場合に便利です。"
   },
   "exportSettingsBtn": {
     "message": "設定をエクスポート"
@@ -722,7 +722,7 @@
     "message": "設定をインポートしますか？"
   },
   "importConfirmBody": {
-    "message": "これにより、現在の設定（通知、サウンド、通知オフ、チャットフィルターなど）がこのファイルの内容で上書きされます。この操作は元に戻せません。"
+    "message": "これにより、現在の設定（通知、サウンド、通知オフ、チャットフィルターなど）がこのファイルの内容で上書きされます。この操作は元に戻せません（ただし、直後に一度だけ「最後の変更を元に戻す」で元に戻すことができます）。"
   },
   "importConfirmAccept": {
     "message": "上書きしてインポート"
@@ -770,18 +770,21 @@
     "message": "$1 さんが返信しました"
   },
   "chatMentionSoundSmart": {
-    "message": "アクティブに見ていないとき（タブが非表示、またはチャットがスクロールされているとき）のみ通知音を再生します — タグ付け、返信、配信者のメッセージに適用されます。"
+    "message": "アクティブに見ていないとき（タブがバックグラウンド、チャットがスクロールされている、またはKick自体のチャットパネルが非表示）のみ — タグ付け、返信、配信者のメッセージに適用されます。"
   },
   "chatMentionSoundEnabled": {
-    "message": "音も再生する（オフ＝サイレントなポップアップ通知のみ）"
+    "message": "音も再生する"
   },
   "chatNotifSoundTitle": {
-    "message": "チャット通知サウンド"
+    "message": "チャット通知"
   },
   "chatNotifSoundDesc": {
-    "message": "チャットタブのタグ付けと配信者メッセージ通知の音声設定。"
+    "message": "チャットタブのタグ付けと配信者メッセージ通知の設定。"
   },
   "chatNotifSoundDisabledNote": {
     "message": " 先にChatタブで「タグ通知」または「配信者メッセージ通知」をオンにしてください。"
+  },
+  "chatShowPopup": {
+    "message": "通知ポップアップを表示"
   }
 }

@@ -3,7 +3,7 @@
     "message": "Alarm"
   },
   "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+    "message": "Erkennt ungewöhnliche Zuschauer-Spitzen. Vergleicht mit vergangenen Stream-Durchschnitten bei neuen Streams, oder mit der Änderungsrate bei laufenden. Ohne vorherige Historie kein Alarm."
   },
   "anomalyDropEnabled": {
     "message": "Abnormen Zuschauerrückgang melden"
@@ -15,19 +15,19 @@
     "message": "Verdächtiger Zuschauer-Rückgang"
   },
   "anomalyModeBadge": {
-    "message": "Badge in popup only"
+    "message": "Nur Badge im Popup"
   },
   "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
+    "message": "Desktop-Benachrichtigung + Badge im Popup"
   },
   "anomalyModeNotif": {
-    "message": "Desktop notification only"
+    "message": "Nur Desktop-Benachrichtigung"
   },
   "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+    "message": "Neuer Stream (< 10 Min.): Vergleich mit vergangenen Stream-Durchschnitten. Laufender Stream: Prüfung der Änderungsrate. Ohne vorherige Historie kein Alarm."
   },
   "anomalyNotifyMode": {
-    "message": "Notification mode"
+    "message": "Benachrichtigungsmodus"
   },
   "anomalySensitivity": {
     "message": "Empfindlichkeit"
@@ -55,10 +55,10 @@
     "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
   },
   "anomalyThreshold": {
-    "message": "Alert threshold"
+    "message": "Alarmschwelle"
   },
   "anomalyTitle": {
-    "message": "Viewer anomaly detection"
+    "message": "Zuschaueranomalie-Erkennung"
   },
   "anomalyWarnLabel": {
     "message": "Warnung"
@@ -100,13 +100,13 @@
     "message": "Sekundärton"
   },
   "cardModeCompact": {
-    "message": "Compact"
+    "message": "Kompakt"
   },
   "cardModeDetail": {
     "message": "Detail"
   },
   "cardModeLabel": {
-    "message": "Card view"
+    "message": "Kartenansicht"
   },
   "chatActiveChannel": {
     "message": "Aktiver Kanal"
@@ -142,7 +142,7 @@
     "message": "Filtermodus"
   },
   "chatFilterModeDesc": {
-    "message": "Ausblenden entfernt die Nachricht. Verwischen blendet sie aus — zum Ansehen überfahren."
+    "message": "Ausblenden entfernt die Nachricht. Verwischen blendet sie ab — zum Anzeigen mit der Maus darüberfahren."
   },
   "chatIntegrationDesc": {
     "message": "Wenn aktiviert, erscheint der Chat-Tab oben. Nach der Erstinstallation geöffnete Kick-Tabs neu laden."
@@ -290,16 +290,16 @@
     "message": "Benachrichtigungsverlauf"
   },
   "historyGroupOlder": {
-    "message": "Earlier"
+    "message": "Früher"
   },
   "historyGroupThisWeek": {
-    "message": "This week"
+    "message": "Diese Woche"
   },
   "historyGroupToday": {
-    "message": "Today"
+    "message": "Heute"
   },
   "historyGroupYesterday": {
-    "message": "Yesterday"
+    "message": "Gestern"
   },
   "langBrowserNoteSupported": {
     "message": "Browsersprache wird verwendet: $1"
@@ -311,10 +311,10 @@
     "message": "Sprache"
   },
   "lastStream": {
-    "message": "Last stream"
+    "message": "Letzter Stream"
   },
   "noDataYet": {
-    "message": "Not enough data yet"
+    "message": "Noch nicht genug Daten"
   },
   "noHistoryYet": {
     "message": "Noch kein Verlauf."
@@ -329,7 +329,7 @@
     "message": "Öffnen"
   },
   "notifDelayLabel": {
-    "message": "Notify after stream starts"
+    "message": "Nach Stream-Start benachrichtigen"
   },
   "autoOpenDelayLabel": {
     "message": "Verzögerung Tab-Öffnung"
@@ -386,7 +386,7 @@
     "message": "Desktop-Benachrichtigungen anzeigen"
   },
   "showOfflineChannels": {
-    "message": "Offline-Kanäle im Following-Tab anzeigen"
+    "message": "Offline-Kanäle im Tab „Gefolgte“ anzeigen"
   },
   "silentForOthers": {
     "message": "Stille Benachrichtigungen für andere Kanäle"
@@ -416,7 +416,7 @@
     "message": "Hell"
   },
   "tooltipLiveCount": {
-    "message": "$1 live"
+    "message": "$1 Live"
   },
   "tooltipMore": {
     "message": "+$1 weitere"
@@ -425,7 +425,7 @@
     "message": "KickAlert — Keine Live-Streams"
   },
   "viewerTrendTitle": {
-    "message": "Viewer Trend"
+    "message": "Zuschauertrend"
   },
   "chatBroadcasterNotif": {
     "message": "Streamer-Nachrichtenbenachrichtigung",
@@ -614,7 +614,7 @@
     "message": "Kanal-Vorschaubilder"
   },
   "thumbnailsWarning": {
-    "message": "Zeigt unter jedem Live-Kanal ein Live-Vorschaubild. Dies sendet bei jedem Öffnen des Popups eine zusätzliche Anfrage pro Live-Kanal, was ein geringes Risiko birgt, dass Kick diese Aktivität als botähnlich einstuft."
+    "message": "Zeigt unter jedem Live-Kanal ein Live-Vorschaubild. Dies sendet bei jedem Öffnen des Popups eine zusätzliche Anfrage pro Live-Kanal — dabei besteht ein geringes Risiko, dass Kick dies als botähnliches Verhalten einstuft."
   },
   "thumbnailViewersSuffix": {
     "message": "Zuschauer"
@@ -644,10 +644,10 @@
     "message": "Wie wird das berechnet?"
   },
   "noChannelsFollowedYet": {
-    "message": "Du folgst noch niemandem. Folge einem Kanal auf Kick, und er erscheint hier automatisch."
+    "message": "Sie folgen noch niemandem. Folgen Sie einem Kanal auf Kick, und er erscheint hier automatisch."
   },
   "whatsNewBannerText": {
-    "message": "Neu: Werbeblocker wurde verbessert, die Einstellungen sind jetzt in Kategorien unterteilt, und ein Fehler bei den Kanalvorschauen wurde behoben. Schau dir die <a id=\"whatsnew-settings-link\">Einstellungen</a> an."
+    "message": "Neu: Werbeblocker wurde verbessert, die Einstellungen sind jetzt in Kategorien unterteilt, und ein Fehler bei den Kanalvorschauen wurde behoben. Schauen Sie sich die <a id=\"whatsnew-settings-link\">Einstellungen</a> an."
   },
   "optGroupGeneral": {
     "message": "Allgemein"
@@ -674,10 +674,10 @@
     "message": "Schließen"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Werbeblocker-Härtung & Einstellungs-Redesign"
+    "message": "v2.5 — Werbeblockierung, Chat-Benachrichtigungen & Einstellungen neu gestaltet"
   },
   "releaseHistoryV0Body": {
-    "message": "• Drei neue Werbeblocker-Ebenen: GPT/IMA-SDK-Attrappe, segmentbasierte Filterung und Erkennung von Kicks eigenem „Schwarzbild“-Übergang\n• VOD-Suche nach werbefreier Quelle ist schneller und sicherer\n• Einstellungen in aufklappbare Kategorien mit Suche neu organisiert\n• „Neuigkeiten“-Banner und dieser Verlauf\n• Sicherung & Wiederherstellung: exportiere/importiere alle deine Einstellungen als Datei (mit einem einmaligen Rückgängig-Sicherheitsnetz und einer Option „Auf Standard zurücksetzen“)\n• Behoben: Werbe-Ausblendung hatte visuell keine Wirkung (CSS-Regel erreichte die Seite nie) und lief nur, wenn unsere eigene Erkennung ausgelöst wurde — funktioniert jetzt unabhängig und erfasst mehr Werbe-Overlays"
+    "message": "• Drei neue Werbeblocker-Ebenen: GPT/IMA-SDK-Attrappe, segmentbasierte Filterung und Erkennung von Kicks eigenem „Schwarzbild“-Übergang\n• VOD-Suche nach werbefreier Quelle ist schneller und sicherer\n• Einstellungen in aufklappbare Kategorien mit Suche neu organisiert\n• „Neuigkeiten“-Banner und dieser Verlauf\n• Sicherung & Wiederherstellung: exportieren/importieren Sie alle Ihre Einstellungen als Datei (mit einem einmaligen Rückgängig-Sicherheitsnetz und einer Option „Auf Standard zurücksetzen“)\n• Behoben: Werbe-Ausblendung hatte visuell keine Wirkung (CSS-Regel erreichte die Seite nie) und lief nur, wenn unsere eigene Erkennung ausgelöst wurde — funktioniert jetzt unabhängig und erfasst mehr Werbe-Overlays\n• Chat: Antworten auf Ihre Nachricht lösen jetzt genau wie @Erwähnungen eine Benachrichtigung aus\n• Chat-Benachrichtigungs-Popup und -Ton können jetzt unabhängig voneinander ein-/ausgeschaltet werden (mit optionalem \"nur wenn nicht zugeschaut wird\"-Tonmodus) — dieser erkennt jetzt auch, wenn Kicks eigenes Chat-Panel ausgeblendet ist (Theater-/Vollbildmodus), nicht nur Tab im Hintergrund oder gescrollt\n• Behoben: Chat-Benachrichtigungen feuerten beim aktiven Mitlesen des Live-Chats nicht, und der eigene Ton kollidierte mit Windows' eigenem Benachrichtigungston\n• Slowakisch als neue unterstützte Sprache hinzugefügt\n• Alle Übersetzungen in allen 14 Sprachen auf Genauigkeit und natürliche Formulierung überprüft — mehrere Fehlübersetzungen und Inkonsistenzen bei der Anrede (Sie/du) behoben"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — Kanalvorschauen & Werbeblocker"
@@ -695,7 +695,7 @@
     "message": "Sicherung & Wiederherstellung"
   },
   "settingsBackupDesc": {
-    "message": "Lade alle deine Einstellungen als Datei herunter oder stelle sie aus einem früheren Backup wieder her — nützlich, wenn du keine Cloud-Synchronisierung verwendest."
+    "message": "Speichern Sie alle Einstellungen in einer Datei oder stellen Sie eine frühere Sicherung wieder her. Praktisch ohne Cloud-Synchronisierung."
   },
   "exportSettingsBtn": {
     "message": "Einstellungen exportieren"
@@ -722,7 +722,7 @@
     "message": "Einstellungen importieren?"
   },
   "importConfirmBody": {
-    "message": "Dadurch werden deine aktuellen Einstellungen (Benachrichtigungen, Sounds, Nicht stören, Chat-Filter und mehr) mit denen aus dieser Datei überschrieben. Dies kann nicht rückgängig gemacht werden."
+    "message": "Dadurch werden Ihre aktuellen Einstellungen (Benachrichtigungen, Sounds, Nicht stören, Chat-Filter und mehr) mit denen aus dieser Datei überschrieben. Dies kann nicht rückgängig gemacht werden (Sie können es aber direkt danach einmal mit „Letzte Änderung rückgängig machen\" rückgängig machen)."
   },
   "importConfirmAccept": {
     "message": "Überschreiben und importieren"
@@ -749,7 +749,7 @@
     "message": "Auf Standard zurücksetzen"
   },
   "resetDefaultsDesc": {
-    "message": "Lösche alle deine Einstellungen und beginne von vorn. Erwäge, zuerst ein Backup zu exportieren."
+    "message": "Löschen Sie alle Ihre Einstellungen und beginnen Sie von vorn. Erwägen Sie, zuerst ein Backup zu exportieren."
   },
   "resetDefaultsBtn": {
     "message": "Alles zurücksetzen"
@@ -758,7 +758,7 @@
     "message": "Wirklich alles zurücksetzen?"
   },
   "resetConfirmBody": {
-    "message": "Dadurch werden alle deine Einstellungen gelöscht und auf die Standardwerte zurückgesetzt. Dies kann nicht rückgängig gemacht werden (du kannst es aber direkt danach einmal mit „Letzte Änderung rückgängig machen“ rückgängig machen)."
+    "message": "Dadurch werden alle Ihre Einstellungen gelöscht und auf die Standardwerte zurückgesetzt. Dies kann nicht rückgängig gemacht werden (Sie können es aber direkt danach einmal mit „Letzte Änderung rückgängig machen\" rückgängig machen)."
   },
   "resetConfirmAccept": {
     "message": "Alles zurücksetzen"
@@ -767,21 +767,24 @@
     "message": "Zurückgesetzt! Wird neu geladen..."
   },
   "chatReplyNotifTitle": {
-    "message": "$1 hat dir geantwortet"
+    "message": "$1 hat Ihnen geantwortet"
   },
   "chatMentionSoundSmart": {
-    "message": "Spiele den Benachrichtigungston nur ab, wenn du nicht aktiv zuschaust (Tab im Hintergrund oder Chat hochgescrollt) — gilt für Erwähnungen, Antworten und Streamer-Nachrichten."
+    "message": "Nur wenn Sie nicht aktiv zuschauen (Tab im Hintergrund, Chat hochgescrollt oder Kicks eigenes Chat-Panel ausgeblendet) — gilt für Erwähnungen, Antworten und Streamer-Nachrichten."
   },
   "chatMentionSoundEnabled": {
-    "message": "Auch einen Ton abspielen (aus = nur stumme Popup-Benachrichtigung)"
+    "message": "Auch einen Ton abspielen"
   },
   "chatNotifSoundTitle": {
-    "message": "Chat-Benachrichtigungston"
+    "message": "Chat-Benachrichtigungen"
   },
   "chatNotifSoundDesc": {
-    "message": "Toneinstellungen für die Erwähnungs- und Streamer-Nachrichten-Benachrichtigungen im Chat-Tab."
+    "message": "Benachrichtigungseinstellungen für Erwähnungs- und Streamer-Nachrichten-Alerts im Chat-Tab."
   },
   "chatNotifSoundDisabledNote": {
-    "message": " Aktiviere zuerst „Erwähnungsbenachrichtigung\" oder „Streamer-Nachrichtenbenachrichtigung\" im Chat-Tab."
+    "message": " Aktivieren Sie zuerst „Tag-Benachrichtigung“ oder „Streamer-Nachrichtenbenachrichtigung“ im Chat-Tab."
+  },
+  "chatShowPopup": {
+    "message": "Benachrichtigungs-Popup anzeigen"
   }
 }

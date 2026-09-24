@@ -3,7 +3,7 @@
     "message": "알림"
   },
   "anomalyDesc": {
-    "message": "Detects unusual viewer count spikes. Compares to past stream averages for new streams, or rate of change for ongoing ones. No alert without prior history."
+    "message": "비정상적인 시청자 수 급증을 감지합니다. 새 방송은 과거 방송 평균과 비교하고, 진행 중인 방송은 변화율을 확인합니다. 이전 기록이 없으면 알림이 발생하지 않습니다."
   },
   "anomalyDropEnabled": {
     "message": "비정상적인 시청자 감소 알림"
@@ -15,19 +15,19 @@
     "message": "의심스러운 시청자 급감"
   },
   "anomalyModeBadge": {
-    "message": "Badge in popup only"
+    "message": "팝업 내 배지만"
   },
   "anomalyModeBoth": {
-    "message": "Desktop notification + badge in popup"
+    "message": "데스크톱 알림 + 팝업 내 배지"
   },
   "anomalyModeNotif": {
-    "message": "Desktop notification only"
+    "message": "데스크톱 알림만"
   },
   "anomalyNote": {
-    "message": "New stream (< 10 min): compares to past stream averages. Ongoing stream: checks rate of change. No alert without prior history."
+    "message": "새 방송(10분 미만): 과거 방송 평균과 비교합니다. 진행 중인 방송: 변화율을 확인합니다. 이전 기록이 없으면 알림이 발생하지 않습니다."
   },
   "anomalyNotifyMode": {
-    "message": "Notification mode"
+    "message": "알림 모드"
   },
   "anomalySensitivity": {
     "message": "감도"
@@ -55,10 +55,10 @@
     "description": "Smoothness detection body. $1 = growth percent, $2 = window minutes, $3 = from value, $4 = to value."
   },
   "anomalyThreshold": {
-    "message": "Alert threshold"
+    "message": "알림 기준값"
   },
   "anomalyTitle": {
-    "message": "Viewer anomaly detection"
+    "message": "시청자 이상 감지"
   },
   "anomalyWarnLabel": {
     "message": "경고"
@@ -100,13 +100,13 @@
     "message": "보조 소리"
   },
   "cardModeCompact": {
-    "message": "Compact"
+    "message": "간단히"
   },
   "cardModeDetail": {
-    "message": "Detail"
+    "message": "자세히"
   },
   "cardModeLabel": {
-    "message": "Card view"
+    "message": "카드 보기"
   },
   "chatActiveChannel": {
     "message": "활성 채널"
@@ -142,7 +142,7 @@
     "message": "필터 모드"
   },
   "chatFilterModeDesc": {
-    "message": "숨기기는 메시지를 제거. 흐리게는 흐려짐 — 마우스로 보기."
+    "message": "숨기기는 메시지를 제거합니다. 흐리게는 흐릿하게 처리합니다 — 보려면 마우스를 올려보세요."
   },
   "chatIntegrationDesc": {
     "message": "켜지면 위에 채팅 탭이 표시됩니다. 최초 설치 후 열린 Kick 탭을 새로고침하세요."
@@ -172,16 +172,16 @@
     "message": "채팅"
   },
   "chatTagDesc": {
-    "message": "누군가 당신을 언급하면 알림."
+    "message": "누군가 회원님을 언급하면 알림을 받습니다."
   },
   "chatTagNotif": {
     "message": "태그 알림"
   },
   "chatTagNotifTitle": {
-    "message": "@$1님이 당신을 언급했습니다"
+    "message": "@$1님이 언급했습니다"
   },
   "chatTagPlaceholder": {
-    "message": "당신의 Kick 사용자명..."
+    "message": "Kick 사용자명..."
   },
   "chatUserFilter": {
     "message": "사용자 필터"
@@ -290,16 +290,16 @@
     "message": "알림 기록"
   },
   "historyGroupOlder": {
-    "message": "Earlier"
+    "message": "이전"
   },
   "historyGroupThisWeek": {
-    "message": "This week"
+    "message": "이번 주"
   },
   "historyGroupToday": {
-    "message": "Today"
+    "message": "오늘"
   },
   "historyGroupYesterday": {
-    "message": "Yesterday"
+    "message": "어제"
   },
   "langBrowserNoteSupported": {
     "message": "브라우저 언어 사용 중: $1"
@@ -311,10 +311,10 @@
     "message": "언어"
   },
   "lastStream": {
-    "message": "Last stream"
+    "message": "최근 방송"
   },
   "noDataYet": {
-    "message": "Not enough data yet"
+    "message": "아직 데이터가 충분하지 않습니다"
   },
   "noHistoryYet": {
     "message": "아직 기록이 없습니다."
@@ -329,7 +329,7 @@
     "message": "열기"
   },
   "notifDelayLabel": {
-    "message": "Notify after stream starts"
+    "message": "방송 시작 후 알림"
   },
   "autoOpenDelayLabel": {
     "message": "탭 열기 지연"
@@ -425,7 +425,7 @@
     "message": "KickAlert — 라이브 방송 없음"
   },
   "viewerTrendTitle": {
-    "message": "Viewer Trend"
+    "message": "시청자 추세"
   },
   "chatBroadcasterNotif": {
     "message": "스트리머 메시지 알림",
@@ -674,10 +674,10 @@
     "message": "닫기"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — 광고 차단 강화 및 설정 재설계"
+    "message": "v2.5 — 광고 차단, 채팅 알림 및 설정 재설계"
   },
   "releaseHistoryV0Body": {
-    "message": "• 세 가지 새로운 광고 차단 계층: GPT/IMA SDK 스텁, 세그먼트 수준 필터링, Kick 자체 \"블랙 슬레이트\" 전환 오버레이 감지\n• VOD 광고 없는 소스 검색이 더 빠르고 안전해짐\n• 설정이 접을 수 있는 카테고리로 재구성되고 검색 기능 추가\n• \"새 소식\" 배너 및 이 기록 보기\n• 백업 및 복원: 모든 설정을 파일로 내보내기/가져오기(일회성 실행 취소 안전망 및 \"기본값으로 재설정\" 옵션 포함)\n• 광고 숨기기가 시각적으로 작동하지 않고(CSS 규칙이 페이지에 전달되지 않음) 자체 감지가 트리거될 때만 작동하던 문제 수정 — 이제 독립적으로 작동하며 더 많은 광고 오버레이를 감지"
+    "message": "• 세 가지 새로운 광고 차단 계층: GPT/IMA SDK 스텁, 세그먼트 수준 필터링, Kick 자체 \"블랙 슬레이트\" 전환 오버레이 감지\n• VOD 광고 없는 소스 검색이 더 빠르고 안전해짐\n• 설정이 접을 수 있는 카테고리로 재구성되고 검색 기능 추가\n• \"새 소식\" 배너 및 이 기록 보기\n• 백업 및 복원: 모든 설정을 파일로 내보내기/가져오기(일회성 실행 취소 안전망 및 \"기본값으로 재설정\" 옵션 포함)\n• 광고 숨기기가 시각적으로 작동하지 않고(CSS 규칙이 페이지에 전달되지 않음) 자체 감지가 트리거될 때만 작동하던 문제 수정 — 이제 독립적으로 작동하며 더 많은 광고 오버레이를 감지\n• 채팅: 이제 내 메시지에 답장이 오면 @멘션처럼 알림이 옵니다\n• 채팅 알림 팝업과 소리를 이제 독립적으로 켜고 끌 수 있으며(\"보고 있지 않을 때만\" 재생하는 선택적 사운드 모드 포함), 이 모드는 이제 Kick 자체 채팅 패널이 숨겨진 경우(극장/전체화면 모드)도 감지합니다 — 탭이 백그라운드에 있거나 스크롤된 경우뿐만 아니라\n• 라이브 채팅을 활발히 보는 동안 알림이 오지 않던 문제와, 확장 프로그램 소리가 Windows 자체 알림 소리와 겹치던 문제를 수정했습니다\n• 새로 지원되는 언어로 슬로바키아어 추가\n• 14개 언어 전체의 번역을 정확성과 자연스러움 측면에서 검토 — 여러 오역과 존댓말/반말 불일치를 수정"
   },
   "releaseHistoryV1Label": {
     "message": "v2.4.0 — 채널 미리보기 및 광고 차단"
@@ -695,7 +695,7 @@
     "message": "백업 및 복원"
   },
   "settingsBackupDesc": {
-    "message": "모든 환경설정을 파일로 다운로드하거나 이전 백업에서 복원할 수 있습니다 — 클라우드 동기화를 사용하지 않는 경우 유용합니다."
+    "message": "모든 설정을 파일로 저장하거나 이전 저장본에서 복원할 수 있습니다. 클라우드 동기화를 사용하지 않을 때 유용합니다."
   },
   "exportSettingsBtn": {
     "message": "설정 내보내기"
@@ -722,7 +722,7 @@
     "message": "설정을 가져오시겠습니까?"
   },
   "importConfirmBody": {
-    "message": "이 작업은 현재 환경설정(알림, 소리, 방해 금지, 채팅 필터 등)을 이 파일의 설정으로 덮어씁니다. 이 작업은 되돌릴 수 없습니다."
+    "message": "이 작업은 현재 환경설정(알림, 소리, 방해 금지, 채팅 필터 등)을 이 파일의 설정으로 덮어씁니다. 이 작업은 되돌릴 수 없습니다(단, 바로 직후에 \"마지막 변경 실행 취소\"를 사용하여 한 번은 되돌릴 수 있습니다)."
   },
   "importConfirmAccept": {
     "message": "덮어쓰고 가져오기"
@@ -770,18 +770,21 @@
     "message": "$1님이 답장했습니다"
   },
   "chatMentionSoundSmart": {
-    "message": "실제로 보고 있지 않을 때만(탭이 숨겨졌거나 채팅이 스크롤된 경우) 알림 소리를 재생합니다 — 태그, 답장, 스트리머 메시지에 적용됩니다."
+    "message": "실제로 보고 있지 않을 때만(탭이 백그라운드, 채팅이 스크롤됨, 또는 Kick 자체 채팅 패널이 숨겨짐) — 태그, 답장, 스트리머 메시지에 적용됩니다."
   },
   "chatMentionSoundEnabled": {
-    "message": "소리도 재생 (끄면 무음 팝업 알림만 표시)"
+    "message": "소리도 재생"
   },
   "chatNotifSoundTitle": {
-    "message": "채팅 알림 소리"
+    "message": "채팅 알림"
   },
   "chatNotifSoundDesc": {
-    "message": "채팅 탭의 태그 및 스트리머 메시지 알림에 대한 소리 설정입니다."
+    "message": "채팅 탭의 태그 및 스트리머 메시지 알림 설정입니다."
   },
   "chatNotifSoundDisabledNote": {
     "message": " 먼저 채팅 탭에서 \"태그 알림\" 또는 \"스트리머 메시지 알림\"을 켜세요."
+  },
+  "chatShowPopup": {
+    "message": "알림 팝업 표시"
   }
 }
