@@ -645,7 +645,7 @@
     "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novità: risolto un bug per cui il tuo nome utente della chat, i preferiti o altre impostazioni potevano non salvarsi se facevi due modifiche ravvicinate. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
+    "message": "Novità: risolto un bug critico della sincronizzazione cloud per cui le impostazioni della scheda Chat potevano azzerarsi da sole. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
   },
   "optGroupGeneral": {
     "message": "Generale"
@@ -672,10 +672,10 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.44 — Correzioni di integrità dei dati"
+    "message": "v2.5.45 — Correzioni di integrità dei dati e sincronizzazione cloud"
   },
   "releaseHistoryV0Body": {
-    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere"
+    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere\n• Risolto un bug critico della sincronizzazione cloud: se la sincronizzazione cloud era attiva, le impostazioni della scheda Chat potevano tornare silenziosamente a uno stato vecchio/vuoto ore dopo senza alcuna interazione, a causa di un controllo di sincronizzazione in background che riapplicava continuamente una copia cloud obsoleta. Ora le impostazioni della chat si sincronizzano immediatamente a ogni modifica, e quel controllo in background non scarica più dati dal cloud per conto proprio"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"

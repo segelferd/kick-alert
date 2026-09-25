@@ -645,7 +645,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Yeni: Chat kullanıcı adın, favorilerin ya da başka bir ayarın, art arda hızlı yaptığın değişikliklerde sessizce kaydedilmeme hatası giderildi. Keşfetmek için <a id=\"whatsnew-settings-link\">Ayarlar</a>'a göz at."
+    "message": "Yeni: Bulut Senkronu açıkken Chat sekmesi ayarlarının kendiliğinden eski haline dönmesine sebep olan kritik bir hata giderildi. Keşfetmek için <a id=\"whatsnew-settings-link\">Ayarlar</a>'a göz at."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -672,10 +672,10 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.44 — Veri bütünlüğü düzeltmeleri"
+    "message": "v2.5.45 — Veri bütünlüğü ve Bulut Senkronu düzeltmeleri"
   },
   "releaseHistoryV0Body": {
-    "message": "• Chat sekmesindeki Kick kullanıcı adı alanına yazıp popup'ı hemen kapatınca değerin kaydedilmediği hata giderildi\n• Aynı kökten gelen başka bir sorun da düzeltildi: favori kanallar, kanal başına ses modu, kanal grupları, otomatik açma listesi, chatroom/kanal ID önbelleği, bot skorları ve bildirim geçmişi — bunların hepsi art arda hızlı yapılan iki değişiklikte birbirini ezip veri kaybına yol açabiliyordu; artık hepsi bir yazma sırasından geçiyor ve bu mümkün değil"
+    "message": "• Chat sekmesindeki Kick kullanıcı adı alanına yazıp popup'ı hemen kapatınca değerin kaydedilmediği hata giderildi\n• Aynı kökten gelen başka bir sorun da düzeltildi: favori kanallar, kanal başına ses modu, kanal grupları, otomatik açma listesi, chatroom/kanal ID önbelleği, bot skorları ve bildirim geçmişi — bunların hepsi art arda hızlı yapılan iki değişiklikte birbirini ezip veri kaybına yol açabiliyordu; artık hepsi bir yazma sırasından geçiyor ve bu mümkün değil\n• Bulut Senkronu'nda kritik bir hata düzeltildi: Bulut Senkronu açıksa, Chat sekmesi ayarların hiçbir dokunma olmadan saatler sonra eski/boş haline dönebiliyordu — sebebi, arka planda rutin çalışan bir senkron kontrolünün bayat bir bulut kopyasını sürekli geri uygulamasıydı. Artık chat ayarları her değişiklikte anında buluta yansıyor, ve bu arka plan kontrolü kendiliğinden buluttan veri çekmiyor"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5 — Reklam engelleme, Chat bildirimleri ve ayarlar tasarımı"

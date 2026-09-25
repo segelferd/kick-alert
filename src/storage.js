@@ -527,7 +527,9 @@ const Storage = {
   },
 
   async setChatIntegrationEnabled(enabled) {
-    await chrome.storage.local.set({ [StorageKeys.CHAT_INTEGRATION_ENABLED]: enabled });
+    // v2.5.45 FIX: chatSettings ile aynı hata — doğrudan chrome.storage.local.set
+    // kullanıyordu, this.set() üzerinden geçmediği için buluta hiç yansımıyordu.
+    return this.set(StorageKeys.CHAT_INTEGRATION_ENABLED, enabled);
   },
 
   async getChatSettings() {
@@ -590,9 +592,10 @@ const Storage = {
   async setChatSettings(settings) {
     // Kuyruğa al: önceki bir updateChatSetting/setChatSettings çağrısı henüz
     // bitmemişse, bu yazma onun tamamlanmasını bekler (stale-overwrite'ı önler).
-    const task = _chatSettingsWriteChain.then(() =>
-      chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: settings })
-    );
+    const task = _chatSettingsWriteChain.then(async () => {
+      await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: settings });
+      await this._mirrorChatSettingsToSync(settings);
+    });
     _chatSettingsWriteChain = task.catch(() => {});
     return task;
   },
@@ -606,10 +609,27 @@ const Storage = {
       const current = await this.getChatSettings();
       current[key] = value;
       await chrome.storage.local.set({ [StorageKeys.CHAT_SETTINGS]: current });
+      await this._mirrorChatSettingsToSync(current);
       return current;
     });
     _chatSettingsWriteChain = task.catch(() => {});
     return task;
+  },
+
+  // v2.5.45 FIX: setChatSettings/updateChatSetting chrome.storage.local'a DOĞRUDAN
+  // yazıyordu (Storage.set() üzerinden geçmiyordu), bu yüzden chatSettings hiçbir
+  // zaman chrome.storage.sync'e yansımıyordu. Buluttaki kopya hep bayat/boş kalıyordu.
+  // Her ~1 dakikada bir (alarm ile) service worker uyanıp initialize() → pullFromSync()
+  // çalıştırdığında, bu bayat bulut kopyası yerel depoyu SESSİZCE eziyordu — kullanıcı
+  // hiçbir şeye dokunmadan saatler sonra ayarların "sıfırlanmış" görünmesinin sebebi buydu.
+  // Artık her chatSettings yazımı buluta da yansıyor, böylece pull hep güncel veriyi geri getiriyor.
+  async _mirrorChatSettingsToSync(settings) {
+    if (!_syncEnabled || SYNC_EXCLUDE_KEYS.has(StorageKeys.CHAT_SETTINGS)) return;
+    try {
+      await chrome.storage.sync.set({ [StorageKeys.CHAT_SETTINGS]: settings });
+    } catch (e) {
+      console.warn('[KickAlert] Sync write failed:', StorageKeys.CHAT_SETTINGS, e.message);
+    }
   },
 
   // ─── v2.3.0: Bot Tracker ───

@@ -135,7 +135,15 @@ let _spikeSensitivity = 'avg';
 let _dropSensitivity  = 'avg';
 let _initRunning = false;
 
-async function initialize() {
+// v2.5.45 FIX: initialize() eskiden HER çağrıldığında (yani her alarm sonrası
+// service worker uyanışında, ~1 dakikada bir) Storage.pullFromSync() çalıştırıyordu.
+// pullFromSync() buluttaki veriyi hiçbir birleştirme yapmadan doğrudan yerel depoya
+// yazıyor — ve chatSettings o zamana kadar buluta hiç yansımadığı için (yukarıdaki
+// _mirrorChatSettingsToSync fix'inden önce), bu bayat/boş bulut kopyası kullanıcının
+// gerçek chat ayarlarını sessizce eziyordu. Artık pull sadece GERÇEK bir oturum
+// başlangıcında (tarayıcı açılışı / eklenti kurulumu-güncellemesi) çalışıyor;
+// alarm kaynaklı rutin uyanışlarda çalışmıyor.
+async function initialize(isFreshSession = false) {
   if (_initRunning) return;
   _initRunning = true;
 
@@ -156,7 +164,7 @@ async function initialize() {
   try {
     await Utils.initI18n();
     await Storage.initSyncState();
-    await Storage.pullFromSync();
+    if (isFreshSession) await Storage.pullFromSync();
 
     const resetOnRestart = await Storage.getResetSuspendOnRestart();
     if (resetOnRestart) await Storage.remove(StorageKeys.SUSPEND_FROM_DATE);
@@ -2124,7 +2132,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
   }
   // Plan C: Mevcut kick.com tab'larına content script'i tazele
   await injectContentScriptToOpenKickTabs();
-  await initialize();
+  await initialize(true); // fresh session: cloud'dan pull yapılabilir
 });
 
 chrome.runtime.onStartup.addListener(async () => {
@@ -2155,15 +2163,17 @@ chrome.runtime.onStartup.addListener(async () => {
   // Plan C: Tarayıcı açılışında da inject yap (browser session restore senaryosu)
   await injectContentScriptToOpenKickTabs();
 
-  initialize();
+  initialize(true); // fresh session: cloud'dan pull yapılabilir
 });
 
 // Fallback: SW woke from alarm. Only run if alarm already exists (was previously set up).
 // Delay 200ms so onInstalled/onStartup can run first if they are also firing.
+// v2.5.45: isFreshSession=false — bu rutin bir uyanış, gerçek bir oturum başlangıcı
+// değil. pullFromSync() burada ÇALIŞTIRILMAMALI (bkz. initialize() üstündeki not).
 chrome.alarms.get(ALARM_NAME).then(alarm => {
   if (alarm) {
     setTimeout(() => {
-      if (!_initRunning) initialize();
+      if (!_initRunning) initialize(false);
     }, 200);
   }
 });

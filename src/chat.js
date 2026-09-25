@@ -212,7 +212,7 @@
         botFilter: false,
         botList: ['Nightbot', 'StreamElements', 'Moobot', 'Fossabot', 'KickBot'],
         emojiFilter: false,
-        emojiThreshold: 10,
+        emojiThreshold: 5, // v2.5.45: storage.js'deki getChatSettings() varsayılanıyla eşitlendi (önceden 10'du, iki farklı varsayılan aynı dosyada tutarsızdı)
         repeatFilter: false,
         repeatWindow: 60,
         repeatThreshold: 3,

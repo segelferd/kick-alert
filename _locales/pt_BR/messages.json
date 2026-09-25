@@ -645,7 +645,7 @@
     "message": "Você ainda não segue ninguém. Siga um canal na Kick e ele aparecerá aqui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novidades: corrigido um bug em que seu nome de usuário do chat, favoritos ou outras configurações podiam não salvar se você fizesse duas alterações rapidamente. Confira as <a id=\"whatsnew-settings-link\">Configurações</a>."
+    "message": "Novidades: corrigido um bug crítico de sincronização em nuvem em que as configurações da aba Chat podiam se redefinir sozinhas. Confira as <a id=\"whatsnew-settings-link\">Configurações</a>."
   },
   "optGroupGeneral": {
     "message": "Geral"
@@ -672,10 +672,10 @@
     "message": "Fechar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.44 — Correções de integridade de dados"
+    "message": "v2.5.45 — Correções de integridade de dados e sincronização em nuvem"
   },
   "releaseHistoryV0Body": {
-    "message": "• Corrigido: o campo de nome de usuário da Kick na aba Chat não salvava o valor se você digitasse e fechasse o popup logo em seguida\n• Corrigido o mesmo problema em outros lugares: canais favoritos, modo de som por canal, grupos de canais, lista de abertura automática, cache de ID de chatroom/canal, pontuações de bot e histórico de notificações podiam perder uma alteração se duas atualizações acontecessem muito próximas — agora todos passam por uma fila de escrita, então isso não pode mais acontecer"
+    "message": "• Corrigido: o campo de nome de usuário da Kick na aba Chat não salvava o valor se você digitasse e fechasse o popup logo em seguida\n• Corrigido o mesmo problema em outros lugares: canais favoritos, modo de som por canal, grupos de canais, lista de abertura automática, cache de ID de chatroom/canal, pontuações de bot e histórico de notificações podiam perder uma alteração se duas atualizações acontecessem muito próximas — agora todos passam por uma fila de escrita, então isso não pode mais acontecer\n• Corrigido um bug crítico de sincronização em nuvem: se a sincronização em nuvem estivesse ativada, as configurações da aba Chat podiam voltar silenciosamente a um estado antigo/vazio horas depois sem nenhuma interação, porque uma verificação de sincronização em segundo plano reaplicava repetidamente uma cópia desatualizada da nuvem. Agora as configurações de chat sincronizam imediatamente a cada alteração, e essa verificação em segundo plano não baixa mais dados da nuvem por conta própria"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5 — Bloqueio de anúncios, notificações de chat e configurações redesenhadas"

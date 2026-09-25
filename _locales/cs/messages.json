@@ -647,7 +647,7 @@
     "message": "Zatím nikoho nesledujete. Sledujte kanál na Kicku a automaticky se zobrazí zde."
   },
   "whatsNewBannerText": {
-    "message": "Novinky: opravena chyba, kdy se vaše uživatelské jméno v chatu, oblíbené položky nebo jiná nastavení mohly tiše neuložit při rychlých po sobě jdoucích změnách. Podívejte se do <a id=\"whatsnew-settings-link\">Nastavení</a>."
+    "message": "Novinky: opravena kritická chyba cloudové synchronizace, kdy se nastavení karty Chat mohla sama od sebe resetovat. Podívejte se do <a id=\"whatsnew-settings-link\">Nastavení</a>."
   },
   "optGroupGeneral": {
     "message": "Obecné"
@@ -674,10 +674,10 @@
     "message": "Zavřít"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.44 — Opravy integrity dat"
+    "message": "v2.5.45 — Opravy integrity dat a cloudové synchronizace"
   },
   "releaseHistoryV0Body": {
-    "message": "• Opraveno: pole uživatelského jména Kick na kartě Chat neuložilo hodnotu, pokud jste ji napsali a hned zavřeli vyskakovací okno\n• Opraven stejný problém jinde: oblíbené kanály, režim zvuku podle kanálu, skupiny kanálů, seznam automatického otevírání, mezipaměť ID chatroomu/kanálu, skóre botů a historie oznámení mohly ztratit změnu, pokud dvě aktualizace přišly těsně po sobě — nyní vše prochází frontou zápisu, takže se to už nemůže stát"
+    "message": "• Opraveno: pole uživatelského jména Kick na kartě Chat neuložilo hodnotu, pokud jste ji napsali a hned zavřeli vyskakovací okno\n• Opraven stejný problém jinde: oblíbené kanály, režim zvuku podle kanálu, skupiny kanálů, seznam automatického otevírání, mezipaměť ID chatroomu/kanálu, skóre botů a historie oznámení mohly ztratit změnu, pokud dvě aktualizace přišly těsně po sobě — nyní vše prochází frontou zápisu, takže se to už nemůže stát\n• Opravena kritická chyba cloudové synchronizace: pokud byla zapnutá cloudová synchronizace, nastavení karty Chat se mohla po hodinách bez jakékoli interakce tiše vrátit do starého/prázdného stavu — způsobovala to rutinní kontrola synchronizace na pozadí, která opakovaně znovu aplikovala zastaralou kopii z cloudu. Nastavení chatu se nyní synchronizují okamžitě při každé změně a tato kontrola na pozadí už sama od sebe nestahuje data z cloudu"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5 — Blokování reklam, oznámení chatu a přepracovaná nastavení"

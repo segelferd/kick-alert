@@ -647,7 +647,7 @@
     "message": "You're not following anyone yet. Follow a channel on Kick and it'll show up here automatically."
   },
   "whatsNewBannerText": {
-    "message": "New: fixed a bug where your Chat username, favorites, or other settings could silently fail to save if you made two changes quickly. Check out <a id=\"whatsnew-settings-link\">Settings</a> to explore."
+    "message": "New: fixed a critical Cloud Sync bug where your Chat tab settings could silently reset on their own. Check out <a id=\"whatsnew-settings-link\">Settings</a> to explore."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -674,10 +674,10 @@
     "message": "Close"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.44 — Data-integrity fixes"
+    "message": "v2.5.45 — Data-integrity & Cloud Sync fixes"
   },
   "releaseHistoryV0Body": {
-    "message": "• Fixed the Chat tab's Kick username field silently failing to save if you typed it and closed the popup right away\n• Fixed the same root issue elsewhere: favorite channels, per-channel sound mode, channel groups, the auto-open list, the chatroom/channel ID cache, bot scores, and notification history could all lose a change if two updates landed close together — all of these now go through a write queue so this can no longer happen"
+    "message": "• Fixed the Chat tab's Kick username field silently failing to save if you typed it and closed the popup right away\n• Fixed the same root issue elsewhere: favorite channels, per-channel sound mode, channel groups, the auto-open list, the chatroom/channel ID cache, bot scores, and notification history could all lose a change if two updates landed close together — all of these now go through a write queue so this can no longer happen\n• Fixed a critical Cloud Sync bug: if Cloud Sync was on, your Chat tab settings could silently revert to an old/empty state hours later with zero interaction, because a routine background sync check kept re-applying a stale cloud copy. Chat settings now sync immediately on every change, and that background check no longer re-pulls from the cloud on its own"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5 — Ad blocking, chat notifications & settings redesign"

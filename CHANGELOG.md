@@ -5,6 +5,14 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.45 — Critical: Cloud Sync silently reverting Chat tab settings
+
+### Cloud Sync / Storage
+- **Root cause found and fixed for a real data-loss bug**: users with Cloud Sync enabled could see their Chat tab settings (filters, tag notification, etc.) silently revert to an old or default state hours later, with zero interaction. Cause: `setChatSettings`/`updateChatSetting` wrote straight to local storage without ever refreshing the cloud copy, so the cloud side stayed stale (often empty). Meanwhile, every service-worker wake-up (roughly once a minute, driven by the periodic live-check alarm) unconditionally re-pulled from the cloud and overwrote local storage with that stale copy — no merge, no timestamp check. Other settings (favorites, channel groups, etc.) were unaffected because they already pushed to the cloud on every change.
+- Fix has two parts: (1) Chat tab settings now mirror to `chrome.storage.sync` immediately on every write, exactly like other synced settings; (2) the automatic cloud pull no longer runs on routine background wake-ups — it now only runs on a genuine new session (browser start or extension install/update), which is the only time it was ever meant to run.
+- Fixed the same class of bug for the Chat tab's on/off switch (`setChatIntegrationEnabled`), which had the identical direct-write bypass.
+- Also fixed a small inconsistency: the Chat tab's content-script default settings object used a different default emoji-spam threshold (10) than the popup's (5) — unified to 5.
+
 ## v2.5.44 — Store listing refresh
 
 ### Store listing

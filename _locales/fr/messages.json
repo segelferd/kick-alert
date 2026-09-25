@@ -645,7 +645,7 @@
     "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
   },
   "whatsNewBannerText": {
-    "message": "Nouveau : correction d'un bug où votre nom d'utilisateur de chat, vos favoris ou d'autres paramètres pouvaient silencieusement ne pas s'enregistrer en cas de modifications rapprochées. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
+    "message": "Nouveau : correction d'un bug critique de synchronisation cloud où vos paramètres de l'onglet Chat pouvaient se réinitialiser tout seuls. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
   },
   "optGroupGeneral": {
     "message": "Général"
@@ -672,10 +672,10 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.44 — Corrections d'intégrité des données"
+    "message": "v2.5.45 — Corrections d'intégrité des données et de synchronisation cloud"
   },
   "releaseHistoryV0Body": {
-    "message": "• Correction : le champ du nom d'utilisateur Kick dans l'onglet Chat ne sauvegardait pas sa valeur si vous le saisissiez puis fermiez immédiatement le popup\n• Correction du même problème ailleurs : les chaînes favorites, le mode sonore par chaîne, les groupes de chaînes, la liste d'ouverture automatique, le cache d'ID chatroom/chaîne, les scores de bots et l'historique des notifications pouvaient tous perdre une modification si deux mises à jour arrivaient rapprochées — tout cela passe désormais par une file d'attente d'écriture, donc cela ne peut plus se produire"
+    "message": "• Correction : le champ du nom d'utilisateur Kick dans l'onglet Chat ne sauvegardait pas sa valeur si vous le saisissiez puis fermiez immédiatement le popup\n• Correction du même problème ailleurs : les chaînes favorites, le mode sonore par chaîne, les groupes de chaînes, la liste d'ouverture automatique, le cache d'ID chatroom/chaîne, les scores de bots et l'historique des notifications pouvaient tous perdre une modification si deux mises à jour arrivaient rapprochées — tout cela passe désormais par une file d'attente d'écriture, donc cela ne peut plus se produire\n• Correction d'un bug critique de synchronisation cloud : si la synchronisation cloud était activée, vos paramètres de l'onglet Chat pouvaient silencieusement revenir à un état ancien/vide des heures plus tard sans aucune interaction, à cause d'une vérification de synchronisation en arrière-plan qui réappliquait sans cesse une copie cloud obsolète. Les paramètres de chat sont désormais synchronisés immédiatement à chaque modification, et cette vérification en arrière-plan ne récupère plus les données du cloud de son propre chef"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5 — Blocage des pubs, notifications de chat et refonte des paramètres"
