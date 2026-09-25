@@ -64,10 +64,10 @@
     "message": "Warn"
   },
   "appDescription": {
-    "message": "No more ninja streams at 3 AM — KickAlert catches every surprise broadcast, even the sneakiest ones ;)"
+    "message": "Be the first to know when Kick.com goes live — instant alerts, ad-free streams, spam-free chat, zero ninja escapes ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Kick.com Live Alerts"
   },
   "autoLaunch": {
     "message": "Auto Launch"
@@ -647,7 +647,7 @@
     "message": "You're not following anyone yet. Follow a channel on Kick and it'll show up here automatically."
   },
   "whatsNewBannerText": {
-    "message": "New: Ad-blocking is stronger, settings are now organized into categories, and channel previews got a fix. Check out <a id=\"whatsnew-settings-link\">Settings</a> to explore."
+    "message": "New: fixed a bug where your Chat username, favorites, or other settings could silently fail to save if you made two changes quickly. Check out <a id=\"whatsnew-settings-link\">Settings</a> to explore."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -674,22 +674,22 @@
     "message": "Close"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Ad blocking, chat notifications & settings redesign"
+    "message": "v2.5.44 — Data-integrity fixes"
   },
   "releaseHistoryV0Body": {
-    "message": "• Three new ad-blocking layers: GPT/IMA SDK stub, segment-level filtering, and detection of Kick's own \"black slate\" transition overlay\n• VOD ad-free lookup is faster and safer (time budget, thumbnail-based fast path)\n• Settings reorganized into collapsible categories, with search\n• \"What's New\" banner and this history view\n• Backup & Restore: export/import all your settings as a file (with a one-time undo safety net and a \"Reset to Defaults\" option)\n• Fixed ad-hiding not actually working visually (the CSS rule never reached the page) and only running when our own ad detection had fired — now works independently and catches more ad control overlays\n• Chat: replying to your message now notifies you like an @mention does\n• Chat notification popup and sound can now be toggled independently (with an optional \"only when not watching\" sound mode) — that smart mode now also detects when Kick's own chat panel is hidden (theater/fullscreen), not just tab-hidden or scrolled\n• Fixed chat notifications silently not firing while actively watching live chat, and the extension's sound clashing with Windows' own notification sound\n• Added Slovak as a new supported language\n• Reviewed every translation across all 14 languages for accuracy and natural phrasing — fixed several mistranslations and formal/informal tone inconsistencies"
+    "message": "• Fixed the Chat tab's Kick username field silently failing to save if you typed it and closed the popup right away\n• Fixed the same root issue elsewhere: favorite channels, per-channel sound mode, channel groups, the auto-open list, the chatroom/channel ID cache, bot scores, and notification history could all lose a change if two updates landed close together — all of these now go through a write queue so this can no longer happen"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Channel Previews & Ad Blocking"
+    "message": "v2.5 — Ad blocking, chat notifications & settings redesign"
   },
   "releaseHistoryV1Body": {
-    "message": "• Channel Preview Images in the Following list\n• Ad Blocking (experimental) for live streams and VODs\n• Bot Detection scoring for viewer counts"
+    "message": "• Three new ad-blocking layers: GPT/IMA SDK stub, segment-level filtering, and detection of Kick's own \"black slate\" transition overlay\n• VOD ad-free lookup is faster and safer (time budget, thumbnail-based fast path)\n• Settings reorganized into collapsible categories, with search\n• \"What's New\" banner and this history view\n• Backup & Restore: export/import all your settings as a file (with a one-time undo safety net and a \"Reset to Defaults\" option)\n• Fixed ad-hiding not actually working visually (the CSS rule never reached the page) and only running when our own ad detection had fired — now works independently and catches more ad control overlays\n• Chat: replying to your message now notifies you like an @mention does\n• Chat notification popup and sound can now be toggled independently (with an optional \"only when not watching\" sound mode) — that smart mode now also detects when Kick's own chat panel is hidden (theater/fullscreen), not just tab-hidden or scrolled\n• Fixed chat notifications silently not firing while actively watching live chat, and the extension's sound clashing with Windows' own notification sound\n• Added Slovak as a new supported language\n• Reviewed every translation across all 14 languages for accuracy and natural phrasing — fixed several mistranslations and formal/informal tone inconsistencies"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Chat Integration"
+    "message": "v2.4.0 — Channel Previews & Ad Blocking"
   },
   "releaseHistoryV2Body": {
-    "message": "• Chat tab: bot/spam/duplicate/keyword filtering, favorites, mentions\n• Do Not Disturb scheduling\n• Viewer anomaly detection"
+    "message": "• Channel Preview Images in the Following list\n• Ad Blocking (experimental) for live streams and VODs\n• Bot Detection scoring for viewer counts"
   },
   "settingsBackupTitle": {
     "message": "Backup & Restore"

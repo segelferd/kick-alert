@@ -5,6 +5,12 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.44 — Store listing refresh
+
+### Store listing
+- Rewrote the extension name and short summary (shown as the Chrome Web Store title/summary, sourced from manifest.json) across all 14 supported languages to lead with "Kick.com" and the core value proposition, while keeping the brand's tone
+- No code changes in this release
+
 ## v2.5.x — Ad-block hardening, VOD improvements, settings redesign
 
 ### Storage / data integrity

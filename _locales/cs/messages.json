@@ -64,10 +64,10 @@
     "message": "Varování"
   },
   "appDescription": {
-    "message": "Žádné přehlédnuté streamy — KickAlert zachytí každé živé vysílání, i to nejnenápadnější ;)"
+    "message": "Dozvíš se jako první, kdy jde Kick.com naživo — okamžitá upozornění, streamy bez reklam, chat bez spamu, žádné ninja úniky ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Živá upozornění pro Kick.com"
   },
   "autoLaunch": {
     "message": "Automatické spuštění"
@@ -647,7 +647,7 @@
     "message": "Zatím nikoho nesledujete. Sledujte kanál na Kicku a automaticky se zobrazí zde."
   },
   "whatsNewBannerText": {
-    "message": "Novinky: blokování reklam je nyní silnější, nastavení jsou rozdělena do kategorií a byla opravena chyba v náhledech kanálů. Podívejte se do <a id=\"whatsnew-settings-link\">Nastavení</a>."
+    "message": "Novinky: opravena chyba, kdy se vaše uživatelské jméno v chatu, oblíbené položky nebo jiná nastavení mohly tiše neuložit při rychlých po sobě jdoucích změnách. Podívejte se do <a id=\"whatsnew-settings-link\">Nastavení</a>."
   },
   "optGroupGeneral": {
     "message": "Obecné"
@@ -674,22 +674,22 @@
     "message": "Zavřít"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Blokování reklam, oznámení chatu a přepracovaná nastavení"
+    "message": "v2.5.44 — Opravy integrity dat"
   },
   "releaseHistoryV0Body": {
-    "message": "• Tři nové vrstvy blokování reklam: falešné GPT/IMA SDK, filtrování na úrovni segmentů a detekce vlastního přechodového překrytí Kicku \"černá obrazovka\"\n• Vyhledávání zdroje VOD bez reklam je rychlejší a bezpečnější\n• Nastavení reorganizována do sbalitelných kategorií s vyhledáváním\n• Banner \"Novinky\" a tento přehled historie\n• Zálohování a obnovení: export/import všech nastavení jako soubor (s jednorázovou pojistkou pro vrácení zpět a možností \"Obnovit výchozí nastavení\")\n• Opraveno: skrývání reklam vizuálně nefungovalo (CSS pravidlo se na stránku vůbec nedostalo) a fungovalo pouze při aktivaci naší vlastní detekce — nyní funguje nezávisle a zachytí více reklamních překryvů\n• Chat: odpověď na vaši zprávu teď spustí oznámení stejně jako zmínka @\n• Vyskakovací okno a zvuk oznámení chatu lze nyní zapínat nezávisle (s volitelným zvukovým režimem \"pouze když nesledujete\") — tento režim nyní rozpoznává i to, když je skrytý vlastní chatovací panel Kicku (režim divadla/celé obrazovky), nejen kartu na pozadí nebo odscrollování\n• Opraveno: oznámení chatu se nespouštěla při aktivním sledování živého chatu a zvuk rozšíření kolidoval s vlastním oznamovacím zvukem Windows\n• Přidána slovenština jako nově podporovaný jazyk\n• Zkontrolovány všechny překlady ve všech 14 jazycích z hlediska přesnosti a přirozenosti — opraveno několik chybných překladů a nesrovnalostí v oslovování (ty/vy)"
+    "message": "• Opraveno: pole uživatelského jména Kick na kartě Chat neuložilo hodnotu, pokud jste ji napsali a hned zavřeli vyskakovací okno\n• Opraven stejný problém jinde: oblíbené kanály, režim zvuku podle kanálu, skupiny kanálů, seznam automatického otevírání, mezipaměť ID chatroomu/kanálu, skóre botů a historie oznámení mohly ztratit změnu, pokud dvě aktualizace přišly těsně po sobě — nyní vše prochází frontou zápisu, takže se to už nemůže stát"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Náhledy kanálů a blokování reklam"
+    "message": "v2.5 — Blokování reklam, oznámení chatu a přepracovaná nastavení"
   },
   "releaseHistoryV1Body": {
-    "message": "• Náhledové obrázky kanálů v seznamu Sledovaní\n• Blokování reklam (experimentální) pro živé přenosy a VOD\n• Skóre detekce botů pro počty diváků"
+    "message": "• Tři nové vrstvy blokování reklam: falešné GPT/IMA SDK, filtrování na úrovni segmentů a detekce vlastního přechodového překrytí Kicku \"černá obrazovka\"\n• Vyhledávání zdroje VOD bez reklam je rychlejší a bezpečnější\n• Nastavení reorganizována do sbalitelných kategorií s vyhledáváním\n• Banner \"Novinky\" a tento přehled historie\n• Zálohování a obnovení: export/import všech nastavení jako soubor (s jednorázovou pojistkou pro vrácení zpět a možností \"Obnovit výchozí nastavení\")\n• Opraveno: skrývání reklam vizuálně nefungovalo (CSS pravidlo se na stránku vůbec nedostalo) a fungovalo pouze při aktivaci naší vlastní detekce — nyní funguje nezávisle a zachytí více reklamních překryvů\n• Chat: odpověď na vaši zprávu teď spustí oznámení stejně jako zmínka @\n• Vyskakovací okno a zvuk oznámení chatu lze nyní zapínat nezávisle (s volitelným zvukovým režimem \"pouze když nesledujete\") — tento režim nyní rozpoznává i to, když je skrytý vlastní chatovací panel Kicku (režim divadla/celé obrazovky), nejen kartu na pozadí nebo odscrollování\n• Opraveno: oznámení chatu se nespouštěla při aktivním sledování živého chatu a zvuk rozšíření kolidoval s vlastním oznamovacím zvukem Windows\n• Přidána slovenština jako nově podporovaný jazyk\n• Zkontrolovány všechny překlady ve všech 14 jazycích z hlediska přesnosti a přirozenosti — opraveno několik chybných překladů a nesrovnalostí v oslovování (ty/vy)"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Integrace chatu"
+    "message": "v2.4.0 — Náhledy kanálů a blokování reklam"
   },
   "releaseHistoryV2Body": {
-    "message": "• Karta chatu: filtrování botů/spamu/duplicit/klíčových slov, oblíbené, zmínky\n• Plánování Nerušit\n• Detekce anomálií diváků"
+    "message": "• Náhledové obrázky kanálů v seznamu Sledovaní\n• Blokování reklam (experimentální) pro živé přenosy a VOD\n• Skóre detekce botů pro počty diváků"
   },
   "settingsBackupTitle": {
     "message": "Zálohování a obnovení"

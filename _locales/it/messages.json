@@ -62,10 +62,10 @@
     "message": "Avviso"
   },
   "appDescription": {
-    "message": "Niente più stream ninja alle 3 di notte — KickAlert cattura ogni trasmissione a sorpresa ;)"
+    "message": "Sii il primo a sapere quando Kick.com va in diretta — avvisi istantanei, stream senza pubblicità, chat senza spam, zero fughe ninja ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Avvisi live per Kick.com"
   },
   "autoLaunch": {
     "message": "Apertura automatica"
@@ -645,7 +645,7 @@
     "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novità: il blocco degli annunci è più solido, le impostazioni ora sono organizzate in categorie ed è stato risolto un bug nelle anteprime dei canali. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
+    "message": "Novità: risolto un bug per cui il tuo nome utente della chat, i preferiti o altre impostazioni potevano non salvarsi se facevi due modifiche ravvicinate. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
   },
   "optGroupGeneral": {
     "message": "Generale"
@@ -672,22 +672,22 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"
+    "message": "v2.5.44 — Correzioni di integrità dei dati"
   },
   "releaseHistoryV0Body": {
-    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari\n• Chat: rispondere al tuo messaggio ora avvisa come una menzione @\n• Popup e suono delle notifiche chat ora si attivano in modo indipendente (con una modalità audio opzionale \"solo quando non stai guardando\") — questa modalità ora rileva anche quando il pannello chat di Kick stesso è nascosto (modalità teatro/schermo intero), non solo scheda in background o scorsa\n• Risolto: le notifiche chat non scattavano seguendo attivamente la chat dal vivo, e il suono dell'estensione entrava in conflitto con quello di Windows\n• Aggiunto lo slovacco come nuova lingua supportata\n• Riviste tutte le traduzioni nelle 14 lingue per accuratezza e naturalezza — corretti diversi errori di traduzione e incoerenze di registro"
+    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Anteprime canale e blocco annunci"
+    "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"
   },
   "releaseHistoryV1Body": {
-    "message": "• Immagini di anteprima canale nell'elenco Seguiti\n• Blocco annunci (sperimentale) per live e VOD\n• Punteggio di rilevamento bot per il conteggio spettatori"
+    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari\n• Chat: rispondere al tuo messaggio ora avvisa come una menzione @\n• Popup e suono delle notifiche chat ora si attivano in modo indipendente (con una modalità audio opzionale \"solo quando non stai guardando\") — questa modalità ora rileva anche quando il pannello chat di Kick stesso è nascosto (modalità teatro/schermo intero), non solo scheda in background o scorsa\n• Risolto: le notifiche chat non scattavano seguendo attivamente la chat dal vivo, e il suono dell'estensione entrava in conflitto con quello di Windows\n• Aggiunto lo slovacco come nuova lingua supportata\n• Riviste tutte le traduzioni nelle 14 lingue per accuratezza e naturalezza — corretti diversi errori di traduzione e incoerenze di registro"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Integrazione chat"
+    "message": "v2.4.0 — Anteprime canale e blocco annunci"
   },
   "releaseHistoryV2Body": {
-    "message": "• Scheda chat: filtro bot/spam/duplicati/parole chiave, preferiti, menzioni\n• Pianificazione non disturbare\n• Rilevamento anomalie spettatori"
+    "message": "• Immagini di anteprima canale nell'elenco Seguiti\n• Blocco annunci (sperimentale) per live e VOD\n• Punteggio di rilevamento bot per il conteggio spettatori"
   },
   "settingsBackupTitle": {
     "message": "Backup e ripristino"

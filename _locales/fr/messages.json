@@ -62,10 +62,10 @@
     "message": "Avertissement"
   },
   "appDescription": {
-    "message": "Fini les streams ninja à 3h du matin — KickAlert attrape chaque diffusion surprise ;)"
+    "message": "Sois le premier informé quand un stream Kick.com commence — alertes instantanées, streams sans pub, chat sans spam, plus aucun stream ninja ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Alertes en direct pour Kick.com"
   },
   "autoLaunch": {
     "message": "Ouverture automatique"
@@ -645,7 +645,7 @@
     "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
   },
   "whatsNewBannerText": {
-    "message": "Nouveau : le blocage des publicités est renforcé, les paramètres sont désormais organisés par catégories, et un bug des aperçus de chaîne a été corrigé. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
+    "message": "Nouveau : correction d'un bug où votre nom d'utilisateur de chat, vos favoris ou d'autres paramètres pouvaient silencieusement ne pas s'enregistrer en cas de modifications rapprochées. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
   },
   "optGroupGeneral": {
     "message": "Général"
@@ -672,22 +672,22 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Blocage des pubs, notifications de chat et refonte des paramètres"
+    "message": "v2.5.44 — Corrections d'intégrité des données"
   },
   "releaseHistoryV0Body": {
-    "message": "• Trois nouvelles couches de blocage des publicités : SDK GPT/IMA factice, filtrage au niveau des segments, détection de l'écran de transition « noir » propre à Kick\n• Recherche de source VOD sans publicité plus rapide et plus sûre\n• Paramètres réorganisés en catégories repliables, avec recherche\n• Bannière « Nouveautés » et cet historique\n• Sauvegarde et restauration : exportez/importez tous vos paramètres sous forme de fichier (avec un filet de sécurité annulable une fois et une option « Réinitialiser aux valeurs par défaut »)\n• Correction : le masquage des publicités n'avait visuellement aucun effet (la règle CSS n'atteignait jamais la page) et ne fonctionnait que lorsque notre propre détection s'était déclenchée — fonctionne désormais indépendamment et capture davantage de superpositions publicitaires\n• Chat : une réponse à votre message déclenche désormais une notification, comme une mention @\n• La popup et le son des notifications de chat sont désormais indépendants (avec un mode sonore optionnel « uniquement si vous ne regardez pas ») — ce mode détecte aussi quand le panneau de chat de Kick lui-même est masqué (mode théâtre/plein écran), pas seulement l'onglet en arrière-plan ou le défilement\n• Correction : les notifications de chat ne se déclenchaient pas en suivant activement le chat en direct, et le son de l'extension entrait en conflit avec celui de Windows\n• Ajout du slovaque comme nouvelle langue prise en charge\n• Toutes les traductions des 14 langues ont été relues pour leur exactitude et leur naturel — plusieurs erreurs de traduction et incohérences de registre (tu/vous) corrigées"
+    "message": "• Correction : le champ du nom d'utilisateur Kick dans l'onglet Chat ne sauvegardait pas sa valeur si vous le saisissiez puis fermiez immédiatement le popup\n• Correction du même problème ailleurs : les chaînes favorites, le mode sonore par chaîne, les groupes de chaînes, la liste d'ouverture automatique, le cache d'ID chatroom/chaîne, les scores de bots et l'historique des notifications pouvaient tous perdre une modification si deux mises à jour arrivaient rapprochées — tout cela passe désormais par une file d'attente d'écriture, donc cela ne peut plus se produire"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Aperçus de chaîne et blocage des publicités"
+    "message": "v2.5 — Blocage des pubs, notifications de chat et refonte des paramètres"
   },
   "releaseHistoryV1Body": {
-    "message": "• Images d'aperçu de chaîne dans la liste \"Suivis\"\n• Blocage des publicités (expérimental) pour les diffusions en direct et les VOD\n• Score de détection de bots pour le nombre de spectateurs"
+    "message": "• Trois nouvelles couches de blocage des publicités : SDK GPT/IMA factice, filtrage au niveau des segments, détection de l'écran de transition « noir » propre à Kick\n• Recherche de source VOD sans publicité plus rapide et plus sûre\n• Paramètres réorganisés en catégories repliables, avec recherche\n• Bannière « Nouveautés » et cet historique\n• Sauvegarde et restauration : exportez/importez tous vos paramètres sous forme de fichier (avec un filet de sécurité annulable une fois et une option « Réinitialiser aux valeurs par défaut »)\n• Correction : le masquage des publicités n'avait visuellement aucun effet (la règle CSS n'atteignait jamais la page) et ne fonctionnait que lorsque notre propre détection s'était déclenchée — fonctionne désormais indépendamment et capture davantage de superpositions publicitaires\n• Chat : une réponse à votre message déclenche désormais une notification, comme une mention @\n• La popup et le son des notifications de chat sont désormais indépendants (avec un mode sonore optionnel « uniquement si vous ne regardez pas ») — ce mode détecte aussi quand le panneau de chat de Kick lui-même est masqué (mode théâtre/plein écran), pas seulement l'onglet en arrière-plan ou le défilement\n• Correction : les notifications de chat ne se déclenchaient pas en suivant activement le chat en direct, et le son de l'extension entrait en conflit avec celui de Windows\n• Ajout du slovaque comme nouvelle langue prise en charge\n• Toutes les traductions des 14 langues ont été relues pour leur exactitude et leur naturel — plusieurs erreurs de traduction et incohérences de registre (tu/vous) corrigées"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Intégration du chat"
+    "message": "v2.4.0 — Aperçus de chaîne et blocage des publicités"
   },
   "releaseHistoryV2Body": {
-    "message": "• Onglet chat : filtrage bot/spam/doublons/mots-clés, favoris, mentions\n• Programmation Ne pas déranger\n• Détection d'anomalies de spectateurs"
+    "message": "• Images d'aperçu de chaîne dans la liste \"Suivis\"\n• Blocage des publicités (expérimental) pour les diffusions en direct et les VOD\n• Score de détection de bots pour le nombre de spectateurs"
   },
   "settingsBackupTitle": {
     "message": "Sauvegarde et restauration"

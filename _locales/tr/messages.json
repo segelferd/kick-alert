@@ -64,10 +64,10 @@
     "message": "Uyarı"
   },
   "appDescription": {
-    "message": "Gece 3'te habersiz açılan ninja yayınlar artık senden kaçamaz — KickAlert her sürpriz yayını yakalar ;)"
+    "message": "Kick.com'da canlı yayın başladığında ilk sen öğren — anında bildirim, reklamsız yayın, spamsız sohbet, ninja yayın kaçağı yok ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Kick.com Canlı Bildirimleri"
   },
   "autoLaunch": {
     "message": "Otomatik Aç"
@@ -645,7 +645,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Yeni: Reklam engelleme güçlendirildi, ayarlar artık kategorilere ayrıldı, kanal önizlemelerinde bir hata düzeltildi. Keşfetmek için <a id=\"whatsnew-settings-link\">Ayarlar</a>'a göz at."
+    "message": "Yeni: Chat kullanıcı adın, favorilerin ya da başka bir ayarın, art arda hızlı yaptığın değişikliklerde sessizce kaydedilmeme hatası giderildi. Keşfetmek için <a id=\"whatsnew-settings-link\">Ayarlar</a>'a göz at."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -672,22 +672,22 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Reklam engelleme, Chat bildirimleri ve ayarlar tasarımı"
+    "message": "v2.5.44 — Veri bütünlüğü düzeltmeleri"
   },
   "releaseHistoryV0Body": {
-    "message": "• Üç yeni reklam engelleme katmanı: GPT/IMA SDK sahtesi, segment-seviyesi filtreleme, ve Kick'in kendi \"siyah slate\" geçiş katmanının tespiti\n• VOD reklamsız kaynak arama daha hızlı ve güvenli (zaman bütçesi, thumbnail-bazlı hızlı yol)\n• Ayarlar açılır-kapanır kategorilere ayrıldı, arama eklendi\n• \"Yenilikler\" banner'ı ve bu geçmiş görünümü\n• Yedekleme ve Geri Yükleme: tüm ayarlarını bir dosya olarak dışa/içe aktar (bir kereliğine geri alma güvenlik ağı ve \"Varsayılanlara Sıfırla\" seçeneğiyle birlikte)\n• Reklam gizleme iki köklü sorundan kurtuldu: görsel olarak hiç çalışmıyordu (CSS kuralı sayfaya hiç ulaşmıyordu) ve sadece kendi tespitimiz tetiklenince devreye giriyordu. Artık ikisinden de bağımsız çalışıyor ve daha fazla reklam kontrol katmanını yakalıyor\n• Chat: birine yanıt verildiğinde artık @etiketleme gibi bildirim geliyor\n• Chat bildirim penceresi ve sesi artık bağımsız açılıp kapatılabiliyor, isteğe bağlı \"sadece izlemiyorken çal\" modu eklendi\n• Sohbeti aktif takip ederken bildirimlerin sessizce hiç gelmemesi ve bizim sesimizle Windows'un kendi bildirim sesinin çakışması sorunları düzeltildi\n• \"Akıllı\" ses modu artık Kick'in kendi sohbet panelinin gizlendiğini de (theater/tam ekran) algılıyor, sadece sekme arka planda ya da kaydırılmışken değil\n• Yeni desteklenen dil: Slovakça\n• 14 dilin tamamındaki çeviriler doğruluk ve doğallık açısından gözden geçirildi — birkaç yanlış çeviri ve resmi/samimi hitap tutarsızlığı düzeltildi"
+    "message": "• Chat sekmesindeki Kick kullanıcı adı alanına yazıp popup'ı hemen kapatınca değerin kaydedilmediği hata giderildi\n• Aynı kökten gelen başka bir sorun da düzeltildi: favori kanallar, kanal başına ses modu, kanal grupları, otomatik açma listesi, chatroom/kanal ID önbelleği, bot skorları ve bildirim geçmişi — bunların hepsi art arda hızlı yapılan iki değişiklikte birbirini ezip veri kaybına yol açabiliyordu; artık hepsi bir yazma sırasından geçiyor ve bu mümkün değil"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Kanal Önizlemeleri ve Reklam Engelleme"
+    "message": "v2.5 — Reklam engelleme, Chat bildirimleri ve ayarlar tasarımı"
   },
   "releaseHistoryV1Body": {
-    "message": "• Takip Edilenler listesinde Kanal Önizleme Resimleri\n• Canlı yayın ve VOD'lar için Reklam Engelleme (deneysel)\n• İzleyici sayıları için Bot Tespiti puanlaması"
+    "message": "• Üç yeni reklam engelleme katmanı: GPT/IMA SDK sahtesi, segment-seviyesi filtreleme, ve Kick'in kendi \"siyah slate\" geçiş katmanının tespiti\n• VOD reklamsız kaynak arama daha hızlı ve güvenli (zaman bütçesi, thumbnail-bazlı hızlı yol)\n• Ayarlar açılır-kapanır kategorilere ayrıldı, arama eklendi\n• \"Yenilikler\" banner'ı ve bu geçmiş görünümü\n• Yedekleme ve Geri Yükleme: tüm ayarlarını bir dosya olarak dışa/içe aktar (bir kereliğine geri alma güvenlik ağı ve \"Varsayılanlara Sıfırla\" seçeneğiyle birlikte)\n• Reklam gizleme iki köklü sorundan kurtuldu: görsel olarak hiç çalışmıyordu (CSS kuralı sayfaya hiç ulaşmıyordu) ve sadece kendi tespitimiz tetiklenince devreye giriyordu. Artık ikisinden de bağımsız çalışıyor ve daha fazla reklam kontrol katmanını yakalıyor\n• Chat: birine yanıt verildiğinde artık @etiketleme gibi bildirim geliyor\n• Chat bildirim penceresi ve sesi artık bağımsız açılıp kapatılabiliyor, isteğe bağlı \"sadece izlemiyorken çal\" modu eklendi\n• Sohbeti aktif takip ederken bildirimlerin sessizce hiç gelmemesi ve bizim sesimizle Windows'un kendi bildirim sesinin çakışması sorunları düzeltildi\n• \"Akıllı\" ses modu artık Kick'in kendi sohbet panelinin gizlendiğini de (theater/tam ekran) algılıyor, sadece sekme arka planda ya da kaydırılmışken değil\n• Yeni desteklenen dil: Slovakça\n• 14 dilin tamamındaki çeviriler doğruluk ve doğallık açısından gözden geçirildi — birkaç yanlış çeviri ve resmi/samimi hitap tutarsızlığı düzeltildi"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Sohbet Entegrasyonu"
+    "message": "v2.4.0 — Kanal Önizlemeleri ve Reklam Engelleme"
   },
   "releaseHistoryV2Body": {
-    "message": "• Sohbet sekmesi: bot/spam/tekrar/anahtar kelime filtreleme, favoriler, bahsetmeler\n• Rahatsız Etme zamanlaması\n• İzleyici anomali tespiti"
+    "message": "• Takip Edilenler listesinde Kanal Önizleme Resimleri\n• Canlı yayın ve VOD'lar için Reklam Engelleme (deneysel)\n• İzleyici sayıları için Bot Tespiti puanlaması"
   },
   "settingsBackupTitle": {
     "message": "Yedekleme ve Geri Yükleme"

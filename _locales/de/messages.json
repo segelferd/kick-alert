@@ -64,10 +64,10 @@
     "message": "Warnung"
   },
   "appDescription": {
-    "message": "Keine Ninja-Streams mehr um 3 Uhr nachts — KickAlert fängt jede Überraschungs-Übertragung ab ;)"
+    "message": "Erfahre als Erster, wenn auf Kick.com ein Livestream startet — sofortige Benachrichtigungen, werbefreie Streams, spamfreier Chat, keine Ninja-Streams mehr ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Kick.com Live-Benachrichtigungen"
   },
   "autoLaunch": {
     "message": "Automatischer Start"
@@ -647,7 +647,7 @@
     "message": "Sie folgen noch niemandem. Folgen Sie einem Kanal auf Kick, und er erscheint hier automatisch."
   },
   "whatsNewBannerText": {
-    "message": "Neu: Werbeblocker wurde verbessert, die Einstellungen sind jetzt in Kategorien unterteilt, und ein Fehler bei den Kanalvorschauen wurde behoben. Schauen Sie sich die <a id=\"whatsnew-settings-link\">Einstellungen</a> an."
+    "message": "Neu: Ein Fehler wurde behoben, bei dem Ihr Chat-Benutzername, Favoriten oder andere Einstellungen nicht gespeichert wurden, wenn Sie schnell hintereinander Änderungen vornahmen. Schauen Sie sich die <a id=\"whatsnew-settings-link\">Einstellungen</a> an."
   },
   "optGroupGeneral": {
     "message": "Allgemein"
@@ -674,22 +674,22 @@
     "message": "Schließen"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Werbeblockierung, Chat-Benachrichtigungen & Einstellungen neu gestaltet"
+    "message": "v2.5.44 — Datenintegritäts-Korrekturen"
   },
   "releaseHistoryV0Body": {
-    "message": "• Drei neue Werbeblocker-Ebenen: GPT/IMA-SDK-Attrappe, segmentbasierte Filterung und Erkennung von Kicks eigenem „Schwarzbild“-Übergang\n• VOD-Suche nach werbefreier Quelle ist schneller und sicherer\n• Einstellungen in aufklappbare Kategorien mit Suche neu organisiert\n• „Neuigkeiten“-Banner und dieser Verlauf\n• Sicherung & Wiederherstellung: exportieren/importieren Sie alle Ihre Einstellungen als Datei (mit einem einmaligen Rückgängig-Sicherheitsnetz und einer Option „Auf Standard zurücksetzen“)\n• Behoben: Werbe-Ausblendung hatte visuell keine Wirkung (CSS-Regel erreichte die Seite nie) und lief nur, wenn unsere eigene Erkennung ausgelöst wurde — funktioniert jetzt unabhängig und erfasst mehr Werbe-Overlays\n• Chat: Antworten auf Ihre Nachricht lösen jetzt genau wie @Erwähnungen eine Benachrichtigung aus\n• Chat-Benachrichtigungs-Popup und -Ton können jetzt unabhängig voneinander ein-/ausgeschaltet werden (mit optionalem \"nur wenn nicht zugeschaut wird\"-Tonmodus) — dieser erkennt jetzt auch, wenn Kicks eigenes Chat-Panel ausgeblendet ist (Theater-/Vollbildmodus), nicht nur Tab im Hintergrund oder gescrollt\n• Behoben: Chat-Benachrichtigungen feuerten beim aktiven Mitlesen des Live-Chats nicht, und der eigene Ton kollidierte mit Windows' eigenem Benachrichtigungston\n• Slowakisch als neue unterstützte Sprache hinzugefügt\n• Alle Übersetzungen in allen 14 Sprachen auf Genauigkeit und natürliche Formulierung überprüft — mehrere Fehlübersetzungen und Inkonsistenzen bei der Anrede (Sie/du) behoben"
+    "message": "• Behoben: Das Kick-Benutzernamenfeld im Chat-Tab speicherte den Wert nicht, wenn Sie ihn eingaben und das Popup sofort schlossen\n• Dasselbe zugrunde liegende Problem an anderer Stelle behoben: Favoritenkanäle, kanalbezogener Ton-Modus, Kanalgruppen, die Auto-Öffnen-Liste, der Chatroom-/Kanal-ID-Cache, Bot-Bewertungen und der Benachrichtigungsverlauf konnten alle eine Änderung verlieren, wenn zwei Updates kurz hintereinander eintrafen — all das läuft jetzt über eine Schreibwarteschlange, sodass dies nicht mehr vorkommen kann"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Kanalvorschauen & Werbeblocker"
+    "message": "v2.5 — Werbeblockierung, Chat-Benachrichtigungen & Einstellungen neu gestaltet"
   },
   "releaseHistoryV1Body": {
-    "message": "• Kanalvorschaubilder in der Liste „Gefolgt“\n• Werbeblocker (experimentell) für Livestreams und VODs\n• Bot-Erkennung für Zuschauerzahlen"
+    "message": "• Drei neue Werbeblocker-Ebenen: GPT/IMA-SDK-Attrappe, segmentbasierte Filterung und Erkennung von Kicks eigenem „Schwarzbild“-Übergang\n• VOD-Suche nach werbefreier Quelle ist schneller und sicherer\n• Einstellungen in aufklappbare Kategorien mit Suche neu organisiert\n• „Neuigkeiten“-Banner und dieser Verlauf\n• Sicherung & Wiederherstellung: exportieren/importieren Sie alle Ihre Einstellungen als Datei (mit einem einmaligen Rückgängig-Sicherheitsnetz und einer Option „Auf Standard zurücksetzen“)\n• Behoben: Werbe-Ausblendung hatte visuell keine Wirkung (CSS-Regel erreichte die Seite nie) und lief nur, wenn unsere eigene Erkennung ausgelöst wurde — funktioniert jetzt unabhängig und erfasst mehr Werbe-Overlays\n• Chat: Antworten auf Ihre Nachricht lösen jetzt genau wie @Erwähnungen eine Benachrichtigung aus\n• Chat-Benachrichtigungs-Popup und -Ton können jetzt unabhängig voneinander ein-/ausgeschaltet werden (mit optionalem \"nur wenn nicht zugeschaut wird\"-Tonmodus) — dieser erkennt jetzt auch, wenn Kicks eigenes Chat-Panel ausgeblendet ist (Theater-/Vollbildmodus), nicht nur Tab im Hintergrund oder gescrollt\n• Behoben: Chat-Benachrichtigungen feuerten beim aktiven Mitlesen des Live-Chats nicht, und der eigene Ton kollidierte mit Windows' eigenem Benachrichtigungston\n• Slowakisch als neue unterstützte Sprache hinzugefügt\n• Alle Übersetzungen in allen 14 Sprachen auf Genauigkeit und natürliche Formulierung überprüft — mehrere Fehlübersetzungen und Inkonsistenzen bei der Anrede (Sie/du) behoben"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Chat-Integration"
+    "message": "v2.4.0 — Kanalvorschauen & Werbeblocker"
   },
   "releaseHistoryV2Body": {
-    "message": "• Chat-Tab: Bot-/Spam-/Duplikat-/Schlüsselwortfilterung, Favoriten, Erwähnungen\n• Nicht-stören-Zeitplan\n• Erkennung von Zuschaueranomalien"
+    "message": "• Kanalvorschaubilder in der Liste „Gefolgt“\n• Werbeblocker (experimentell) für Livestreams und VODs\n• Bot-Erkennung für Zuschauerzahlen"
   },
   "settingsBackupTitle": {
     "message": "Sicherung & Wiederherstellung"

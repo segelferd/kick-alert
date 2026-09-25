@@ -62,10 +62,10 @@
     "message": "Aviso"
   },
   "appDescription": {
-    "message": "No más streams ninja a las 3 AM — KickAlert atrapa cada transmisión sorpresa ;)"
+    "message": "Sé el primero en saber cuándo Kick.com se pone en vivo — alertas instantáneas, streams sin anuncios, chat sin spam, cero escapes ninja ;)"
   },
   "appName": {
-    "message": "KickAlert"
+    "message": "KickAlert — Alertas en vivo de Kick.com"
   },
   "autoLaunch": {
     "message": "Apertura automática"
@@ -645,7 +645,7 @@
     "message": "Aún no sigues a nadie. Sigue un canal en Kick y aparecerá aquí automáticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novedades: el bloqueo de anuncios es más sólido, los ajustes ahora están organizados por categorías y se corrigió un error en las vistas previas de canal. Explora los <a id=\"whatsnew-settings-link\">Ajustes</a>."
+    "message": "Novedades: se corrigió un error por el que tu nombre de usuario de chat, favoritos u otros ajustes podían no guardarse si hacías dos cambios seguidos. Explora los <a id=\"whatsnew-settings-link\">Ajustes</a>."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -672,22 +672,22 @@
     "message": "Cerrar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5 — Bloqueo de anuncios, notificaciones de chat y ajustes rediseñados"
+    "message": "v2.5.44 — Correcciones de integridad de datos"
   },
   "releaseHistoryV0Body": {
-    "message": "• Tres nuevas capas de bloqueo de anuncios: SDK GPT/IMA simulado, filtrado a nivel de segmento y detección de la superposición de transición \"pantalla negra\" propia de Kick\n• Búsqueda de fuente VOD sin anuncios más rápida y segura\n• Ajustes reorganizados en categorías plegables, con búsqueda\n• Banner de \"Novedades\" y este historial\n• Copia de seguridad y restauración: exporta/importa todos tus ajustes como archivo (con una red de seguridad de deshacer única y una opción de \"Restablecer valores predeterminados\")\n• Corregido: el ocultamiento de anuncios no tenía efecto visual (la regla CSS nunca llegaba a la página) y solo funcionaba cuando se activaba nuestra propia detección — ahora funciona de forma independiente y detecta más superposiciones de anuncios\n• Chat: responder a tu mensaje ahora notifica igual que una mención @\n• La ventana emergente y el sonido de las notificaciones de chat ahora se activan de forma independiente (con un modo de sonido opcional \"solo cuando no estés mirando\") — este modo también detecta cuando el propio panel de chat de Kick está oculto (modo teatro/pantalla completa), no solo pestaña en segundo plano o desplazada\n• Se corrigió que las notificaciones de chat no sonaran mientras se seguía activamente el chat en vivo, y que el sonido de la extensión chocara con el propio sonido de notificación de Windows\n• Se añadió el eslovaco como nuevo idioma compatible\n• Se revisaron todas las traducciones en los 14 idiomas por precisión y naturalidad — se corrigieron varios errores de traducción e inconsistencias de tono"
+    "message": "• Corregido: el campo de nombre de usuario de Kick en la pestaña Chat no guardaba su valor si lo escribías y cerrabas el popup enseguida\n• Corregido el mismo problema en otros lugares: los canales favoritos, el modo de sonido por canal, los grupos de canales, la lista de apertura automática, la caché de ID de chatroom/canal, las puntuaciones de bots y el historial de notificaciones podían perder un cambio si dos actualizaciones ocurrían muy seguidas — todos ahora pasan por una cola de escritura, así que esto ya no puede pasar"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.4.0 — Vistas previas de canal y bloqueo de anuncios"
+    "message": "v2.5 — Bloqueo de anuncios, notificaciones de chat y ajustes rediseñados"
   },
   "releaseHistoryV1Body": {
-    "message": "• Imágenes de vista previa de canal en la lista de Seguidos\n• Bloqueo de anuncios (experimental) para transmisiones en vivo y VOD\n• Puntuación de detección de bots para el recuento de espectadores"
+    "message": "• Tres nuevas capas de bloqueo de anuncios: SDK GPT/IMA simulado, filtrado a nivel de segmento y detección de la superposición de transición \"pantalla negra\" propia de Kick\n• Búsqueda de fuente VOD sin anuncios más rápida y segura\n• Ajustes reorganizados en categorías plegables, con búsqueda\n• Banner de \"Novedades\" y este historial\n• Copia de seguridad y restauración: exporta/importa todos tus ajustes como archivo (con una red de seguridad de deshacer única y una opción de \"Restablecer valores predeterminados\")\n• Corregido: el ocultamiento de anuncios no tenía efecto visual (la regla CSS nunca llegaba a la página) y solo funcionaba cuando se activaba nuestra propia detección — ahora funciona de forma independiente y detecta más superposiciones de anuncios\n• Chat: responder a tu mensaje ahora notifica igual que una mención @\n• La ventana emergente y el sonido de las notificaciones de chat ahora se activan de forma independiente (con un modo de sonido opcional \"solo cuando no estés mirando\") — este modo también detecta cuando el propio panel de chat de Kick está oculto (modo teatro/pantalla completa), no solo pestaña en segundo plano o desplazada\n• Se corrigió que las notificaciones de chat no sonaran mientras se seguía activamente el chat en vivo, y que el sonido de la extensión chocara con el propio sonido de notificación de Windows\n• Se añadió el eslovaco como nuevo idioma compatible\n• Se revisaron todas las traducciones en los 14 idiomas por precisión y naturalidad — se corrigieron varios errores de traducción e inconsistencias de tono"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.3.0 — Integración de chat"
+    "message": "v2.4.0 — Vistas previas de canal y bloqueo de anuncios"
   },
   "releaseHistoryV2Body": {
-    "message": "• Pestaña de chat: filtrado de bots/spam/duplicados/palabras clave, favoritos, menciones\n• Programación de no molestar\n• Detección de anomalías de espectadores"
+    "message": "• Imágenes de vista previa de canal en la lista de Seguidos\n• Bloqueo de anuncios (experimental) para transmisiones en vivo y VOD\n• Puntuación de detección de bots para el recuento de espectadores"
   },
   "settingsBackupTitle": {
     "message": "Copia de seguridad y restauración"
