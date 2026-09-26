@@ -645,7 +645,7 @@
     "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
   },
   "whatsNewBannerText": {
-    "message": "Nouveau : correction d'un bug critique de synchronisation cloud où vos paramètres de l'onglet Chat pouvaient se réinitialiser tout seuls. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
+    "message": "Nouveau look ! Compteurs sur les onglets, thème « Système » et polices intégrées à l'extension. Découvrez les <a id=\"whatsnew-settings-link\">Paramètres</a>."
   },
   "optGroupGeneral": {
     "message": "Général"
@@ -672,22 +672,22 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.45 — Corrections d'intégrité des données et de synchronisation cloud"
+    "message": "v2.5.46 — Un tout nouveau look"
   },
   "releaseHistoryV0Body": {
-    "message": "• Correction : le champ du nom d'utilisateur Kick dans l'onglet Chat ne sauvegardait pas sa valeur si vous le saisissiez puis fermiez immédiatement le popup\n• Correction du même problème ailleurs : les chaînes favorites, le mode sonore par chaîne, les groupes de chaînes, la liste d'ouverture automatique, le cache d'ID chatroom/chaîne, les scores de bots et l'historique des notifications pouvaient tous perdre une modification si deux mises à jour arrivaient rapprochées — tout cela passe désormais par une file d'attente d'écriture, donc cela ne peut plus se produire\n• Correction d'un bug critique de synchronisation cloud : si la synchronisation cloud était activée, vos paramètres de l'onglet Chat pouvaient silencieusement revenir à un état ancien/vide des heures plus tard sans aucune interaction, à cause d'une vérification de synchronisation en arrière-plan qui réappliquait sans cesse une copie cloud obsolète. Les paramètres de chat sont désormais synchronisés immédiatement à chaque modification, et cette vérification en arrière-plan ne récupère plus les données du cloud de son propre chef"
+    "message": "• Popup repensé : en-tête épuré, compteurs sur les onglets (chaînes en direct, nouvelles notifications), cartes plus sobres et un style d'interrupteur unique dans tous les paramètres\n• Nouveau thème « Système » qui suit le mode clair ou sombre de votre ordinateur\n• Les polices et icônes sont désormais intégrées à l'extension : les noms d'icônes n'apparaissent plus en texte sur une connexion lente, et le popup n'envoie aucune requête à Google\n• Historique : les notifications identiques répétées sont regroupées et les catégories vides masquées\n• Icônes de mode sonore plus claires, focus clavier visible et respect du réglage système « réduire les animations »"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5 — Blocage des pubs, notifications de chat et refonte des paramètres"
+    "message": "v2.5.45 — Corrections d'intégrité des données et de synchronisation cloud"
   },
   "releaseHistoryV1Body": {
-    "message": "• Trois nouvelles couches de blocage des publicités : SDK GPT/IMA factice, filtrage au niveau des segments, détection de l'écran de transition « noir » propre à Kick\n• Recherche de source VOD sans publicité plus rapide et plus sûre\n• Paramètres réorganisés en catégories repliables, avec recherche\n• Bannière « Nouveautés » et cet historique\n• Sauvegarde et restauration : exportez/importez tous vos paramètres sous forme de fichier (avec un filet de sécurité annulable une fois et une option « Réinitialiser aux valeurs par défaut »)\n• Correction : le masquage des publicités n'avait visuellement aucun effet (la règle CSS n'atteignait jamais la page) et ne fonctionnait que lorsque notre propre détection s'était déclenchée — fonctionne désormais indépendamment et capture davantage de superpositions publicitaires\n• Chat : une réponse à votre message déclenche désormais une notification, comme une mention @\n• La popup et le son des notifications de chat sont désormais indépendants (avec un mode sonore optionnel « uniquement si vous ne regardez pas ») — ce mode détecte aussi quand le panneau de chat de Kick lui-même est masqué (mode théâtre/plein écran), pas seulement l'onglet en arrière-plan ou le défilement\n• Correction : les notifications de chat ne se déclenchaient pas en suivant activement le chat en direct, et le son de l'extension entrait en conflit avec celui de Windows\n• Ajout du slovaque comme nouvelle langue prise en charge\n• Toutes les traductions des 14 langues ont été relues pour leur exactitude et leur naturel — plusieurs erreurs de traduction et incohérences de registre (tu/vous) corrigées"
+    "message": "• Correction : le champ du nom d'utilisateur Kick dans l'onglet Chat ne sauvegardait pas sa valeur si vous le saisissiez puis fermiez immédiatement le popup\n• Correction du même problème ailleurs : les chaînes favorites, le mode sonore par chaîne, les groupes de chaînes, la liste d'ouverture automatique, le cache d'ID chatroom/chaîne, les scores de bots et l'historique des notifications pouvaient tous perdre une modification si deux mises à jour arrivaient rapprochées — tout cela passe désormais par une file d'attente d'écriture, donc cela ne peut plus se produire\n• Correction d'un bug critique de synchronisation cloud : si la synchronisation cloud était activée, vos paramètres de l'onglet Chat pouvaient silencieusement revenir à un état ancien/vide des heures plus tard sans aucune interaction, à cause d'une vérification de synchronisation en arrière-plan qui réappliquait sans cesse une copie cloud obsolète. Les paramètres de chat sont désormais synchronisés immédiatement à chaque modification, et cette vérification en arrière-plan ne récupère plus les données du cloud de son propre chef"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.4.0 — Aperçus de chaîne et blocage des publicités"
+    "message": "v2.5 — Blocage des pubs, notifications de chat et refonte des paramètres"
   },
   "releaseHistoryV2Body": {
-    "message": "• Images d'aperçu de chaîne dans la liste \"Suivis\"\n• Blocage des publicités (expérimental) pour les diffusions en direct et les VOD\n• Score de détection de bots pour le nombre de spectateurs"
+    "message": "• Trois nouvelles couches de blocage des publicités : SDK GPT/IMA factice, filtrage au niveau des segments, détection de l'écran de transition « noir » propre à Kick\n• Recherche de source VOD sans publicité plus rapide et plus sûre\n• Paramètres réorganisés en catégories repliables, avec recherche\n• Bannière « Nouveautés » et cet historique\n• Sauvegarde et restauration : exportez/importez tous vos paramètres sous forme de fichier (avec un filet de sécurité annulable une fois et une option « Réinitialiser aux valeurs par défaut »)\n• Correction : le masquage des publicités n'avait visuellement aucun effet (la règle CSS n'atteignait jamais la page) et ne fonctionnait que lorsque notre propre détection s'était déclenchée — fonctionne désormais indépendamment et capture davantage de superpositions publicitaires\n• Chat : une réponse à votre message déclenche désormais une notification, comme une mention @\n• La popup et le son des notifications de chat sont désormais indépendants (avec un mode sonore optionnel « uniquement si vous ne regardez pas ») — ce mode détecte aussi quand le panneau de chat de Kick lui-même est masqué (mode théâtre/plein écran), pas seulement l'onglet en arrière-plan ou le défilement\n• Correction : les notifications de chat ne se déclenchaient pas en suivant activement le chat en direct, et le son de l'extension entrait en conflit avec celui de Windows\n• Ajout du slovaque comme nouvelle langue prise en charge\n• Toutes les traductions des 14 langues ont été relues pour leur exactitude et leur naturel — plusieurs erreurs de traduction et incohérences de registre (tu/vous) corrigées"
   },
   "settingsBackupTitle": {
     "message": "Sauvegarde et restauration"
@@ -784,5 +784,23 @@
   },
   "chatShowPopup": {
     "message": "Afficher une notification popup"
+  },
+  "themeSystem": {
+    "message": "Système"
+  },
+  "chatGroupFilters": {
+    "message": "Filtres"
+  },
+  "chatGroupHighlight": {
+    "message": "Mise en évidence"
+  },
+  "chatGroupNotifications": {
+    "message": "Notifications"
+  },
+  "alSectionLive": {
+    "message": "En direct"
+  },
+  "alSectionOffline": {
+    "message": "Hors ligne"
   }
 }

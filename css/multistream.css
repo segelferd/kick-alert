@@ -10,7 +10,7 @@
   --text-muted: rgba(255,255,255,0.38);
   --accent: #53FC18;
   --red: #eb0400;
-  --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font: 'Geist', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --topbar-h: 46px;
 }
 

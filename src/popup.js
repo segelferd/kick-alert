@@ -16,8 +16,11 @@ let autoRefreshTimer = null;
 
 // Bell icon states
 const BELL_STATES = ['main', 'sub', 'silent', 'muted'];
-const BELL_ICONS = { main: 'notifications_active', sub: 'notifications', silent: 'notifications_off', muted: 'block' };
-const BELL_COLORS = { main: '#53FC18', sub: '#f0883e', silent: 'var(--text-muted)', muted: '#eb0400' };
+// v2.5.46: Speaker icons now describe the SOUND (main / secondary / silent) and a
+// crossed-out bell means "no notification at all" (previously a red block icon,
+// which looked like an error). Colours come from the theme tokens in popup.css.
+const BELL_ICONS = { main: 'volume_up', sub: 'volume_down', silent: 'volume_off', muted: 'notifications_off' };
+const BELL_COLORS = { main: 'var(--accent-text)', sub: 'var(--warn)', silent: 'var(--text-muted)', muted: 'var(--danger)' };
 const BELL_TITLES = { main: 'bellMain', sub: 'bellSub', silent: 'bellSilent', muted: 'bellMuted' };
 
 // ─── Init ───
@@ -48,6 +51,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupWhatsNewRelink();        // v2.5.11: Kalıcı "What's New" linki
   setupReleaseHistoryModal();   // v2.5.16: Sürüm Geçmişi modalı
   await checkWhatsNewBanner();   // v2.5.9: "Yenilikler" banner'ı
+  // v2.5.46: fonts are bundled now; once they are ready, re-measure the open
+  // Settings groups so a late font swap can never clip their content.
+  try { document.fonts?.ready?.then(() => refreshAllOptGroupHeights()); } catch (e) {}
 });
 
 // v2.3.23: Popup açıkken arka planda "session reddedildi" durumu değişirse
@@ -118,9 +124,30 @@ async function updateChatTabVisibility() {
   }
 }
 
+// v2.5.46: 'system' follows the OS light/dark setting. The data-theme attribute
+// on <html> is always resolved to 'dark' or 'light', so every existing
+// [data-theme="light"] CSS rule keeps working unchanged.
+function resolveTheme(theme) {
+  if (theme === 'system') {
+    return (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) ? 'light' : 'dark';
+  }
+  return theme === 'light' ? 'light' : 'dark';
+}
+let _themeMediaListenerAttached = false;
 async function applyTheme() {
   const theme = await Storage.getTheme();
-  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.setAttribute('data-theme', resolveTheme(theme));
+  if (!_themeMediaListenerAttached && window.matchMedia) {
+    _themeMediaListenerAttached = true;
+    const mq = window.matchMedia('(prefers-color-scheme: light)');
+    const onChange = async () => {
+      if ((await Storage.getTheme()) === 'system') {
+        document.documentElement.setAttribute('data-theme', resolveTheme('system'));
+      }
+    };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+    else if (mq.addListener) mq.addListener(onChange);
+  }
 }
 
 function setupI18n() {
@@ -140,6 +167,35 @@ function setTitle(id, text) { const el = document.getElementById(id); if (el) el
 
 // ─── Tabs ───
 
+// v2.5.46: Counters on the tab buttons. They are drawn from a data-count
+// attribute by CSS (::after) because the tab labels are rewritten with
+// textContent in several places (setupI18n, updateChatTabVisibility); an
+// attribute survives that, a child element would not.
+function setTabCount(btnId, n) {
+  const btn = document.getElementById(btnId);
+  if (!btn) return;
+  if (n > 0) btn.setAttribute('data-count', String(n));
+  else btn.removeAttribute('data-count');
+}
+
+// v2.5.46: "Unread" notifications = history entries newer than the last time
+// the History tab was opened. Internal key ('_' prefix): never synced, never
+// exported. First run initialises it to "now" so nobody gets a sudden badge.
+const HISTORY_SEEN_KEY = '_historySeenAt';
+async function getHistorySeenAt() {
+  try {
+    const r = await chrome.storage.local.get(HISTORY_SEEN_KEY);
+    if (r && typeof r[HISTORY_SEEN_KEY] === 'number') return r[HISTORY_SEEN_KEY];
+    const now = Date.now();
+    await chrome.storage.local.set({ [HISTORY_SEEN_KEY]: now });
+    return now;
+  } catch (e) { return Date.now(); }
+}
+async function markHistorySeen() {
+  try { await chrome.storage.local.set({ [HISTORY_SEEN_KEY]: Date.now() }); } catch (e) {}
+  setTabCount('history-btn', 0);
+}
+
 function setupTabs() {
   document.querySelectorAll('.tab-button').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -147,6 +203,9 @@ function setupTabs() {
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       btn.classList.add('active');
       document.getElementById(btn.dataset.tab)?.classList.add('active');
+
+      // v2.5.46: opening History clears its unread counter
+      if (btn.dataset.tab === 'history-panel') markHistorySeen();
 
       // Chat tab: detect active channel from browser tabs
       if (btn.dataset.tab === 'chat-panel') {
@@ -174,11 +233,11 @@ async function detectActiveChannel() {
                       'subscriptions', 'wallet', 'settings', 'search', 'vods',
                       'clips', 'channels', 'home', 'api', 'events', 'watch'];
     if (!match || excluded.includes(match[1].toLowerCase())) {
-      statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#f0a500;">warning</span> <span>${Utils.i18n('chatNoChannel') || 'No active Kick channel'}</span>`;
+      statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:var(--warn);">warning</span> <span>${Utils.i18n('chatNoChannel') || 'No active Kick channel'}</span>`;
       return;
     }
     const slug = match[1];
-    statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:#53FC18;">check_circle</span> <span>${Utils.i18n('chatActiveChannel') || 'Active channel'}: <b style="color:#53FC18">${esc(slug)}</b></span>`;
+    statusEl.innerHTML = `<span class="material-icons-outlined" style="font-size:14px;vertical-align:middle;color:var(--accent-text);">check_circle</span> <span>${Utils.i18n('chatActiveChannel') || 'Active channel'}: <b style="color:var(--accent-text)">${esc(slug)}</b></span>`;
   } catch (e) {
     console.warn('[KickAlert] detectActiveChannel error:', e);
   }
@@ -338,6 +397,7 @@ function showMsg(id, msg) {
 async function renderFollowing(categoryFilter) {
   const el = document.getElementById('following-list');
   if (!el) return;
+  setTabCount('following-btn', (allChannels || []).filter(c => c.isLive).length); // v2.5.46
 
   // v2.5.9: Test panelinden tetiklenen tek-seferlik "ilk kullanım önizlemesi" —
   // gerçek takip verisine hiç dokunmadan, boş durum ekranını simüle eder.
@@ -616,7 +676,26 @@ async function renderAutoLaunch() {
     Storage.getChannelGroups(),
   ]);
   const alBatch = { favMap: alFavMap, groupMap: alGroupMap, bellMap: alBellMap, groupList: alGroupList };
-  for (const ch of sorted) el.appendChild(await autoLaunchCard(ch, alCardMode, alBatch));
+  // v2.5.46: "Live · N" / "Offline · N" section labels between the two blocks.
+  // setupSearch() hides a label when none of its cards match the search.
+  const liveCount = sorted.filter(c => c.isLive).length;
+  let lastLive = null;
+  for (const ch of sorted) {
+    if (ch.isLive !== lastLive) {
+      lastLive = ch.isLive;
+      const lbl = document.createElement('div');
+      lbl.className = 'al-section-label';
+      lbl.dataset.section = ch.isLive ? 'live' : 'offline';
+      const text = Utils.i18n(ch.isLive ? 'alSectionLive' : 'alSectionOffline') || (ch.isLive ? 'Live' : 'Offline');
+      lbl.textContent = text;
+      const cnt = document.createElement('span');
+      cnt.className = 'al-count';
+      cnt.textContent = String(ch.isLive ? liveCount : sorted.length - liveCount);
+      lbl.appendChild(cnt);
+      el.appendChild(lbl);
+    }
+    el.appendChild(await autoLaunchCard(ch, alCardMode, alBatch));
+  }
 }
 
 // ─── Bell Button Helper ───
@@ -1125,6 +1204,13 @@ async function loadHistory() {
 
   try {
     const history = await Storage.getNotificationHistory();
+    // v2.5.46: unread counter on the History tab
+    const seenAt = await getHistorySeenAt();
+    const historyTabActive = !!document.getElementById('history-btn')?.classList.contains('active');
+    const tsOf = (e) => { const t = new Date(e?.timestamp).getTime(); return isNaN(t) ? 0 : t; };
+    const unread = (history || []).filter(e => tsOf(e) > seenAt).length;
+    if (historyTabActive) await markHistorySeen();
+    else setTabCount('history-btn', unread);
     if (!history?.length) {
       el.innerHTML = `<div class="empty-state">${Utils.i18n('noHistoryYet')}</div>`;
       return;
@@ -1146,8 +1232,30 @@ async function loadHistory() {
     }
 
     let lastGroup = null;
+    // v2.5.46: the same channel/title notified twice within a few minutes is
+    // shown once with a "×2" marker instead of two identical rows.
+    let prevEntry = null, prevItem = null;
+    const DUP_WINDOW_MS = 15 * 60 * 1000;
     history.forEach(entry => {
       const group = getGroup(entry.timestamp);
+      if (prevEntry && prevItem && group === lastGroup
+          && prevEntry.channelSlug === entry.channelSlug
+          && (prevEntry.title || '') === (entry.title || '')
+          && Math.abs(tsOf(prevEntry) - tsOf(entry)) <= DUP_WINDOW_MS) {
+        prevItem._repeat = (prevItem._repeat || 1) + 1;
+        const rep = prevItem.querySelector('.history-repeat');
+        if (rep) { rep.textContent = `×${prevItem._repeat}`; rep.hidden = false; }
+        if (!prevItem.querySelector('.history-category') && entry.category && entry.category !== '-') {
+          const body = prevItem.querySelector('.history-body');
+          if (body) {
+            const cat = document.createElement('div');
+            cat.className = 'history-category';
+            cat.textContent = entry.category;
+            body.appendChild(cat);
+          }
+        }
+        return;
+      }
       if (group !== lastGroup) {
         const header = document.createElement('div');
         header.className = 'history-group-header';
@@ -1156,17 +1264,18 @@ async function loadHistory() {
         lastGroup = group;
       }
       const item = document.createElement('div');
-      item.className = 'history-item';
+      item.className = 'history-item' + (tsOf(entry) > seenAt ? ' is-new' : '');
       const pic = entry.profilePic || '../images/default-profile-pictures/default.jpeg';
       item.innerHTML = `
         <img class="history-avatar" src="${esc(pic)}" alt="" />
         <div class="history-body">
           <div class="history-header">
             <span class="history-username">${esc(entry.username)}</span>
+            <span class="history-repeat" hidden></span>
             <span class="history-time">${esc(Utils.formatTimestamp(entry.timestamp))}</span>
           </div>
           <div class="history-title">${esc(entry.title)}</div>
-          <div class="history-category">${esc(entry.category)}</div>
+          ${(entry.category && entry.category !== '-') ? `<div class="history-category">${esc(entry.category)}</div>` : ''}
         </div>`;
       // v2.1.0: CSP-safe avatar fallback
       const histAvatarImg = item.querySelector('.history-avatar');
@@ -1177,6 +1286,7 @@ async function loadHistory() {
       }
       item.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${entry.channelSlug}` }));
       el.appendChild(item);
+      prevEntry = entry; prevItem = item;
     });
   } catch { el.innerHTML = `<div class="empty-state">${Utils.i18n('errorLoadingHistory')}</div>`; }
 }
@@ -1229,6 +1339,15 @@ function setupSearch() {
         const cat = card.querySelector('.category-name')?.textContent?.toLowerCase() || '';
         card.style.display = (!q || name.includes(q) || cat.includes(q)) ? '' : 'none';
       });
+    });
+    // v2.5.46: hide a section label when no card under it is visible
+    document.querySelectorAll('#autolaunch-list .al-section-label').forEach(lbl => {
+      let n = lbl.nextElementSibling, any = false;
+      while (n && !n.classList.contains('al-section-label')) {
+        if (n.classList.contains('channel-card') && n.style.display !== 'none') { any = true; break; }
+        n = n.nextElementSibling;
+      }
+      lbl.style.display = any ? '' : 'none';
     });
   });
 }
@@ -2196,7 +2315,7 @@ function setupOptionsListeners() {
     btn.addEventListener('click', async () => {
       const theme = btn.dataset.theme;
       await Storage.setTheme(theme);
-      document.documentElement.setAttribute('data-theme', theme);
+      document.documentElement.setAttribute('data-theme', resolveTheme(theme));
       document.querySelectorAll('.opt-theme-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
@@ -2336,7 +2455,7 @@ function optUpdateSliderFill(slider) {
   const max = parseFloat(slider.max) || 100;
   const val = parseFloat(slider.value) || 0;
   const pct = ((val - min) / (max - min)) * 100;
-  slider.style.background = `linear-gradient(to right, #53FC18 0%, #53FC18 ${pct}%, #3a3a3e ${pct}%, #3a3a3e 100%)`;
+  slider.style.background = `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}%, var(--border-strong) ${pct}%, var(--border-strong) 100%)`;
 }
 
 function optToDataUrl(file) {
@@ -2379,7 +2498,7 @@ function updateSensitivityFill(slider, labels) {
   if (!slider) return;
   // min=0 max=2 step=1 — sabit 3 pozisyon, fill hesabı doğrudan
   const pct = (+slider.value / 2) * 100;
-  slider.style.background = `linear-gradient(to right, #53FC18 0%, #53FC18 ${pct}%, #3a3a3e ${pct}%, #3a3a3e 100%)`;
+  slider.style.background = `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}%, var(--border-strong) ${pct}%, var(--border-strong) 100%)`;
   const valEl = optEl(slider.id.replace('-slider', '-val'));
   if (valEl && labels) {
     const key = ['min','avg','max'][+slider.value];
@@ -2656,9 +2775,11 @@ function drawViewerChart(svg, labels, entries, ch) {
   // İzlenen süre (ilk-son entry arası — yayın başı değil, izleme süresi)
   const watchedMs = times[times.length - 1] - times[0];
   const watchedMin = Math.max(1, Math.round(watchedMs / 60000));
+  // v2.5.46: was hard-coded Turkish ("1s 20dk") in every language; now uses the
+  // same "1h 20m" format as the stream duration on the channel cards.
   const durLabel = watchedMin >= 60
-    ? `${Math.floor(watchedMin / 60)}s ${watchedMin % 60}dk`
-    : `${watchedMin}dk`;
+    ? `${Math.floor(watchedMin / 60)}h ${watchedMin % 60}m`
+    : `${watchedMin}m`;
 
   const fmt = (t) => {
     const d = new Date(t);

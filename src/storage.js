@@ -30,7 +30,7 @@ const StorageKeys = {
   CHANNEL_SOUND_MODE: 'channelSoundMode',
   FAVORITE_CHANNELS: 'favoriteChannels',
   CLOUD_SYNC_ENABLED: 'cloudSyncEnabled',
-  THEME: 'theme', // 'dark' or 'light'
+  THEME: 'theme', // 'dark' | 'light' | 'system' (v2.5.46)
   CHANNEL_GROUPS: 'channelGroups', // ['Türk yayıncılar', 'FPS', ...]
   CHANNEL_GROUP_MAP: 'channelGroupMap', // { slug: 'groupName' }
   VIEWER_HISTORY: 'viewerHistory',   // { slug: [{v, t}, ...] }

@@ -645,7 +645,7 @@
     "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novità: risolto un bug critico della sincronizzazione cloud per cui le impostazioni della scheda Chat potevano azzerarsi da sole. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
+    "message": "Nuovo aspetto! Contatori sulle schede, tema \"Sistema\" e font integrati nell'estensione. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
   },
   "optGroupGeneral": {
     "message": "Generale"
@@ -672,22 +672,22 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.45 — Correzioni di integrità dei dati e sincronizzazione cloud"
+    "message": "v2.5.46 — Un aspetto tutto nuovo"
   },
   "releaseHistoryV0Body": {
-    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere\n• Risolto un bug critico della sincronizzazione cloud: se la sincronizzazione cloud era attiva, le impostazioni della scheda Chat potevano tornare silenziosamente a uno stato vecchio/vuoto ore dopo senza alcuna interazione, a causa di un controllo di sincronizzazione in background che riapplicava continuamente una copia cloud obsoleta. Ora le impostazioni della chat si sincronizzano immediatamente a ogni modifica, e quel controllo in background non scarica più dati dal cloud per conto proprio"
+    "message": "• Popup ridisegnato: intestazione più pulita, contatori sulle schede (canali live, nuove notifiche), schede più sobrie e un unico stile di interruttore in tutte le impostazioni\n• Nuovo tema \"Sistema\" che segue la modalità chiara o scura del tuo computer\n• Font e icone ora sono inclusi nell'estensione: i nomi delle icone non compaiono più come testo con connessioni lente e il popup non invia richieste a Google\n• Cronologia: le notifiche identiche ripetute vengono unite e le categorie vuote nascoste\n• Icone della modalità audio più chiare, focus da tastiera visibile e rispetto dell'impostazione di sistema \"riduci movimento\""
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"
+    "message": "v2.5.45 — Correzioni di integrità dei dati e sincronizzazione cloud"
   },
   "releaseHistoryV1Body": {
-    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari\n• Chat: rispondere al tuo messaggio ora avvisa come una menzione @\n• Popup e suono delle notifiche chat ora si attivano in modo indipendente (con una modalità audio opzionale \"solo quando non stai guardando\") — questa modalità ora rileva anche quando il pannello chat di Kick stesso è nascosto (modalità teatro/schermo intero), non solo scheda in background o scorsa\n• Risolto: le notifiche chat non scattavano seguendo attivamente la chat dal vivo, e il suono dell'estensione entrava in conflitto con quello di Windows\n• Aggiunto lo slovacco come nuova lingua supportata\n• Riviste tutte le traduzioni nelle 14 lingue per accuratezza e naturalezza — corretti diversi errori di traduzione e incoerenze di registro"
+    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere\n• Risolto un bug critico della sincronizzazione cloud: se la sincronizzazione cloud era attiva, le impostazioni della scheda Chat potevano tornare silenziosamente a uno stato vecchio/vuoto ore dopo senza alcuna interazione, a causa di un controllo di sincronizzazione in background che riapplicava continuamente una copia cloud obsoleta. Ora le impostazioni della chat si sincronizzano immediatamente a ogni modifica, e quel controllo in background non scarica più dati dal cloud per conto proprio"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.4.0 — Anteprime canale e blocco annunci"
+    "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"
   },
   "releaseHistoryV2Body": {
-    "message": "• Immagini di anteprima canale nell'elenco Seguiti\n• Blocco annunci (sperimentale) per live e VOD\n• Punteggio di rilevamento bot per il conteggio spettatori"
+    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari\n• Chat: rispondere al tuo messaggio ora avvisa come una menzione @\n• Popup e suono delle notifiche chat ora si attivano in modo indipendente (con una modalità audio opzionale \"solo quando non stai guardando\") — questa modalità ora rileva anche quando il pannello chat di Kick stesso è nascosto (modalità teatro/schermo intero), non solo scheda in background o scorsa\n• Risolto: le notifiche chat non scattavano seguendo attivamente la chat dal vivo, e il suono dell'estensione entrava in conflitto con quello di Windows\n• Aggiunto lo slovacco come nuova lingua supportata\n• Riviste tutte le traduzioni nelle 14 lingue per accuratezza e naturalezza — corretti diversi errori di traduzione e incoerenze di registro"
   },
   "settingsBackupTitle": {
     "message": "Backup e ripristino"
@@ -784,5 +784,23 @@
   },
   "chatShowPopup": {
     "message": "Mostra una notifica popup"
+  },
+  "themeSystem": {
+    "message": "Sistema"
+  },
+  "chatGroupFilters": {
+    "message": "Filtri"
+  },
+  "chatGroupHighlight": {
+    "message": "Evidenziazione"
+  },
+  "chatGroupNotifications": {
+    "message": "Notifiche"
+  },
+  "alSectionLive": {
+    "message": "Live"
+  },
+  "alSectionOffline": {
+    "message": "Offline"
   }
 }

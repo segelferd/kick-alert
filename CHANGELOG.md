@@ -5,6 +5,35 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.47 — Two small fixes found while refreshing the store images
+
+- Tab labels no longer get clipped when a counter is shown next to a long label (e.g. "Notification History"); each tab now takes the width its label needs and long translations wrap instead of being cut off
+- The viewer trend window showed its time span in Turkish ("29dk", "1s 20dk") in every language; it now uses the same "29m" / "1h 20m" format as the channel cards
+
+## v2.5.46 — Visual refresh
+
+A restyle of the popup. Every existing feature, setting, id and class that the
+code depends on was kept; the new look is a separate design layer at the end of
+`popup.css` plus a handful of small, isolated script changes.
+
+### Fonts & privacy
+- Fonts (Geist, Geist Mono) and Material Icons are now bundled inside the extension (`fonts/`, `css/fonts.css`) instead of being loaded from fonts.googleapis.com on every popup open. Icon names no longer appear as plain text ("play_arrow", "settings") on slow or offline connections, and the popup, backup page and multi-stream page make no requests to Google anymore. The content security policy no longer allows Google Fonts. Material Icons ship as the full font files (subsetting strips the ligature tables and breaks icons)
+- Replaced the one icon the bundled font doesn't have ("monitoring", viewer anomaly detection) with "query_stats"
+
+### Look & feel
+- Design tokens: one type scale, three corner radii, a spacing scale and semantic colours (success / warning / danger / info) for both themes, replacing roughly 20 hard-coded colours
+- Header: Auto and Guard are status pills with a dot instead of an ON/OFF block; Refresh, Multi, Options and Kick are icon buttons on the right (tooltips unchanged)
+- Tabs are a segmented control with counters: live channels on Following, new notifications on History (cleared when you open the tab)
+- Channel cards: live ring around the avatar, category as a chip, monospace numbers, lighter action buttons
+- Auto-launch: "Live" and "Offline" section labels (hidden while searching if a section has no matches)
+- History: single column grouped into cards; identical notifications from the same channel within 15 minutes are merged into one row with a "×2" marker; the "-" placeholder for a missing category is no longer shown; new entries get a dot
+- Chat tab: filters grouped under Filters / Highlight / Notifications, each row with an icon and a description that stays visible
+- Settings: flat rows inside one card per group instead of nested cards; every checkbox is now the same switch as the rest (a CSS selector typo meant these were rendering as unstyled browser checkboxes); radio groups are segmented controls
+- New "System" theme option that follows the OS light/dark setting
+- Sound-mode icons: speaker icons for main / secondary / silent, and a crossed-out bell for "no notification" (previously a red block icon that looked like an error)
+- Skeleton cards while the channel list loads, and an icon on empty states
+- Visible keyboard focus everywhere, and animations are turned off when the OS "reduce motion" setting is on
+
 ## v2.5.45 — Critical: Cloud Sync silently reverting Chat tab settings
 
 ### Cloud Sync / Storage

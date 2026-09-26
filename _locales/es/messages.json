@@ -645,7 +645,7 @@
     "message": "Aún no sigues a nadie. Sigue un canal en Kick y aparecerá aquí automáticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novedades: se corrigió un error crítico de sincronización en la nube por el que los ajustes de la pestaña Chat podían restablecerse solos. Explora los <a id=\"whatsnew-settings-link\">Ajustes</a>."
+    "message": "¡Nuevo aspecto! Contadores en las pestañas, tema \"Sistema\" y fuentes integradas en la extensión. Explora los <a id=\"whatsnew-settings-link\">Ajustes</a>."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -672,22 +672,22 @@
     "message": "Cerrar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.45 — Correcciones de integridad de datos y sincronización en la nube"
+    "message": "v2.5.46 — Un aspecto totalmente nuevo"
   },
   "releaseHistoryV0Body": {
-    "message": "• Corregido: el campo de nombre de usuario de Kick en la pestaña Chat no guardaba su valor si lo escribías y cerrabas el popup enseguida\n• Corregido el mismo problema en otros lugares: los canales favoritos, el modo de sonido por canal, los grupos de canales, la lista de apertura automática, la caché de ID de chatroom/canal, las puntuaciones de bots y el historial de notificaciones podían perder un cambio si dos actualizaciones ocurrían muy seguidas — todos ahora pasan por una cola de escritura, así que esto ya no puede pasar\n• Corregido un error crítico de sincronización en la nube: si la sincronización en la nube estaba activada, los ajustes de la pestaña Chat podían volver silenciosamente a un estado antiguo/vacío horas después sin ninguna interacción, debido a que una comprobación de sincronización en segundo plano reaplicaba constantemente una copia obsoleta de la nube. Ahora los ajustes de chat se sincronizan de inmediato con cada cambio, y esa comprobación en segundo plano ya no descarga datos de la nube por su cuenta"
+    "message": "• Popup rediseñado: cabecera más limpia, contadores en las pestañas (canales en vivo, notificaciones nuevas), tarjetas más sobrias y un mismo estilo de interruptor en todos los ajustes\n• Nuevo tema \"Sistema\" que sigue el modo claro u oscuro de tu equipo\n• Las fuentes y los iconos ahora vienen dentro de la extensión: los nombres de iconos ya no aparecen como texto con conexiones lentas y el popup no hace peticiones a Google\n• Historial: las notificaciones idénticas repetidas se agrupan y las categorías vacías se ocultan\n• Iconos de modo de sonido más claros, foco de teclado visible y respeto al ajuste del sistema \"reducir movimiento\""
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5 — Bloqueo de anuncios, notificaciones de chat y ajustes rediseñados"
+    "message": "v2.5.45 — Correcciones de integridad de datos y sincronización en la nube"
   },
   "releaseHistoryV1Body": {
-    "message": "• Tres nuevas capas de bloqueo de anuncios: SDK GPT/IMA simulado, filtrado a nivel de segmento y detección de la superposición de transición \"pantalla negra\" propia de Kick\n• Búsqueda de fuente VOD sin anuncios más rápida y segura\n• Ajustes reorganizados en categorías plegables, con búsqueda\n• Banner de \"Novedades\" y este historial\n• Copia de seguridad y restauración: exporta/importa todos tus ajustes como archivo (con una red de seguridad de deshacer única y una opción de \"Restablecer valores predeterminados\")\n• Corregido: el ocultamiento de anuncios no tenía efecto visual (la regla CSS nunca llegaba a la página) y solo funcionaba cuando se activaba nuestra propia detección — ahora funciona de forma independiente y detecta más superposiciones de anuncios\n• Chat: responder a tu mensaje ahora notifica igual que una mención @\n• La ventana emergente y el sonido de las notificaciones de chat ahora se activan de forma independiente (con un modo de sonido opcional \"solo cuando no estés mirando\") — este modo también detecta cuando el propio panel de chat de Kick está oculto (modo teatro/pantalla completa), no solo pestaña en segundo plano o desplazada\n• Se corrigió que las notificaciones de chat no sonaran mientras se seguía activamente el chat en vivo, y que el sonido de la extensión chocara con el propio sonido de notificación de Windows\n• Se añadió el eslovaco como nuevo idioma compatible\n• Se revisaron todas las traducciones en los 14 idiomas por precisión y naturalidad — se corrigieron varios errores de traducción e inconsistencias de tono"
+    "message": "• Corregido: el campo de nombre de usuario de Kick en la pestaña Chat no guardaba su valor si lo escribías y cerrabas el popup enseguida\n• Corregido el mismo problema en otros lugares: los canales favoritos, el modo de sonido por canal, los grupos de canales, la lista de apertura automática, la caché de ID de chatroom/canal, las puntuaciones de bots y el historial de notificaciones podían perder un cambio si dos actualizaciones ocurrían muy seguidas — todos ahora pasan por una cola de escritura, así que esto ya no puede pasar\n• Corregido un error crítico de sincronización en la nube: si la sincronización en la nube estaba activada, los ajustes de la pestaña Chat podían volver silenciosamente a un estado antiguo/vacío horas después sin ninguna interacción, debido a que una comprobación de sincronización en segundo plano reaplicaba constantemente una copia obsoleta de la nube. Ahora los ajustes de chat se sincronizan de inmediato con cada cambio, y esa comprobación en segundo plano ya no descarga datos de la nube por su cuenta"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.4.0 — Vistas previas de canal y bloqueo de anuncios"
+    "message": "v2.5 — Bloqueo de anuncios, notificaciones de chat y ajustes rediseñados"
   },
   "releaseHistoryV2Body": {
-    "message": "• Imágenes de vista previa de canal en la lista de Seguidos\n• Bloqueo de anuncios (experimental) para transmisiones en vivo y VOD\n• Puntuación de detección de bots para el recuento de espectadores"
+    "message": "• Tres nuevas capas de bloqueo de anuncios: SDK GPT/IMA simulado, filtrado a nivel de segmento y detección de la superposición de transición \"pantalla negra\" propia de Kick\n• Búsqueda de fuente VOD sin anuncios más rápida y segura\n• Ajustes reorganizados en categorías plegables, con búsqueda\n• Banner de \"Novedades\" y este historial\n• Copia de seguridad y restauración: exporta/importa todos tus ajustes como archivo (con una red de seguridad de deshacer única y una opción de \"Restablecer valores predeterminados\")\n• Corregido: el ocultamiento de anuncios no tenía efecto visual (la regla CSS nunca llegaba a la página) y solo funcionaba cuando se activaba nuestra propia detección — ahora funciona de forma independiente y detecta más superposiciones de anuncios\n• Chat: responder a tu mensaje ahora notifica igual que una mención @\n• La ventana emergente y el sonido de las notificaciones de chat ahora se activan de forma independiente (con un modo de sonido opcional \"solo cuando no estés mirando\") — este modo también detecta cuando el propio panel de chat de Kick está oculto (modo teatro/pantalla completa), no solo pestaña en segundo plano o desplazada\n• Se corrigió que las notificaciones de chat no sonaran mientras se seguía activamente el chat en vivo, y que el sonido de la extensión chocara con el propio sonido de notificación de Windows\n• Se añadió el eslovaco como nuevo idioma compatible\n• Se revisaron todas las traducciones en los 14 idiomas por precisión y naturalidad — se corrigieron varios errores de traducción e inconsistencias de tono"
   },
   "settingsBackupTitle": {
     "message": "Copia de seguridad y restauración"
@@ -784,5 +784,23 @@
   },
   "chatShowPopup": {
     "message": "Mostrar una notificación emergente"
+  },
+  "themeSystem": {
+    "message": "Sistema"
+  },
+  "chatGroupFilters": {
+    "message": "Filtros"
+  },
+  "chatGroupHighlight": {
+    "message": "Resaltado"
+  },
+  "chatGroupNotifications": {
+    "message": "Notificaciones"
+  },
+  "alSectionLive": {
+    "message": "En vivo"
+  },
+  "alSectionOffline": {
+    "message": "Desconectados"
   }
 }

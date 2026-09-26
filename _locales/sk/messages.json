@@ -612,7 +612,7 @@
     "message": "Zatiaľ nikoho nesleduješ. Sleduj kanál na Kick a automaticky sa zobrazí tu."
   },
   "whatsNewBannerText": {
-    "message": "Novinka: opravená kritická chyba cloudovej synchronizácie, kedy sa nastavenia karty Chat mohli samy od seba resetovať. Pozri si <a id=\"whatsnew-settings-link\">Nastavenia</a>."
+    "message": "Nový vzhľad! Počítadlá na kartách, téma „Systémová“ a písma priamo v rozšírení. Pozri si <a id=\"whatsnew-settings-link\">Nastavenia</a>."
   },
   "optGroupGeneral": {
     "message": "Všeobecné"
@@ -639,22 +639,22 @@
     "message": "Zavrieť"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.45 — Opravy integrity dát a cloudovej synchronizácie"
+    "message": "v2.5.46 — Úplne nový vzhľad"
   },
   "releaseHistoryV0Body": {
-    "message": "• Opravené: pole používateľského mena Kick na karte Chat neuložilo hodnotu, ak si ho napísal a hneď zavrel vyskakovacie okno\n• Opravený rovnaký problém inde: obľúbené kanály, režim zvuku podľa kanála, skupiny kanálov, zoznam automatického otvárania, medzipamäť ID chatroomu/kanála, skóre botov a história oznámení mohli stratiť zmenu, ak dve aktualizácie prišli tesne po sebe — teraz všetko prechádza frontou zápisu, takže sa to už nemôže stať\n• Opravená kritická chyba cloudovej synchronizácie: ak bola zapnutá cloudová synchronizácia, nastavenia karty Chat sa mohli po hodinách bez akejkoľvek interakcie ticho vrátiť do starého/prázdneho stavu — spôsobovala to rutinná kontrola synchronizácie na pozadí, ktorá opakovane znova aplikovala zastaranú kópiu z cloudu. Nastavenia chatu sa teraz synchronizujú okamžite pri každej zmene a táto kontrola na pozadí už sama od seba nesťahuje dáta z cloudu"
+    "message": "• Prepracované okno: čistejšia hlavička, počítadlá na kartách (živé kanály, nové oznámenia), pokojnejšie karty a jednotný štýl prepínačov vo všetkých nastaveniach\n• Nová téma „Systémová“, ktorá sa riadi svetlým alebo tmavým režimom počítača\n• Písma a ikony sú teraz súčasťou rozšírenia: na pomalom pripojení sa už nezobrazujú názvy ikon ako text a okno neposiela žiadne požiadavky na Google\n• História: opakované rovnaké oznámenia sa zlučujú a prázdne kategórie sa skrývajú\n• Zrozumiteľnejšie ikony režimu zvuku, viditeľné zameranie klávesnicou a rešpektovanie systémového nastavenia „obmedziť pohyb“"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5 — Blokovanie reklám, oznámenia chatu a prepracované nastavenia"
+    "message": "v2.5.45 — Opravy integrity dát a cloudovej synchronizácie"
   },
   "releaseHistoryV1Body": {
-    "message": "• Tri nové vrstvy blokovania reklám: náhrada GPT/IMA SDK, filtrovanie na úrovni segmentov a detekcia vlastného prechodového prekrytia \"čiernej obrazovky\" Kicku\n• Vyhľadávanie zdroja VOD bez reklám je rýchlejšie a bezpečnejšie\n• Nastavenia prepracované do zbaliteľných kategórií s vyhľadávaním\n• Banner \"Čo je nové\" a toto zobrazenie histórie\n• Zálohovanie a obnovenie: exportuj/importuj všetky svoje nastavenia ako súbor (s jednorazovou poistkou na vrátenie späť a možnosťou \"Obnoviť na predvolené\")\n• Opravené skrývanie reklám, ktoré vizuálne vôbec nefungovalo (pravidlo CSS sa nikdy nedostalo na stránku) a fungovalo len pri aktivácii našej vlastnej detekcie — teraz funguje nezávisle a zachytí viac reklamných prekrytí\n• Chat: odpoveď na tvoju správu ťa teraz upozorní rovnako ako zmienka @\n• Vyskakovacie okno a zvuk oznámení chatu sa teraz dajú zapínať nezávisle (s voliteľným zvukovým režimom \"len keď nesleduješ\") — tento režim teraz rozpoznáva aj to, keď je skrytý vlastný chatovací panel Kicku (režim divadla/celej obrazovky), nielen kartu na pozadí alebo odscrollovanie\n• Opravené oznámenia chatu, ktoré sa nespúšťali pri aktívnom sledovaní živého chatu, a kolízia zvuku rozšírenia s vlastným oznamovacím zvukom Windows\n• Pridaná slovenčina ako novo podporovaný jazyk\n• Skontrolované všetky preklady vo všetkých 14 jazykoch z hľadiska presnosti a prirodzenosti — opravených niekoľko chybných prekladov a nezrovnalostí v oslovovaní"
+    "message": "• Opravené: pole používateľského mena Kick na karte Chat neuložilo hodnotu, ak si ho napísal a hneď zavrel vyskakovacie okno\n• Opravený rovnaký problém inde: obľúbené kanály, režim zvuku podľa kanála, skupiny kanálov, zoznam automatického otvárania, medzipamäť ID chatroomu/kanála, skóre botov a história oznámení mohli stratiť zmenu, ak dve aktualizácie prišli tesne po sebe — teraz všetko prechádza frontou zápisu, takže sa to už nemôže stať\n• Opravená kritická chyba cloudovej synchronizácie: ak bola zapnutá cloudová synchronizácia, nastavenia karty Chat sa mohli po hodinách bez akejkoľvek interakcie ticho vrátiť do starého/prázdneho stavu — spôsobovala to rutinná kontrola synchronizácie na pozadí, ktorá opakovane znova aplikovala zastaranú kópiu z cloudu. Nastavenia chatu sa teraz synchronizujú okamžite pri každej zmene a táto kontrola na pozadí už sama od seba nesťahuje dáta z cloudu"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.4.0 — Náhľady kanálov a blokovanie reklám"
+    "message": "v2.5 — Blokovanie reklám, oznámenia chatu a prepracované nastavenia"
   },
   "releaseHistoryV2Body": {
-    "message": "• Náhľadové obrázky kanálov v zozname Sledované\n• Blokovanie reklám (experimentálne) pre živé vysielania a VOD\n• Skóre detekcie botov pre počty divákov"
+    "message": "• Tri nové vrstvy blokovania reklám: náhrada GPT/IMA SDK, filtrovanie na úrovni segmentov a detekcia vlastného prechodového prekrytia \"čiernej obrazovky\" Kicku\n• Vyhľadávanie zdroja VOD bez reklám je rýchlejšie a bezpečnejšie\n• Nastavenia prepracované do zbaliteľných kategórií s vyhľadávaním\n• Banner \"Čo je nové\" a toto zobrazenie histórie\n• Zálohovanie a obnovenie: exportuj/importuj všetky svoje nastavenia ako súbor (s jednorazovou poistkou na vrátenie späť a možnosťou \"Obnoviť na predvolené\")\n• Opravené skrývanie reklám, ktoré vizuálne vôbec nefungovalo (pravidlo CSS sa nikdy nedostalo na stránku) a fungovalo len pri aktivácii našej vlastnej detekcie — teraz funguje nezávisle a zachytí viac reklamných prekrytí\n• Chat: odpoveď na tvoju správu ťa teraz upozorní rovnako ako zmienka @\n• Vyskakovacie okno a zvuk oznámení chatu sa teraz dajú zapínať nezávisle (s voliteľným zvukovým režimom \"len keď nesleduješ\") — tento režim teraz rozpoznáva aj to, keď je skrytý vlastný chatovací panel Kicku (režim divadla/celej obrazovky), nielen kartu na pozadí alebo odscrollovanie\n• Opravené oznámenia chatu, ktoré sa nespúšťali pri aktívnom sledovaní živého chatu, a kolízia zvuku rozšírenia s vlastným oznamovacím zvukom Windows\n• Pridaná slovenčina ako novo podporovaný jazyk\n• Skontrolované všetky preklady vo všetkých 14 jazykoch z hľadiska presnosti a prirodzenosti — opravených niekoľko chybných prekladov a nezrovnalostí v oslovovaní"
   },
   "settingsBackupTitle": {
     "message": "Zálohovanie a obnovenie"
@@ -751,5 +751,23 @@
   },
   "chatShowPopup": {
     "message": "Zobraziť vyskakovacie oznámenie"
+  },
+  "themeSystem": {
+    "message": "Systémová"
+  },
+  "chatGroupFilters": {
+    "message": "Filtre"
+  },
+  "chatGroupHighlight": {
+    "message": "Zvýraznenie"
+  },
+  "chatGroupNotifications": {
+    "message": "Oznámenia"
+  },
+  "alSectionLive": {
+    "message": "Naživo"
+  },
+  "alSectionOffline": {
+    "message": "Offline"
   }
 }

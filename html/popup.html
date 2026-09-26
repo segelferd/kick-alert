@@ -3,9 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <link rel="stylesheet" href="../css/popup.css" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
+  <link rel="stylesheet" href="../css/fonts.css" />
   <title>KickAlert</title>
 </head>
 <body>
@@ -85,7 +83,13 @@
           <span class="material-icons" id="sort-dir-icon">arrow_downward</span>
         </button>
       </div>
-      <div id="following-list" class="channels-container"></div>
+      <!-- v2.5.46: skeleton cards, replaced by renderFollowing()/showMsg() on first load -->
+      <div id="following-list" class="channels-container">
+        <div class="ka-skel-card" aria-hidden="true"><div class="ka-skel-top"><div class="ka-skeleton" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div class="ka-skel-lines"><div class="ka-skeleton" style="width:55%;height:11px;"></div><div class="ka-skeleton" style="width:85%;height:10px;"></div><div class="ka-skeleton" style="width:60%;height:10px;"></div></div></div></div>
+        <div class="ka-skel-card" aria-hidden="true"><div class="ka-skel-top"><div class="ka-skeleton" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div class="ka-skel-lines"><div class="ka-skeleton" style="width:55%;height:11px;"></div><div class="ka-skeleton" style="width:85%;height:10px;"></div><div class="ka-skeleton" style="width:60%;height:10px;"></div></div></div></div>
+        <div class="ka-skel-card" aria-hidden="true"><div class="ka-skel-top"><div class="ka-skeleton" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div class="ka-skel-lines"><div class="ka-skeleton" style="width:55%;height:11px;"></div><div class="ka-skeleton" style="width:85%;height:10px;"></div><div class="ka-skeleton" style="width:60%;height:10px;"></div></div></div></div>
+        <div class="ka-skel-card" aria-hidden="true"><div class="ka-skel-top"><div class="ka-skeleton" style="width:40px;height:40px;border-radius:50%;flex-shrink:0;"></div><div class="ka-skel-lines"><div class="ka-skeleton" style="width:55%;height:11px;"></div><div class="ka-skeleton" style="width:85%;height:10px;"></div><div class="ka-skeleton" style="width:60%;height:10px;"></div></div></div></div>
+      </div>
     </div>
     <div id="autolaunch-panel" class="tab-content">
       <div class="search-container">
@@ -127,6 +131,7 @@
         </div>
         <div class="chat-section-desc" data-i18n="chatFilterModeDesc">Hide removes the message. Blur fades it — hover to see.</div>
       </div>
+      <div class="chat-group-label" data-i18n="chatGroupFilters">Filters</div>
       <!-- Bot Filter -->
       <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="botFilter">
         <div class="chat-section-header">
@@ -208,6 +213,7 @@
           <div id="chat-user-chips" class="chat-chips"></div>
         </div>
       </div>
+      <div class="chat-group-label" data-i18n="chatGroupHighlight">Highlight</div>
       <!-- Keyword Highlight -->
       <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="keywordEnabled">
         <div class="chat-section-header">
@@ -246,6 +252,7 @@
           <div id="chat-fav-chips" class="chat-chips"></div>
         </div>
       </div>
+      <div class="chat-group-label" data-i18n="chatGroupNotifications">Notifications</div>
       <!-- Tag Notification -->
       <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="tagEnabled">
         <div class="chat-section-header">
@@ -358,6 +365,7 @@
           <div class="opt-theme-btns">
             <button class="opt-theme-btn" id="opt-theme-dark" data-theme="dark" data-i18n="themeDark">Dark</button>
             <button class="opt-theme-btn" id="opt-theme-light" data-theme="light" data-i18n="themeLight">Light</button>
+            <button class="opt-theme-btn" id="opt-theme-system" data-theme="system" data-i18n="themeSystem">System</button>
           </div>
         </div>
         <div class="opt-divider"></div>
@@ -551,7 +559,7 @@
       <div class="opt-section">
         <div class="opt-dnd-section" id="opt-anomaly-section">
           <div class="opt-dnd-header">
-            <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">monitoring</span>
+            <span class="material-icons-outlined" style="font-size:16px;width:16px;height:16px;overflow:hidden;flex-shrink:0;">query_stats</span>
             <span data-i18n="anomalyTitle">Viewer anomaly detection</span>
             <label class="toggle-switch toggle-switch-sm">
               <input type="checkbox" id="opt-anomaly-enabled" />
