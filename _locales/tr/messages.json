@@ -645,7 +645,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Yeni görünüm! Sekme sayaçları, \"Sistem\" teması ve artık eklentiye gömülü fontlar. Keşfetmek için <a id=\"whatsnew-settings-link\">Ayarlar</a>'a göz at."
+    "message": "Yeni: kategori değişimi, yayın bitti ve raid için kanal bazlı bildirimler ve izleme süresi. Kanal kartındaki ayar butonunu kullan, seslerini <a id=\"whatsnew-settings-link\">Ayarlar</a>'dan seç."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -672,22 +672,22 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — Yepyeni bir görünüm"
+    "message": "v2.5.67 — Kanal bazlı bildirimler, izleme süresi ve düzeltmeler"
   },
   "releaseHistoryV0Body": {
-    "message": "• Popup yeniden tasarlandı: daha sade üst bar, sekmelerde sayaçlar (canlı kanallar, yeni bildirimler), daha sakin kartlar ve tüm ayarlarda tek tip anahtar görünümü\n• Bilgisayarının açık/koyu moduna uyan yeni \"Sistem\" teması\n• Fontlar ve ikonlar artık eklentinin içinde: yavaş bağlantıda ikon adları yazı olarak görünmüyor, popup Google'a hiç istek atmıyor\n• Geçmiş: tekrarlanan aynı bildirimler birleştiriliyor, boş kategoriler gizleniyor\n• Daha anlaşılır ses modu ikonları, görünür klavye odağı ve sistemin \"hareketi azalt\" ayarına uyum"
+    "message": "• Yeni kanal bildirimleri penceresi (kanal kartındaki ayar butonu): kanal kategori veya başlık değiştirince, yayın bitince (ne kadar sürdüğüyle) ve kanala raid gelince (kimden ve kaç izleyiciyle) bildirim al. Hepsi varsayılan olarak kapalı\n• Kanal filtresi: sadece seçtiğin kategorilerde veya başlıkta senin kelimelerinden biri geçtiğinde bildir\n• Bu bildirimlerin kendi, daha kısık sesi var (Yumuşak damla, Hafif çan, Tık); istersen Windows sesi veya sessiz, ayrı ses seviyesiyle\n• İzleme süresi: Geçmiş sekmesi son 7 günde ne kadar izlediğini ve en çok izlediğin kanalları gösterir (sadece bu cihazda saklanır)\n• Kanal önizleme görselinin üzerinde durunca büyük hali açılır; kart butonları artık hep sığıyor\n• Güncel Chrome'da (148+) düzeltildi: \"Eklenti sesleri\" modunda bildirimler Windows sesini de çalıyordu ve Aç / Sustur butonları kaybolmuştu\n• Bulut Senkronu artık içe aktarılan ayar dosyasını geri almıyor; senkron için çok büyük bir ayar ezilmek yerine korunuyor\n• Uzun dillerde ayarlar artık kesilmiyor; canlı yayında reklam atlama için daha güçlü yedek yöntem"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — Veri bütünlüğü ve Bulut Senkronu düzeltmeleri"
+    "message": "v2.5.46 — Yepyeni bir görünüm"
   },
   "releaseHistoryV1Body": {
-    "message": "• Chat sekmesindeki Kick kullanıcı adı alanına yazıp popup'ı hemen kapatınca değerin kaydedilmediği hata giderildi\n• Aynı kökten gelen başka bir sorun da düzeltildi: favori kanallar, kanal başına ses modu, kanal grupları, otomatik açma listesi, chatroom/kanal ID önbelleği, bot skorları ve bildirim geçmişi — bunların hepsi art arda hızlı yapılan iki değişiklikte birbirini ezip veri kaybına yol açabiliyordu; artık hepsi bir yazma sırasından geçiyor ve bu mümkün değil\n• Bulut Senkronu'nda kritik bir hata düzeltildi: Bulut Senkronu açıksa, Chat sekmesi ayarların hiçbir dokunma olmadan saatler sonra eski/boş haline dönebiliyordu — sebebi, arka planda rutin çalışan bir senkron kontrolünün bayat bir bulut kopyasını sürekli geri uygulamasıydı. Artık chat ayarları her değişiklikte anında buluta yansıyor, ve bu arka plan kontrolü kendiliğinden buluttan veri çekmiyor"
+    "message": "• Popup yeniden tasarlandı: daha sade üst bar, sekmelerde sayaçlar (canlı kanallar, yeni bildirimler), daha sakin kartlar ve tüm ayarlarda tek tip anahtar görünümü\n• Bilgisayarının açık/koyu moduna uyan yeni \"Sistem\" teması\n• Fontlar ve ikonlar artık eklentinin içinde: yavaş bağlantıda ikon adları yazı olarak görünmüyor, popup Google'a hiç istek atmıyor\n• Geçmiş: tekrarlanan aynı bildirimler birleştiriliyor, boş kategoriler gizleniyor\n• Daha anlaşılır ses modu ikonları, görünür klavye odağı ve sistemin \"hareketi azalt\" ayarına uyum"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — Reklam engelleme, Chat bildirimleri ve ayarlar tasarımı"
+    "message": "v2.5.45 — Veri bütünlüğü ve Bulut Senkronu düzeltmeleri"
   },
   "releaseHistoryV2Body": {
-    "message": "• Üç yeni reklam engelleme katmanı: GPT/IMA SDK sahtesi, segment-seviyesi filtreleme, ve Kick'in kendi \"siyah slate\" geçiş katmanının tespiti\n• VOD reklamsız kaynak arama daha hızlı ve güvenli (zaman bütçesi, thumbnail-bazlı hızlı yol)\n• Ayarlar açılır-kapanır kategorilere ayrıldı, arama eklendi\n• \"Yenilikler\" banner'ı ve bu geçmiş görünümü\n• Yedekleme ve Geri Yükleme: tüm ayarlarını bir dosya olarak dışa/içe aktar (bir kereliğine geri alma güvenlik ağı ve \"Varsayılanlara Sıfırla\" seçeneğiyle birlikte)\n• Reklam gizleme iki köklü sorundan kurtuldu: görsel olarak hiç çalışmıyordu (CSS kuralı sayfaya hiç ulaşmıyordu) ve sadece kendi tespitimiz tetiklenince devreye giriyordu. Artık ikisinden de bağımsız çalışıyor ve daha fazla reklam kontrol katmanını yakalıyor\n• Chat: birine yanıt verildiğinde artık @etiketleme gibi bildirim geliyor\n• Chat bildirim penceresi ve sesi artık bağımsız açılıp kapatılabiliyor, isteğe bağlı \"sadece izlemiyorken çal\" modu eklendi\n• Sohbeti aktif takip ederken bildirimlerin sessizce hiç gelmemesi ve bizim sesimizle Windows'un kendi bildirim sesinin çakışması sorunları düzeltildi\n• \"Akıllı\" ses modu artık Kick'in kendi sohbet panelinin gizlendiğini de (theater/tam ekran) algılıyor, sadece sekme arka planda ya da kaydırılmışken değil\n• Yeni desteklenen dil: Slovakça\n• 14 dilin tamamındaki çeviriler doğruluk ve doğallık açısından gözden geçirildi — birkaç yanlış çeviri ve resmi/samimi hitap tutarsızlığı düzeltildi"
+    "message": "• Chat sekmesindeki Kick kullanıcı adı alanına yazıp popup'ı hemen kapatınca değerin kaydedilmediği hata giderildi\n• Aynı kökten gelen başka bir sorun da düzeltildi: favori kanallar, kanal başına ses modu, kanal grupları, otomatik açma listesi, chatroom/kanal ID önbelleği, bot skorları ve bildirim geçmişi — bunların hepsi art arda hızlı yapılan iki değişiklikte birbirini ezip veri kaybına yol açabiliyordu; artık hepsi bir yazma sırasından geçiyor ve bu mümkün değil\n• Bulut Senkronu'nda kritik bir hata düzeltildi: Bulut Senkronu açıksa, Chat sekmesi ayarların hiçbir dokunma olmadan saatler sonra eski/boş haline dönebiliyordu — sebebi, arka planda rutin çalışan bir senkron kontrolünün bayat bir bulut kopyasını sürekli geri uygulamasıydı. Artık chat ayarları her değişiklikte anında buluta yansıyor, ve bu arka plan kontrolü kendiliğinden buluttan veri çekmiyor"
   },
   "settingsBackupTitle": {
     "message": "Yedekleme ve Geri Yükleme"
@@ -802,5 +802,229 @@
   },
   "alSectionOffline": {
     "message": "Çevrimdışı"
+  },
+  "chipAutoLabel": {
+    "message": "Oto",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "Koruma",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "KickAlert Ayarları",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "Kaynak Kodu",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "Eklentiyi Puanla",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "sn",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 kategori değiştirdi",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 yayın başlığını değiştirdi",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "Kanal bildirimleri",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "Bu kanal için ek bildirimler. Hepsi varsayılan olarak kapalı.",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "Kategori veya başlık değişince",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "Kanal yayındayken kategori ya da yayın başlığı değişince bildir.",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "Sadece şu durumda bildir",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "Her yayında bildirim için boş bırak. Bildirim, ses ve otomatik açmaya uygulanır.",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "Kategori şunlardan biriyse",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "Başlıkta şunlardan biri geçiyorsa",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "örn. Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "örn. turnuva",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "Filtrelendi",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "Bildirim gönderilmedi: kanal filtresine uymadı",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "KickAlert'i bir süredir kullanıyorsun. İşine yarıyorsa mağazada kısa bir değerlendirme çok şey ifade eder, başkalarının da bulmasını sağlar.",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "Değerlendir",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "Daha sonra",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "Bir daha sorma",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 yayını bitirdi",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "$1 yayın yaptı",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "Yayın bitti",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "$1 raid attı · $2 izleyici",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "Yayın bitince",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "Yayın bitince süresiyle birlikte bildir. Kısa kopmalar sayılmasın diye yaklaşık 2 dakika sonra doğrulanır.",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1, $2 kanalına raid attı",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "$1 izleyiciyle",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "Raid gelince",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "Başka bir yayıncı bu kanala raid atınca, kimin attığını ve kaç izleyiciyle geldiğini bildir.",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "İzleme süresi",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "Bir Kick sekmesinde yayın oynarken her kanalı ne kadar izlediğini sayar ve Geçmiş'te haftalık özet gösterir. Sadece bu cihazda saklanır.",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "Son 7 günde izlediklerin",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "önceki 7 güne göre",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "Şu an: $1 · $2 önce kontrol edildi",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "Takip, kanal yayına girince başlar",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "Kanal olayı sesleri",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "Kategori/başlık değişimi, yayın bitti ve raid bildirimleri için. Daha kısık bir eklenti sesi, Windows bildirim sesi veya sessiz seçebilirsin.",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "Ses",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "Yumuşak damla",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "Hafif çan",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "Tık",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "Sessiz",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Windows bildirim sesi",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "Sadece sistem sesi çalar, eklenti sesi çalmaz.",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "Örnek kanal olayı bildirimi (sistem sesi)",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "Firefox sessiz bildirim isteyemediği için Windows kendi sesini de çalabilir. Önlemek için Windows Ayarlar → Sistem → Bildirimler → Firefox → \"Bildirim geldiğinde ses çal\" seçeneğini kapat.",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "Senkron için çok büyük (8 KB üstü): $1. Bu cihazda korunuyor ama diğer cihazlarına gönderilmiyor.",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "Favori kanallar",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "Otomatik açılan kanallar",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "Kanal ses modları",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "Chat ayarları",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

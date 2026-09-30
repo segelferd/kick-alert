@@ -5,6 +5,111 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.67 — Store release: per-channel alerts, watch time and fixes
+
+- Store release covering v2.5.48 → v2.5.66 (see the entries below)
+- What's New banner and Release History updated in all 14 languages
+
+## v2.5.66 — Cloud Sync no longer undoes imports or loses large settings
+
+- With Cloud Sync on, importing a settings file (and "Reset to defaults" / "Undo import") only changed this device; the old copy in your browser account came back on the next browser start and silently reverted the imported settings, including per-channel alerts, sound modes, favourites and auto-open channels. These actions now update the cloud copy too
+- Browser sync allows at most 8 KB per setting. A setting over the limit (for example channel alerts with filters on very many channels) failed to sync silently, and on the next browser start the older cloud copy overwrote the newer one on this device. Such settings are now kept on this device and never overwritten, the other settings still sync, and Settings → Cloud Sync shows which setting is too large
+- A setting that could not be written to the cloud (offline, rate limit) is retried automatically and is not overwritten by the cloud copy in the meantime
+
+## v2.5.65 — Critical: Windows sound and buttons on Chrome 148+
+
+- Root cause of the Windows notification sound playing with extension sounds found and fixed. Since Chrome 148, Chrome also exposes the `browser` namespace that the extension used to detect Firefox, so on current Chrome it treated itself as Firefox: notifications (live alerts, channel events, chat tag/streamer messages) were created without the "silent" flag and without the Open / Mute buttons. Firefox is now detected with a Firefox-only API, so in "Extension sounds" mode Windows no longer adds its own sound, and the notification buttons are back
+- The note about turning off the Windows sound in system settings is now shown only in Firefox, which cannot request silent notifications
+
+## v2.5.64 — Windows sound option for channel event alerts
+
+- Channel event sounds now have five choices: Soft drop, Light chime, Tick (extension sound, system sound off), Windows notification sound (only the system sound, no extension sound) and Silent (no sound at all). The Windows option has its own Test button that sends a sample notification
+- Silent now also asks the system for a silent notification; Do Not Disturb "Mute sounds" and a channel's "silent" setting silence the Windows option too
+- Added a note in Settings: if Windows still plays its own sound with an extension sound or Silent, turn off "Play a sound when a notification arrives" for the browser in Windows notification settings (Firefox cannot request silent notifications at all)
+
+## v2.5.63 — Quieter sound for channel event alerts
+
+- Category/title change, stream ended and raid alerts no longer use the system (Windows) notification sound, which was louder than the live alert. They now have their own quieter sound, chosen in Settings → Channel event sounds: Soft drop (default), Light chime, Tick or Silent, with a separate volume slider and a Test button
+- The event sound follows Do Not Disturb ("Mute sounds") and a channel's "silent" sound setting; muted channels still get no event alerts at all
+- The new sounds are original, generated for KickAlert (no third-party audio), about 5 dB quieter than the live alert before the volume slider
+
+## v2.5.62 — No error after extension updates
+
+- After the extension was updated or reloaded, kick.com tabs that were already open kept the old page script, which reported "Extension context invalidated" in chrome://extensions → Errors (seen on channel pages with ad blocking logs). The old script now notices the extension was replaced and stops quietly. Refreshing those tabs loads the new version as before
+
+## v2.5.61 — Developer test panel
+
+- Internal test panel redesigned (tabs, live flow, log filter/copy) and extended with checks for every feature added since v2.5.48: per-channel change / stream-end / raid alerts, channel filters, watch time, review prompt conditions, raid listener status, settings integrity and all 14 languages. No change for users
+
+## v2.5.60 — Category/title change alerts actually track
+
+- Category and title change alerts never fired, and the channel alerts window kept saying "Tracking starts when the channel goes live" even for channels that had been live for hours. The followed-channels list Kick returns has no stream start time, and the tracker skipped every channel without one. Channels are now tracked as long as they are seen live; the start time is fetched once per stream only for channels with change or stream-end alerts on, so stream-ended alerts also show the stream length more reliably
+
+## v2.5.59 — Tracking status line readable
+
+- The "Now: category · checked Xm ago" line in the channel alerts window was cut off with "…"; it now wraps and is slightly larger
+
+## v2.5.58 — Stream-end details, raid viewer count, change-alert checks
+
+- Stream ended alerts arrived without length or title ("-"): the category/title tracker removed a channel's last info (start time, title) the moment it went offline, just before the stream-end check looked for it. That info is now kept for 3 hours after a channel goes offline, so the alert shows "Streamed for 2h 5m · title" again. If nothing is known, the category (or Kick.com) is shown instead of "-"
+- Raid alerts could show "? viewers": Kick sends two events per raid and one may have no viewer count. The first event now waits 4 seconds and both are merged into a single notification
+- Category/title change alerts: comparisons were skipped when the last fresh check was more than 15 minutes old (e.g. after Cloudflare blocks); now 60 minutes, the same-stream check still prevents mix-ups. The channel alerts window now shows what the extension last saw for that channel ("Now: Just Chatting · checked 3m ago"), and each check is logged (CHG-05…CHG-08) in the background console
+
+## v2.5.57 — Card buttons always fit
+
+- Following cards: with channel groups defined a card has six buttons, and in the two-column popup the last one (favourite star) was cut off. The buttons are now one group, slightly tighter, and fit on one line in the usual popup width; if a card is ever too narrow, the whole group moves to a second line instead of being cut
+- The new channel-alerts icon used a different icon class and rendered larger than the others; all card icons are now the same size (the group icon too)
+
+## v2.5.56 — Large preview on hover
+
+- Hovering a channel preview image for a moment shows it large with the title and category. Uses the image already loaded (no extra request); only when Channel Preview Images is on
+
+## v2.5.55 — Watch time and weekly summary
+
+- New: counts how long you watch each channel while a Kick tab is playing (VOD/clip pages and silent background tabs are not counted; the same channel in two tabs is counted once). Stored only on this device, kept for 35 days
+- History tab shows the last 7 days: total, change vs. the 7 days before, and the top 3 channels
+- Can be turned off in Settings → Additional Features → Watch time (on by default)
+
+## v2.5.54 — Raid alerts (opt-in per channel)
+
+- New per-channel option: notification when another streamer raids a followed channel, e.g. "Mithrain raided Eray · with 842 viewers", plus a History entry
+- Uses Kick's StreamHostEvent / StreamHostedEvent on the channel's chatroom through the existing bot-detection connection; if bot detection is off, only channels with raid alerts on are listened to (no scoring). The raw event is logged as RAID-00 so the field names can be checked against a real raid
+- One raid notification per channel per 10 minutes (the two events Kick sends for one raid never produce two notifications)
+- Firefox: the chat connection module is now loaded in the background in raid-only mode (no bot scores on Firefox, same as before)
+
+## v2.5.53 — Stream ended alerts (opt-in per channel)
+
+- New per-channel option: notification when a stream ends, with how long it lasted, plus a History entry
+- Two-stage confirmation: a Pusher end event or fresh API data only makes the channel a candidate; the alert goes out when fresh API data still shows it offline about 2.5 minutes later. Fallback (cached) data never counts as an end, a channel that comes back cancels the candidate, and nothing is sent retroactively after the browser was closed
+
+## v2.5.52 — Review request for active users only
+
+- A one-line request to leave a store review, shown only when all of these are true: used for at least 7 days, at least one channel preference set, at least one setting changed, popup opened at least 10 times, at least 3 live notifications received
+- "Maybe later" waits 21 days; shown at most twice; "Leave a review" or × never shows it again. Never shown together with the What's New banner. Stored only on this device
+
+## v2.5.51 — Stronger live ad-block fallback
+
+- Clarification: live streams already switch to Kick's own ad-free (ads-opt-out) playlist since v2.3.18; that stays the primary method
+- New third fallback adapted from Kick Ad Blocker – AI Chat: Amazon IVS labels every segment's source ("live" for real content). Segments with a different source (and their ad init segment) are removed, which also catches ad breaks without SCTE-35 CUE-OUT markers. Only applied when the playlist uses these labels and real content remains
+
+## v2.5.50 — Per-channel category / keyword filter
+
+- New per-channel filter: notify only if the category is one of a list and/or the title contains one of your words. Applies to the notification, sound and auto-launch; the stream is still logged in History with a "Filtered" tag
+- Matching ignores case and accents and handles Turkish İ/ı ("İSTANBUL" matches "istanbul"); category suggestions come from the channels you follow
+- If Kick's live event arrives without a category and a category filter is set, the category is looked up for that channel only; if it is still unknown, the notification is not blocked
+
+## v2.5.49 — Channel alerts window and category / title change alerts
+
+- New button on channel cards (tune icon) opens a per-channel alerts window; everything in it is off by default and the button turns green when something is set
+- New per-channel option: notification when a live channel switches category or changes its title. Only with fresh API data, only within the same stream session, both old and new values must be present, at most one change alert per channel per 5 minutes
+
+## v2.5.48 — Settings no longer cut off in longer languages
+
+- Settings groups were measured once when opened and kept that pixel height; switching language (or any text that grew later) pushed the bottom of a group out of view, e.g. the "Reset Everything" button in German and Japanese. Groups now only use a fixed height during the open/close animation and grow freely with their content afterwards
+- Text written by the popup itself now follows a language switch right away: last backup line, custom sound status, History day headings, anomaly sensitivity labels ("Warn" / "Alert")
+- Translated the remaining fixed English text: Settings title, "Source Code" and "Rate Extension" links, the Auto / Guard header pills, the "Sort:" label and the "sec" unit, in all 14 languages
+- Japanese: auto-launch is now "自動オープン" instead of "自動入場"
+
 ## v2.5.47 — Two small fixes found while refreshing the store images
 
 - Tab labels no longer get clipped when a counter is shown next to a long label (e.g. "Notification History"); each tab now takes the width its label needs and long translations wrap instead of being cut off

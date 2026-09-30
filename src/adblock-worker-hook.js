@@ -603,6 +603,57 @@
       return outLines.join('\n');
     }
 
+    // v2.5.51: Kick Ad Blocker (AI Chat) v1.1.1'den uyarlandı — üçüncü yedek.
+    // Amazon IVS medya listesinde her segmentin kaynağını etiketliyor:
+    // gerçek yayın "#EXTINF:<süre>,live", reklam segmentleri farklı bir kaynak
+    // adıyla; ayrıca "X-NET-LIVE-VIDEO-STREAM-SOURCE" DATERANGE özniteliği.
+    // CUE-OUT işareti OLMAYAN reklam aralarını da yakalar.
+    // GÜVENLİK: sadece listede en az bir segment açıkça "live" etiketliyse
+    // (etiket düzeni kullanılıyor demek) ve en az bir "live" segment kalıyorsa
+    // uygulanır; etiketsiz (boş başlıklı) segmentler içerik sayılır.
+    var STREAM_SOURCE_RE = /X-NET-LIVE-VIDEO-STREAM-SOURCE="?([^",]+)/i;
+    function extinfSource(line) {
+      var ci = line.indexOf(',');
+      return (ci >= 0 ? line.slice(ci + 1) : '').trim().toLowerCase();
+    }
+    function stripNonLiveSegments(txt) {
+      if (typeof txt !== 'string' || txt.indexOf('#EXTINF') === -1) return null;
+      if (txt.indexOf('#EXT-X-STREAM-INF') !== -1) return null; // master, medya değil
+      var lines = txt.split('\n');
+      var liveTagged = 0, adSegs = 0, liveSegs = 0, inAd = false, i, l, m, src;
+      for (i = 0; i < lines.length; i++) {
+        l = lines[i];
+        m = l.match(STREAM_SOURCE_RE);
+        if (m) { inAd = m[1].trim().toLowerCase() !== 'live'; continue; }
+        if (l.indexOf('#EXTINF:') === 0) {
+          src = extinfSource(l);
+          if (src === 'live') liveTagged++;
+          if (inAd || (src && src !== 'live')) adSegs++; else liveSegs++;
+        }
+      }
+      if (!adSegs || !liveTagged || !liveSegs) return null;
+      var out = [], cur = false;
+      for (i = 0; i < lines.length; i++) {
+        l = lines[i];
+        m = l.match(STREAM_SOURCE_RE);
+        if (m) { cur = m[1].trim().toLowerCase() !== 'live'; if (!cur) out.push(l); continue; }
+        if (l.indexOf('#EXT-X-MAP') === 0) { if (!cur) out.push(l); continue; } // reklamın init segmenti
+        if (l.indexOf('#EXTINF:') === 0) {
+          src = extinfSource(l);
+          if (cur || (src && src !== 'live')) {
+            // #EXTINF ile URI arasındaki etiketleri de atla, URI satırını atla
+            while (i + 1 < lines.length && lines[i + 1].charAt(0) === '#') i++;
+            i++;
+            continue;
+          }
+          out.push(l);
+          continue;
+        }
+        out.push(l);
+      }
+      return out.join('\n');
+    }
+
     if (/\.m3u8/i.test(url)) {
           return p.then(function (resp) {
             return resp.clone().text().then(function (txt) {
@@ -637,7 +688,18 @@
                     return new Response(stripped, { status: resp.status, statusText: resp.statusText, headers: rebuildHeaders(resp) });
                   }
                 } catch (e) { /* parse hatasi - orijinal akisa dokunulmadan devam */ }
-              } else if (VOD_STITCH_RE.test(url)) {
+              }
+              // v2.5.51: CUE-OUT yok ya da segment-cerrahi bir şey çıkaramadıysa IVS kaynak etiketine bak
+              try {
+                var strippedSrc = stripNonLiveSegments(txt);
+                if (strippedSrc) {
+                  post({ kaAbAdLeak: 1 });
+                  log('medya playlistinden "live" disi kaynak segmentleri cikarildi (IVS kaynak etiketi)');
+                  post({ kaAbSwapped: 1 });
+                  return new Response(strippedSrc, { status: resp.status, statusText: resp.statusText, headers: rebuildHeaders(resp) });
+                }
+              } catch (e) { /* parse hatasi - orijinal akisa dokunulmadan devam */ }
+              if (!(txt.indexOf('#EXT-X-CUE-OUT') !== -1 || txt.indexOf('stitched-ad') !== -1) && VOD_STITCH_RE.test(url)) {
                 // v2.5.3: Açık CUE-OUT işaretçisi yoktu ama bu VOD-özel bir istek —
                 // host-bazlı yedek tekniği dene.
                 try {

@@ -645,7 +645,7 @@
     "message": "Você ainda não segue ninguém. Siga um canal na Kick e ele aparecerá aqui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Visual novo! Contadores nas abas, tema \"Sistema\" e fontes embutidas na extensão. Confira as <a id=\"whatsnew-settings-link\">Configurações</a>."
+    "message": "Novo: alertas por canal para mudança de categoria, fim da live e raids, além do tempo assistido. Use o botão de ajustes no card e escolha o som em <a id=\"whatsnew-settings-link\">Configurações</a>."
   },
   "optGroupGeneral": {
     "message": "Geral"
@@ -672,22 +672,22 @@
     "message": "Fechar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — Um visual totalmente novo"
+    "message": "v2.5.67 — Alertas por canal, tempo assistido e correções"
   },
   "releaseHistoryV0Body": {
-    "message": "• Popup redesenhado: cabeçalho mais limpo, contadores nas abas (canais ao vivo, novas notificações), cartões mais discretos e um único estilo de interruptor em todas as configurações\n• Novo tema \"Sistema\" que segue o modo claro ou escuro do seu computador\n• Fontes e ícones agora vêm dentro da extensão: nomes de ícones não aparecem mais como texto em conexões lentas e o popup não faz requisições ao Google\n• Histórico: notificações idênticas repetidas são agrupadas e categorias vazias ficam ocultas\n• Ícones de modo de som mais claros, foco de teclado visível e respeito à configuração do sistema \"reduzir movimento\""
+    "message": "• Nova janela de alertas por canal (botão de ajustes no card): seja avisado quando um canal mudar de categoria ou título, quando uma live terminar (com a duração) e quando ele receber uma raid (de quem e com quantos espectadores). Tudo vem desativado\n• Filtro por canal: avisar só quando a categoria for uma das escolhidas ou o título tiver uma das suas palavras\n• Esses alertas têm um som próprio, mais baixo (Gota suave, Sino leve, Tique), o som do Windows ou silêncio, com volume separado\n• Tempo assistido: o histórico mostra quanto você assistiu nos últimos 7 dias e seus canais principais (salvo só neste dispositivo)\n• Passe o mouse sobre a prévia de um canal para vê-la em tamanho grande; os botões dos cards sempre cabem\n• Corrigido no Chrome atual (148+): no modo \"Sons da extensão\" as notificações tocavam também o som do Windows e perdiam os botões Abrir / Silenciar\n• A sincronização na nuvem não desfaz mais um arquivo de configurações importado, e uma configuração grande demais para sincronizar é mantida em vez de sobrescrita\n• As configurações não são mais cortadas em idiomas mais longos; método reserva mais forte para pular anúncios na live"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — Correções de integridade de dados e sincronização em nuvem"
+    "message": "v2.5.46 — Um visual totalmente novo"
   },
   "releaseHistoryV1Body": {
-    "message": "• Corrigido: o campo de nome de usuário da Kick na aba Chat não salvava o valor se você digitasse e fechasse o popup logo em seguida\n• Corrigido o mesmo problema em outros lugares: canais favoritos, modo de som por canal, grupos de canais, lista de abertura automática, cache de ID de chatroom/canal, pontuações de bot e histórico de notificações podiam perder uma alteração se duas atualizações acontecessem muito próximas — agora todos passam por uma fila de escrita, então isso não pode mais acontecer\n• Corrigido um bug crítico de sincronização em nuvem: se a sincronização em nuvem estivesse ativada, as configurações da aba Chat podiam voltar silenciosamente a um estado antigo/vazio horas depois sem nenhuma interação, porque uma verificação de sincronização em segundo plano reaplicava repetidamente uma cópia desatualizada da nuvem. Agora as configurações de chat sincronizam imediatamente a cada alteração, e essa verificação em segundo plano não baixa mais dados da nuvem por conta própria"
+    "message": "• Popup redesenhado: cabeçalho mais limpo, contadores nas abas (canais ao vivo, novas notificações), cartões mais discretos e um único estilo de interruptor em todas as configurações\n• Novo tema \"Sistema\" que segue o modo claro ou escuro do seu computador\n• Fontes e ícones agora vêm dentro da extensão: nomes de ícones não aparecem mais como texto em conexões lentas e o popup não faz requisições ao Google\n• Histórico: notificações idênticas repetidas são agrupadas e categorias vazias ficam ocultas\n• Ícones de modo de som mais claros, foco de teclado visível e respeito à configuração do sistema \"reduzir movimento\""
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — Bloqueio de anúncios, notificações de chat e configurações redesenhadas"
+    "message": "v2.5.45 — Correções de integridade de dados e sincronização em nuvem"
   },
   "releaseHistoryV2Body": {
-    "message": "• Três novas camadas de bloqueio de anúncios: SDK GPT/IMA simulado, filtragem em nível de segmento e detecção da sobreposição de transição \"tela preta\" da própria Kick\n• Busca de fonte VOD sem anúncios mais rápida e segura\n• Configurações reorganizadas em categorias recolhíveis, com busca\n• Banner de \"Novidades\" e este histórico\n• Backup e restauração: exporte/importe todas as suas configurações como um arquivo (com uma rede de segurança de desfazer única e uma opção \"Restaurar padrões\")\n• Corrigido: a ocultação de anúncios não tinha efeito visual (a regra CSS nunca chegava à página) e só funcionava quando nossa própria detecção era acionada — agora funciona de forma independente e detecta mais sobreposições de anúncios\n• Chat: responder à sua mensagem agora notifica como uma menção @\n• O popup e o som das notificações de chat agora podem ser ativados de forma independente (com um modo de som opcional \"somente quando não estiver assistindo\") — esse modo também detecta quando o próprio painel de chat da Kick está oculto (modo teatro/tela cheia), não apenas aba em segundo plano ou rolada\n• Corrigido: notificações de chat não disparavam ao acompanhar ativamente o chat ao vivo, e o som da extensão conflitava com o próprio som de notificação do Windows\n• Adicionado o eslovaco como novo idioma suportado\n• Todas as traduções nos 14 idiomas foram revisadas quanto à precisão e naturalidade — várias traduções incorretas e inconsistências de tom foram corrigidas"
+    "message": "• Corrigido: o campo de nome de usuário da Kick na aba Chat não salvava o valor se você digitasse e fechasse o popup logo em seguida\n• Corrigido o mesmo problema em outros lugares: canais favoritos, modo de som por canal, grupos de canais, lista de abertura automática, cache de ID de chatroom/canal, pontuações de bot e histórico de notificações podiam perder uma alteração se duas atualizações acontecessem muito próximas — agora todos passam por uma fila de escrita, então isso não pode mais acontecer\n• Corrigido um bug crítico de sincronização em nuvem: se a sincronização em nuvem estivesse ativada, as configurações da aba Chat podiam voltar silenciosamente a um estado antigo/vazio horas depois sem nenhuma interação, porque uma verificação de sincronização em segundo plano reaplicava repetidamente uma cópia desatualizada da nuvem. Agora as configurações de chat sincronizam imediatamente a cada alteração, e essa verificação em segundo plano não baixa mais dados da nuvem por conta própria"
   },
   "settingsBackupTitle": {
     "message": "Backup e restauração"
@@ -802,5 +802,229 @@
   },
   "alSectionOffline": {
     "message": "Offline"
+  },
+  "chipAutoLabel": {
+    "message": "Auto",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "Proteção",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "Configurações do KickAlert",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "Código-fonte",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "Avaliar a extensão",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "s",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 mudou de categoria",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 mudou o título da live",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "Alertas do canal",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "Alertas extras para este canal. Todos desativados por padrão.",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "Mudança de categoria ou título",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "Avisar quando este canal mudar de categoria ou de título durante a live.",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "Avisar somente se",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "Deixe vazio para ser avisado em toda live. Vale para a notificação, o som e a abertura automática.",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "A categoria é uma destas",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "O título contém um destes",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "ex.: Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "ex.: torneio",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "Filtrado",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "Sem notificação: não correspondeu ao filtro do canal",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "Você usa o KickAlert há algum tempo. Se ele te ajuda, uma avaliação rápida na loja faria muita diferença e ajudaria outras pessoas a encontrá-lo.",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "Avaliar",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "Mais tarde",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "Não perguntar de novo",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 encerrou a live",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "Duração: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "Live encerrada",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "Raid de $1 · $2 espectadores",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "Fim da live",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "Avisar quando a live terminar, com a duração. Confirmado após cerca de 2 minutos para ignorar quedas rápidas.",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1 fez raid em $2",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "com $1 espectadores",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "Raid recebido",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "Avisar quando outro streamer fizer raid neste canal, com quem foi e quantos espectadores vieram.",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "Tempo assistido",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "Conta quanto tempo você assiste a cada canal enquanto uma aba do Kick está tocando e mostra um resumo semanal no Histórico. Fica salvo só neste dispositivo.",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "Assistido nos últimos 7 dias",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "em relação aos 7 dias anteriores",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "Agora: $1 · verificado há $2",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "O acompanhamento começa quando o canal entrar ao vivo",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "Sons de eventos do canal",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "Para mudança de categoria/título, fim da live e raids. Escolha um som da extensão mais baixo, o som de notificação do Windows ou silêncio.",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "Som",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "Gota suave",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "Sino leve",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "Tique",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "Silencioso",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Som de notificação do Windows",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "Só o som do sistema toca, o da extensão não.",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "Exemplo de alerta de evento do canal (som do sistema)",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "O Firefox não consegue pedir uma notificação silenciosa, então o Windows pode tocar o próprio som. Para evitar, desative \"Reproduzir um som quando uma notificação chegar\" para o Firefox em Configurações do Windows → Sistema → Notificações.",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "Grande demais para sincronizar (mais de 8 KB): $1. Mantido neste dispositivo, mas não enviado aos seus outros dispositivos.",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "Canais favoritos",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "Canais com abertura automática",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "Modos de som dos canais",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "Configurações do chat",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

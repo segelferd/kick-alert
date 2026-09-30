@@ -612,7 +612,7 @@
     "message": "Zatiaľ nikoho nesleduješ. Sleduj kanál na Kick a automaticky sa zobrazí tu."
   },
   "whatsNewBannerText": {
-    "message": "Nový vzhľad! Počítadlá na kartách, téma „Systémová“ a písma priamo v rozšírení. Pozri si <a id=\"whatsnew-settings-link\">Nastavenia</a>."
+    "message": "Novinka: upozornenia pre jednotlivé kanály na zmenu kategórie, koniec streamu a raidy a tiež čas sledovania. Použite tlačidlo nastavenia na karte kanála, zvuk vyberiete v <a id=\"whatsnew-settings-link\">Nastaveniach</a>."
   },
   "optGroupGeneral": {
     "message": "Všeobecné"
@@ -639,22 +639,22 @@
     "message": "Zavrieť"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — Úplne nový vzhľad"
+    "message": "v2.5.67 — Upozornenia pre jednotlivé kanály, čas sledovania a opravy"
   },
   "releaseHistoryV0Body": {
-    "message": "• Prepracované okno: čistejšia hlavička, počítadlá na kartách (živé kanály, nové oznámenia), pokojnejšie karty a jednotný štýl prepínačov vo všetkých nastaveniach\n• Nová téma „Systémová“, ktorá sa riadi svetlým alebo tmavým režimom počítača\n• Písma a ikony sú teraz súčasťou rozšírenia: na pomalom pripojení sa už nezobrazujú názvy ikon ako text a okno neposiela žiadne požiadavky na Google\n• História: opakované rovnaké oznámenia sa zlučujú a prázdne kategórie sa skrývajú\n• Zrozumiteľnejšie ikony režimu zvuku, viditeľné zameranie klávesnicou a rešpektovanie systémového nastavenia „obmedziť pohyb“"
+    "message": "• Nové okno upozornení kanála (tlačidlo nastavení na karte kanála): dostanete upozornenie, keď kanál zmení kategóriu alebo názov, keď stream skončí (aj s dĺžkou) a keď príde raid (od koho a s koľkými divákmi). Všetko je predvolene vypnuté\n• Filter kanála: upozorniť len vtedy, keď je kategória z vášho výberu alebo názov obsahuje jedno z vašich slov\n• Tieto upozornenia majú vlastný tichší zvuk (Jemná kvapka, Ľahká zvonkohra, Cvaknutie), zvuk Windows alebo ticho, s vlastnou hlasitosťou\n• Čas sledovania: história ukazuje, ako dlho ste sledovali za posledných 7 dní, a vaše najsledovanejšie kanály (uložené len v tomto zariadení)\n• Po prejdení myšou na náhľad kanála sa zobrazí vo veľkom; tlačidlá na kartách sa vždy zmestia\n• Opravené v aktuálnom Chrome (148+): v režime „Zvuky rozšírenia\" oznámenia prehrávali zvuk Windows a prišli o tlačidlá Otvoriť / Stlmiť\n• Cloudová synchronizácia už nevracia späť importovaný súbor nastavení a nastavenie príliš veľké na synchronizáciu sa zachová namiesto prepísania\n• Nastavenia sa v dlhších jazykoch už neorezávajú; silnejší záložný spôsob preskakovania reklám v živom vysielaní"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — Opravy integrity dát a cloudovej synchronizácie"
+    "message": "v2.5.46 — Úplne nový vzhľad"
   },
   "releaseHistoryV1Body": {
-    "message": "• Opravené: pole používateľského mena Kick na karte Chat neuložilo hodnotu, ak si ho napísal a hneď zavrel vyskakovacie okno\n• Opravený rovnaký problém inde: obľúbené kanály, režim zvuku podľa kanála, skupiny kanálov, zoznam automatického otvárania, medzipamäť ID chatroomu/kanála, skóre botov a história oznámení mohli stratiť zmenu, ak dve aktualizácie prišli tesne po sebe — teraz všetko prechádza frontou zápisu, takže sa to už nemôže stať\n• Opravená kritická chyba cloudovej synchronizácie: ak bola zapnutá cloudová synchronizácia, nastavenia karty Chat sa mohli po hodinách bez akejkoľvek interakcie ticho vrátiť do starého/prázdneho stavu — spôsobovala to rutinná kontrola synchronizácie na pozadí, ktorá opakovane znova aplikovala zastaranú kópiu z cloudu. Nastavenia chatu sa teraz synchronizujú okamžite pri každej zmene a táto kontrola na pozadí už sama od seba nesťahuje dáta z cloudu"
+    "message": "• Prepracované okno: čistejšia hlavička, počítadlá na kartách (živé kanály, nové oznámenia), pokojnejšie karty a jednotný štýl prepínačov vo všetkých nastaveniach\n• Nová téma „Systémová“, ktorá sa riadi svetlým alebo tmavým režimom počítača\n• Písma a ikony sú teraz súčasťou rozšírenia: na pomalom pripojení sa už nezobrazujú názvy ikon ako text a okno neposiela žiadne požiadavky na Google\n• História: opakované rovnaké oznámenia sa zlučujú a prázdne kategórie sa skrývajú\n• Zrozumiteľnejšie ikony režimu zvuku, viditeľné zameranie klávesnicou a rešpektovanie systémového nastavenia „obmedziť pohyb“"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — Blokovanie reklám, oznámenia chatu a prepracované nastavenia"
+    "message": "v2.5.45 — Opravy integrity dát a cloudovej synchronizácie"
   },
   "releaseHistoryV2Body": {
-    "message": "• Tri nové vrstvy blokovania reklám: náhrada GPT/IMA SDK, filtrovanie na úrovni segmentov a detekcia vlastného prechodového prekrytia \"čiernej obrazovky\" Kicku\n• Vyhľadávanie zdroja VOD bez reklám je rýchlejšie a bezpečnejšie\n• Nastavenia prepracované do zbaliteľných kategórií s vyhľadávaním\n• Banner \"Čo je nové\" a toto zobrazenie histórie\n• Zálohovanie a obnovenie: exportuj/importuj všetky svoje nastavenia ako súbor (s jednorazovou poistkou na vrátenie späť a možnosťou \"Obnoviť na predvolené\")\n• Opravené skrývanie reklám, ktoré vizuálne vôbec nefungovalo (pravidlo CSS sa nikdy nedostalo na stránku) a fungovalo len pri aktivácii našej vlastnej detekcie — teraz funguje nezávisle a zachytí viac reklamných prekrytí\n• Chat: odpoveď na tvoju správu ťa teraz upozorní rovnako ako zmienka @\n• Vyskakovacie okno a zvuk oznámení chatu sa teraz dajú zapínať nezávisle (s voliteľným zvukovým režimom \"len keď nesleduješ\") — tento režim teraz rozpoznáva aj to, keď je skrytý vlastný chatovací panel Kicku (režim divadla/celej obrazovky), nielen kartu na pozadí alebo odscrollovanie\n• Opravené oznámenia chatu, ktoré sa nespúšťali pri aktívnom sledovaní živého chatu, a kolízia zvuku rozšírenia s vlastným oznamovacím zvukom Windows\n• Pridaná slovenčina ako novo podporovaný jazyk\n• Skontrolované všetky preklady vo všetkých 14 jazykoch z hľadiska presnosti a prirodzenosti — opravených niekoľko chybných prekladov a nezrovnalostí v oslovovaní"
+    "message": "• Opravené: pole používateľského mena Kick na karte Chat neuložilo hodnotu, ak si ho napísal a hneď zavrel vyskakovacie okno\n• Opravený rovnaký problém inde: obľúbené kanály, režim zvuku podľa kanála, skupiny kanálov, zoznam automatického otvárania, medzipamäť ID chatroomu/kanála, skóre botov a história oznámení mohli stratiť zmenu, ak dve aktualizácie prišli tesne po sebe — teraz všetko prechádza frontou zápisu, takže sa to už nemôže stať\n• Opravená kritická chyba cloudovej synchronizácie: ak bola zapnutá cloudová synchronizácia, nastavenia karty Chat sa mohli po hodinách bez akejkoľvek interakcie ticho vrátiť do starého/prázdneho stavu — spôsobovala to rutinná kontrola synchronizácie na pozadí, ktorá opakovane znova aplikovala zastaranú kópiu z cloudu. Nastavenia chatu sa teraz synchronizujú okamžite pri každej zmene a táto kontrola na pozadí už sama od seba nesťahuje dáta z cloudu"
   },
   "settingsBackupTitle": {
     "message": "Zálohovanie a obnovenie"
@@ -769,5 +769,229 @@
   },
   "alSectionOffline": {
     "message": "Offline"
+  },
+  "chipAutoLabel": {
+    "message": "Auto",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "Ochrana",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "Nastavenia KickAlert",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "Zdrojový kód",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "Ohodnotiť rozšírenie",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "s",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 zmenil kategóriu",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 zmenil názov streamu",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "Upozornenia kanála",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "Ďalšie upozornenia pre tento kanál. Predvolene sú všetky vypnuté.",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "Zmena kategórie alebo názvu",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "Upozorniť, keď kanál počas streamu zmení kategóriu alebo názov.",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "Upozorniť len keď",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "Nechajte prázdne pre upozornenie na každý stream. Platí pre upozornenie, zvuk aj automatické otvorenie.",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "Kategória je jedna z",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "Názov obsahuje jedno z",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "napr. Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "napr. turnaj",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "Filtrované",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "Bez upozornenia: nezodpovedalo filtru kanála",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "KickAlert používate už nejaký čas. Ak vám pomáha, krátka recenzia v obchode by veľmi pomohla aj ostatným, aby ho našli.",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "Napísať recenziu",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "Neskôr",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "Už sa nepýtať",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 ukončil stream",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "Dĺžka streamu: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "Stream skončil",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "Raid od $1 · $2 divákov",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "Koniec streamu",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "Upozorniť, keď stream skončí, aj s jeho dĺžkou. Potvrdzuje sa asi po 2 minútach, aby sa krátke výpadky nerátali.",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1 poslal raid na $2",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "s $1 divákmi",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "Prichádzajúci raid",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "Upozorniť, keď iný streamer pošle na tento kanál raid, aj s tým, kto to bol a koľko divákov prišlo.",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "Čas sledovania",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "Počíta, ako dlho sledujete jednotlivé kanály, keď karta Kick prehráva, a v histórii ukazuje týždenný súhrn. Ukladá sa len v tomto zariadení.",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "Sledované za posledných 7 dní",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "oproti predchádzajúcim 7 dňom",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "Teraz: $1 · kontrola pred $2",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "Sledovanie začne, keď kanál začne vysielať",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "Zvuky udalostí kanála",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "Pre zmenu kategórie/názvu, koniec streamu a raidy. Vyberte tichší zvuk rozšírenia, zvuk oznámení Windows alebo ticho.",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "Zvuk",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "Jemná kvapka",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "Ľahká zvonkohra",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "Cvaknutie",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "Ticho",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Zvuk oznámení Windows",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "Hrá len systémový zvuk, zvuk rozšírenia nie.",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "Ukážkové upozornenie na udalosť kanála (systémový zvuk)",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "Firefox nemôže požiadať o tiché oznámenie, preto môže Windows pridať vlastný zvuk. Aby ste tomu zabránili, vypnite pre Firefox „Prehrať zvuk pri prijatí oznámenia“ v Nastavenia Windows → Systém → Oznámenia.",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "Príliš veľké na synchronizáciu (nad 8 KB): $1. Zostáva v tomto zariadení, ale neodosiela sa do ostatných zariadení.",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "Obľúbené kanály",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "Automaticky otvárané kanály",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "Zvukové režimy kanálov",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "Nastavenia chatu",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

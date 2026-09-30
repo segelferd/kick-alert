@@ -11,12 +11,12 @@
     <div class="menu-chips">
       <button class="menu-chip" id="suspend-chip" title="">
         <span class="material-icons" id="suspend-icon">play_arrow</span>
-        <span class="chip-label" id="suspend-label">Auto</span>
+        <span class="chip-label" id="suspend-label" data-i18n="chipAutoLabel">Auto</span>
         <span class="chip-status" id="suspend-status"></span>
       </button>
       <button class="menu-chip" id="dup-guard-chip" title="">
         <span class="material-icons-outlined" id="dup-guard-icon">tab</span>
-        <span class="chip-label" id="dup-guard-label">Guard</span>
+        <span class="chip-label" id="dup-guard-label" data-i18n="chipGuardLabel">Guard</span>
         <span class="chip-status" id="dup-guard-status"></span>
       </button>
       <button class="menu-chip" id="refresh-chip" title="">
@@ -41,6 +41,21 @@
     <span class="material-icons-outlined">celebration</span>
     <span class="whatsnew-banner-text" id="whatsnew-banner-text"></span>
     <button type="button" id="whatsnew-banner-close" class="whatsnew-banner-close">
+      <span class="material-icons-outlined">close</span>
+    </button>
+  </div>
+
+  <!-- v2.5.52: Değerlendirme isteği; sadece gerçekten kullanan birine, en fazla iki kez -->
+  <div id="rate-banner" class="whatsnew-banner rate-banner" style="display:none;">
+    <span class="material-icons-outlined">star_rate</span>
+    <div class="rate-banner-body">
+      <span class="whatsnew-banner-text" id="rate-banner-text" data-i18n="rateBannerText">You've been using KickAlert for a while. If it helps you, a short review in the store would mean a lot and helps others find it.</span>
+      <div class="rate-banner-actions">
+        <button type="button" id="rate-banner-rate" class="rate-btn rate-btn-primary" data-i18n="rateBannerRate">Leave a review</button>
+        <button type="button" id="rate-banner-later" class="rate-btn" data-i18n="rateBannerLater">Maybe later</button>
+      </div>
+    </div>
+    <button type="button" id="rate-banner-close" class="whatsnew-banner-close">
       <span class="material-icons-outlined">close</span>
     </button>
   </div>
@@ -105,6 +120,7 @@
           <span data-i18n="clearHistory">Clear</span>
         </button>
       </div>
+      <div id="watch-summary" class="watch-summary" hidden></div>
       <div id="history-list" class="history-container"></div>
     </div>
     <div id="chat-panel" class="tab-content">
@@ -295,7 +311,7 @@
         <span class="material-icons">arrow_back</span>
         <span data-i18n="optionsBack">Back</span>
       </button>
-      <span class="options-title">KickAlert Options</span>
+      <span class="options-title" data-i18n="optionsTitle">KickAlert Options</span>
     </div>
     <div class="options-body">
       <div class="opt-search-wrap">
@@ -431,7 +447,7 @@
           <span class="opt-slider-label" data-i18n="autoOpenDelayLabel">Tab open delay</span>
           <input type="range" id="opt-auto-open-delay-slider" min="3" max="9" step="2" />
           <span id="opt-auto-open-delay-value" class="opt-slider-value"></span>
-          <span class="opt-slider-unit">sec</span>
+          <span class="opt-slider-unit" data-i18n="unitSeconds">sec</span>
         </div>
         <div class="opt-divider"></div>
         <div class="opt-sound-mode">
@@ -484,7 +500,7 @@
           <span class="opt-slider-label" data-i18n="checkInterval">Check interval</span>
           <input type="range" id="opt-interval-slider" min="30" max="300" step="30" />
           <span id="opt-interval-value" class="opt-slider-value"></span>
-          <span class="opt-slider-unit">sec</span>
+          <span class="opt-slider-unit" data-i18n="unitSeconds">sec</span>
         </div>
         <label class="opt-row">
           <input type="checkbox" id="opt-auto-refresh" />
@@ -520,6 +536,41 @@
               <span data-i18n="chatMentionSoundSmart">Only when you're not actively watching (tab in background, chat scrolled up, or Kick's own chat panel hidden) — applies to tags, replies, and streamer messages.</span>
             </label>
           </div>
+        </div>
+      </div>
+      <!-- v2.5.63: Kanal olayı sesi — değişim / yayın bitti / raid bildirimleri için
+           ayrı, daha kısık ses (veya sessiz). Ana ses modundan bağımsız. -->
+      <div class="opt-section">
+        <div class="opt-dnd-section" id="opt-event-sound-section">
+          <div class="opt-dnd-header">
+            <span class="material-icons-outlined" style="font-size:16px;">tune</span>
+            <span data-i18n="eventSoundTitle">Channel event sounds</span>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 22px;line-height:1.5;">
+            <span data-i18n="eventSoundDesc">For category/title change, stream ended and raid alerts. Quieter than the live alert; the system notification sound is not used.</span>
+          </div>
+          <div class="opt-slider-row opt-slider-row-compact">
+            <span class="opt-slider-label" data-i18n="eventSoundLabel">Sound</span>
+            <select id="opt-event-sound" class="opt-dnd-select opt-event-select">
+              <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
+              <option value="chime" data-i18n="eventSoundChime">Light chime</option>
+              <option value="tick" data-i18n="eventSoundTick">Tick</option>
+              <option value="windows" data-i18n="eventSoundWindows">Windows notification sound</option>
+              <option value="silent" data-i18n="eventSoundSilent">Silent</option>
+            </select>
+          </div>
+          <div class="opt-slider-row" id="opt-event-volume-row">
+            <span class="opt-slider-label" data-i18n="notificationSoundVolume">Sound volume</span>
+            <input type="range" id="opt-event-volume-slider" min="0" max="100" step="5" />
+            <span id="opt-event-volume-value" class="opt-slider-value"></span>
+            <span class="opt-slider-unit">%</span>
+            <button id="opt-event-sound-test" class="opt-text-btn" data-i18n="testSoundVolume">[Test]</button>
+          </div>
+          <div class="opt-slider-row opt-slider-row-compact" id="opt-event-winsound-row" style="display:none;">
+            <span class="opt-slider-label" data-i18n="eventSoundWindowsHint">Only the system sound plays, the extension sound does not.</span>
+            <button id="opt-event-winsound-test" class="opt-text-btn" data-i18n="testSoundVolume">[Test]</button>
+          </div>
+          <p class="opt-sound-note" id="opt-event-sound-note" style="display:none;" data-i18n="eventSoundWinNote">If Windows still plays its own sound with an extension sound or Silent, turn off "Play a sound when a notification arrives" for your browser in Windows Settings → System → Notifications.</p>
         </div>
       </div>
       <!-- DND Section — OUTSIDE extension-sound-settings, works with both sound modes -->
@@ -670,6 +721,18 @@
         </div>
         <div id="thumbnails-desc" class="opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="thumbnailsWarning">Shows a live preview image under each live channel. This sends one extra request per live channel each time the popup opens, which carries a small risk of Kick flagging the activity as bot-like.</div>
       </div>
+      <!-- Watch Time Section (v2.5.55) -->
+      <div class="opt-section">
+        <div class="opt-dnd-header">
+          <span class="material-icons-outlined" style="font-size:16px;">schedule</span>
+          <span data-i18n="watchTimeTitle">Watch time</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="opt-watch-time" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="watchTimeDesc">Counts how long you watch each channel while a Kick tab is playing and shows a weekly summary in History. Stored only on this device.</div>
+      </div>
         </div>
       </div>
       <div class="opt-group" id="opt-group-account">
@@ -698,6 +761,7 @@
             </button>
             <span id="opt-cloud-sync-now-status" style="font-size:11px;color:var(--text-muted);"></span>
           </div>
+          <div id="opt-cloud-sync-issue" style="display:none;font-size:11px;color:#e0a952;padding:6px 0 0 22px;line-height:1.5;"></div>
         </div>
       </div>
       <!-- v2.5.17: Ayarları Dışa/İçe Aktar -->
@@ -752,9 +816,9 @@
         <div class="opt-app-info">
           <span class="opt-app-version" id="opt-app-version">KickAlert v1.7.0</span>
           <div class="opt-app-links">
-            <a href="https://github.com/segelferd/kick-alert" target="_blank">Source Code</a>
+            <a href="https://github.com/segelferd/kick-alert" target="_blank" data-i18n="footerSourceCode">Source Code</a>
             <span class="opt-link-sep">·</span>
-            <a href="https://chromewebstore.google.com/detail/kickalert/dlchkgjgcmbgpbdiiipibnpjfhipkbac" target="_blank" id="rate-link">Rate Extension</a>
+            <a href="https://chromewebstore.google.com/detail/kickalert/dlchkgjgcmbgpbdiiipibnpjfhipkbac" target="_blank" id="rate-link" data-i18n="footerRateExtension">Rate Extension</a>
             <span class="opt-link-sep">·</span>
             <a href="#" id="whatsnew-relink" data-i18n="whatsNewRelink">What's New</a>
           </div>
@@ -829,6 +893,60 @@
       <div class="confirm-modal-actions">
         <button id="reset-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel" data-i18n="cancel">Cancel</button>
         <button id="reset-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept" data-i18n="resetConfirmAccept">Reset Everything</button>
+      </div>
+    </div>
+  </div>
+  <!-- v2.5.49: Kanal bazlı ek bildirim ayarları (hepsi varsayılan kapalı) -->
+  <div id="ch-alert-modal" class="confirm-modal ch-alert-modal" style="display:none" role="dialog" aria-modal="true" aria-labelledby="ch-alert-name">
+    <div class="confirm-modal-backdrop"></div>
+    <div class="confirm-modal-box ch-alert-box">
+      <div class="ch-alert-head">
+        <img class="ch-alert-avatar" id="ch-alert-avatar" alt="" />
+        <div class="ch-alert-headtext">
+          <div class="ch-alert-name" id="ch-alert-name"></div>
+          <div class="ch-alert-sub" data-i18n="chAlertSubtitle">Extra alerts for this channel. All are off by default.</div>
+        </div>
+        <button class="ch-alert-close" id="ch-alert-close" type="button"><span class="material-icons">close</span></button>
+      </div>
+      <div class="ch-alert-list" id="ch-alert-list">
+        <label class="ch-alert-row" data-pref="change">
+          <span class="material-icons-outlined ch-alert-ico">swap_horiz</span>
+          <span class="ch-alert-text"><span class="ch-alert-label" data-i18n="chAlertChange">Category or title changes</span><span class="ch-alert-desc" data-i18n="chAlertChangeDesc">Notify when this channel switches category or changes its stream title while live.</span><span class="ch-alert-state" id="ch-alert-change-state"></span></span>
+          <input type="checkbox" class="ch-alert-switch" data-pref="change" />
+        </label>
+        <label class="ch-alert-row" data-pref="end">
+          <span class="material-icons-outlined ch-alert-ico">stop_circle</span>
+          <span class="ch-alert-text"><span class="ch-alert-label" data-i18n="chAlertEnd">Stream ended</span><span class="ch-alert-desc" data-i18n="chAlertEndDesc">Notify when the stream ends, with how long it lasted. Confirmed after about 2 minutes so short drops don't count.</span></span>
+          <input type="checkbox" class="ch-alert-switch" data-pref="end" />
+        </label>
+        <label class="ch-alert-row" data-pref="raid">
+          <span class="material-icons-outlined ch-alert-ico">groups</span>
+          <span class="ch-alert-text"><span class="ch-alert-label" data-i18n="chAlertRaid">Incoming raid</span><span class="ch-alert-desc" data-i18n="chAlertRaidDesc">Notify when another streamer raids this channel, with who raided and how many viewers came.</span></span>
+          <input type="checkbox" class="ch-alert-switch" data-pref="raid" />
+        </label>
+        <div class="ch-alert-block" data-block="filter">
+          <div class="ch-alert-blockhead">
+            <span class="material-icons-outlined ch-alert-ico">filter_alt</span>
+            <span class="ch-alert-text"><span class="ch-alert-label" data-i18n="chFilterTitle">Only notify when</span><span class="ch-alert-desc" data-i18n="chFilterDesc">Leave empty to be notified for every stream. Applies to the notification, sound and auto-launch.</span></span>
+          </div>
+          <div class="ch-filter-field">
+            <span class="ch-filter-label" data-i18n="chFilterCats">Category is one of</span>
+            <div class="chat-input-row">
+              <input type="text" id="ch-filter-cat-input" class="chat-input" list="ch-filter-cat-list" maxlength="40" autocomplete="off" />
+              <button id="ch-filter-cat-add" class="chat-add-btn" type="button">+</button>
+            </div>
+            <datalist id="ch-filter-cat-list"></datalist>
+            <div id="ch-filter-cat-chips" class="chat-chips"></div>
+          </div>
+          <div class="ch-filter-field">
+            <span class="ch-filter-label" data-i18n="chFilterWords">Title contains one of</span>
+            <div class="chat-input-row">
+              <input type="text" id="ch-filter-word-input" class="chat-input" maxlength="40" autocomplete="off" />
+              <button id="ch-filter-word-add" class="chat-add-btn" type="button">+</button>
+            </div>
+            <div id="ch-filter-word-chips" class="chat-chips"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

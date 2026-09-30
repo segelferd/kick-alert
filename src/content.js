@@ -7,6 +7,23 @@
  * © 2025 Segelferd. All rights reserved.
  */
 
+// ─── v2.5.62: Eklenti bağlamı koruması ───
+// Eklenti güncellenince / yeniden yüklenince açık kick.com sekmelerindeki eski
+// içerik betiği "yetim" kalır; chrome.runtime.sendMessage bu durumda Promise
+// reddetmek yerine ANINDA "Extension context invalidated" hatası fırlatır ve
+// .catch() bunu yakalayamaz (chrome://extensions → Hatalar'a düşer). Tüm
+// mesajlar bu yardımcıdan geçer; bağlam kopmuşsa sessizce hiçbir şey yapmaz.
+function kaContextAlive() {
+  try { return !!(chrome.runtime && chrome.runtime.id); } catch (e) { return false; }
+}
+function kaSend(msg) {
+  if (!kaContextAlive()) return;
+  try {
+    const p = chrome.runtime.sendMessage(msg);
+    if (p && typeof p.catch === 'function') p.catch(() => { /* SW uykuda olabilir */ });
+  } catch (e) { /* bağlam koptu */ }
+}
+
 // ─── 1) Auto-unmute (mevcut) ───
 (async function () {
   const result = await chrome.storage.local.get('autoUnmute');
@@ -122,12 +139,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     if (!channelId) return;
 
     // SW'ye ilet — kalıcı cache + Pusher subscribe
-    chrome.runtime.sendMessage({
+    kaSend({
       type: 'CHANNEL_ID_HARVESTED',
       slug,
       channelId,
       chatroomId,
-    }).catch(() => { /* SW uykuda olabilir, sorun değil — sonra tekrar denenir */ });
+    }); // SW uykuda olabilir, sorun değil — sonra tekrar denenir
   } catch (e) {
     // Sessiz — sayfa context'i hatası kritik değil
   }
@@ -153,12 +170,10 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     // v2.5.14: TEŞHİS LOGU — chrome.storage.local'dan GERÇEKTE ne okunduğunu
     // ve localStorage'a ne yazıldığını görmemiz için.
     try { console.log('[KickAlert][AdBlock][TEŞHİS]', 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0')); } catch (e) {}
-    try {
-      chrome.runtime.sendMessage({
-        type: 'AD_BLOCK_LOG', level: 'info', code: 'ADB-09',
-        text: 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0'),
-      }).catch(() => {});
-    } catch (e) {}
+    kaSend({
+      type: 'AD_BLOCK_LOG', level: 'info', code: 'ADB-09',
+      text: 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0'),
+    });
 
     const nonce = (crypto?.randomUUID?.() || String(Date.now()) + Math.random());
     window.postMessage({
@@ -191,15 +206,50 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 // konsolundan tamamen kopuk, DevTools'ta ayrı context'ler gerektiriyor.
 // Bu köprü, o logları yakalayıp background.js'e iletir; background.js da
 // KLog'a yazar → test panelindeki TEK Aktivite Logu'nda hepsi bir arada görünür.
-window.addEventListener('message', (e) => {
+window.addEventListener('message', function kaAdLogBridge(e) {
   if (e.source !== window) return;
   const d = e.data;
   if (d && d.source === 'ka-ab-log' && typeof d.text === 'string') {
-    chrome.runtime.sendMessage({
+    // v2.5.62: eklenti güncellendiyse bu eski betik artık log iletemez; dinlemeyi bırak
+    if (!kaContextAlive()) { window.removeEventListener('message', kaAdLogBridge); return; }
+    kaSend({
       type: 'AD_BLOCK_LOG',
       level: d.level || 'info',
       code: d.code || 'ADB-00',
       text: d.text,
-    }).catch(() => { /* SW uykuda olabilir, sorun değil — bu log kaybolur ama kritik değil */ });
+    }); // SW uykuda olabilir, sorun değil — bu log kaybolur ama kritik değil
   }
 });
+
+// ─── 3) v2.5.55: İzleme süresi (sadece bu cihazda) ───
+// Bir kanal sayfasında video oynarken 30 sn'de bir arka plana "tik" gönderir.
+// Sayılmayanlar: VOD/klip sayfaları, ana sayfa/gezinme sayfaları, arka planda
+// sessiz oynayan sekme. Ayarlar'dan kapatılabilir (varsayılan açık).
+(function () {
+  const TICK_MS = 30000;
+  const RESERVED = new Set(['browse', 'following', 'categories', 'category', 'search', 'subscriptions', 'settings',
+    'dashboard', 'video', 'videos', 'clips', 'clip', 'auth', 'signup', 'login', 'terms', 'privacy', 'community-guidelines',
+    'dmca', 'popout', 'embed', 'transparency', 'about', 'help', 'kick-streamer-program']);
+  function slugNow() {
+    const seg = location.pathname.split('/').filter(Boolean);
+    if (!seg.length) return '';
+    const s = seg[0].toLowerCase();
+    if (RESERVED.has(s)) return '';
+    if (seg[1] && ['videos', 'clips', 'about'].includes(seg[1].toLowerCase())) return '';
+    return /^[a-z0-9_-]{2,40}$/.test(s) ? s : '';
+  }
+  const timer = setInterval(async () => {
+    // v2.5.62: eklenti güncellendiyse yetim kalan sayaç kendini durdurur
+    if (!kaContextAlive()) { clearInterval(timer); return; }
+    try {
+      const slug = slugNow();
+      if (!slug) return;
+      const v = document.querySelector('video');
+      if (!v || v.paused || v.ended || v.readyState < 3) return;
+      if (document.visibilityState !== 'visible' && v.muted) return;
+      const { watchTimeEnabled } = await chrome.storage.local.get('watchTimeEnabled');
+      if (watchTimeEnabled === false) return;
+      kaSend({ type: 'WATCH_TICK', slug, sec: TICK_MS / 1000 });
+    } catch (e) {}
+  }, TICK_MS);
+})();

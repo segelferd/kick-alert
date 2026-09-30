@@ -70,22 +70,22 @@
     "message": "KickAlert — Kick.comライブ通知"
   },
   "autoLaunch": {
-    "message": "自動入場"
+    "message": "自動オープン"
   },
   "autoLaunchButtonTooltip": {
-    "message": "自動入場の On/Off を切り替えます"
+    "message": "自動オープンの On/Off を切り替えます"
   },
   "autoLaunchSettings": {
-    "message": "自動入場設定"
+    "message": "自動オープン設定"
   },
   "autoLaunchTab": {
-    "message": "自動入場"
+    "message": "自動オープン"
   },
   "autoRefreshPopup": {
     "message": "フォロー中タブを自動更新"
   },
   "autoUnmuteCheckbox": {
-    "message": "自動入場後にミュートを自動解除する<br />(注意: 音量スライダーには表示上は反映されません)"
+    "message": "自動オープン後にミュートを自動解除する<br />(注意: 音量スライダーには表示上は反映されません)"
   },
   "bellMain": {
     "message": "メインサウンド"
@@ -241,7 +241,7 @@
     "message": "終了"
   },
   "dndMuteAutoLaunch": {
-    "message": "自動入場を一時停止"
+    "message": "自動オープンを一時停止"
   },
   "dndMuteNotifications": {
     "message": "通知をミュート"
@@ -259,7 +259,7 @@
     "message": "重複タブブロック"
   },
   "duplicateTabGuardButtonTooltip": {
-    "message": "自動入場時の重複タブブロックの On/Off を切り替えます。On の場合、自動入場対象の配信のタブがすでに開かれているときは、新しくタブを開きません。"
+    "message": "自動オープン時の重複タブブロックの On/Off を切り替えます。On の場合、自動オープン対象の配信のタブがすでに開かれているときは、新しくタブを開きません。"
   },
   "errorLoadingHistory": {
     "message": "履歴の読み込みエラー。"
@@ -368,7 +368,7 @@
     "message": "タブの内容を更新します"
   },
   "resetSuspendOnRestartCheckbox": {
-    "message": "ブラウザ再起動時に自動入場設定を On に戻す"
+    "message": "ブラウザ再起動時に自動オープン設定を On に戻す"
   },
   "searchChannels": {
     "message": "チャンネル検索..."
@@ -647,7 +647,7 @@
     "message": "まだ誰もフォローしていません。Kickでチャンネルをフォローすると、自動的にここに表示されます。"
   },
   "whatsNewBannerText": {
-    "message": "新しいデザイン！タブのカウンター、「システム」テーマ、拡張機能に内蔵されたフォント。<a id=\"whatsnew-settings-link\">設定</a>を確認してみてください。"
+    "message": "新機能：カテゴリ変更・配信終了・レイドのチャンネル別通知と視聴時間。チャンネルカードの調整ボタンから設定し、音は<a id=\"whatsnew-settings-link\">設定</a>で選べます。"
   },
   "optGroupGeneral": {
     "message": "一般"
@@ -674,22 +674,22 @@
     "message": "閉じる"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — 新しいデザイン"
+    "message": "v2.5.67 — チャンネル別通知、視聴時間、修正"
   },
   "releaseHistoryV0Body": {
-    "message": "• ポップアップを刷新：すっきりしたヘッダー、タブのカウンター（ライブ中のチャンネル、新しい通知）、落ち着いたカード、すべての設定で統一されたスイッチ\n• パソコンのライト／ダークモードに合わせる新しい「システム」テーマ\n• フォントとアイコンを拡張機能に内蔵：回線が遅くてもアイコン名が文字で表示されなくなり、ポップアップはGoogleへ一切リクエストしません\n• 履歴：同じ通知の重複はまとめて表示し、空のカテゴリーは非表示に\n• 分かりやすいサウンドモードのアイコン、見やすいキーボードフォーカス、システムの「視差効果を減らす」設定に対応"
+    "message": "• 新しいチャンネル通知ウィンドウ（チャンネルカードの調整ボタン）：カテゴリやタイトルの変更、配信終了（配信時間つき）、レイド（誰から何人で）を通知します。初期設定ではすべてオフです\n• チャンネルフィルター：選んだカテゴリのとき、またはタイトルに指定した語句が含まれるときだけ通知\n• これらの通知には専用の控えめな音（やわらかい水滴、軽いチャイム、カチッ）があり、Windows の音や無音も選べて、音量も個別に設定できます\n• 視聴時間：履歴に直近 7 日間の視聴時間とよく見たチャンネルを表示（この端末にのみ保存）\n• チャンネルのプレビュー画像にカーソルを合わせると大きく表示。カードのボタンが常に収まるようになりました\n• 最新の Chrome（148 以降）で修正：「拡張機能の音」モードでも通知で Windows の音が鳴り、「開く」「ミュート」ボタンが消えていました\n• クラウド同期がインポートした設定ファイルを元に戻さなくなり、同期するには大きすぎる設定は上書きされずに保持されます\n• 長い言語で設定が切れなくなりました。ライブ広告をスキップする予備の仕組みを強化"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — データ整合性とクラウド同期の修正"
+    "message": "v2.5.46 — 新しいデザイン"
   },
   "releaseHistoryV1Body": {
-    "message": "• チャットタブのKickユーザー名欄が、入力してすぐポップアップを閉じると保存されない問題を修正\n• 同じ根本原因による問題を他の箇所でも修正:お気に入りチャンネル、チャンネルごとの音声モード、チャンネルグループ、自動起動リスト、チャットルーム/チャンネルIDキャッシュ、ボットスコア、通知履歴が、2つの更新がほぼ同時に発生すると変更を失う可能性がありました — これらすべてが書き込みキューを通るようになり、二度と発生しません\n• クラウド同期の重大なバグを修正:クラウド同期がオンの場合、バックグラウンドの定期同期チェックが古いクラウドのコピーを繰り返し適用してしまい、何も操作していないのに数時間後にチャットタブの設定が古い/空の状態に静かに戻ってしまうことがありました。チャット設定は変更のたびに即座に同期されるようになり、このバックグラウンドチェックは自らクラウドからデータを取得しなくなりました"
+    "message": "• ポップアップを刷新：すっきりしたヘッダー、タブのカウンター（ライブ中のチャンネル、新しい通知）、落ち着いたカード、すべての設定で統一されたスイッチ\n• パソコンのライト／ダークモードに合わせる新しい「システム」テーマ\n• フォントとアイコンを拡張機能に内蔵：回線が遅くてもアイコン名が文字で表示されなくなり、ポップアップはGoogleへ一切リクエストしません\n• 履歴：同じ通知の重複はまとめて表示し、空のカテゴリーは非表示に\n• 分かりやすいサウンドモードのアイコン、見やすいキーボードフォーカス、システムの「視差効果を減らす」設定に対応"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — 広告ブロック、チャット通知、設定画面の刷新"
+    "message": "v2.5.45 — データ整合性とクラウド同期の修正"
   },
   "releaseHistoryV2Body": {
-    "message": "• 3つの新しい広告ブロック層：GPT/IMA SDKスタブ、セグメントレベルのフィルタリング、Kick独自の「ブラックスレート」遷移オーバーレイの検出\n• VOD広告なしソース検索がより高速かつ安全に\n• 設定が折りたたみ可能なカテゴリーに再編成され、検索機能を追加\n• 「新機能」バナーとこの履歴表示\n• バックアップと復元：すべての設定をファイルとしてエクスポート/インポート（一度だけ元に戻せる安全機能と「初期設定に戻す」オプション付き）\n• 広告非表示が視覚的に機能しておらず（CSSルールがページに届いていなかった）、独自の検出が発動した時のみ動作していた問題を修正 — 現在は独立して動作し、より多くの広告コントロールを検出\n• チャット：あなたのメッセージへの返信も、@メンションと同じように通知されるようになりました\n• チャット通知のポップアップとサウンドを個別にオン/オフできるようになり（「見ていないときだけ再生」する任意のサウンドモードも追加）、このモードはKick自体のチャットパネルが非表示（シアター/全画面表示）の場合も検知するようになりました（タブの非表示やスクロールだけでなく）\n• ライブチャットをアクティブに見ている間に通知が鳴らない問題と、拡張機能の音とWindows自体の通知音が重なる問題を修正\n• 新しくスロバキア語のサポートを追加\n• 全14言語の翻訳を正確さと自然さの観点で見直し、いくつかの誤訳と敬語レベルの不整合を修正"
+    "message": "• チャットタブのKickユーザー名欄が、入力してすぐポップアップを閉じると保存されない問題を修正\n• 同じ根本原因による問題を他の箇所でも修正:お気に入りチャンネル、チャンネルごとの音声モード、チャンネルグループ、自動起動リスト、チャットルーム/チャンネルIDキャッシュ、ボットスコア、通知履歴が、2つの更新がほぼ同時に発生すると変更を失う可能性がありました — これらすべてが書き込みキューを通るようになり、二度と発生しません\n• クラウド同期の重大なバグを修正:クラウド同期がオンの場合、バックグラウンドの定期同期チェックが古いクラウドのコピーを繰り返し適用してしまい、何も操作していないのに数時間後にチャットタブの設定が古い/空の状態に静かに戻ってしまうことがありました。チャット設定は変更のたびに即座に同期されるようになり、このバックグラウンドチェックは自らクラウドからデータを取得しなくなりました"
   },
   "settingsBackupTitle": {
     "message": "バックアップと復元"
@@ -804,5 +804,229 @@
   },
   "alSectionOffline": {
     "message": "オフライン"
+  },
+  "chipAutoLabel": {
+    "message": "自動",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "ガード",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "KickAlert の設定",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "ソースコード",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "拡張機能を評価",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "秒",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 がカテゴリを変更しました",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 が配信タイトルを変更しました",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "チャンネル通知",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "このチャンネルの追加通知です。すべて初期設定ではオフです。",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "カテゴリ・タイトルの変更",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "配信中にこのチャンネルがカテゴリや配信タイトルを変更したら通知します。",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "次の場合のみ通知",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "空欄のままならすべての配信で通知します。通知・サウンド・自動オープンに適用されます。",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "カテゴリが次のいずれか",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "タイトルに次のいずれかを含む",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "例: Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "例: 大会",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "フィルター済み",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "通知なし: チャンネルのフィルターに一致しませんでした",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "KickAlert をしばらくお使いいただいています。お役に立っていれば、ストアで短いレビューをいただけると大きな励みになり、ほかの方にも見つけてもらいやすくなります。",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "レビューを書く",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "あとで",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "今後表示しない",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 が配信を終了しました",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "配信時間: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "配信終了",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "$1 からのレイド · $2 人",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "配信終了",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "配信が終わったら配信時間とともに通知します。短い切断を除外するため、約2分後に確認します。",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1 が $2 にレイドしました",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "$1 人の視聴者と一緒に",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "レイドを受けたとき",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "ほかの配信者がこのチャンネルにレイドしたとき、誰から何人来たかを通知します。",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "視聴時間",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "Kick のタブで再生中に各チャンネルをどれだけ視聴したかを記録し、履歴に週間サマリーを表示します。データはこの端末にのみ保存されます。",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "過去7日間の視聴",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "その前の7日間と比較",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "現在: $1 · $2 前に確認",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "チャンネルが配信を始めると追跡を開始します",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "チャンネルイベントの音",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "カテゴリ・タイトル変更、配信終了、レイドの通知用。控えめな拡張機能の音、Windows の通知音、無音から選べます。",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "サウンド",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "やわらかい水滴",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "軽いチャイム",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "カチッ",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "無音",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Windows の通知音",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "システムの音だけが鳴り、拡張機能の音は鳴りません。",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "チャンネルイベント通知のサンプル（システム音）",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "Firefox は無音の通知を要求できないため、Windows が独自の音を鳴らすことがあります。防ぐには Windows の設定 → システム → 通知 で Firefox の「通知の着信時に音を鳴らす」をオフにしてください。",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "同期するには大きすぎます（8 KB 超）: $1。この端末には保存されますが、ほかの端末には送信されません。",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "お気に入りチャンネル",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "自動オープンのチャンネル",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "チャンネルのサウンドモード",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "チャット設定",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

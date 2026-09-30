@@ -646,7 +646,7 @@
     "message": "你还没有关注任何人。在 Kick 上关注一个频道，它就会自动显示在这里。"
   },
   "whatsNewBannerText": {
-    "message": "全新外观！标签页计数、\"跟随系统\"主题，以及内置于扩展的字体。前往<a id=\"whatsnew-settings-link\">设置</a>查看。"
+    "message": "新功能：分类变更、直播结束和突袭的按频道提醒，以及观看时长。使用频道卡片上的调节按钮，并在<a id=\"whatsnew-settings-link\">设置</a>中选择提示音。"
   },
   "optGroupGeneral": {
     "message": "常规"
@@ -673,22 +673,22 @@
     "message": "关闭"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — 全新外观"
+    "message": "v2.5.67 — 按频道提醒、观看时长与修复"
   },
   "releaseHistoryV0Body": {
-    "message": "• 重新设计的弹窗：更简洁的顶部栏、标签页计数（直播中的频道、新通知）、更沉稳的卡片，以及所有设置中统一的开关样式\n• 新增\"跟随系统\"主题，自动匹配电脑的浅色或深色模式\n• 字体和图标现已内置于扩展中：网络较慢时不再以文字显示图标名称，弹窗也不再向 Google 发送任何请求\n• 历史记录：重复的相同通知会合并显示，空分类会被隐藏\n• 更清晰的声音模式图标、可见的键盘焦点，并遵循系统的\"减少动态效果\"设置"
+    "message": "• 新的频道提醒窗口（频道卡片上的调节按钮）：频道切换分类或标题、直播结束（附时长）以及收到突袭（来自谁、多少观众）时提醒你。默认全部关闭\n• 频道过滤：仅当分类在你的列表中或标题包含你的关键词时提醒\n• 这些提醒有专属的更轻提示音（柔和水滴、轻柔铃声、滴答），也可选 Windows 声音或静音，并可单独调节音量\n• 观看时长：历史页显示最近 7 天的观看时长和最常看的频道（仅保存在此设备上）\n• 鼠标停在频道预览图上即可放大查看；卡片按钮始终能完整显示\n• 已修复新版 Chrome（148+）问题：在“扩展声音”模式下通知仍会播放 Windows 声音，且“打开 / 静音”按钮消失\n• 云同步不再撤销导入的设置文件；过大无法同步的设置会被保留，而不会被覆盖\n• 较长语言下设置不再被截断；增强直播广告跳过的备用方法"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — 数据完整性与云同步修复"
+    "message": "v2.5.46 — 全新外观"
   },
   "releaseHistoryV1Body": {
-    "message": "• 修复了聊天标签中 Kick 用户名字段在输入后立即关闭弹窗时不会保存的问题\n• 修复了其他地方的同一根本问题:收藏频道、频道声音模式、频道分组、自动打开列表、聊天室/频道 ID 缓存、机器人评分和通知历史记录,如果两次更新几乎同时发生,都可能丢失更改——现在这些都通过写入队列处理,不会再发生这种情况\n• 修复了一个严重的云同步错误:如果开启了云同步,后台例行同步检查会不断重新应用陈旧的云端副本,导致聊天标签设置在没有任何操作的情况下,几个小时后悄悄恢复为旧的/空的状态。现在聊天设置会在每次更改时立即同步,该后台检查也不再自行从云端拉取数据"
+    "message": "• 重新设计的弹窗：更简洁的顶部栏、标签页计数（直播中的频道、新通知）、更沉稳的卡片，以及所有设置中统一的开关样式\n• 新增\"跟随系统\"主题，自动匹配电脑的浅色或深色模式\n• 字体和图标现已内置于扩展中：网络较慢时不再以文字显示图标名称，弹窗也不再向 Google 发送任何请求\n• 历史记录：重复的相同通知会合并显示，空分类会被隐藏\n• 更清晰的声音模式图标、可见的键盘焦点，并遵循系统的\"减少动态效果\"设置"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — 广告拦截、聊天通知与设置重新设计"
+    "message": "v2.5.45 — 数据完整性与云同步修复"
   },
   "releaseHistoryV2Body": {
-    "message": "• 三个新的广告拦截层：GPT/IMA SDK 模拟、分段级过滤、以及对 Kick 自身\"黑屏\"过渡遮罩的检测\n• VOD 无广告源查找更快更安全\n• 设置重新组织为可折叠分类，并加入搜索功能\n• \"新功能\"横幅和此历史记录视图\n• 备份与恢复：将所有设置导出/导入为文件（附带一次性撤销安全网和\"恢复默认设置\"选项）\n• 修复了广告隐藏在视觉上不起作用（CSS 规则从未到达页面）且仅在我们自己的检测触发时才运行的问题——现在独立运行并捕获更多广告控制层\n• 聊天：现在有人回复你的消息时也会像 @提及 一样收到通知\n• 聊天通知弹窗和声音现在可以独立开关（并新增可选的\"仅在未观看时\"播放声音模式）——该模式现在也能检测 Kick 自己的聊天面板是否被隐藏（剧场/全屏模式），不仅仅是标签页在后台或已滚动\n• 修复了在积极关注直播聊天时通知不会触发、以及插件声音与 Windows 自带通知声音冲突的问题\n• 新增支持斯洛伐克语\n• 对全部 14 种语言的翻译进行了准确性和自然度审查——修正了多处误译和敬语/口语不一致的问题"
+    "message": "• 修复了聊天标签中 Kick 用户名字段在输入后立即关闭弹窗时不会保存的问题\n• 修复了其他地方的同一根本问题:收藏频道、频道声音模式、频道分组、自动打开列表、聊天室/频道 ID 缓存、机器人评分和通知历史记录,如果两次更新几乎同时发生,都可能丢失更改——现在这些都通过写入队列处理,不会再发生这种情况\n• 修复了一个严重的云同步错误:如果开启了云同步,后台例行同步检查会不断重新应用陈旧的云端副本,导致聊天标签设置在没有任何操作的情况下,几个小时后悄悄恢复为旧的/空的状态。现在聊天设置会在每次更改时立即同步,该后台检查也不再自行从云端拉取数据"
   },
   "settingsBackupTitle": {
     "message": "备份与恢复"
@@ -803,5 +803,229 @@
   },
   "alSectionOffline": {
     "message": "离线"
+  },
+  "chipAutoLabel": {
+    "message": "自动",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "防重复",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "KickAlert 设置",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "源代码",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "评价扩展",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "秒",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 切换了分类",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 修改了直播标题",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "频道提醒",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "此频道的额外提醒。默认全部关闭。",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "分类或标题变更",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "直播中此频道切换分类或修改标题时提醒。",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "仅在以下情况提醒",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "留空则每次开播都提醒。适用于通知、声音和自动打开。",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "分类为以下之一",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "标题包含以下之一",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "例如 Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "例如 比赛",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "已过滤",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "未提醒: 不符合此频道的过滤条件",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "你已经使用 KickAlert 一段时间了。如果它对你有帮助，在商店留下简短评价会很有意义，也能帮助更多人发现它。",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "去评价",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "以后再说",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "不再询问",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 结束了直播",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "直播时长: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "直播已结束",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "来自 $1 的突袭 · $2 名观众",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "直播结束",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "直播结束时提醒并显示时长。约 2 分钟后确认，短暂掉线不计入。",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1 突袭了 $2",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "带来 $1 名观众",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "收到突袭",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "其他主播突袭此频道时提醒，并显示来自谁、带来多少观众。",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "观看时长",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "在 Kick 标签页播放时记录每个频道的观看时长，并在历史记录中显示每周汇总。仅保存在此设备上。",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "最近 7 天观看",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "与前 7 天相比",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "当前: $1 · $2 前检查",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "频道开播后开始跟踪",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "频道事件提示音",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "用于分类/标题变更、直播结束和突袭提醒。可选更轻的扩展声音、Windows 通知音或静音。",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "声音",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "柔和水滴",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "轻柔铃声",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "滴答",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "静音",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Windows 通知音",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "只播放系统声音，不播放扩展声音。",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "频道事件提醒示例（系统声音）",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "Firefox 无法请求静音通知，因此 Windows 可能会播放自己的声音。如需避免，请在 Windows 设置 → 系统 → 通知 中关闭 Firefox 的“通知到达时播放声音”。",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "过大，无法同步（超过 8 KB）：$1。仍保留在此设备上，但不会发送到你的其他设备。",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "收藏的频道",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "自动打开的频道",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "频道声音模式",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "聊天设置",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

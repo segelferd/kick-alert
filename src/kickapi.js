@@ -980,6 +980,9 @@ const KickAPI = {
           return t.endsWith('Z') || t.includes('+') ? t : t + 'Z';
         })(),
         thumbnailUrl,
+        // v2.5.50: kanal filtresi için (canlı olayında kategori boş gelirse)
+        categoryName: ls.category?.name || ls.categories?.[0]?.name || '',
+        sessionTitle: ls.session_title || '',
       };
     } catch (e) {
       KLog.warn('THM-04', `${slug}: getChannelLiveDetails hatası — ${e.message}`);

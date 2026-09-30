@@ -647,7 +647,7 @@
     "message": "أنت لا تتابع أحدًا بعد. تابع قناة على Kick وستظهر هنا تلقائيًا."
   },
   "whatsNewBannerText": {
-    "message": "مظهر جديد! عدّادات على علامات التبويب، وسمة \"النظام\"، وخطوط مضمّنة في الإضافة. تفقد <a id=\"whatsnew-settings-link\">الإعدادات</a>."
+    "message": "جديد: تنبيهات لكل قناة عند تغيير الفئة وانتهاء البث والغارات، مع وقت المشاهدة. استخدم زر الضبط على بطاقة القناة واختر الصوت من <a id=\"whatsnew-settings-link\">الإعدادات</a>."
   },
   "optGroupGeneral": {
     "message": "عام"
@@ -674,22 +674,22 @@
     "message": "إغلاق"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — مظهر جديد كليًا"
+    "message": "v2.5.67 — تنبيهات لكل قناة ووقت المشاهدة وإصلاحات"
   },
   "releaseHistoryV0Body": {
-    "message": "• إعادة تصميم النافذة: شريط علوي أنظف، وعدّادات على علامات التبويب (القنوات المباشرة، الإشعارات الجديدة)، وبطاقات أهدأ، ونمط مفاتيح موحّد في جميع الإعدادات\n• سمة \"النظام\" الجديدة التي تتبع الوضع الفاتح أو الداكن لجهازك\n• الخطوط والأيقونات أصبحت مضمّنة في الإضافة: لم تعد أسماء الأيقونات تظهر كنص عند بطء الاتصال، ولم تعد النافذة ترسل أي طلبات إلى Google\n• السجل: يتم دمج الإشعارات المتطابقة المتكررة وإخفاء الفئات الفارغة\n• أيقونات أوضح لأوضاع الصوت، وتركيز مرئي للوحة المفاتيح، واحترام إعداد النظام \"تقليل الحركة\""
+    "message": "• نافذة جديدة لتنبيهات القناة (زر الضبط على بطاقة القناة): تلقَّ تنبيهًا عندما تغيّر القناة الفئة أو العنوان، وعند انتهاء البث (مع مدته)، وعند وصول غارة (ممن وبكم مشاهد). كل شيء متوقف افتراضيًا\n• فلتر القناة: نبّهني فقط إذا كانت الفئة من اختياراتك أو احتوى العنوان على إحدى كلماتك\n• لهذه التنبيهات صوت خاص أهدأ (قطرة ناعمة، جرس خفيف، نقرة)، أو صوت Windows أو الصمت، مع مستوى صوت منفصل\n• وقت المشاهدة: يعرض السجل مدة مشاهدتك في آخر 7 أيام وأكثر القنوات مشاهدة (محفوظ على هذا الجهاز فقط)\n• مرّر المؤشر فوق صورة معاينة القناة لتراها كبيرة؛ أزرار البطاقات تتسع دائمًا\n• إصلاح في Chrome الحديث (148+): في وضع «أصوات الإضافة» كانت الإشعارات تشغّل صوت Windows وتفقد زري فتح / كتم\n• لم تعد المزامنة السحابية تتراجع عن ملف إعدادات مستورد، ويُحتفظ بالإعداد الأكبر من أن يُزامَن بدل الكتابة فوقه\n• لم تعد الإعدادات تُقتطع في اللغات الأطول؛ طريقة احتياطية أقوى لتخطي إعلانات البث المباشر"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — إصلاحات سلامة البيانات والمزامنة السحابية"
+    "message": "v2.5.46 — مظهر جديد كليًا"
   },
   "releaseHistoryV1Body": {
-    "message": "• تم إصلاح حقل اسم مستخدم Kick في تبويب الدردشة الذي كان لا يحفظ القيمة إذا كتبتها وأغلقت النافذة المنبثقة فورًا\n• تم إصلاح نفس المشكلة في أماكن أخرى: القنوات المفضلة، وضع الصوت لكل قناة، مجموعات القنوات، قائمة الفتح التلقائي، ذاكرة تخزين معرف الدردشة/القناة، درجات الروبوتات، وسجل الإشعارات — كان يمكن أن تفقد جميعها تغييرًا إذا حدث تحديثان متقاربان — الآن تمر جميعها عبر طابور كتابة، لذا لم يعد هذا ممكن الحدوث\n• تم إصلاح خلل حرج في المزامنة السحابية: إذا كانت المزامنة السحابية مفعّلة، كانت إعدادات تبويب الدردشة يمكن أن تعود بصمت إلى حالة قديمة/فارغة بعد ساعات دون أي تفاعل من المستخدم، بسبب فحص مزامنة روتيني في الخلفية كان يعيد تطبيق نسخة سحابية قديمة باستمرار. الآن تتم مزامنة إعدادات الدردشة فورًا مع كل تغيير، ولم يعد هذا الفحص في الخلفية يسحب البيانات من السحابة من تلقاء نفسه"
+    "message": "• إعادة تصميم النافذة: شريط علوي أنظف، وعدّادات على علامات التبويب (القنوات المباشرة، الإشعارات الجديدة)، وبطاقات أهدأ، ونمط مفاتيح موحّد في جميع الإعدادات\n• سمة \"النظام\" الجديدة التي تتبع الوضع الفاتح أو الداكن لجهازك\n• الخطوط والأيقونات أصبحت مضمّنة في الإضافة: لم تعد أسماء الأيقونات تظهر كنص عند بطء الاتصال، ولم تعد النافذة ترسل أي طلبات إلى Google\n• السجل: يتم دمج الإشعارات المتطابقة المتكررة وإخفاء الفئات الفارغة\n• أيقونات أوضح لأوضاع الصوت، وتركيز مرئي للوحة المفاتيح، واحترام إعداد النظام \"تقليل الحركة\""
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — حظر الإعلانات وإشعارات الدردشة وإعادة تصميم الإعدادات"
+    "message": "v2.5.45 — إصلاحات سلامة البيانات والمزامنة السحابية"
   },
   "releaseHistoryV2Body": {
-    "message": "• ثلاث طبقات جديدة لحظر الإعلانات: محاكاة SDK الخاصة بـ GPT/IMA، والتصفية على مستوى المقاطع، واكتشاف طبقة انتقال \"الشاشة السوداء\" الخاصة بـ Kick\n• أصبح البحث عن مصدر خالٍ من الإعلانات لمقاطع VOD أسرع وأكثر أمانًا\n• أعيد تنظيم الإعدادات إلى فئات قابلة للطي، مع خاصية البحث\n• شريط \"الجديد\" وعرض السجل هذا\n• النسخ الاحتياطي والاستعادة: تصدير/استيراد جميع إعداداتك كملف (مع شبكة أمان للتراجع لمرة واحدة وخيار \"إعادة التعيين إلى الافتراضي\")\n• تم إصلاح مشكلة عدم عمل إخفاء الإعلانات بصريًا (قاعدة CSS لم تصل إلى الصفحة أبدًا) وعملها فقط عند تفعيل اكتشافنا الخاص — يعمل الآن بشكل مستقل ويلتقط المزيد من طبقات التحكم بالإعلانات\n• الدردشة: الرد على رسالتك الآن يُرسل إشعارًا مثل الإشارة @ تمامًا\n• يمكن الآن تفعيل نافذة إشعار الدردشة والصوت بشكل مستقل (مع وضع صوت اختياري \"فقط عند عدم المشاهدة\") — هذا الوضع يكتشف الآن أيضًا عندما تكون لوحة دردشة Kick نفسها مخفية (وضع المسرح/ملء الشاشة)، وليس فقط عندما تكون علامة التبويب في الخلفية أو تم التمرير\n• تم إصلاح عدم تفعيل إشعارات الدردشة أثناء متابعة الدردشة المباشرة بنشاط، وتعارض صوت الإضافة مع صوت إشعارات ويندوز الخاص\n• تمت إضافة السلوفاكية كلغة مدعومة جديدة\n• تمت مراجعة جميع الترجمات في اللغات الـ14 من حيث الدقة والطبيعية — تم إصلاح عدة أخطاء ترجمة وتناقضات في أسلوب الخطاب"
+    "message": "• تم إصلاح حقل اسم مستخدم Kick في تبويب الدردشة الذي كان لا يحفظ القيمة إذا كتبتها وأغلقت النافذة المنبثقة فورًا\n• تم إصلاح نفس المشكلة في أماكن أخرى: القنوات المفضلة، وضع الصوت لكل قناة، مجموعات القنوات، قائمة الفتح التلقائي، ذاكرة تخزين معرف الدردشة/القناة، درجات الروبوتات، وسجل الإشعارات — كان يمكن أن تفقد جميعها تغييرًا إذا حدث تحديثان متقاربان — الآن تمر جميعها عبر طابور كتابة، لذا لم يعد هذا ممكن الحدوث\n• تم إصلاح خلل حرج في المزامنة السحابية: إذا كانت المزامنة السحابية مفعّلة، كانت إعدادات تبويب الدردشة يمكن أن تعود بصمت إلى حالة قديمة/فارغة بعد ساعات دون أي تفاعل من المستخدم، بسبب فحص مزامنة روتيني في الخلفية كان يعيد تطبيق نسخة سحابية قديمة باستمرار. الآن تتم مزامنة إعدادات الدردشة فورًا مع كل تغيير، ولم يعد هذا الفحص في الخلفية يسحب البيانات من السحابة من تلقاء نفسه"
   },
   "settingsBackupTitle": {
     "message": "النسخ الاحتياطي والاستعادة"
@@ -804,5 +804,229 @@
   },
   "alSectionOffline": {
     "message": "غير متصل"
+  },
+  "chipAutoLabel": {
+    "message": "تلقائي",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "حماية",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "إعدادات KickAlert",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "الشيفرة المصدرية",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "قيّم الإضافة",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "ث",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "غيّر $1 الفئة",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "غيّر $1 عنوان البث",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "تنبيهات القناة",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "تنبيهات إضافية لهذه القناة. جميعها متوقفة افتراضيًا.",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "تغيير الفئة أو العنوان",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "نبّهني عندما تغيّر هذه القناة الفئة أو عنوان البث أثناء البث.",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "نبّهني فقط عندما",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "اتركه فارغًا لتلقي تنبيه مع كل بث. ينطبق على التنبيه والصوت والفتح التلقائي.",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "الفئة واحدة من",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "العنوان يحتوي على واحدة من",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "مثال: Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "مثال: بطولة",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "تمت التصفية",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "لم يُرسل تنبيه: لم يطابق فلتر القناة",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "تستخدم KickAlert منذ فترة. إذا كان مفيدًا لك، فإن مراجعة قصيرة في المتجر تعني الكثير وتساعد الآخرين في العثور عليه.",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "اكتب مراجعة",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "لاحقًا",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "لا تسألني مجددًا",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "أنهى $1 البث",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "مدة البث: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "انتهى البث",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "غارة من $1 · $2 مشاهد",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "انتهاء البث",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "نبّهني عند انتهاء البث مع مدته. يتم التأكيد بعد نحو دقيقتين حتى لا تُحتسب الانقطاعات القصيرة.",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "شنّ $1 غارة على $2",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "مع $1 مشاهد",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "غارة واردة",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "نبّهني عندما يشنّ صانع محتوى آخر غارة على هذه القناة، مع اسمه وعدد المشاهدين القادمين.",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "مدة المشاهدة",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "يحسب مدة مشاهدتك لكل قناة أثناء التشغيل في علامة تبويب Kick ويعرض ملخصًا أسبوعيًا في السجل. يُحفظ على هذا الجهاز فقط.",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "ما شاهدته في آخر 7 أيام",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "مقارنة بالأيام السبعة السابقة",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "الآن: $1 · تم التحقق قبل $2",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "تبدأ المتابعة عندما تبدأ القناة البث",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "أصوات أحداث القناة",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "لتنبيهات تغيير الفئة/العنوان وانتهاء البث والغارات. اختر صوت إضافة أهدأ أو صوت إشعارات Windows أو الصمت.",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "الصوت",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "قطرة ناعمة",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "جرس خفيف",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "نقرة",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "صامت",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "صوت إشعارات Windows",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "يُشغَّل صوت النظام فقط، ولا يُشغَّل صوت الإضافة.",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "مثال على تنبيه حدث القناة (صوت النظام)",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "لا يستطيع Firefox طلب إشعار صامت، لذا قد يضيف Windows صوته الخاص. لتجنب ذلك، أوقف «تشغيل صوت عند وصول إشعار» لـ Firefox من إعدادات Windows ← النظام ← الإشعارات.",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "أكبر من أن تتم مزامنته (أكثر من 8 كيلوبايت): $1. يبقى على هذا الجهاز لكنه لا يُرسل إلى أجهزتك الأخرى.",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "القنوات المفضلة",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "القنوات ذات الفتح التلقائي",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "أوضاع صوت القنوات",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "إعدادات الدردشة",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

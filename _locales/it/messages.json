@@ -645,7 +645,7 @@
     "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Nuovo aspetto! Contatori sulle schede, tema \"Sistema\" e font integrati nell'estensione. Dai un'occhiata alle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
+    "message": "Novità: avvisi per canale su cambio di categoria, fine della diretta e raid, più il tempo di visione. Usa il pulsante impostazioni sulla scheda e scegli il suono nelle <a id=\"whatsnew-settings-link\">Impostazioni</a>."
   },
   "optGroupGeneral": {
     "message": "Generale"
@@ -672,22 +672,22 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — Un aspetto tutto nuovo"
+    "message": "v2.5.67 — Avvisi per canale, tempo di visione e correzioni"
   },
   "releaseHistoryV0Body": {
-    "message": "• Popup ridisegnato: intestazione più pulita, contatori sulle schede (canali live, nuove notifiche), schede più sobrie e un unico stile di interruttore in tutte le impostazioni\n• Nuovo tema \"Sistema\" che segue la modalità chiara o scura del tuo computer\n• Font e icone ora sono inclusi nell'estensione: i nomi delle icone non compaiono più come testo con connessioni lente e il popup non invia richieste a Google\n• Cronologia: le notifiche identiche ripetute vengono unite e le categorie vuote nascoste\n• Icone della modalità audio più chiare, focus da tastiera visibile e rispetto dell'impostazione di sistema \"riduci movimento\""
+    "message": "• Nuova finestra degli avvisi per canale (pulsante impostazioni sulla scheda): ricevi un avviso quando un canale cambia categoria o titolo, quando una diretta finisce (con la durata) e quando riceve un raid (da chi e con quanti spettatori). Tutto è disattivato di default\n• Filtro per canale: avvisa solo se la categoria è tra quelle scelte o il titolo contiene una delle tue parole\n• Questi avvisi hanno un proprio suono più discreto (Goccia morbida, Campanella leggera, Tic), il suono di Windows o il silenzio, con volume separato\n• Tempo di visione: la cronologia mostra quanto hai guardato negli ultimi 7 giorni e i canali più seguiti (salvato solo su questo dispositivo)\n• Passa il mouse sull'anteprima di un canale per vederla in grande; i pulsanti delle schede ora entrano sempre\n• Corretto su Chrome recente (148+): in modalità \"Suoni dell'estensione\" le notifiche riproducevano anche il suono di Windows e perdevano i pulsanti Apri / Silenzia\n• La sincronizzazione cloud non annulla più un file di impostazioni importato, e un'impostazione troppo grande da sincronizzare viene conservata invece di essere sovrascritta\n• Le impostazioni non vengono più tagliate nelle lingue più lunghe; metodo di riserva più efficace per saltare la pubblicità in diretta"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — Correzioni di integrità dei dati e sincronizzazione cloud"
+    "message": "v2.5.46 — Un aspetto tutto nuovo"
   },
   "releaseHistoryV1Body": {
-    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere\n• Risolto un bug critico della sincronizzazione cloud: se la sincronizzazione cloud era attiva, le impostazioni della scheda Chat potevano tornare silenziosamente a uno stato vecchio/vuoto ore dopo senza alcuna interazione, a causa di un controllo di sincronizzazione in background che riapplicava continuamente una copia cloud obsoleta. Ora le impostazioni della chat si sincronizzano immediatamente a ogni modifica, e quel controllo in background non scarica più dati dal cloud per conto proprio"
+    "message": "• Popup ridisegnato: intestazione più pulita, contatori sulle schede (canali live, nuove notifiche), schede più sobrie e un unico stile di interruttore in tutte le impostazioni\n• Nuovo tema \"Sistema\" che segue la modalità chiara o scura del tuo computer\n• Font e icone ora sono inclusi nell'estensione: i nomi delle icone non compaiono più come testo con connessioni lente e il popup non invia richieste a Google\n• Cronologia: le notifiche identiche ripetute vengono unite e le categorie vuote nascoste\n• Icone della modalità audio più chiare, focus da tastiera visibile e rispetto dell'impostazione di sistema \"riduci movimento\""
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — Blocco annunci, notifiche chat e impostazioni ridisegnate"
+    "message": "v2.5.45 — Correzioni di integrità dei dati e sincronizzazione cloud"
   },
   "releaseHistoryV2Body": {
-    "message": "• Tre nuovi livelli di blocco annunci: stub SDK GPT/IMA, filtraggio a livello di segmento e rilevamento della schermata di transizione \"nera\" di Kick\n• Ricerca della fonte VOD senza pubblicità più veloce e sicura\n• Impostazioni riorganizzate in categorie comprimibili, con ricerca\n• Banner \"Novità\" e questa cronologia\n• Backup e ripristino: esporta/importa tutte le tue impostazioni come file (con una rete di sicurezza per annullare una volta e un'opzione \"Ripristina predefiniti\")\n• Risolto: il nascondimento degli annunci non aveva effetto visivo (la regola CSS non raggiungeva mai la pagina) e funzionava solo quando si attivava il nostro rilevamento — ora funziona in modo indipendente e cattura più overlay pubblicitari\n• Chat: rispondere al tuo messaggio ora avvisa come una menzione @\n• Popup e suono delle notifiche chat ora si attivano in modo indipendente (con una modalità audio opzionale \"solo quando non stai guardando\") — questa modalità ora rileva anche quando il pannello chat di Kick stesso è nascosto (modalità teatro/schermo intero), non solo scheda in background o scorsa\n• Risolto: le notifiche chat non scattavano seguendo attivamente la chat dal vivo, e il suono dell'estensione entrava in conflitto con quello di Windows\n• Aggiunto lo slovacco come nuova lingua supportata\n• Riviste tutte le traduzioni nelle 14 lingue per accuratezza e naturalezza — corretti diversi errori di traduzione e incoerenze di registro"
+    "message": "• Risolto: il campo del nome utente Kick nella scheda Chat non salvava il valore se lo scrivevi e chiudevi subito il popup\n• Risolto lo stesso problema altrove: canali preferiti, modalità audio per canale, gruppi di canali, elenco di apertura automatica, cache ID chatroom/canale, punteggi bot e cronologia notifiche potevano tutti perdere una modifica se due aggiornamenti arrivavano ravvicinati — ora passano tutti attraverso una coda di scrittura, quindi non può più succedere\n• Risolto un bug critico della sincronizzazione cloud: se la sincronizzazione cloud era attiva, le impostazioni della scheda Chat potevano tornare silenziosamente a uno stato vecchio/vuoto ore dopo senza alcuna interazione, a causa di un controllo di sincronizzazione in background che riapplicava continuamente una copia cloud obsoleta. Ora le impostazioni della chat si sincronizzano immediatamente a ogni modifica, e quel controllo in background non scarica più dati dal cloud per conto proprio"
   },
   "settingsBackupTitle": {
     "message": "Backup e ripristino"
@@ -802,5 +802,229 @@
   },
   "alSectionOffline": {
     "message": "Offline"
+  },
+  "chipAutoLabel": {
+    "message": "Auto",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "Guardia",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "Impostazioni di KickAlert",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "Codice sorgente",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "Valuta l'estensione",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "s",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 ha cambiato categoria",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 ha cambiato il titolo della diretta",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "Avvisi del canale",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "Avvisi aggiuntivi per questo canale. Tutti disattivati per impostazione predefinita.",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "Cambio di categoria o titolo",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "Avvisa quando questo canale cambia categoria o titolo durante la diretta.",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "Avvisa solo se",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "Lascia vuoto per ricevere avvisi per ogni diretta. Vale per notifica, suono e apertura automatica.",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "La categoria è una di",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "Il titolo contiene uno di",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "es. Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "es. torneo",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "Filtrato",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "Nessuna notifica: non corrispondeva al filtro del canale",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "Usi KickAlert da un po'. Se ti è utile, una breve recensione nello store sarebbe preziosa e aiuterebbe altri a trovarlo.",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "Lascia una recensione",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "Più tardi",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "Non chiedere più",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 ha terminato la diretta",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "Durata: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "Diretta terminata",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "Raid da $1 · $2 spettatori",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "Fine della diretta",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "Avvisa quando la diretta finisce, con la sua durata. Confermato dopo circa 2 minuti per ignorare brevi interruzioni.",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1 ha fatto un raid su $2",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "con $1 spettatori",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "Raid in arrivo",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "Avvisa quando un altro streamer fa un raid su questo canale, con chi è stato e quanti spettatori sono arrivati.",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "Tempo di visione",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "Conta quanto guardi ogni canale mentre una scheda di Kick è in riproduzione e mostra un riepilogo settimanale nella cronologia. Salvato solo su questo dispositivo.",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "Guardato negli ultimi 7 giorni",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "rispetto ai 7 giorni precedenti",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "Ora: $1 · controllato $2 fa",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "Il monitoraggio inizia quando il canale va in diretta",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "Suoni degli eventi del canale",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "Per cambio di categoria/titolo, fine della diretta e raid. Scegli un suono dell'estensione più discreto, il suono di notifica di Windows o il silenzio.",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "Suono",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "Goccia morbida",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "Campanella leggera",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "Tic",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "Silenzioso",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Suono di notifica di Windows",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "Viene riprodotto solo il suono di sistema, non quello dell'estensione.",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "Esempio di avviso di evento del canale (suono di sistema)",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "Firefox non può richiedere una notifica silenziosa, quindi Windows può aggiungere il proprio suono. Per evitarlo, disattiva «Riproduci un suono all'arrivo di una notifica» per Firefox in Impostazioni di Windows → Sistema → Notifiche.",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "Troppo grande per la sincronizzazione (oltre 8 KB): $1. Conservato su questo dispositivo ma non inviato agli altri tuoi dispositivi.",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "Canali preferiti",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "Canali ad apertura automatica",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "Modalità audio dei canali",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "Impostazioni della chat",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

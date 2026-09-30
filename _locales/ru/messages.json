@@ -647,7 +647,7 @@
     "message": "Вы пока ни на кого не подписаны. Подпишитесь на канал на Kick, и он появится здесь автоматически."
   },
   "whatsNewBannerText": {
-    "message": "Новый облик! Счётчики на вкладках, тема «Системная» и шрифты, встроенные в расширение. Загляните в <a id=\"whatsnew-settings-link\">Настройки</a>."
+    "message": "Новое: уведомления по каналам о смене категории, окончании трансляции и рейдах, а также время просмотра. Нажмите кнопку настройки на карточке канала, звук выбирается в <a id=\"whatsnew-settings-link\">Настройках</a>."
   },
   "optGroupGeneral": {
     "message": "Общие"
@@ -674,22 +674,22 @@
     "message": "Закрыть"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.46 — Новый облик"
+    "message": "v2.5.67 — Уведомления по каналам, время просмотра и исправления"
   },
   "releaseHistoryV0Body": {
-    "message": "• Обновлённое окно: более аккуратная шапка, счётчики на вкладках (каналы в эфире, новые уведомления), спокойные карточки и единый стиль переключателей во всех настройках\n• Новая тема «Системная», которая следует светлому или тёмному режиму компьютера\n• Шрифты и значки теперь встроены в расширение: при медленном соединении названия значков больше не отображаются текстом, а окно не обращается к Google\n• История: повторяющиеся одинаковые уведомления объединяются, пустые категории скрыты\n• Более понятные значки режима звука, видимый фокус клавиатуры и учёт системной настройки «Уменьшить движение»"
+    "message": "• Новое окно уведомлений канала (кнопка настройки на карточке): получайте уведомление, когда канал меняет категорию или название, когда трансляция заканчивается (с её длительностью) и когда на канал приходит рейд (от кого и сколько зрителей). По умолчанию всё выключено\n• Фильтр канала: уведомлять, только если категория из вашего списка или в названии есть одно из ваших слов\n• У этих уведомлений свой, более тихий звук (Мягкая капля, Лёгкий колокольчик, Щелчок), звук Windows или тишина, с отдельной громкостью\n• Время просмотра: в истории видно, сколько вы смотрели за последние 7 дней и ваши главные каналы (хранится только на этом устройстве)\n• Наведите курсор на превью канала, чтобы увидеть его крупно; кнопки на карточках теперь всегда помещаются\n• Исправлено в актуальном Chrome (148+): в режиме «Звуки расширения» уведомления проигрывали звук Windows и теряли кнопки «Открыть» / «Без звука»\n• Облачная синхронизация больше не отменяет импортированный файл настроек, а слишком большая для синхронизации настройка сохраняется, а не перезаписывается\n• Настройки больше не обрезаются в длинных языках; более надёжный запасной способ пропуска рекламы в прямом эфире"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.45 — Исправления целостности данных и облачной синхронизации"
+    "message": "v2.5.46 — Новый облик"
   },
   "releaseHistoryV1Body": {
-    "message": "• Исправлено: поле имени пользователя Kick на вкладке чата не сохраняло значение, если вы вводили его и сразу закрывали всплывающее окно\n• Исправлена та же проблема в других местах: избранные каналы, режим звука по каналам, группы каналов, список автооткрытия, кэш ID чата/канала, оценки ботов и история уведомлений могли потерять изменение, если два обновления происходили почти одновременно — теперь все они проходят через очередь записи, поэтому это больше не может произойти\n• Исправлена критическая ошибка облачной синхронизации: если облачная синхронизация была включена, настройки вкладки чата могли незаметно откатиться к старому/пустому состоянию спустя часы без каких-либо действий пользователя — из-за того, что фоновая проверка синхронизации постоянно заново применяла устаревшую копию из облака. Теперь настройки чата синхронизируются мгновенно при каждом изменении, а эта фоновая проверка больше не подтягивает данные из облака самостоятельно"
+    "message": "• Обновлённое окно: более аккуратная шапка, счётчики на вкладках (каналы в эфире, новые уведомления), спокойные карточки и единый стиль переключателей во всех настройках\n• Новая тема «Системная», которая следует светлому или тёмному режиму компьютера\n• Шрифты и значки теперь встроены в расширение: при медленном соединении названия значков больше не отображаются текстом, а окно не обращается к Google\n• История: повторяющиеся одинаковые уведомления объединяются, пустые категории скрыты\n• Более понятные значки режима звука, видимый фокус клавиатуры и учёт системной настройки «Уменьшить движение»"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5 — Блокировка рекламы, уведомления чата и обновлённые настройки"
+    "message": "v2.5.45 — Исправления целостности данных и облачной синхронизации"
   },
   "releaseHistoryV2Body": {
-    "message": "• Три новых уровня блокировки рекламы: заглушка GPT/IMA SDK, фильтрация на уровне сегментов, обнаружение собственного «чёрного» переходного экрана Kick\n• Поиск источника VOD без рекламы стал быстрее и надёжнее\n• Настройки реорганизованы в сворачиваемые категории с поиском\n• Баннер «Что нового» и эта история\n• Резервное копирование: экспорт/импорт всех настроек в виде файла (с одноразовой сетью безопасности отмены и опцией «Сбросить настройки»)\n• Исправлено: скрытие рекламы не имело визуального эффекта (правило CSS никогда не попадало на страницу) и срабатывало только при активации нашего собственного обнаружения — теперь работает независимо и захватывает больше рекламных наложений\n• Чат: ответ на ваше сообщение теперь уведомляет так же, как упоминание @\n• Всплывающее окно и звук уведомлений чата теперь включаются независимо (с необязательным режимом звука «только когда не смотрите») — этот режим также определяет, когда скрыта собственная панель чата Kick (театральный/полноэкранный режим), а не только вкладка в фоне или прокрутка\n• Исправлено: уведомления чата не срабатывали при активном просмотре чата, а звук расширения конфликтовал со звуком уведомлений Windows\n• Добавлен словацкий как новый поддерживаемый язык\n• Проверены все переводы на всех 14 языках на точность и естественность — исправлено несколько неточных переводов и несоответствий в обращении (ты/вы)"
+    "message": "• Исправлено: поле имени пользователя Kick на вкладке чата не сохраняло значение, если вы вводили его и сразу закрывали всплывающее окно\n• Исправлена та же проблема в других местах: избранные каналы, режим звука по каналам, группы каналов, список автооткрытия, кэш ID чата/канала, оценки ботов и история уведомлений могли потерять изменение, если два обновления происходили почти одновременно — теперь все они проходят через очередь записи, поэтому это больше не может произойти\n• Исправлена критическая ошибка облачной синхронизации: если облачная синхронизация была включена, настройки вкладки чата могли незаметно откатиться к старому/пустому состоянию спустя часы без каких-либо действий пользователя — из-за того, что фоновая проверка синхронизации постоянно заново применяла устаревшую копию из облака. Теперь настройки чата синхронизируются мгновенно при каждом изменении, а эта фоновая проверка больше не подтягивает данные из облака самостоятельно"
   },
   "settingsBackupTitle": {
     "message": "Резервное копирование и восстановление"
@@ -804,5 +804,229 @@
   },
   "alSectionOffline": {
     "message": "Не в сети"
+  },
+  "chipAutoLabel": {
+    "message": "Авто",
+    "description": "Header status pill: auto-launch on/off (keep very short)"
+  },
+  "chipGuardLabel": {
+    "message": "Защита",
+    "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "optionsTitle": {
+    "message": "Настройки KickAlert",
+    "description": "Settings panel title"
+  },
+  "footerSourceCode": {
+    "message": "Исходный код",
+    "description": "Footer link to the GitHub repository"
+  },
+  "footerRateExtension": {
+    "message": "Оценить расширение",
+    "description": "Footer link to the store review page"
+  },
+  "unitSeconds": {
+    "message": "сек",
+    "description": "Unit shown after second-based sliders"
+  },
+  "notifCategoryChanged": {
+    "message": "$1 сменил категорию",
+    "description": "Notification title: channel switched category. $1 = channel name"
+  },
+  "notifTitleChanged": {
+    "message": "$1 изменил название трансляции",
+    "description": "Notification title: channel changed stream title. $1 = channel name"
+  },
+  "chAlertButtonTooltip": {
+    "message": "Уведомления канала",
+    "description": "Tooltip of the per-channel alerts button on channel cards"
+  },
+  "chAlertSubtitle": {
+    "message": "Дополнительные уведомления для этого канала. По умолчанию все выключены.",
+    "description": "Subtitle in the per-channel alerts window"
+  },
+  "chAlertChange": {
+    "message": "Смена категории или названия",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertChangeDesc": {
+    "message": "Уведомлять, когда канал меняет категорию или название во время трансляции.",
+    "description": "Per-channel alert option description"
+  },
+  "chFilterTitle": {
+    "message": "Уведомлять, только если",
+    "description": "Per-channel filter block title"
+  },
+  "chFilterDesc": {
+    "message": "Оставьте пустым, чтобы получать уведомления о каждой трансляции. Действует на уведомление, звук и автооткрытие.",
+    "description": "Per-channel filter block description"
+  },
+  "chFilterCats": {
+    "message": "Категория — одна из",
+    "description": "Per-channel filter: category field label"
+  },
+  "chFilterWords": {
+    "message": "Название содержит одно из",
+    "description": "Per-channel filter: title keyword field label"
+  },
+  "chFilterCatPlaceholder": {
+    "message": "напр. Just Chatting",
+    "description": "Placeholder for category input"
+  },
+  "chFilterWordPlaceholder": {
+    "message": "напр. турнир",
+    "description": "Placeholder for title keyword input"
+  },
+  "historyFiltered": {
+    "message": "Отфильтровано",
+    "description": "History chip: stream was logged but filtered out by the channel filter"
+  },
+  "historyFilteredTooltip": {
+    "message": "Без уведомления: не подошло под фильтр канала",
+    "description": "Tooltip for the Filtered chip in history"
+  },
+  "rateBannerText": {
+    "message": "Вы уже какое-то время пользуетесь KickAlert. Если он вам полезен, короткий отзыв в магазине очень поможет другим его найти.",
+    "description": "Review request banner text, shown only to active users"
+  },
+  "rateBannerRate": {
+    "message": "Оставить отзыв",
+    "description": "Review request: primary button"
+  },
+  "rateBannerLater": {
+    "message": "Позже",
+    "description": "Review request: postpone button"
+  },
+  "rateBannerNever": {
+    "message": "Больше не спрашивать",
+    "description": "Review request: close button tooltip"
+  },
+  "notifStreamEnded": {
+    "message": "$1 завершил трансляцию",
+    "description": "Notification title: stream ended. $1 = channel name"
+  },
+  "notifStreamEndedLength": {
+    "message": "Длительность: $1",
+    "description": "Notification message: stream length. $1 = e.g. 3h 12m"
+  },
+  "historyStreamEnded": {
+    "message": "Трансляция завершена",
+    "description": "History row label for a stream-ended entry"
+  },
+  "historyRaid": {
+    "message": "Рейд от $1 · $2 зрителей",
+    "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
+  },
+  "chAlertEnd": {
+    "message": "Окончание трансляции",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertEndDesc": {
+    "message": "Уведомлять об окончании трансляции с её длительностью. Подтверждается примерно через 2 минуты, чтобы короткие обрывы не учитывались.",
+    "description": "Per-channel alert option description"
+  },
+  "notifRaidTitle": {
+    "message": "$1 устроил рейд на $2",
+    "description": "Notification title: incoming raid. $1 = raiding channel, $2 = raided (followed) channel"
+  },
+  "notifRaidViewers": {
+    "message": "с $1 зрителями",
+    "description": "Notification message: raid size. $1 = viewer count"
+  },
+  "chAlertRaid": {
+    "message": "Входящий рейд",
+    "description": "Per-channel alert option label"
+  },
+  "chAlertRaidDesc": {
+    "message": "Уведомлять, когда другой стример устраивает рейд на этот канал: кто и сколько зрителей пришло.",
+    "description": "Per-channel alert option description"
+  },
+  "watchTimeTitle": {
+    "message": "Время просмотра",
+    "description": "Settings: watch time feature title"
+  },
+  "watchTimeDesc": {
+    "message": "Считает, сколько вы смотрите каждый канал, пока вкладка Kick воспроизводит видео, и показывает недельную сводку в истории. Хранится только на этом устройстве.",
+    "description": "Settings: watch time description"
+  },
+  "watchSummaryTitle": {
+    "message": "Просмотрено за 7 дней",
+    "description": "History: weekly watch summary title"
+  },
+  "watchSummaryVsPrev": {
+    "message": "по сравнению с предыдущими 7 днями",
+    "description": "History: tooltip for weekly change"
+  },
+  "chAlertStateLive": {
+    "message": "Сейчас: $1 · проверено $2 назад",
+    "description": "Per-channel alerts: last seen category and check age. $1 = category, $2 = e.g. 3m"
+  },
+  "chAlertStateIdle": {
+    "message": "Отслеживание начнётся, когда канал выйдет в эфир",
+    "description": "Per-channel alerts: tracking not active because channel is offline"
+  },
+  "eventSoundTitle": {
+    "message": "Звуки событий канала",
+    "description": "Options section title: sound for per-channel event alerts"
+  },
+  "eventSoundDesc": {
+    "message": "Для смены категории/названия, окончания трансляции и рейдов. Выберите более тихий звук расширения, звук уведомлений Windows или тишину.",
+    "description": "Options section description for event alert sound"
+  },
+  "eventSoundLabel": {
+    "message": "Звук",
+    "description": "Label for the event sound selector"
+  },
+  "eventSoundSoft": {
+    "message": "Мягкая капля",
+    "description": "Event sound option: soft drop"
+  },
+  "eventSoundChime": {
+    "message": "Лёгкий колокольчик",
+    "description": "Event sound option: light chime"
+  },
+  "eventSoundTick": {
+    "message": "Щелчок",
+    "description": "Event sound option: short tick"
+  },
+  "eventSoundSilent": {
+    "message": "Без звука",
+    "description": "Event sound option: no sound"
+  },
+  "eventSoundWindows": {
+    "message": "Звук уведомлений Windows",
+    "description": "Event sound option: use the operating system notification sound only"
+  },
+  "eventSoundWindowsHint": {
+    "message": "Звучит только системный звук, звук расширения не воспроизводится.",
+    "description": "Shown when the Windows sound option is selected"
+  },
+  "eventSoundWindowsTest": {
+    "message": "Пример оповещения о событии канала (системный звук)",
+    "description": "Message of the sample notification sent by the Test button for the Windows sound option"
+  },
+  "eventSoundWinNote": {
+    "message": "Firefox не может запросить беззвучное уведомление, поэтому Windows может добавить свой звук. Чтобы этого избежать, отключите «Воспроизводить звук при получении уведомления» для Firefox в Параметры Windows → Система → Уведомления.",
+    "description": "Firefox-only help note under the event sound setting"
+  },
+  "cloudSyncIssue": {
+    "message": "Слишком большой объём для синхронизации (более 8 КБ): $1. Сохраняется на этом устройстве, но не передаётся на другие.",
+    "description": "Warning under Cloud Sync: some settings exceed the browser sync size limit. $1 = setting names"
+  },
+  "syncNameFavorites": {
+    "message": "Избранные каналы",
+    "description": "Setting name in the sync warning: favourite channels"
+  },
+  "syncNameAutoOpen": {
+    "message": "Каналы с автооткрытием",
+    "description": "Setting name in the sync warning: auto-open channels"
+  },
+  "syncNameSoundModes": {
+    "message": "Звуковые режимы каналов",
+    "description": "Setting name in the sync warning: per-channel sound modes"
+  },
+  "syncNameChat": {
+    "message": "Настройки чата",
+    "description": "Setting name in the sync warning: chat tab settings"
   }
 }

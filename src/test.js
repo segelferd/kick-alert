@@ -1196,19 +1196,19 @@ async function refreshDiagStatus() {
 
 const SCENARIOS = {
   health: {
-    title: '🩺 Sağlık Kontrolü',
+    title: 'Sağlık kontrolü',
     msgType: 'RUN_SCENARIO_HEALTH',
     description: 'Bağlantı, auth, hız, cookie ve alarm sağlığını ardışık ölçüyor.',
     payload: () => ({}),
   },
   notification: {
-    title: '🔔 Bildirim Pipeline',
+    title: 'Bildirim pipeline',
     msgType: 'RUN_SCENARIO_NOTIFICATION',
     description: 'Bildirim, ses, DND, anomali ayarlarını uçtan uca test ediyor.',
     payload: () => ({}),
   },
   detection: {
-    title: '📺 Yayın Algılama',
+    title: 'Yayın algılama',
     msgType: 'E2E_TEST', // Mevcut E2E_TEST handler'ı
     description: 'Gerçek API ile "yayına geçti" akışını simüle ediyor.',
     payload: () => {
@@ -1217,19 +1217,19 @@ const SCENARIOS = {
     },
   },
   recovery: {
-    title: '🛡️ Geri Kurtarma',
+    title: 'Geri kurtarma',
     msgType: 'RUN_SCENARIO_RECOVERY',
     description: 'Backoff ve recovery mekanizmasını canlı test ediyor.',
     payload: () => ({}),
   },
   pressure: {
-    title: '🔥 Cloudflare Baskı Testi',
+    title: 'Cloudflare baskı testi',
     msgType: 'RUN_SCENARIO_PRESSURE',
     description: '10 ardışık istek atıyor (50sn) — Plan B değerlendirmesi.',
     payload: () => ({}),
   },
   authConsistency: {
-    title: '🎯 Auth Tutarlılık Testi (cf-ray)',
+    title: 'Auth tutarlılık (cf-ray)',
     msgType: 'RUN_SCENARIO_AUTH_CONSISTENCY',
     description: 'Backoff\'u hiç tetiklemeden 10 ham istek atar, her birinin cf-ray\'ini kaydeder — Kick sunucu tutarsızlığının örüntüsünü arar.',
     payload: () => ({}),
@@ -1327,12 +1327,13 @@ function setCardResult(scenarioKey, summary) {
 async function runScenario(scenarioKey) {
   if (_scenarioRunning) {
     dlog('⏳ Bir senaryo zaten çalışıyor — bekleyin', 'warn');
-    return;
+    return null;
   }
   const sc = SCENARIOS[scenarioKey];
   if (!sc) return;
 
   _scenarioRunning = true;
+  let outcome = { ok: 0, warn: 0, err: 1 };
 
   // Tüm kartları kilitle, çalışan kartı işaretle
   document.querySelectorAll('.scenario-card').forEach(c => {
@@ -1351,8 +1352,10 @@ async function runScenario(scenarioKey) {
   dlog(`▶ Senaryo başlatıldı: ${sc.title}`, 'info');
 
   try {
-    const payload = { type: sc.msgType, ...sc.payload() };
-    const response = await chrome.runtime.sendMessage(payload);
+    // v2.5.61: istemci tarafı senaryolar (sc.run) — test-v2.js
+    const response = sc.run
+      ? await sc.run()
+      : await chrome.runtime.sendMessage({ type: sc.msgType, ...sc.payload() });
 
     if (!response) {
       throw new Error('Backend yanıt vermedi');
@@ -1380,6 +1383,7 @@ async function runScenario(scenarioKey) {
 
     dlog(`✓ Senaryo bitti: ${sc.title} — ${okCount} OK, ${warnCount} uyarı, ${errCount} hata`,
          errCount > 0 ? 'err' : warnCount > 0 ? 'warn' : 'ok');
+    outcome = { ok: okCount, warn: warnCount, err: errCount };
 
     // Senaryo tamamlanınca sağlık header'ı yenile
     refreshDiagStatus();
@@ -1398,6 +1402,7 @@ async function runScenario(scenarioKey) {
     });
     if (activeCard) activeCard.classList.remove('running');
   }
+  return outcome;
 }
 
 // ─── Initialize Diagnostic Panel ───
@@ -1429,6 +1434,14 @@ function initDiagnosticPanel() {
     card.addEventListener('click', (e) => {
       // Input alanına tıklandıysa senaryo başlatma (slug input'u için)
       if (e.target.tagName === 'INPUT') return;
+      const key = card.getAttribute('data-scenario');
+      if (key) runScenario(key);
+    });
+    // v2.5.61: klavye ile de başlatılabilsin
+    card.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      e.preventDefault();
       const key = card.getAttribute('data-scenario');
       if (key) runScenario(key);
     });

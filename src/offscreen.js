@@ -43,6 +43,10 @@ const SoundPaths = {
   NEW_LIVE_MAIN: '../sounds/new_live_main.mp3',
   NEW_LIVE_SUB: '../sounds/new_live_sub.mp3',
   CHAT_MENTION: '../sounds/chat_mention.mp3',
+  // v2.5.63: kanal olayı sesleri (sentezlenmiş, canlı bildirimden ~5 dB kısık)
+  EVENT_SOFT: '../sounds/event_soft.mp3',
+  EVENT_CHIME: '../sounds/event_chime.mp3',
+  EVENT_TICK: '../sounds/event_tick.mp3',
 };
 
 setInterval(async () => {
@@ -458,3 +462,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
   return false;
 });
+
+// v2.5.54: Raid olaylarını arka plana ilet (Chrome; offscreen içindeki BotTracker)
+try {
+  if (typeof BotTracker !== 'undefined' && BotTracker) {
+    BotTracker.onRaid = (d) => {
+      try { chrome.runtime.sendMessage({ type: 'RAID_EVENT', slug: d.slug, raider: d.raider, viewers: d.viewers, message: d.message, event: d.event }).catch(() => {}); } catch (e) {}
+    };
+  }
+} catch (e) {}

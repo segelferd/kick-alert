@@ -50,7 +50,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupWhatsNewBannerButtons(); // v2.5.11: Banner butonlarını bir kez bağla
   setupWhatsNewRelink();        // v2.5.11: Kalıcı "What's New" linki
   setupReleaseHistoryModal();   // v2.5.16: Sürüm Geçmişi modalı
+  setupChannelAlertModal();     // v2.5.49: Kanal bazlı ek bildirim ayarları
+  setupRateBanner();            // v2.5.52: Değerlendirme isteği
   await checkWhatsNewBanner();   // v2.5.9: "Yenilikler" banner'ı
+  try { await trackPopupOpenForRating(); await maybeShowRateBanner(); } catch (e) {} // v2.5.52
   // v2.5.46: fonts are bundled now; once they are ready, re-measure the open
   // Settings groups so a late font swap can never clip their content.
   try { document.fonts?.ready?.then(() => refreshAllOptGroupHeights()); } catch (e) {}
@@ -160,6 +163,16 @@ function setupI18n() {
   setTitle('option-chip', Utils.i18n('optionsButtonTooltip'));
   const searchInput = document.getElementById('autolaunch-search');
   if (searchInput) searchInput.placeholder = Utils.i18n('searchChannels');
+  // v2.5.48: Ayarlar ve Chat panelleri dışındaki data-i18n etiketleri
+  // (örn. "Sort:", üst bardaki Auto/Guard) hiç çevrilmiyordu; çünkü
+  // applyOptionsI18n sadece o panelleri tarıyor. Sadece çocuk elemanı
+  // olmayan ve çevirisi düz metin olan etiketlere dokunuyoruz; ikonlu
+  // butonların içi bozulmasın.
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (el.closest('#options-panel, #chat-panel') || el.children.length) return;
+    const t = Utils.i18n(el.getAttribute('data-i18n'));
+    if (t && t.indexOf('<') === -1) el.textContent = t;
+  });
 }
 
 function setText(id, text) { const el = document.getElementById(id); if (el) el.textContent = text; }
@@ -480,7 +493,7 @@ async function renderFollowing(categoryFilter) {
   const cardMode = 'detail'; // Compact mod kaldırıldı
 
   // Batch yükle — her kart için ayrı storage.get yerine tek seferde
-  const [favMap, groupMap2, bellMap, groupList, botScoresRes, botScoreAlways] = await Promise.all([
+  const [favMap, groupMap2, bellMap, groupList, botScoresRes, botScoreAlways, alertPrefs] = await Promise.all([
     Storage.getFavoriteChannels(),
     Storage.getChannelGroupMap(),
     Storage.getAllChannelSoundModes(),
@@ -490,9 +503,10 @@ async function renderFollowing(categoryFilter) {
     chrome.runtime.sendMessage({ type: 'GET_BOT_SCORES' }).catch(() => null),
     // v2.3.0: "Her zaman göster" toggle'ı (default false)
     Storage.getBotScoreAlwaysVisible(),
+    Storage.getChannelAlertPrefs(), // v2.5.49
   ]);
   const botScores = (botScoresRes?.success && botScoresRes.scores) ? botScoresRes.scores : {};
-  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList, botScores, botScoreAlways };
+  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList, botScores, botScoreAlways, alertPrefs };
 
   // v2.3.26: Kanal Önizlemeleri (Thumbnail).
   // v2.4.5 DÜZELTME: Önceden burada TÜM canlı kanalların thumbnail'i bitene
@@ -959,13 +973,18 @@ async function channelCard(ch, cardMode, batch) {
     actions.appendChild(botWrap);
   }
 
+  // v2.5.57: Butonlar tek bir grupta. Kart dar kalırsa grup bütün halinde
+  // alt satıra iner (hiçbir buton kesilmez); sparkline ve bot skoru solda kalır.
+  const btnGroup = document.createElement('div');
+  btnGroup.className = 'card-action-btns';
+
   // Open button — her zaman (live ve offline)
   const openBtn = document.createElement('button');
   openBtn.className = 'card-action-btn open-btn';
   openBtn.title = 'Open channel';
   openBtn.innerHTML = '<span class="material-icons">open_in_new</span>';
   openBtn.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}` }));
-  actions.appendChild(openBtn);
+  btnGroup.appendChild(openBtn);
 
   if (ch.isLive) {
     // Multi button — sadece live
@@ -979,13 +998,17 @@ async function channelCard(ch, cardMode, batch) {
       multiBtn.querySelector('.material-icons').style.color = '#f0883e';
     });
 
-    actions.appendChild(multiBtn);
+    btnGroup.appendChild(multiBtn);
   }
 
   // Bell button — her zaman (live ve offline)
   const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
   const bellBtn = createBellButton(ch.channelSlug, bellMode);
-  actions.appendChild(bellBtn);
+  btnGroup.appendChild(bellBtn);
+
+  // v2.5.49: Kanal bazlı ek bildirimler butonu (değişim / yayın bitti / raid / filtre)
+  const alertPref = batch ? (batch.alertPrefs?.[ch.channelSlug] || {}) : await Storage.getChannelAlertPref(ch.channelSlug);
+  btnGroup.appendChild(createChannelAlertsButton(ch, alertPref));
 
   // Group assign button — always visible (only if groups exist)
   const groups = batch ? (batch.groupList || []) : await Storage.getChannelGroups();
@@ -1015,7 +1038,7 @@ async function channelCard(ch, cardMode, batch) {
       groupBtn.title = nextGroup || Utils.i18n('groupAssign');
       groupBtn.querySelector('.material-icons').style.color = nextGroup ? 'var(--accent)' : '';
     });
-    actions.appendChild(groupBtn);
+    btnGroup.appendChild(groupBtn);
   }
 
   // Star/favorite button — always visible
@@ -1039,7 +1062,9 @@ async function channelCard(ch, cardMode, batch) {
     });
   });
   starBtn.dataset.slug = ch.channelSlug;
-  actions.appendChild(starBtn);
+  btnGroup.appendChild(starBtn);
+
+  actions.appendChild(btnGroup);
 
   // v2.3.33: Thumbnail modunda actions, önceden HTML'de oluşturulan
   // .card-actions-col placeholder'ının İÇİNE gidiyor (thumbnail'in solunda,
@@ -1067,6 +1092,7 @@ async function channelCard(ch, cardMode, batch) {
     // v2.4.4: Thumbnail'e tıklayınca kanalı yeni sekmede aç (Open butonuyla
     // aynı davranış) — viewer trend AÇILMASIN, sadece kanal.
     const thumbWrapForClick = card.querySelector('.channel-thumbnail-wrap');
+    if (thumbWrapForClick) attachThumbPreview(thumbWrapForClick, ch); // v2.5.56
     if (thumbWrapForClick) {
       thumbWrapForClick.style.cursor = 'pointer';
       thumbWrapForClick.addEventListener('click', (e) => {
@@ -1201,6 +1227,7 @@ async function autoLaunchCard(ch, cardMode, batch) {
 async function loadHistory() {
   const el = document.getElementById('history-list');
   if (!el) return;
+  renderWatchSummary(); // v2.5.55
 
   try {
     const history = await Storage.getNotificationHistory();
@@ -1240,6 +1267,7 @@ async function loadHistory() {
       const group = getGroup(entry.timestamp);
       if (prevEntry && prevItem && group === lastGroup
           && prevEntry.channelSlug === entry.channelSlug
+          && (prevEntry.kind || '') === (entry.kind || '')
           && (prevEntry.title || '') === (entry.title || '')
           && Math.abs(tsOf(prevEntry) - tsOf(entry)) <= DUP_WINDOW_MS) {
         prevItem._repeat = (prevItem._repeat || 1) + 1;
@@ -1264,7 +1292,8 @@ async function loadHistory() {
         lastGroup = group;
       }
       const item = document.createElement('div');
-      item.className = 'history-item' + (tsOf(entry) > seenAt ? ' is-new' : '');
+      item.className = 'history-item' + (tsOf(entry) > seenAt ? ' is-new' : '') + (entry.kind ? ` history-kind-${entry.kind}` : '');
+      const eventLine = historyEventLine(entry); // v2.5.53+: yayın bitti / raid
       const pic = entry.profilePic || '../images/default-profile-pictures/default.jpeg';
       item.innerHTML = `
         <img class="history-avatar" src="${esc(pic)}" alt="" />
@@ -1272,8 +1301,10 @@ async function loadHistory() {
           <div class="history-header">
             <span class="history-username">${esc(entry.username)}</span>
             <span class="history-repeat" hidden></span>
+            ${entry.filtered ? `<span class="history-filtered" title="${esc(Utils.i18n('historyFilteredTooltip') || '')}">${esc(Utils.i18n('historyFiltered') || 'Filtered')}</span>` : ''}
             <span class="history-time">${esc(Utils.formatTimestamp(entry.timestamp))}</span>
           </div>
+          ${eventLine ? `<div class="history-event">${esc(eventLine)}</div>` : ''}
           <div class="history-title">${esc(entry.title)}</div>
           ${(entry.category && entry.category !== '-') ? `<div class="history-category">${esc(entry.category)}</div>` : ''}
         </div>`;
@@ -1459,11 +1490,24 @@ function setupWhatsNewRelink() {
 // o anki scrollHeight'a göre yeniden hesaplar. Options paneli display:none'dan
 // display:block'a geçtiği her an çağrılmalı — aksi halde panel gizliyken
 // yapılan ilk ölçüm (scrollHeight=0) kalıcı olarak yanlış kalır.
+// v2.5.48: KÖK ÇÖZÜM. Açık bir grubun yüksekliği artık piksel olarak
+// sabitlenmiyor. Piksel değer SADECE açma/kapama animasyonu sırasında
+// kullanılıyor; animasyon bitince max-height 'none' oluyor ve grup içeriği
+// ne kadar uzarsa (dil değişimi, sonradan dolan metin, font, pencere
+// genişliği) o kadar büyüyor. Önceki yaklaşımda her yeni durum için
+// yeniden ölçüm eklemek gerekiyordu (v2.5.10, v2.5.13, v2.5.46) ve dil
+// değişiminde ölçüm yapılmadığı için alt kısım kırpılıyordu.
+function releaseOptGroupHeight(body) {
+  if (!body) return;
+  const group = body.closest('.opt-group');
+  if (group && group.classList.contains('collapsed')) return;
+  body.style.maxHeight = 'none';
+}
+
 function refreshAllOptGroupHeights() {
   document.querySelectorAll('#options-panel .opt-group').forEach(group => {
     if (group.classList.contains('collapsed')) return;
-    const body = group.querySelector('.opt-group-body');
-    if (body) body.style.maxHeight = body.scrollHeight + 'px';
+    releaseOptGroupHeight(group.querySelector('.opt-group-body'));
   });
 }
 
@@ -1482,17 +1526,33 @@ function setupOptGroups() {
   // v2.5.10: Grubun gerçek içerik yüksekliğini (scrollHeight) ölçüp
   // max-height'a atar — CSS grid tekniğinin aksine, içinde kaç .opt-section
   // olursa olsun doğru çalışır.
-  function setExpanded(group, expanded) {
+  // v2.5.48: animate=false ilk yüklemede kullanılır (panel gizliyken
+  // ölçüm yapılamaz, animasyona da gerek yok).
+  function setExpanded(group, expanded, animate = true) {
     const body = group.querySelector('.opt-group-body');
     if (!body) return;
     if (expanded) {
+      const wasCollapsed = group.classList.contains('collapsed');
       group.classList.remove('collapsed');
+      if (!animate || !wasCollapsed) { releaseOptGroupHeight(body); return; }
+      // 0'dan gerçek yüksekliğe animasyon, bitince sınırı kaldır.
       body.style.maxHeight = body.scrollHeight + 'px';
+      let finished = false;
+      const finish = () => {
+        if (finished) return;
+        finished = true;
+        body.removeEventListener('transitionend', onEnd);
+        releaseOptGroupHeight(body);
+      };
+      const onEnd = (e) => { if (e.target === body && e.propertyName === 'max-height') finish(); };
+      body.addEventListener('transitionend', onEnd);
+      setTimeout(finish, 350); // transitionend gelmezse (reduce motion vb.)
     } else {
-      // Geçiş animasyonunun düzgün çalışması için önce GERÇEK açık
-      // yüksekliği sabitleyip, hemen ardından collapsed class'ını ekliyoruz
-      // (CSS !important zaten 0'a indiriyor, animasyon buradan başlıyor).
+      // Kapanma animasyonu 'none' değerinden başlayamaz: önce o anki gerçek
+      // yüksekliği piksel olarak sabitle, reflow yaptır, sonra collapsed
+      // class'ını ekle (CSS !important 0'a indiriyor, animasyon buradan başlar).
       body.style.maxHeight = body.scrollHeight + 'px';
+      void body.offsetHeight;
       requestAnimationFrame(() => group.classList.add('collapsed'));
     }
   }
@@ -1505,14 +1565,14 @@ function setupOptGroups() {
     if (!group || group.classList.contains('collapsed')) return;
     const body = group.querySelector('.opt-group-body');
     if (!body) return;
-    setTimeout(() => { body.style.maxHeight = body.scrollHeight + 'px'; }, 220);
+    setTimeout(() => releaseOptGroupHeight(body), 220);
   }
 
   Storage.get(StorageKeys.OPT_GROUP_COLLAPSED_STATE).then(state => {
     const collapsedMap = state && typeof state === 'object' ? state : {};
     groups.forEach(group => {
       const key = group.dataset.groupKey || group.id;
-      setExpanded(group, !collapsedMap[key]);
+      setExpanded(group, !collapsedMap[key], false);
     });
   });
 
@@ -1611,8 +1671,7 @@ function setupOptSearch() {
       // gizlenen/gösterilen bölümler eski (bayat) yükseklikte kırpılır/boşluk
       // bırakır. Sadece açık (collapsed olmayan) gruplar için gerekli.
       if (!group.classList.contains('collapsed')) {
-        const body = group.querySelector('.opt-group-body');
-        if (body) body.style.maxHeight = body.scrollHeight + 'px';
+        releaseOptGroupHeight(group.querySelector('.opt-group-body'));
       }
     });
   });
@@ -1684,6 +1743,244 @@ function setupHistoryClear() {
   });
 }
 
+// ─── v2.5.56: Kartta büyük önizleme ───
+// Önizleme görselinin üzerinde 350 ms durunca aynı görseli (zaten 720p
+// çekiliyor, ek istek yok) büyük gösterir. Fare ayrılınca veya kaydırınca kapanır.
+let _thumbPrevTimer = null;
+function getThumbPreviewEl() {
+  let el = document.getElementById('thumb-preview');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'thumb-preview';
+    el.className = 'thumb-preview';
+    el.hidden = true;
+    el.innerHTML = '<img alt="" /><div class="thumb-preview-meta"><span class="thumb-preview-name"></span><span class="thumb-preview-title"></span></div>';
+    document.body.appendChild(el);
+    window.addEventListener('scroll', hideThumbPreview, true);
+  }
+  return el;
+}
+function hideThumbPreview() {
+  clearTimeout(_thumbPrevTimer);
+  const el = document.getElementById('thumb-preview');
+  if (el) el.hidden = true;
+}
+function attachThumbPreview(wrap, ch) {
+  wrap.addEventListener('mouseenter', () => {
+    clearTimeout(_thumbPrevTimer);
+    _thumbPrevTimer = setTimeout(() => {
+      const img = wrap.querySelector('.channel-thumbnail');
+      if (!img || !img.src || !img.complete || !img.naturalWidth) return;
+      const el = getThumbPreviewEl();
+      el.querySelector('img').src = img.src;
+      el.querySelector('.thumb-preview-name').textContent = ch.userUsername || ch.channelSlug;
+      el.querySelector('.thumb-preview-title').textContent = [ch.sessionTitle, ch.categoryName].filter(Boolean).join(' · ');
+      el.hidden = false;
+      const r = wrap.getBoundingClientRect();
+      const h = el.offsetHeight, vh = window.innerHeight;
+      let top = r.bottom + 8;
+      if (top + h > vh - 8) top = Math.max(8, r.top - h - 8);
+      el.style.top = `${Math.round(top)}px`;
+    }, 350);
+  });
+  wrap.addEventListener('mouseleave', hideThumbPreview);
+  wrap.addEventListener('click', hideThumbPreview);
+}
+
+// ─── v2.5.55: Haftalık izleme özeti (Geçmiş sekmesinin üstünde) ───
+function formatWatch(sec) {
+  const m = Math.round((sec || 0) / 60);
+  const h = Math.floor(m / 60), mm = m % 60;
+  return h ? `${h}h ${mm}m` : `${mm}m`;
+}
+
+async function renderWatchSummary() {
+  const box = document.getElementById('watch-summary');
+  if (!box) return;
+  try {
+    if (!(await Storage.getWatchTimeEnabled())) { box.hidden = true; return; }
+    const data = (await chrome.storage.local.get('_watchTime'))._watchTime;
+    const days = (data && data.days) || {};
+    const dayKey = (off) => { const d = new Date(); d.setDate(d.getDate() - off); const p = n => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`; };
+    const sumRange = (from, to) => { const per = {}; let total = 0; for (let i = from; i <= to; i++) { const day = days[dayKey(i)] || {}; for (const [slug, sec] of Object.entries(day)) { per[slug] = (per[slug] || 0) + sec; total += sec; } } return { per, total }; };
+    const cur = sumRange(0, 6), prev = sumRange(7, 13);
+    if (cur.total < 60) { box.hidden = true; return; }
+    const top = Object.entries(cur.per).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    const max = top[0] ? top[0][1] : 1;
+    const nameOf = (slug) => (allChannels.find(c => c.channelSlug === slug)?.userUsername) || slug;
+    const diff = cur.total - prev.total;
+    const diffText = prev.total >= 60 ? `${diff >= 0 ? '+' : '−'}${formatWatch(Math.abs(diff))}` : '';
+    box.innerHTML = '<div class="watch-head"><span class="material-icons-outlined">schedule</span>'
+      + '<span class="watch-title"></span><span class="watch-total"></span><span class="watch-diff" hidden></span></div>'
+      + '<div class="watch-rows"></div>';
+    box.querySelector('.watch-title').textContent = Utils.i18n('watchSummaryTitle') || 'Watched in the last 7 days';
+    box.querySelector('.watch-total').textContent = formatWatch(cur.total);
+    const dEl = box.querySelector('.watch-diff');
+    if (dEl && diffText) {
+      dEl.textContent = diffText;
+      dEl.classList.add(diff >= 0 ? 'up' : 'down');
+      dEl.title = Utils.i18n('watchSummaryVsPrev') || 'vs. the 7 days before';
+      dEl.hidden = false;
+    }
+    const rows = box.querySelector('.watch-rows');
+    top.forEach(([slug, sec]) => {
+      const row = document.createElement('div');
+      row.className = 'watch-row';
+      row.innerHTML = '<span class="watch-name"></span><span class="watch-bar"><i></i></span><span class="watch-val"></span>';
+      row.querySelector('.watch-name').textContent = nameOf(slug);
+      row.querySelector('.watch-bar i').style.width = `${Math.max(6, Math.round(sec / max * 100))}%`;
+      row.querySelector('.watch-val').textContent = formatWatch(sec);
+      rows.appendChild(row);
+    });
+    box.hidden = false;
+  } catch (e) { box.hidden = true; }
+}
+
+// v2.5.53+: Geçmişte yayın bitti / raid kayıtları için üst satır
+function historyEventLine(entry) {
+  if (entry.kind === 'end') {
+    const base = Utils.i18n('historyStreamEnded') || 'Stream ended';
+    return entry.length ? `${base} · ${entry.length}` : base;
+  }
+  if (entry.kind === 'raid') {
+    return Utils.i18n('historyRaid', [entry.raider || '?', String(entry.viewers ?? '?')]) || `Raid from ${entry.raider} · ${entry.viewers} viewers`;
+  }
+  return '';
+}
+
+// ─── v2.5.52: Değerlendirme isteği ───
+// Sadece eklentiyi gerçekten kullanan birine sorulur. Hepsi sağlanmalı:
+//  - en az RATE_MIN_DAYS gündür kullanıyor (mevcut kullanıcıda en eski
+//    bildirim geçmişi kaydından hesaplanır),
+//  - en az bir kanal tercihi yapmış (favori, ses modu, otomatik açma, grup
+//    veya kanal bildirimi),
+//  - Ayarlar'da en az bir ayarı değiştirmiş,
+//  - popup'ı en az RATE_MIN_OPENS kez açmış,
+//  - en az RATE_MIN_ALERTS yayın bildirimi almış.
+// "Daha sonra" RATE_SNOOZE_DAYS gün erteler; toplam en fazla RATE_MAX_SHOWS
+// kez gösterilir. "Değerlendir" veya kapatma (×) bir daha göstermez.
+// Durum sadece bu cihazda tutulur (_ ile başlayan anahtar senkronlanmaz).
+const RATE_KEY = '_ratePrompt';
+const RATE_MIN_DAYS = 7, RATE_MIN_OPENS = 10, RATE_MIN_ALERTS = 3, RATE_SNOOZE_DAYS = 21, RATE_MAX_SHOWS = 2;
+const DAY_MS = 86400000;
+const RATE_INFER_SETTINGS_KEYS = ['theme', 'userLanguage', 'soundMode', 'dndEnabled', 'anomalySettings', 'chatSettings',
+  'checkInterval', 'showOfflineChannels', 'channelThumbnailsEnabled', 'adBlockEnabled', 'cloudSyncEnabled', 'botScoreAlwaysVisible'];
+
+function rateReviewUrl() {
+  const isFirefox = !chrome.runtime.getManifest().background?.service_worker;
+  return isFirefox
+    ? 'https://addons.mozilla.org/firefox/addon/kickalert/reviews/'
+    : 'https://chromewebstore.google.com/detail/dlchkgjgcmbgpbdiiipibnpjfhipkbac/reviews';
+}
+
+async function getRateState() {
+  const v = (await chrome.storage.local.get(RATE_KEY))[RATE_KEY];
+  return v && typeof v === 'object' ? v : null;
+}
+async function saveRateState(st) {
+  try { await chrome.storage.local.set({ [RATE_KEY]: st }); } catch (e) {}
+}
+
+// Popup her açıldığında bir kez çağrılır.
+async function trackPopupOpenForRating() {
+  let st = await getRateState();
+  if (!st) {
+    const now = Date.now();
+    const data = await chrome.storage.local.get(['notificationHistory', ...RATE_INFER_SETTINGS_KEYS]);
+    const hist = Array.isArray(data.notificationHistory) ? data.notificationHistory : [];
+    const oldest = hist.reduce((m, e) => { const t = new Date(e.timestamp).getTime(); return isFinite(t) && t < m ? t : m; }, now);
+    st = {
+      firstSeen: oldest,
+      opens: 0,
+      // Mevcut kullanıcı: daha önce ayar değiştirdiyse bu anahtarlardan biri kayıtlıdır
+      settingsChanged: RATE_INFER_SETTINGS_KEYS.some(k => data[k] !== undefined),
+      state: 'pending',
+      shows: 0,
+    };
+  }
+  st.opens = (st.opens || 0) + 1;
+  await saveRateState(st);
+  return st;
+}
+
+async function markSettingsChangedForRating() {
+  const st = await getRateState();
+  if (!st || st.settingsChanged) return;
+  st.settingsChanged = true;
+  await saveRateState(st);
+}
+
+async function hasChannelPreferences() {
+  const d = await chrome.storage.local.get(['favoriteChannels', 'channelSoundMode', 'autoOpenChannels', 'channelAlertPrefs', 'channelGroupMap']);
+  return Object.values(d).some(v => v && typeof v === 'object' && Object.keys(v).length > 0);
+}
+
+async function isRatePromptDue(st) {
+  if (!st) return false;
+  const now = Date.now();
+  if (st.state === 'rated' || st.state === 'dismissed') return false;
+  if (st.state === 'snoozed' && now < (st.snoozeUntil || 0)) return false;
+  if ((st.shows || 0) >= RATE_MAX_SHOWS) return false;
+  if (now - (st.firstSeen || now) < RATE_MIN_DAYS * DAY_MS) return false;
+  if ((st.opens || 0) < RATE_MIN_OPENS) return false;
+  if (!st.settingsChanged) return false;
+  if (!(await hasChannelPreferences())) return false;
+  const hist = (await chrome.storage.local.get('notificationHistory')).notificationHistory;
+  if (!Array.isArray(hist) || hist.filter(e => !e.filtered && !e.kind).length < RATE_MIN_ALERTS) return false;
+  return true;
+}
+
+async function maybeShowRateBanner() {
+  const banner = document.getElementById('rate-banner');
+  if (!banner) return;
+  const wn = document.getElementById('whatsnew-banner');
+  if (wn && wn.style.display !== 'none') return; // aynı anda iki bant gösterme
+  if (document.getElementById('options-panel')?.style.display === 'block') return;
+  const st = await getRateState();
+  if (!(await isRatePromptDue(st))) return;
+  if (!banner._counted) {
+    banner._counted = true;
+    st.shows = (st.shows || 0) + 1;
+    st.lastShown = Date.now();
+    await saveRateState(st);
+  }
+  banner.style.display = 'flex';
+}
+
+function setupRateBanner() {
+  const banner = document.getElementById('rate-banner');
+  if (!banner) return;
+  const hide = () => { banner.style.display = 'none'; };
+  const setState = async (patch) => {
+    const st = (await getRateState()) || {};
+    await saveRateState({ ...st, ...patch });
+  };
+  document.getElementById('rate-banner-rate')?.addEventListener('click', async () => {
+    await setState({ state: 'rated', ratedAt: Date.now() });
+    hide();
+    chrome.tabs.create({ url: rateReviewUrl() });
+  });
+  document.getElementById('rate-banner-later')?.addEventListener('click', async () => {
+    const st = (await getRateState()) || {};
+    const last = (st.shows || 0) >= RATE_MAX_SHOWS;
+    await setState(last ? { state: 'dismissed' } : { state: 'snoozed', snoozeUntil: Date.now() + RATE_SNOOZE_DAYS * DAY_MS });
+    hide();
+  });
+  const close = document.getElementById('rate-banner-close');
+  if (close) {
+    close.title = Utils.i18n('rateBannerNever') || "Don't ask again";
+    close.addEventListener('click', async () => { await setState({ state: 'dismissed' }); hide(); });
+  }
+  // Ayarlar'da gerçek bir değişiklik = "ayar yaptı" sinyali
+  const opt = document.getElementById('options-panel');
+  if (opt) {
+    opt.addEventListener('change', () => { markSettingsChangedForRating(); });
+    opt.addEventListener('click', (e) => {
+      if (e.target.closest('.opt-seg-btn, .anomaly-seg-btn, .lang-item, [id^="opt-theme-"], .opt-radio-row')) markSettingsChangedForRating();
+    });
+  }
+}
+
 // ─── Rate Link (Chrome vs Firefox) ───
 
 function setupRateLink() {
@@ -1717,6 +2014,8 @@ function showOptionsPanel() {
   // v2.5.9: Yenilikler banner'ı da diğer ana ekran elementleriyle birlikte gizlensin
   const wnBanner = document.getElementById('whatsnew-banner');
   if (wnBanner) wnBanner.style.display = 'none';
+  const rtBanner = document.getElementById('rate-banner'); // v2.5.52
+  if (rtBanner) rtBanner.style.display = 'none';
   renderLangSelector();
   applyOptionsI18n();
   loadOptionsSettings();
@@ -1774,9 +2073,170 @@ async function renderLangSelector() {
       renderLangSelector();
       applyOptionsI18n();
       setupI18n();
+      refreshLanguageDependentUI();
     });
     container.appendChild(btn);
   });
+}
+
+// ─── v2.5.49: Kanal bazlı ek bildirim ayarları ───
+function hasChannelAlertPref(pref) {
+  return !!(pref && Object.keys(pref).length);
+}
+
+function createChannelAlertsButton(ch, pref) {
+  const btn = document.createElement('button');
+  btn.className = 'card-action-btn alerts-btn' + (hasChannelAlertPref(pref) ? ' is-set' : '');
+  btn.dataset.slug = ch.channelSlug;
+  btn.title = Utils.i18n('chAlertButtonTooltip') || 'Channel alerts';
+  btn.innerHTML = '<span class="material-icons">tune</span>';
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openChannelAlertModal(ch);
+  });
+  return btn;
+}
+
+let _chAlertSlug = null;
+async function openChannelAlertModal(ch) {
+  const modal = document.getElementById('ch-alert-modal');
+  if (!modal) return;
+  _chAlertSlug = ch.channelSlug;
+  const pref = await Storage.getChannelAlertPref(ch.channelSlug);
+  document.getElementById('ch-alert-name').textContent = ch.userUsername || ch.channelSlug;
+  const av = document.getElementById('ch-alert-avatar');
+  av.src = ch.profilePic || '../images/default-profile-pictures/default.jpeg';
+  av.onerror = () => { av.onerror = null; av.src = '../images/default-profile-pictures/default.jpeg'; };
+  modal.querySelectorAll('.ch-alert-switch').forEach(sw => { sw.checked = !!pref[sw.dataset.pref]; });
+  if (typeof renderChannelFilterUI === 'function') renderChannelFilterUI(pref);
+  renderChangeTrackingState(ch.channelSlug); // v2.5.58
+  modal.style.display = 'flex';
+  document.getElementById('ch-alert-close')?.focus();
+}
+
+// v2.5.50: Kanal filtresi (kategori / başlıkta kelime) alanları
+const CH_FILTER_MAX = 10;
+function renderChannelFilterUI(pref) {
+  const draw = (containerId, key, items) => {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.innerHTML = '';
+    (items || []).forEach(item => {
+      const chip = document.createElement('span');
+      chip.className = 'chat-chip';
+      chip.textContent = item;
+      chip.title = Utils.i18n('chatChipRemoveTooltip') || 'Click to remove';
+      chip.addEventListener('click', async () => {
+        if (!_chAlertSlug) return;
+        const slug = _chAlertSlug;
+        const cur = await Storage.getChannelAlertPref(slug);
+        const next = await Storage.updateChannelAlertPref(slug, { [key]: (cur[key] || []).filter(x => x !== item) });
+        renderChannelFilterUI(next);
+        refreshChannelAlertButtons(slug, next);
+      });
+      el.appendChild(chip);
+    });
+  };
+  draw('ch-filter-cat-chips', 'cats', pref.cats);
+  draw('ch-filter-word-chips', 'words', pref.words);
+  const ci = document.getElementById('ch-filter-cat-input');
+  const wi = document.getElementById('ch-filter-word-input');
+  if (ci) ci.placeholder = Utils.i18n('chFilterCatPlaceholder') || 'e.g. Just Chatting';
+  if (wi) wi.placeholder = Utils.i18n('chFilterWordPlaceholder') || 'e.g. tournament';
+  // Öneri listesi: takip edilen kanallarda görülen kategoriler
+  const dl = document.getElementById('ch-filter-cat-list');
+  if (dl) {
+    const cats = [...new Set((typeof allChannels !== "undefined" && Array.isArray(allChannels) ? allChannels : []).map(c => c.categoryName).filter(Boolean))].sort();
+    dl.innerHTML = '';
+    cats.forEach(c => { const o = document.createElement('option'); o.value = c; dl.appendChild(o); });
+  }
+}
+
+function setupChannelFilterInputs() {
+  const bind = (inputId, btnId, key) => {
+    const input = document.getElementById(inputId);
+    const btn = document.getElementById(btnId);
+    if (!input || !btn) return;
+    const add = async () => {
+      const val = input.value.trim().slice(0, 40);
+      if (!val || !_chAlertSlug) return;
+      const slug = _chAlertSlug;
+      const cur = await Storage.getChannelAlertPref(slug);
+      const list = cur[key] || [];
+      if (list.some(x => x.toLocaleLowerCase() === val.toLocaleLowerCase()) || list.length >= CH_FILTER_MAX) { input.value = ''; return; }
+      const next = await Storage.updateChannelAlertPref(slug, { [key]: [...list, val] });
+      input.value = '';
+      renderChannelFilterUI(next);
+      refreshChannelAlertButtons(slug, next);
+    };
+    btn.addEventListener('click', add);
+    input.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
+  };
+  bind('ch-filter-cat-input', 'ch-filter-cat-add', 'cats');
+  bind('ch-filter-word-input', 'ch-filter-word-add', 'words');
+}
+
+// v2.5.58: Değişim takibinin gerçekten çalıştığını kullanıcı görebilsin diye
+// eklentinin o kanal için en son gördüğü kategori ve kontrol zamanı.
+async function renderChangeTrackingState(slug) {
+  const el = document.getElementById('ch-alert-change-state');
+  if (!el) return;
+  el.textContent = ''; el.classList.remove('is-live'); el.title = '';
+  try {
+    const meta = ((await chrome.storage.local.get('_channelMeta'))._channelMeta || {})[slug];
+    if (!meta || meta.off) { el.textContent = Utils.i18n('chAlertStateIdle') || 'Tracking starts when the channel goes live'; return; }
+    const mins = Math.max(0, Math.round((Date.now() - (meta.at || 0)) / 60000));
+    const ago = mins < 1 ? '<1m' : (mins < 60 ? `${mins}m` : `${Math.floor(mins / 60)}h ${mins % 60}m`);
+    el.textContent = Utils.i18n('chAlertStateLive', [meta.c || '-', ago]) || `Now: ${meta.c || '-'} · checked ${ago} ago`;
+    el.title = meta.t || '';
+    el.classList.add('is-live');
+  } catch (e) {}
+}
+
+function closeChannelAlertModal() {
+  const modal = document.getElementById('ch-alert-modal');
+  if (modal) modal.style.display = 'none';
+  _chAlertSlug = null;
+}
+
+function refreshChannelAlertButtons(slug, pref) {
+  document.querySelectorAll(`.alerts-btn[data-slug="${CSS.escape(slug)}"]`).forEach(b => {
+    b.classList.toggle('is-set', hasChannelAlertPref(pref));
+  });
+}
+
+function setupChannelAlertModal() {
+  const modal = document.getElementById('ch-alert-modal');
+  if (!modal) return;
+  modal.querySelector('.confirm-modal-backdrop')?.addEventListener('click', closeChannelAlertModal);
+  document.getElementById('ch-alert-close')?.addEventListener('click', closeChannelAlertModal);
+  document.getElementById('ch-alert-close')?.setAttribute('aria-label', Utils.i18n('close') || 'Close');
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display !== 'none') closeChannelAlertModal();
+  });
+  setupChannelFilterInputs();
+  modal.querySelectorAll('.ch-alert-switch').forEach(sw => {
+    sw.addEventListener('change', async () => {
+      if (!_chAlertSlug) return;
+      const slug = _chAlertSlug;
+      const next = await Storage.updateChannelAlertPref(slug, { [sw.dataset.pref]: sw.checked });
+      refreshChannelAlertButtons(slug, next);
+    });
+  });
+}
+
+// v2.5.48: data-i18n ile değil, JS ile bir kez yazılan metinler dil
+// değişiminde eski dilde kalıyordu (örn. "Son yedek: 4 gün önce").
+// Dil değiştiren her yoldan sonra bu fonksiyon çağrılır.
+function refreshLanguageDependentUI() {
+  try { Promise.resolve(updateBackupRestoreUI()).catch(() => {}); } catch (e) {}
+  try { ['main', 'sub'].forEach(t => Promise.resolve(optUpdateSoundStatus(t)).catch(() => {})); } catch (e) {}
+  // Geçmiş sekmesindeki "Bugün / Dün" gibi JS ile üretilen başlıklar
+  try { Promise.resolve(loadHistory()).catch(() => {}); } catch (e) {}
+  try {
+    updateSensitivityFill(optEl('opt-spike-sensitivity-slider'), SPIKE_LABELS);
+    updateSensitivityFill(optEl('opt-drop-sensitivity-slider'), DROP_LABELS);
+  } catch (e) {}
 }
 
 function hideOptionsPanel() {
@@ -1785,6 +2245,7 @@ function hideOptionsPanel() {
   document.querySelector('.tabs-container').style.display = 'flex';
   document.querySelector('.content-container').style.display = 'block';
   loadChannels();
+  try { maybeShowRateBanner(); } catch (e) {} // v2.5.52: ayar yapıp döndüyse koşullar şimdi sağlanmış olabilir
 }
 
 function applyOptionsI18n() {
@@ -1818,6 +2279,7 @@ async function loadOptionsSettings() {
   optEl('opt-auto-unmute').checked = await Storage.getAutoUnmute();
   optEl('opt-reset-suspend').checked = await Storage.getResetSuspendOnRestart();
   optEl('opt-show-offline').checked = await Storage.getShowOfflineChannels();
+  if (optEl('opt-watch-time')) optEl('opt-watch-time').checked = await Storage.getWatchTimeEnabled(); // v2.5.55
   optEl('opt-show-notification').checked = await Storage.getShowNotification();
   optEl('opt-auto-refresh').checked = await Storage.getAutoRefreshPopup();
   // v2.3.0: Bot skorunu her zaman göster (default false)
@@ -1828,6 +2290,19 @@ async function loadOptionsSettings() {
   optEl('opt-volume-slider').value = vol;
   optEl('opt-volume-value').textContent = vol;
   optUpdateSliderFill(optEl('opt-volume-slider'));
+
+  // v2.5.63: kanal olayı sesi
+  if (optEl('opt-event-sound')) {
+    optEl('opt-event-sound').value = await Storage.getEventSound();
+    const evVol = await Storage.getEventSoundVolume();
+    optEl('opt-event-volume-slider').value = evVol;
+    optEl('opt-event-volume-value').textContent = evVol;
+    optUpdateSliderFill(optEl('opt-event-volume-slider'));
+    optUpdateEventSoundRow();
+    // v2.5.65: Windows sesi notu sadece Firefox'ta (Firefox sessiz bildirim isteyemiyor)
+    const evNote = optEl('opt-event-sound-note');
+    if (evNote) evNote.style.display = chrome.runtime.getManifest().background?.service_worker ? 'none' : '';
+  }
 
   const interval = await Storage.getCheckInterval();
   optEl('opt-interval-slider').value = interval;
@@ -1908,6 +2383,7 @@ async function loadOptionsSettings() {
   syncCollapsibleDesc('opt-ad-block', 'ad-block-desc');
   syncCollapsibleDesc('opt-channel-thumbnails', 'thumbnails-desc');
   syncCollapsibleDesc('opt-cloud-sync', 'cloud-sync-collapsible');
+  optRenderSyncIssues(); // v2.5.66
 
   // Theme
   const theme = await Storage.getTheme();
@@ -2075,6 +2551,7 @@ function setupOptionsListeners() {
   optBind('opt-auto-unmute', v => Storage.setAutoUnmute(v));
   optBind('opt-reset-suspend', v => Storage.setResetSuspendOnRestart(v));
   optBind('opt-show-offline', v => Storage.setShowOfflineChannels(v));
+  if (optEl('opt-watch-time')) optBind('opt-watch-time', async v => { await Storage.setWatchTimeEnabled(v); renderWatchSummary(); }); // v2.5.55
   optBind('opt-show-notification', v => Storage.setShowNotification(v));
   optBind('opt-auto-refresh', v => Storage.setAutoRefreshPopup(v));
   // v2.3.0: Bot skor görünürlüğü değişince popup'ı anında yenile
@@ -2170,6 +2647,7 @@ function setupOptionsListeners() {
         await Utils.loadLocale(lang);
         applyOptionsI18n();
         setupI18n();
+        refreshLanguageDependentUI();
       }
       renderLangSelector();
     });
@@ -2190,9 +2668,10 @@ function setupOptionsListeners() {
   }
 
   // Cloud Sync listener
-  optBind('opt-cloud-sync', v => {
-    Storage.setCloudSyncEnabled(v);
+  optBind('opt-cloud-sync', async v => {
+    await Storage.setCloudSyncEnabled(v);
     syncCollapsibleDesc('opt-cloud-sync', 'cloud-sync-collapsible');
+    optRenderSyncIssues();
   });
 
   // v2.3.7: Manuel "Şimdi Senkronize Et" butonu — açma/kapama switch'inden
@@ -2204,6 +2683,7 @@ function setupOptionsListeners() {
       syncNowBtn.disabled = true;
       syncNowStatus.textContent = Utils.i18n('cloudSyncNowRunning') || 'Syncing...';
       const result = await Storage.syncNow();
+      optRenderSyncIssues();
       if (result.success) {
         syncNowStatus.textContent = Utils.i18n('cloudSyncNowSuccess') || 'Synced!';
       } else if (result.reason === 'disabled') {
@@ -2339,6 +2819,24 @@ function setupOptionsListeners() {
     await popupPlaySound('NEW_LIVE_MAIN');
   });
 
+  // v2.5.63: kanal olayı sesi
+  optEl('opt-event-sound')?.addEventListener('change', async e => {
+    await Storage.setEventSound(e.target.value);
+    optUpdateEventSoundRow();
+    if (e.target.value !== 'silent' && e.target.value !== 'windows') optPlayEventSoundTest();
+  });
+  const evSlider = optEl('opt-event-volume-slider');
+  evSlider?.addEventListener('input', () => {
+    optEl('opt-event-volume-value').textContent = evSlider.value;
+    optUpdateSliderFill(evSlider);
+  });
+  evSlider?.addEventListener('change', async () => {
+    await Storage.setEventSoundVolume(+evSlider.value);
+    optPlayEventSoundTest();
+  });
+  optEl('opt-event-sound-test')?.addEventListener('click', optPlayEventSoundTest);
+  optEl('opt-event-winsound-test')?.addEventListener('click', optPlayEventSoundTest);
+
   optSetupSound('main');
   optSetupSound('sub');
 
@@ -2443,6 +2941,39 @@ async function popupPlaySound(soundType) {
   }
 }
 
+// v2.5.66: Bulut senkronu — 8 KB sınırını aşan ayarlar için uyarı
+const SYNC_ISSUE_NAMES = {
+  channelAlertPrefs: 'chAlertButtonTooltip', channelGroups: 'groupsTitle', channelGroupMap: 'groupsTitle',
+  favoriteChannels: 'syncNameFavorites', autoOpenChannels: 'syncNameAutoOpen', channelSoundMode: 'syncNameSoundModes',
+  chatSettings: 'syncNameChat',
+};
+async function optRenderSyncIssues() {
+  const box = optEl('opt-cloud-sync-issue');
+  if (!box) return;
+  const on = await Storage.getCloudSyncEnabled();
+  const issues = on ? await Storage.getSyncIssues() : {};
+  const keys = Object.keys(issues);
+  if (!keys.length) { box.style.display = 'none'; box.textContent = ''; return; }
+  const names = [...new Set(keys.map(k => (SYNC_ISSUE_NAMES[k] && Utils.i18n(SYNC_ISSUE_NAMES[k])) || k))].join(', ');
+  box.textContent = Utils.i18n('cloudSyncIssue', [names]) || `Too large to sync (over 8 KB): ${names}. Kept on this device but not sent to your other devices.`;
+  box.style.display = '';
+}
+
+// v2.5.63: olay sesi satırı — "Sessiz" seçiliyken seviye/test pasif
+function optUpdateEventSoundRow() {
+  const v = optEl('opt-event-sound')?.value;
+  // v2.5.64: Windows sesi seçiliyse seviye satırı yerine açıklama + test
+  const vol = optEl('opt-event-volume-row');
+  if (vol) { vol.style.display = v === 'windows' ? 'none' : ''; vol.classList.toggle('is-disabled', v === 'silent'); }
+  const win = optEl('opt-event-winsound-row');
+  if (win) win.style.display = v === 'windows' ? '' : 'none';
+}
+function optPlayEventSoundTest() {
+  const sound = optEl('opt-event-sound')?.value;
+  if (!sound || sound === 'silent') return;
+  chrome.runtime.sendMessage({ type: 'PLAY_EVENT_SOUND_TEST', sound, volume: +optEl('opt-event-volume-slider').value }).catch(() => {});
+}
+
 async function optUpdateSoundStatus(type) {
   const data = await Storage.getCustomSoundFile(type);
   optSetSoundStatus(type, data?.fileName || Utils.i18n('customSoundStatusUnset'));
@@ -2478,16 +3009,16 @@ function setSegActive(groupId, val) {
   });
 }
 
-const SPIKE_LABELS = {
-  min: 'Warn +25% · Alert +75%',
-  avg: 'Warn +50% · Alert +150%',
-  max: 'Warn +75% · Alert +250%',
-};
-const DROP_LABELS = {
-  min: 'Warn -10% · Alert -20%',
-  avg: 'Warn -20% · Alert -35%',
-  max: 'Warn -30% · Alert -50%',
-};
+// v2.5.48: "Warn"/"Alert" her dilde İngilizce kalıyordu; çeviriler
+// (anomalyWarnLabel / anomalyAlertLabel) zaten vardı. Eşik değerleri aynı.
+const SPIKE_LABELS = { min: ['+25%', '+75%'], avg: ['+50%', '+150%'], max: ['+75%', '+250%'] };
+const DROP_LABELS = { min: ['-10%', '-20%'], avg: ['-20%', '-35%'], max: ['-30%', '-50%'] };
+function formatSensitivityLabel(pair) {
+  if (!pair) return '';
+  const warn = Utils.i18n('anomalyWarnLabel') || 'Warn';
+  const alert = Utils.i18n('anomalyAlertLabel') || 'Alert';
+  return `${warn} ${pair[0]} · ${alert} ${pair[1]}`;
+}
 
 function setSensitivityDisabled(bodyId, disabled) {
   const el = optEl(bodyId);
@@ -2502,7 +3033,7 @@ function updateSensitivityFill(slider, labels) {
   const valEl = optEl(slider.id.replace('-slider', '-val'));
   if (valEl && labels) {
     const key = ['min','avg','max'][+slider.value];
-    valEl.textContent = labels[key] || '';
+    valEl.textContent = formatSensitivityLabel(labels[key]);
   }
 }
 

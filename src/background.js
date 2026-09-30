@@ -10,6 +10,13 @@ if (typeof importScripts === 'function') {
   importScripts('./storage.js', './kickapi.js', './utils.js', './pusher.js');
 }
 
+// v2.5.65: Firefox tespiti. Chrome 148'den beri eklentilerde `browser` ad alanı
+// da tanımlı; eski `typeof browser !== 'undefined'` kontrolü Chrome'u Firefox
+// sanıyordu. Sonuç: Chrome'da bildirimlere `silent` ve butonlar eklenmiyor,
+// "Eklenti sesi" modunda bile Windows bildirim sesi çalıyordu. getBrowserInfo
+// sadece Firefox'ta var.
+const IS_FIREFOX = typeof browser !== 'undefined' && !!browser.runtime && typeof browser.runtime.getBrowserInfo === 'function';
+
 const BADGE_ACTIVE = '#53FC18';
 const BADGE_SUSPENDED = '#606060';
 const BADGE_DND = '#eb0400';
@@ -165,6 +172,7 @@ async function initialize(isFreshSession = false) {
     await Utils.initI18n();
     await Storage.initSyncState();
     if (isFreshSession) await Storage.pullFromSync();
+    else Storage.flushSyncPending().catch(() => {}); // v2.5.66: buluta yazılamamış ayarları tekrar dene
 
     const resetOnRestart = await Storage.getResetSuspendOnRestart();
     if (resetOnRestart) await Storage.remove(StorageKeys.SUSPEND_FROM_DATE);
@@ -552,6 +560,19 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     await Utils.delay(notifDelay * 1000);
   }
 
+  // ── FLT-20 (v2.5.50): Kanal filtresi. Filtre tanımlıysa ve kategori olayda
+  // gelmediyse, sadece bu kanal için /livestream'den tamamlanır.
+  const pusherPref = await Storage.getChannelAlertPref(slug);
+  if ((pusherPref.cats?.length && !ch.categoryName) || (pusherPref.words?.length && !ch.sessionTitle)) {
+    try {
+      const det = await KickAPI.getChannelLiveDetails(slug);
+      if (det?.categoryName && !ch.categoryName) ch.categoryName = det.categoryName;
+      if (det?.sessionTitle && !ch.sessionTitle) ch.sessionTitle = det.sessionTitle;
+    } catch {}
+  }
+  const pusherFilter = matchChannelFilter(pusherPref, ch.categoryName, ch.sessionTitle);
+  if (!pusherFilter.pass) KLog.info('FLT-20', `${slug} → filtreye takıldı (${pusherFilter.reason}), bildirim/ses/sekme atlanacak`);
+
   // ── NOTIF-52: History ──
   Storage.addNotificationHistory({
     username: ch.userUsername,
@@ -560,6 +581,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     title: ch.sessionTitle || '-',
     category: ch.categoryName || '-',
     timestamp: new Date().toISOString(),
+    ...(pusherFilter.pass ? {} : { filtered: pusherFilter.reason }),
   });
   KLog.debug('NOTIF-52', `${slug} history'ye eklendi`);
 
@@ -572,7 +594,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   // slug liveSlugs'ta kilitli kalır → bildirim GİTMEDİ → kalıcı kayıp.
   // Hata olursa rollback yapıp sonraki event'in tekrar denemesine izin veriyoruz.
   try {
-    if (chSoundPref !== 'muted') {
+    if (chSoundPref !== 'muted' && pusherFilter.pass) {
       // NOTIF-54: Bildirim
       if (showNotif && !dndMuteNotif) {
         const isSilentNotif = soundMode === 'extension' || chSoundPref === 'silent';
@@ -642,6 +664,10 @@ async function handlePusherOfflineEvent(slug) {
   // get→modify→set arası kısa olduğu için lost-update penceresi minimal.
   const state = await getPersistedState();
   if (!state.liveSlugs.has(slug)) return;
+
+  // v2.5.53: "Yayın bitti" adayı (sadece kullanıcı bu kanal için açtıysa).
+  // Bildirim burada DEĞİL, sonraki kontrollerde taze API ile doğrulanınca gider.
+  try { await addStreamEndCandidate(slug, 'pusher'); } catch {}
 
   state.liveSlugs.delete(slug);
   await setPersistedLiveSlugs(state.liveSlugs);
@@ -1599,6 +1625,9 @@ async function _checkChannelsInner() {
 
     dbg(`[KickAlert] New live: ${ch.userUsername} (${ch.channelSlug})`);
 
+    // v2.5.50: kanal filtresi (kategori / anahtar kelime)
+    const pollFilter = matchChannelFilter(await Storage.getChannelAlertPref(ch.channelSlug), ch.categoryName, ch.sessionTitle);
+
     // Always log to history
     Storage.addNotificationHistory({
       username: ch.userUsername,
@@ -1607,7 +1636,13 @@ async function _checkChannelsInner() {
       title: ch.sessionTitle || '-',
       category: ch.categoryName || '-',
       timestamp: new Date().toISOString(),
+      ...(pollFilter.pass ? {} : { filtered: pollFilter.reason }),
     });
+
+    if (!pollFilter.pass) {
+      KLog.info('FLT-10', `${ch.channelSlug} → filtreye takıldı (${pollFilter.reason}), bildirim/ses/sekme atlandı`);
+      continue;
+    }
 
     // Channel-level sound preference: main / sub / silent / muted
     const chSoundPref = await Storage.getChannelSoundMode(ch.channelSlug);
@@ -1645,6 +1680,31 @@ async function _checkChannelsInner() {
         KLog.debug('TAB-71', `${ch.channelSlug} → polling shouldAutoOpen=false → sekme açılmadı`);
       }
     }
+  }
+
+  // v2.5.49: Kategori / başlık değişim bildirimleri (kanal bazlı, varsayılan kapalı)
+  try {
+    await checkChannelMetaChanges(channels, notifiedLives, {
+      isStale, showNotif, dndMuteNotif, soundMode,
+    });
+  } catch (e) {
+    KLog.warn('CHG-99', 'Değişim kontrolü hatası', e);
+  }
+
+  // v2.5.53: Yayın bitti bildirimi (kanal bazlı, varsayılan kapalı)
+  try {
+    const nowLive = new Set(channels.filter(c => c.isLive).map(c => c.channelSlug));
+    for (const p of _pusherLiveSlugs) nowLive.add(p);
+    if (!isStale) {
+      for (const prevSlug of liveChannelSlugs) {
+        if (!nowLive.has(prevSlug)) await addStreamEndCandidate(prevSlug, 'poll');
+      }
+    }
+    await processStreamEndCandidates(channels, nowLive, notifiedLives, {
+      isStale, showNotif, dndMuteNotif, soundMode,
+    });
+  } catch (e) {
+    KLog.warn('END-99', 'Yayın bitti kontrolü hatası', e);
   }
 
   // #E FIX: Polling liveSlugs'u REPLACE ediyor (API snapshot'ına göre).
@@ -1763,14 +1823,19 @@ async function syncBotTracker(channels) {
   if (!BotTrackerHost.isSupported) return;
 
   // Master toggle
+  // v2.5.54: Bot tespiti kapalı olsa bile, raid bildirimi açılmış canlı
+  // kanalların chatroom'u dinlenir (sadece onlar; skor hesabı yapılmaz).
   const enabled = await Storage.getBotTrackerEnabled();
-  if (!enabled) {
+  const alertPrefs = await Storage.getChannelAlertPrefs();
+  // Firefox'ta (offscreen yok) BotTracker sadece raid için yüklü: skor yok.
+  const raidOnly = !enabled || !BotTrackerHost.hasOffscreen;
+  if (raidOnly && !channels.some(c => c.isLive && alertPrefs[c.channelSlug]?.raid)) {
     // Disabled olsa da çalışıyor olabilir — durdur
     await BotTrackerHost.stop();
     return;
   }
 
-  const liveChannels = channels.filter(c => c.isLive);
+  const liveChannels = channels.filter(c => c.isLive && (!raidOnly || alertPrefs[c.channelSlug]?.raid));
   if (liveChannels.length === 0) {
     // Canlı kanal yok — tracker'ı durdur
     await BotTrackerHost.stop();
@@ -1812,8 +1877,8 @@ async function syncBotTracker(channels) {
     console.warn('[KickAlert] BotTracker sync error:', e.message);
   }
 
-  // v2.3.0 Aşama 2: Skor hesabı (1 dakikada bir)
-  await recomputeBotScores(liveChannels);
+  // v2.3.0 Aşama 2: Skor hesabı (1 dakikada bir) — sadece bot tespiti açıksa
+  if (!raidOnly) await recomputeBotScores(liveChannels);
 }
 
 // v2.3.0 Aşama 2: MoKick skor hesabı — her dakika tetiklenir
@@ -1934,7 +1999,7 @@ async function sendNotification(ch, notifiedLives, isSilent) {
     || `${ch.userUsername} started streaming`;
   const iconUrl = await getAvatarDataUrl(ch);
 
-  const isFirefox = typeof browser !== 'undefined';
+  const isFirefox = IS_FIREFOX;
   const notifOptions = {
     type: 'basic',
     iconUrl: iconUrl,
@@ -1955,6 +2020,375 @@ async function sendNotification(ch, notifiedLives, isSilent) {
 
   chrome.notifications.create(id, notifOptions);
   notifiedLives[id] = { url: `https://kick.com/${ch.channelSlug}`, slug: ch.channelSlug };
+}
+
+// ─── v2.5.50: Kanal bazlı kategori / anahtar kelime filtresi ───
+// Kategori listesi doluysa kanal bu kategorilerden birinde olmalı (parça
+// eşleşmesi: "Counter" → "Counter-Strike 2"). Kelime listesi doluysa başlıkta
+// kelimelerden biri geçmeli. İkisi de doluysa ikisi de sağlanmalı.
+// Kategori bilinmiyorsa (veri gelmediyse) bildirim engellenmez.
+function matchChannelFilter(pref, category, title) {
+  const cats = (pref && pref.cats) || [];
+  const words = (pref && pref.words) || [];
+  if (!cats.length && !words.length) return { pass: true };
+  // Büyük/küçük harf ve aksan duyarsız: "İSTANBUL" ≈ "istanbul", "ı" ≈ "i", "é" ≈ "e"
+  const lc = (x) => String(x || '').toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
+  const c = lc(category), t = lc(title);
+  if (cats.length && c && !cats.some(x => c.includes(lc(x)))) return { pass: false, reason: 'category' };
+  if (words.length && !words.some(w => t.includes(lc(w)))) return { pass: false, reason: 'keyword' };
+  return { pass: true, unknownCategory: cats.length > 0 && !c };
+}
+
+// ─── v2.5.49: Kategori / başlık değişim bildirimi ───
+// StreamPulse'un korumaları uyarlandı:
+//  - sadece taze API verisi (403 sonrası yedek veri değil),
+//  - aynı yayın oturumu (startedAt aynı), kanal hâlâ yayında,
+//  - eski ve yeni değer ikisi de dolu,
+//  - son gözlem çok eskiyse (SW uzun uyuduysa) karşılaştırma yapılmaz,
+//  - kanal başına 5 dk'da en fazla bir değişim bildirimi.
+const CHANGE_META_KEY = '_channelMeta';
+// v2.5.58: 15 dk → 60 dk. Cloudflare 403 sonrası birkaç kontrol boyunca taze
+// veri gelmezse değişim sessizce atlanıyordu. Aynı oturum (startedAt) kontrolü
+// zaten eski yayınla karıştırmayı engelliyor.
+const CHANGE_MAX_GAP_MS = 60 * 60 * 1000;
+// v2.5.58: Yayından düşen kanalın son bilgisi (başlangıç, başlık, kategori)
+// bu süre boyunca saklanır; "yayın bitti" bildirimi süreyi ve başlığı buradan alır.
+const CHANGE_META_KEEP_OFFLINE_MS = 3 * 60 * 60 * 1000;
+const CHANGE_COOLDOWN_MS = 5 * 60 * 1000;
+
+function _sameSession(a, b) {
+  if (!a || !b) return false;
+  const ta = new Date(a).getTime(), tb = new Date(b).getTime();
+  if (!isFinite(ta) || !isFinite(tb)) return a === b;
+  return Math.abs(ta - tb) < 90 * 1000;
+}
+
+async function checkChannelMetaChanges(channels, notifiedLives, ctx) {
+  if (ctx.isStale) return; // yedek veride başlık/kategori güvenilmez
+  const prefs = await Storage.getChannelAlertPrefs();
+  const stored = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {};
+  const now = Date.now();
+  const next = {};
+  for (const ch of channels) {
+    // v2.5.60: startedAt şartı kaldırıldı. Takip listesi uç noktası (followed)
+    // canlı kanallarda start_time döndürmüyor; bu yüzden hiçbir kanal kaydedilmiyor,
+    // değişim bildirimi hiç gitmiyor, "yayın bitti" süresiz geliyordu.
+    if (!ch.isLive) continue;
+    const slug = ch.channelSlug;
+    const prev = stored[slug];
+    const prevOn = !!(prev && !prev.off);
+    const cur = { t: (ch.sessionTitle || '').trim(), c: (ch.categoryName || '').trim(), s: ch.startedAt || null, at: now };
+    // Aynı oturum: iki tarafta da başlangıç varsa onunla; yoksa kanal kesintisiz
+    // canlı görülüyorsa (önceki kayıt kapalı değil ve çok eski değil) aynı yayın.
+    let same;
+    if (!prevOn) same = false;
+    else if (prev.s && cur.s) same = _sameSession(prev.s, cur.s);
+    else same = now - (prev.at || 0) <= CHANGE_MAX_GAP_MS;
+    if (same && !cur.s && prev.s) cur.s = prev.s;
+    cur.f = same && prev.f ? prev.f : now; // bu oturumda ilk görülme
+    const pref = prefs[slug] || {};
+    if (!cur.s && (pref.change || pref.end)) {
+      // Yayın süresi için başlangıcı bir kez tamamla (başarısızlıkta 30 dk negatif cache)
+      try { cur.s = await KickAPI.getChannelStartTime(slug); } catch { cur.s = null; }
+      if (cur.s) KLog.debug('CHG-03', `${slug} başlangıç API'den tamamlandı: ${cur.s}`);
+      else KLog.debug('CHG-04', `${slug} başlangıç bilinmiyor, kesintisiz canlı gözlemle takip`);
+    }
+    cur.n = same ? (prev.n || 0) : 0; // son bildirim zamanı
+    next[slug] = cur;
+    if (!pref.change) continue;
+    if (!prevOn) { KLog.debug('CHG-05', `${slug} ilk gözlem: kategori="${cur.c}" başlık="${cur.t.slice(0, 60)}"`); continue; }
+    if (!same) { KLog.debug('CHG-06', `${slug} yeni yayın oturumu, karşılaştırma yok`); continue; }
+    if (now - (prev.at || 0) > CHANGE_MAX_GAP_MS) { KLog.info('CHG-07', `${ch.channelSlug} son taze gözlem ${Math.round((now - prev.at) / 60000)} dk önce, karşılaştırma atlandı`); continue; }
+    const catChanged = prev.c && cur.c && prev.c !== cur.c;
+    const titleChanged = prev.t && cur.t && prev.t !== cur.t;
+    KLog.debug('CHG-08', `${ch.channelSlug} kontrol: kategori "${prev.c}"→"${cur.c}" başlık ${titleChanged ? 'DEĞİŞTİ' : 'aynı'}`);
+    if (!catChanged && !titleChanged) continue;
+    if (now - (cur.n || 0) < CHANGE_COOLDOWN_MS) {
+      KLog.debug('CHG-10', `${ch.channelSlug} değişim var ama bekleme süresinde`);
+      continue;
+    }
+    const soundPref = await Storage.getChannelSoundMode(ch.channelSlug);
+    if (soundPref === 'muted' || !ctx.showNotif || ctx.dndMuteNotif) continue;
+    await Utils.ensureI18n();
+    const title = catChanged
+      ? (Utils.i18n('notifCategoryChanged', [ch.userUsername]) || `${ch.userUsername} switched category`)
+      : (Utils.i18n('notifTitleChanged', [ch.userUsername]) || `${ch.userUsername} changed the stream title`);
+    const message = catChanged ? `${prev.c} → ${cur.c}` : cur.t;
+    await sendChannelEventNotification(ch, title, message, notifiedLives);
+    cur.n = now;
+    KLog.info('CHG-20', `${ch.channelSlug} → ${catChanged ? 'kategori' : 'başlık'} değişim bildirimi gönderildi`);
+  }
+  // v2.5.58: Canlı olmayan kanalların son kaydını hemen silme (bkz. CHANGE_META_KEEP_OFFLINE_MS).
+  // Önceden burada silindiği için aynı döngüde çalışan "yayın bitti" kontrolü
+  // başlangıç saatini ve başlığı bulamıyor, bildirim süresiz ve "-" gidiyordu.
+  for (const [slug, prev] of Object.entries(stored)) {
+    if (next[slug]) continue;
+    if (now - (prev.at || 0) < CHANGE_META_KEEP_OFFLINE_MS) next[slug] = { ...prev, off: true };
+  }
+  try { await chrome.storage.local.set({ [CHANGE_META_KEY]: next }); } catch {}
+}
+
+// ─── v2.5.53: Yayın bitti bildirimi ───
+// Geçmişte yayın bitişini anlamak zordu (Pusher bitiş olayı kaçabiliyor,
+// Cloudflare 403 sonrası yedek veri kanalı yanlışlıkla kapalı gösterebiliyor,
+// yayıncı kopup hemen geri dönebiliyor). Bu yüzden iki aşamalı:
+//  1) Aday: Pusher StopStreamBroadcast VEYA taze API'de kanal kapalı.
+//  2) Doğrulama: aday oluştuktan en az END_CONFIRM_MS sonra taze (yedek
+//     olmayan) API hâlâ kapalı diyor ve Pusher yeniden canlı demiyorsa bildir.
+//  Kanal bu arada geri gelirse aday silinir. Yedek veri hiçbir aşamada
+//  bitiş sayılmaz. END_PENDING_MAX_MS içinde doğrulanamayan aday düşer.
+//  Tarayıcı başlangıcında canlı listesi sıfırlandığı için geriye dönük
+//  "bitti" bildirimi oluşmaz.
+const END_PENDING_KEY = '_endPending';
+const END_CONFIRM_MS = 150 * 1000;
+const END_PENDING_MAX_MS = 30 * 60 * 1000;
+
+function formatStreamLength(ms) {
+  if (!ms || ms < 60000) return '';
+  const h = Math.floor(ms / 3600000), m = Math.floor((ms % 3600000) / 60000);
+  return h ? `${h}h ${m}m` : `${m}m`;
+}
+
+async function addStreamEndCandidate(slug, source) {
+  const pref = await Storage.getChannelAlertPref(slug);
+  if (!pref.end) return;
+  const store = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+  if (store[slug]) return; // zaten aday
+  const ch = (cachedChannels || []).find(c => c.channelSlug === slug) || {};
+  const meta = ((await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {})[slug] || {};
+  store[slug] = {
+    since: Date.now(),
+    source,
+    startedAt: ch.startedAt || meta.s || null,
+    title: ch.sessionTitle || meta.t || '',
+    category: ch.categoryName || meta.c || '',
+    username: ch.userUsername || slug,
+    profilePic: ch.profilePic || '',
+  };
+  await chrome.storage.local.set({ [END_PENDING_KEY]: store });
+  KLog.info('END-10', `${slug} → yayın bitti ADAYI (${source}), doğrulama bekleniyor`);
+}
+
+async function processStreamEndCandidates(channels, nowLive, notifiedLives, ctx) {
+  const store = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+  const slugs = Object.keys(store);
+  if (!slugs.length) return;
+  const now = Date.now();
+  let changed = false;
+  for (const slug of slugs) {
+    const c = store[slug];
+    if (nowLive.has(slug)) { delete store[slug]; changed = true; KLog.info('END-11', `${slug} → geri döndü, aday iptal`); continue; }
+    if (now - c.since > END_PENDING_MAX_MS) { delete store[slug]; changed = true; KLog.info('END-12', `${slug} → doğrulanamadı, aday düştü`); continue; }
+    if (ctx.isStale || now - c.since < END_CONFIRM_MS) continue;
+    const pref = await Storage.getChannelAlertPref(slug);
+    delete store[slug]; changed = true;
+    if (!pref.end) continue;
+    const ch = channels.find(x => x.channelSlug === slug) || {};
+    const lengthMs = c.startedAt ? (c.since - new Date(c.startedAt).getTime()) : 0;
+    const lengthText = formatStreamLength(lengthMs);
+    Storage.addNotificationHistory({
+      kind: 'end',
+      username: ch.userUsername || c.username || slug,
+      channelSlug: slug,
+      profilePic: ch.profilePic || c.profilePic || '',
+      title: c.title || '-',
+      category: c.category || '-',
+      timestamp: new Date().toISOString(),
+      ...(lengthText ? { length: lengthText } : {}),
+    });
+    const soundPref = await Storage.getChannelSoundMode(slug);
+    if (soundPref === 'muted' || !ctx.showNotif || ctx.dndMuteNotif) continue;
+    await Utils.ensureI18n();
+    const name = ch.userUsername || c.username || slug;
+    const title = Utils.i18n('notifStreamEnded', [name]) || `${name} ended the stream`;
+    const message = lengthText
+      ? (Utils.i18n('notifStreamEndedLength', [lengthText]) || `Streamed for ${lengthText}`) + (c.title ? ` · ${c.title}` : '')
+      : (c.title || c.category || 'Kick.com');
+    await sendChannelEventNotification({ ...ch, channelSlug: slug, userUsername: name, profilePic: ch.profilePic || c.profilePic || '' },
+      title, message, notifiedLives);
+    KLog.info('END-20', `${slug} → yayın bitti bildirimi gönderildi (${lengthText || 'süre bilinmiyor'})`);
+  }
+  if (changed) await chrome.storage.local.set({ [END_PENDING_KEY]: store });
+}
+
+// ─── v2.5.55: İzleme süresi ───
+// _watchTime = { days: { 'YYYY-MM-DD': { slug: saniye } } } — sadece bu cihaz.
+// Aynı kanal iki sekmede oynuyorsa çift sayılmasın diye kanal başına 20 sn
+// içinde gelen ikinci tik yok sayılır. 35 günden eski günler silinir.
+const WATCH_KEY = '_watchTime';
+const WATCH_KEEP_DAYS = 35;
+const _watchLastTick = new Map();
+let _watchChain = Promise.resolve();
+
+function localDayKey(d = new Date()) {
+  const p = n => String(n).padStart(2, '0');
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+function addWatchTime(slug, sec) {
+  if (typeof slug !== 'string' || !/^[a-z0-9_-]{2,40}$/.test(slug)) return;
+  const add = Math.min(Math.max(Number(sec) || 0, 0), 60);
+  if (!add) return;
+  const now = Date.now();
+  if (now - (_watchLastTick.get(slug) || 0) < 20000) return;
+  _watchLastTick.set(slug, now);
+  _watchChain = _watchChain.then(async () => {
+    const data = (await chrome.storage.local.get(WATCH_KEY))[WATCH_KEY] || { days: {} };
+    const days = data.days || (data.days = {});
+    const key = localDayKey();
+    days[key] = days[key] || {};
+    days[key][slug] = (days[key][slug] || 0) + add;
+    const cutoff = localDayKey(new Date(now - WATCH_KEEP_DAYS * 86400000));
+    for (const k of Object.keys(days)) if (k < cutoff) delete days[k];
+    await chrome.storage.local.set({ [WATCH_KEY]: data });
+  }).catch(() => {});
+}
+
+// ─── v2.5.54: Raid bildirimi ───
+// Kaynak: BotTracker'ın chatroom bağlantısında gelen StreamHostEvent /
+// StreamHostedEvent. İki olay aynı raid için gelebilir; kanal başına
+// RAID_DEDUP_MS içinde tek bildirim (StreamPulse'un tekrar önleme penceresi).
+const RAID_SEEN_KEY = '_raidSeen';
+const RAID_DEDUP_MS = 10 * 60 * 1000;
+
+// v2.5.58: Kick aynı raid için iki olay gönderiyor ve biri izleyici sayısını
+// içermeyebiliyor (kullanıcı ekranı: "? izleyiciyle"). İlk olaydan sonra
+// RAID_MERGE_MS beklenip iki olayın bilgisi birleştiriliyor.
+const RAID_MERGE_MS = 4000;
+const _raidBuffer = new Map();
+function handleRaidEvent(d) {
+  const slug = d && d.slug;
+  if (!slug) return Promise.resolve();
+  const b = _raidBuffer.get(slug);
+  if (b) {
+    if (!b.d.raider && d.raider) b.d.raider = d.raider;
+    if (b.d.viewers == null && d.viewers != null) b.d.viewers = d.viewers;
+    if (!b.d.message && d.message) b.d.message = d.message;
+    return b.p;
+  }
+  const entry = { d: { ...d } };
+  entry.p = new Promise(res => setTimeout(() => {
+    _raidBuffer.delete(slug);
+    processRaidEvent(entry.d).catch(e => KLog.warn('RAID-99', 'Raid işleme hatası', e)).finally(res);
+  }, RAID_MERGE_MS));
+  _raidBuffer.set(slug, entry);
+  return entry.p;
+}
+
+async function processRaidEvent(d) {
+  const slug = d && d.slug;
+  if (!slug) return;
+  const pref = await Storage.getChannelAlertPref(slug);
+  if (!pref.raid) return;
+  if (!d.raider && d.viewers == null) { KLog.warn('RAID-02', `${slug} raid olayı tanınmayan biçimde geldi, bildirim atlandı`); return; }
+  const now = Date.now();
+  const seen = (await chrome.storage.local.get(RAID_SEEN_KEY))[RAID_SEEN_KEY] || {};
+  if (now - (seen[slug] || 0) < RAID_DEDUP_MS) { KLog.debug('RAID-03', `${slug} raid zaten bildirildi (10 dk)`); return; }
+  seen[slug] = now;
+  for (const k of Object.keys(seen)) if (now - seen[k] > RAID_DEDUP_MS) delete seen[k];
+  await chrome.storage.local.set({ [RAID_SEEN_KEY]: seen });
+
+  const ch = (cachedChannels || []).find(c => c.channelSlug === slug) || { channelSlug: slug, userUsername: slug, profilePic: '' };
+  const raider = d.raider || '?';
+  const viewers = d.viewers == null ? '?' : String(d.viewers);
+  Storage.addNotificationHistory({
+    kind: 'raid',
+    username: ch.userUsername || slug,
+    channelSlug: slug,
+    profilePic: ch.profilePic || '',
+    title: ch.sessionTitle || '-',
+    category: ch.categoryName || '-',
+    timestamp: new Date().toISOString(),
+    raider, viewers: d.viewers == null ? null : d.viewers,
+  });
+
+  const showNotif = await Storage.getShowNotification();
+  const dndActive = await Storage.isDndActive();
+  const dndMuteNotif = dndActive && await Storage.getDndMuteNotif();
+  const soundPref = await Storage.getChannelSoundMode(slug);
+  if (!showNotif || dndMuteNotif || soundPref === 'muted') return;
+  const soundMode = await Storage.getSoundMode();
+  await Utils.ensureI18n();
+  const name = ch.userUsername || slug;
+  const title = Utils.i18n('notifRaidTitle', [raider, name]) || `${raider} raided ${name}`;
+  let message = Utils.i18n('notifRaidViewers', [viewers]) || `with ${viewers} viewers`;
+  if (d.message) message += ` · ${String(d.message).slice(0, 120)}`;
+  const state = await getPersistedState();
+  await sendChannelEventNotification(ch, title, message, state.notifiedLives);
+  await setPersistedNotifiedLives(state.notifiedLives);
+  KLog.info('RAID-10', `${slug} ← ${raider} raid (${viewers} izleyici) bildirimi gönderildi`);
+}
+
+// Firefox: BotTracker bu bağlamda yüklü, raid callback'i doğrudan bağla
+try { if (typeof BotTracker !== 'undefined' && BotTracker) BotTracker.onRaid = (d) => { handleRaidEvent(d).catch(() => {}); }; } catch (e) {}
+
+// Canlı yayın bildirimi dışındaki kanal olayları (değişim, yayın bitti, raid)
+// için ortak bildirim: tek "Aç" butonu; tıklanınca kanal açılır.
+let _evSeq = 0;
+async function sendChannelEventNotification(ch, title, message, notifiedLives) {
+  // son parça zaman damgası olmalı (cleanupNotifiedLives); aynı milisaniyede
+  // iki olay çakışmasın diye küçük bir sayaç ekleniyor.
+  const id = `kickalert-ev-${ch.channelSlug}-${Date.now() + (_evSeq++ % 1000)}`;
+  const snd = await resolveEventSound(ch.channelSlug);
+  const notifOptions = {
+    type: 'basic',
+    iconUrl: await getAvatarDataUrl(ch),
+    title,
+    message: message || '-',
+  };
+  if (!IS_FIREFOX) {
+    // v2.5.64: sistem (Windows) sesi SADECE "Windows bildirim sesi" seçiliyse;
+    // eklenti sesi veya sessiz seçiliyse bildirim sessiz istenir.
+    notifOptions.silent = !snd.system;
+    notifOptions.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
+  }
+  chrome.notifications.create(id, notifOptions);
+  notifiedLives[id] = { url: `https://kick.com/${ch.channelSlug}`, slug: ch.channelSlug, event: true };
+  if (snd.type) await playEventSoundFile(snd.choice, snd.volume);
+}
+
+// ─── v2.5.63 / v2.5.64: Kanal olayı sesi ───
+// Değişim / yayın bitti / raid bildirimleri canlı bildirimden daha naif.
+// Seçenekler: soft / chime / tick (eklentinin kısık sesi, sistem sesi kapalı),
+// windows (sadece işletim sisteminin bildirim sesi, eklenti sesi yok),
+// silent (hiç ses yok). Ana ses modundan (Eklenti/Windows) bağımsızdır.
+// Sessiz saatlerde "sesleri sustur" açıksa veya kanalın ses tercihi "sessiz"
+// ise hiçbir ses çalınmaz ve bildirim sessiz istenir.
+const EVENT_SOUND_TYPES = { soft: 'EVENT_SOFT', chime: 'EVENT_CHIME', tick: 'EVENT_TICK' };
+async function resolveEventSound(slug) {
+  const none = { system: false, type: null };
+  try {
+    const choice = await Storage.getEventSound();
+    if (choice === 'silent') return none;
+    if (slug && (await Storage.getChannelSoundMode(slug)) === 'silent') return none;
+    if ((await Storage.isDndActive()) && (await Storage.getDndMuteSound())) return none;
+    if (choice === 'windows') return { system: true, type: null };
+    const type = EVENT_SOUND_TYPES[choice];
+    const volume = await Storage.getEventSoundVolume();
+    if (!type || volume <= 0) return none;
+    return { system: false, type, choice, volume };
+  } catch (e) {
+    KLog.warn('SND-31', 'Olay sesi ayarı okunamadı: ' + e.message);
+    return none;
+  }
+}
+async function playEventSoundFile(choice, volumePct) {
+  const type = EVENT_SOUND_TYPES[choice];
+  if (!type) return;
+  const volume = Math.max(0, Math.min(100, Number(volumePct) || 0)) / 100;
+  if (volume <= 0) return;
+  try {
+    if (chrome.offscreen) {
+      await startOffscreen();
+      await chrome.runtime.sendMessage({ messageType: 'PLAY_SOUND', options: { sound: type, volume, customSoundFile: null } }).catch(() => {});
+    } else {
+      const audio = new Audio(chrome.runtime.getURL(`sounds/event_${choice}.mp3`));
+      audio.volume = volume;
+      await audio.play();
+    }
+  } catch (e) {
+    KLog.warn('SND-30', 'Olay sesi çalınamadı: ' + e.message);
+  }
 }
 
 // ─── Auto Open ───
@@ -2211,6 +2645,18 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   // ─── v2.3.20: offscreen.html (LiveTracker/BotTracker) log köprüsü ───
   // offscreen.js/bot_tracker.js ayrı DevTools context'inde çalışıyor —
   // önemli olaylarını buraya (KLog'a) iletiyorlar, tek konsol için.
+  // v2.5.55: içerik betiğinden izleme süresi tiki
+  if (msg.type === 'WATCH_TICK') {
+    addWatchTime(msg.slug, msg.sec);
+    return false;
+  }
+
+  // v2.5.54: offscreen BotTracker'dan gelen raid olayı (Chrome)
+  if (msg.type === 'RAID_EVENT') {
+    handleRaidEvent(msg).catch(e => KLog.warn('RAID-99', 'Raid işleme hatası', e));
+    return false;
+  }
+
   if (msg.type === 'OFFSCREEN_LOG') {
     const level = msg.level === 'warn' ? 'warn' : 'info';
     KLog[level](msg.code || 'OFF-00', msg.text || '');
@@ -2800,7 +3246,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     (async () => {
       try {
         await Utils.ensureI18n();
-        const isFirefox = typeof browser !== 'undefined';
+        const isFirefox = IS_FIREFOX;
         const fromUser = msg.fromUser || 'Someone';
         const channel = msg.channel || '';
         const message = msg.message || '';
@@ -2885,7 +3331,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     (async () => {
       try {
         await Utils.ensureI18n();
-        const isFirefox = typeof browser !== 'undefined';
+        const isFirefox = IS_FIREFOX;
         const fromUser = msg.fromUser || '';
         const channel = msg.channel || '';
         const message = msg.message || '';
@@ -3357,6 +3803,183 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         respond({ success: false, results });
       }
     })();
+    return true;
+  }
+
+  // ─── v2.5.61: SENARYO — KANAL OLAYLARI (değişim, yayın bitti, raid, filtre, izleme süresi) ───
+  // Gerçek fonksiyonları ayrı bir test kanalıyla (__katest__) çalıştırır; gerçek
+  // kanalların kayıtlarına dokunmamak için ilgili depolar önce yedeklenir, test
+  // bitince geri yüklenir. Test bildirimleri gerçekten gösterilir.
+  if (msg.type === 'RUN_SCENARIO_CHANNEL_EVENTS') {
+    (async () => {
+      const results = [];
+      const log = (step, status, detail) => results.push({ step, status, detail });
+      const start = Date.now();
+      const T = '__katest__';
+      const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+      const histOf = async (kind) => ((await Storage.getNotificationHistory()) || []).filter(e => e.channelSlug === T && (!kind || e.kind === kind));
+      const soundMode = await Storage.getSoundMode();
+      const ctx = { isStale: false, showNotif: true, dndMuteNotif: false, soundMode };
+      const nl = {};
+      const metaBackup = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {};
+      const endBackup = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+      try {
+        // 1) Kanal tercihi yaz/oku
+        await Storage.updateChannelAlertPref(T, { change: true, end: true, raid: true });
+        const p = await Storage.getChannelAlertPref(T);
+        log('Kanal tercihi', p.change && p.end && p.raid ? 'ok' : 'error', `Yazılan: değişim/bitiş/raid açık → okunan: ${JSON.stringify(p)}`);
+
+        // 2) Filtre mantığı (gerçek matchChannelFilter)
+        const cases = [
+          [{}, 'Slots', 'x', true, 'filtre yok → geçer'],
+          [{ cats: ['Just Chatting'] }, 'just chatting', 'x', true, 'büyük/küçük harf'],
+          [{ cats: ['Slots'] }, 'GTA V', 'x', false, 'kategori uymuyor'],
+          [{ words: ['istanbul'] }, 'x', 'İSTANBUL turu', true, 'Türkçe İ'],
+          [{ words: ['kopru'] }, 'x', 'Köprü yayını', true, 'aksan (ö→o, ü→u)'],
+          [{ words: ['turnuva'] }, 'x', 'sohbet', false, 'kelime yok'],
+          [{ cats: ['Slots'], words: ['bonus'] }, 'Slots', 'bonus hunt', true, 'ikisi birden'],
+          [{ cats: ['Slots'] }, '', 'x', true, 'kategori bilinmiyor → geçer'],
+        ];
+        const bad = cases.filter(([pref, c, t, exp]) => matchChannelFilter(pref, c, t).pass !== exp).map(x => x[4]);
+        log('Filtre mantığı', bad.length ? 'error' : 'ok', bad.length ? `Hatalı: ${bad.join(', ')}` : `${cases.length}/${cases.length} durum doğru (harf, Türkçe İ, aksan, boş kategori)`);
+
+        // 3) Kategori / başlık değişimi (gerçek checkChannelMetaChanges)
+        const s0 = new Date(Date.now() - 3600e3).toISOString();
+        const mk = (c, t, s) => ({ channelSlug: T, userUsername: 'KickAlert Test', isLive: true, startedAt: s, categoryName: c, sessionTitle: t, profilePic: '' });
+        await checkChannelMetaChanges([mk('Just Chatting', 'Test yayını', s0)], nl, ctx);
+        let m = ((await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {})[T];
+        log('Değişim takibi: ilk gözlem', m && !m.off && m.c === 'Just Chatting' ? 'ok' : 'error',
+          m ? `Kaydedildi: "${m.c}" · başlangıç ${m.s ? 'var' : 'yok'} · bildirim yok (beklenen)` : 'Kayıt oluşmadı');
+        await checkChannelMetaChanges([mk('Slots', 'Test yayını', null)], nl, ctx);
+        m = ((await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {})[T];
+        const chgIds = Object.keys(nl);
+        log('Kategori değişimi (başlangıç saati boş)', chgIds.length === 1 && m?.c === 'Slots' ? 'ok' : 'error',
+          chgIds.length === 1 ? 'Just Chatting → Slots bildirimi gönderildi (ekranda görünmeli)' : `Bildirim sayısı: ${chgIds.length}`);
+        log('Başlangıç saati taşındı', m?.s === s0 ? 'ok' : 'warn', m?.s === s0 ? 'Aynı yayın olarak tanındı' : `s=${m?.s}`);
+        await checkChannelMetaChanges([mk('Slots', 'Yeni başlık', null)], nl, ctx);
+        log('Bekleme süresi (5 dk)', Object.keys(nl).length === 1 ? 'ok' : 'error',
+          Object.keys(nl).length === 1 ? 'Hemen ardından gelen başlık değişimi susturuldu' : 'Bekleme süresine rağmen ikinci bildirim gitti');
+
+        // 4) Yayın bitti (gerçek addStreamEndCandidate + processStreamEndCandidates)
+        await chrome.storage.local.set({ [END_PENDING_KEY]: {} }); // gerçek adaylar test sırasında işlenmesin
+        await addStreamEndCandidate(T, 'test');
+        let es = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+        log('Yayın bitti: aday', es[T] ? 'ok' : 'error', es[T] ? `Aday oluştu · başlangıç ${es[T].startedAt ? 'biliniyor' : 'yok'} · başlık "${es[T].title}"` : 'Aday oluşmadı');
+        await processStreamEndCandidates([], new Set(), nl, ctx);
+        es = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+        log('Yayın bitti: 2,5 dk doğrulama', es[T] ? 'ok' : 'error', es[T] ? 'Doğrulama süresi dolmadan bildirim gitmedi' : 'Aday erken düştü');
+        if (es[T]) { es[T].since -= END_CONFIRM_MS + 1000; await chrome.storage.local.set({ [END_PENDING_KEY]: es }); }
+        const before = Object.keys(nl).length;
+        await processStreamEndCandidates([], new Set(), nl, ctx);
+        await sleep(300);
+        const endH = await histOf('end');
+        log('Yayın bitti: bildirim', Object.keys(nl).length === before + 1 ? 'ok' : 'error',
+          Object.keys(nl).length === before + 1 ? `Gönderildi · süre: ${endH[0]?.length || 'yok'}` : 'Bildirim gitmedi');
+        log('Yayın bitti: süre', endH[0]?.length ? 'ok' : 'error', endH[0]?.length ? `Geçmişe "${endH[0].length}" yazıldı` : 'Süre hesaplanamadı');
+        // geri gelirse iptal
+        await addStreamEndCandidate(T, 'test');
+        await processStreamEndCandidates([], new Set([T]), nl, ctx);
+        es = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+        log('Yayın bitti: geri dönüş', !es[T] ? 'ok' : 'error', !es[T] ? 'Kanal tekrar canlı → aday iptal edildi' : 'Aday iptal edilmedi');
+
+        // 5) Raid (gerçek handleRaidEvent: 4 sn birleştirme + 10 dk tekrar önleme)
+        const seen = (await chrome.storage.local.get(RAID_SEEN_KEY))[RAID_SEEN_KEY] || {};
+        delete seen[T]; await chrome.storage.local.set({ [RAID_SEEN_KEY]: seen });
+        const r1 = handleRaidEvent({ slug: T, raider: 'TestRaider', viewers: null });
+        const r2 = handleRaidEvent({ slug: T, raider: 'TestRaider', viewers: 123, message: 'test raid' });
+        await Promise.all([r1, r2]);
+        await sleep(300);
+        let raidH = await histOf('raid');
+        log('Raid: iki olay birleştirme', raidH.length === 1 && raidH[0].viewers === 123 ? 'ok' : 'error',
+          raidH.length ? `Tek bildirim · gönderen ${raidH[0].raider} · ${raidH[0].viewers ?? '?'} izleyici` : 'Raid bildirimi oluşmadı');
+        await processRaidEvent({ slug: T, raider: 'TestRaider', viewers: 50 });
+        await sleep(300);
+        raidH = await histOf('raid');
+        log('Raid: 10 dk tekrar önleme', raidH.length === 1 ? 'ok' : 'error', raidH.length === 1 ? 'Aynı kanala ikinci raid bildirimi gitmedi' : 'Tekrar bildirimi gitti');
+
+        // 6) İzleme süresi (gerçek addWatchTime)
+        _watchLastTick.delete(T);
+        addWatchTime(T, 30);
+        await _watchChain;
+        const wt = (await chrome.storage.local.get(WATCH_KEY))[WATCH_KEY] || { days: {} };
+        const today = wt.days?.[localDayKey()]?.[T] || 0;
+        log('İzleme süresi: tik', today === 30 ? 'ok' : 'error', `Bugün ${today} sn yazıldı (beklenen 30)`);
+        addWatchTime(T, 30);
+        await _watchChain;
+        const wt2 = (await chrome.storage.local.get(WATCH_KEY))[WATCH_KEY] || { days: {} };
+        log('İzleme süresi: çift sekme koruması', (wt2.days?.[localDayKey()]?.[T] || 0) === 30 ? 'ok' : 'error', '20 sn içindeki ikinci tik sayılmadı');
+        const watchOn = await Storage.getWatchTimeEnabled();
+        log('İzleme süresi ayarı', watchOn ? 'ok' : 'warn', watchOn ? 'Açık' : 'Kapalı (Ayarlar → İzleme süresi); içerik betiği tik göndermez');
+      } catch (e) {
+        log('Genel hata', 'error', e.message);
+      } finally {
+        // Temizlik: test kanalının tüm izleri
+        try {
+          await Storage.updateChannelAlertPref(T, { change: false, end: false, raid: false, cats: [], words: [] });
+          const curMeta = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {};
+          const restoredMeta = { ...curMeta, ...metaBackup }; delete restoredMeta[T];
+          const curEnd = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
+          const restoredEnd = { ...curEnd, ...endBackup }; delete restoredEnd[T];
+          const seen = (await chrome.storage.local.get(RAID_SEEN_KEY))[RAID_SEEN_KEY] || {}; delete seen[T];
+          const wt = (await chrome.storage.local.get(WATCH_KEY))[WATCH_KEY];
+          if (wt?.days) for (const d of Object.values(wt.days)) delete d[T];
+          await chrome.storage.local.set({ [CHANGE_META_KEY]: restoredMeta, [END_PENDING_KEY]: restoredEnd, [RAID_SEEN_KEY]: seen, ...(wt ? { [WATCH_KEY]: wt } : {}) });
+          _watchLastTick.delete(T);
+          await _withKeyLock(StorageKeys.NOTIFICATION_HISTORY, async () => {
+            const h = (await Storage.getNotificationHistory()) || [];
+            await Storage.set(StorageKeys.NOTIFICATION_HISTORY, h.filter(e => e.channelSlug !== T));
+          });
+          const left = (await Storage.getChannelAlertPrefs())[T];
+          log('Temizlik', left ? 'warn' : 'ok', 'Test kanalının tercih, takip, aday, raid, izleme ve geçmiş kayıtları silindi; gerçek kanal kayıtları geri yüklendi');
+        } catch (e) {
+          log('Temizlik', 'warn', e.message);
+        }
+        respond({ success: true, results, totalMs: Date.now() - start });
+      }
+    })();
+    return true;
+  }
+
+  // v2.5.61: Test paneli — bir kanalın filtresini örnek kategori/başlıkla dene
+  // v2.5.63: Ayarlar'daki olay sesi "Test" butonu (seçili ses + seviye)
+  if (msg.type === 'PLAY_EVENT_SOUND_TEST') {
+    if (msg.sound === 'windows') {
+      // Windows sesi ancak gerçek bir bildirimle duyulur: sesli örnek bildirim
+      (async () => {
+        await Utils.ensureI18n();
+        chrome.notifications.create(`kickalert-evtest-${Date.now()}`, {
+          type: 'basic', iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+          title: 'KickAlert', message: Utils.i18n('eventSoundWindowsTest') || 'Sample channel event alert (system sound)',
+          ...(!IS_FIREFOX ? { silent: false } : {}),
+        });
+      })().catch(() => {});
+    } else {
+      playEventSoundFile(msg.sound, msg.volume);
+    }
+    return false;
+  }
+
+  if (msg.type === 'TEST_CHANNEL_FILTER') {
+    Storage.getChannelAlertPref(msg.slug || '').then(pref => {
+      respond({ success: true, pref, result: matchChannelFilter(pref, msg.category, msg.title) });
+    }).catch(e => respond({ success: false, error: e.message }));
+    return true;
+  }
+
+  // v2.5.61: Test paneli — gerçek bir kanalda bir sonraki kontrolde kategori
+  // değişim bildirimi tetikle (son görülen kategori geçici bir değerle değiştirilir).
+  if (msg.type === 'SIMULATE_CATEGORY_CHANGE') {
+    (async () => {
+      const slug = msg.slug;
+      const pref = await Storage.getChannelAlertPref(slug);
+      const all = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {};
+      const m = all[slug];
+      if (!pref.change) return respond({ success: false, error: 'Bu kanalda "kategori veya başlık değişince" kapalı' });
+      if (!m || m.off) return respond({ success: false, error: 'Kanal şu an takipte değil (canlı görülmemiş)' });
+      m.c = '(test) Önceki kategori'; m.n = 0; m.at = Date.now();
+      await chrome.storage.local.set({ [CHANGE_META_KEY]: all });
+      respond({ success: true });
+    })().catch(e => respond({ success: false, error: e.message }));
     return true;
   }
 

@@ -28,6 +28,13 @@ const StorageKeys = {
   DND_MUTE_AUTOLAUNCH: 'dndMuteAutolaunch',
   SOUND_MODE: 'soundMode',
   CHANNEL_SOUND_MODE: 'channelSoundMode',
+  // v2.5.49: kanal bazlı ek bildirim tercihleri, hepsi varsayılan KAPALI.
+  // { slug: { change: bool, end: bool, raid: bool, cats: [str], words: [str] } }
+  CHANNEL_ALERT_PREFS: 'channelAlertPrefs',
+  WATCH_TIME_ENABLED: 'watchTimeEnabled', // v2.5.55: varsayılan açık (undefined = açık)
+  // v2.5.63: kanal olayı (değişim / yayın bitti / raid) bildirim sesi ve seviyesi
+  EVENT_SOUND: 'eventSound',               // 'soft' | 'chime' | 'tick' | 'windows' | 'silent' (varsayılan soft)
+  EVENT_SOUND_VOLUME: 'eventSoundVolume',  // 0-100 (varsayılan 60)
   FAVORITE_CHANNELS: 'favoriteChannels',
   CLOUD_SYNC_ENABLED: 'cloudSyncEnabled',
   THEME: 'theme', // 'dark' | 'light' | 'system' (v2.5.46)
@@ -135,6 +142,69 @@ function _withKeyLock(key, task) {
   return next;
 }
 
+// ─── v2.5.66: Bulut senkronu güvenliği ───
+// Sorun 1: İçe aktarma / sıfırlama / geri alma sadece yerel depoya yazıyordu;
+//   buluttaki eski kopya bir sonraki tarayıcı açılışında (pullFromSync) yereli ezip
+//   yüklenen ayarları geri alıyordu.
+// Sorun 2: chrome.storage.sync'te anahtar başına 8 KB sınırı var. Sınırı aşan bir
+//   ayar buluta sessizce yazılamıyor, sonra buluttaki eski değer yereli eziyordu.
+// Çözüm: buluta yazılamayan anahtarlar "_syncPending" listesinde tutulur (bu cihaz
+//   daha yeni); pull ve başka cihazdan gelen değişiklik bu anahtarlara dokunmaz ve
+//   ilk fırsatta tekrar buluta yazılır. Sınırı aşanlar "_syncIssues"a düşer ve
+//   Ayarlar'da uyarı olarak gösterilir.
+const SYNC_ITEM_LIMIT = 8192; // chrome.storage.sync.QUOTA_BYTES_PER_ITEM (anahtar + JSON)
+const SYNC_PENDING_KEY = '_syncPending'; // { key: zaman } — buluta yazılamamış, yerel daha yeni
+const SYNC_ISSUE_KEY = '_syncIssues';    // { key: bayt } — 8 KB sınırını aşanlar
+function _isSyncableKey(key) { return !SYNC_EXCLUDE_KEYS.has(key) && !String(key).startsWith('_'); }
+function _syncItemBytes(key, value) {
+  try { return new TextEncoder().encode(key + JSON.stringify(value)).length; } catch (e) { return Infinity; }
+}
+async function _getSyncPending() {
+  try { return (await chrome.storage.local.get(SYNC_PENDING_KEY))[SYNC_PENDING_KEY] || {}; } catch (e) { return {}; }
+}
+// Verilen anahtar/değerleri buluta yazar; sonuca göre bekleyen/sorunlu listesini günceller.
+async function _syncWriteKeys(obj) {
+  const res = { ok: [], failed: [], tooBig: [] };
+  const batch = {};
+  const sizes = {};
+  for (const [k, v] of Object.entries(obj || {})) {
+    if (!_isSyncableKey(k) || v === undefined) continue;
+    sizes[k] = _syncItemBytes(k, v);
+    if (sizes[k] > SYNC_ITEM_LIMIT) res.tooBig.push(k); else batch[k] = v;
+  }
+  const keys = Object.keys(batch);
+  if (keys.length) {
+    try { await chrome.storage.sync.set(batch); res.ok.push(...keys); }
+    catch (e) {
+      if (keys.length === 1) res.failed.push(keys[0]);
+      else for (const k of keys) {
+        try { await chrome.storage.sync.set({ [k]: batch[k] }); res.ok.push(k); } catch (e2) { res.failed.push(k); }
+      }
+      console.warn('[KickAlert] Sync write failed:', res.failed.join(', '), e.message);
+    }
+  }
+  if (!res.ok.length && !res.failed.length && !res.tooBig.length) return res;
+  await _withKeyLock(SYNC_PENDING_KEY, async () => {
+    const d = await chrome.storage.local.get([SYNC_PENDING_KEY, SYNC_ISSUE_KEY]);
+    const pend = d[SYNC_PENDING_KEY] || {}, iss = d[SYNC_ISSUE_KEY] || {};
+    const before = JSON.stringify([Object.keys(pend).sort(), iss]);
+    const now = Date.now();
+    for (const k of res.ok) { delete pend[k]; delete iss[k]; }
+    for (const k of res.failed) pend[k] = pend[k] || now;
+    for (const k of res.tooBig) { pend[k] = pend[k] || now; iss[k] = sizes[k]; }
+    if (JSON.stringify([Object.keys(pend).sort(), iss]) === before) return; // değişiklik yoksa yazma
+    await chrome.storage.local.set({ [SYNC_PENDING_KEY]: pend, [SYNC_ISSUE_KEY]: iss });
+  });
+  return res;
+}
+// Toplu yerel yazımdan (içe aktarma, sıfırlama, geri alma) sonra: senkron açıksa buluta da yaz.
+async function _mirrorBulkToSync(obj) {
+  try {
+    const on = (await chrome.storage.local.get('cloudSyncEnabled')).cloudSyncEnabled === true;
+    if (on) await _syncWriteKeys(obj);
+  } catch (e) { console.warn('[KickAlert] Bulk sync mirror failed:', e.message); }
+}
+
 const Storage = {
   async get(key) {
     const result = await chrome.storage.local.get(key);
@@ -152,17 +222,24 @@ const Storage = {
       console.warn('[KickAlert] Storage write failed:', key, e.message);
       return; // sync'e de yazma anlamsız — vazgeç
     }
-    // Mirror to sync if enabled and key is syncable
-    if (_syncEnabled && !SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
-      try { await chrome.storage.sync.set({ [key]: value }); }
-      catch (e) { console.warn('[KickAlert] Sync write failed:', key, e.message); }
+    // Mirror to sync if enabled and key is syncable (v2.5.66: sınır ve hata takibiyle)
+    if (_syncEnabled && _isSyncableKey(key)) {
+      await _syncWriteKeys({ [key]: value });
     }
   },
 
   async remove(key) {
     await chrome.storage.local.remove(key);
-    if (_syncEnabled && !SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
-      try { await chrome.storage.sync.remove(key); }
+    if (_syncEnabled && _isSyncableKey(key)) {
+      try {
+        await chrome.storage.sync.remove(key);
+        await _withKeyLock(SYNC_PENDING_KEY, async () => {
+          const d = await chrome.storage.local.get([SYNC_PENDING_KEY, SYNC_ISSUE_KEY]);
+          const pend = d[SYNC_PENDING_KEY] || {}, iss = d[SYNC_ISSUE_KEY] || {};
+          delete pend[key]; delete iss[key];
+          await chrome.storage.local.set({ [SYNC_PENDING_KEY]: pend, [SYNC_ISSUE_KEY]: iss });
+        });
+      }
       catch (e) { console.warn('[KickAlert] Sync remove failed:', key, e.message); }
     }
   },
@@ -223,16 +300,28 @@ const Storage = {
     const allLocal = await chrome.storage.local.get(null);
     const toSync = {};
     for (const [key, value] of Object.entries(allLocal)) {
-      if (!SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
-        toSync[key] = value;
-      }
+      if (_isSyncableKey(key)) toSync[key] = value;
     }
-    try {
-      await chrome.storage.sync.set(toSync);
-      console.debug('[KickAlert] Cloud sync: pushed', Object.keys(toSync).length, 'keys');
-    } catch (e) {
-      console.warn('[KickAlert] Cloud sync push failed:', e.message);
-    }
+    // v2.5.66: tek büyük yazım yerine sınır kontrollü; 8 KB'ı aşan bir anahtar
+    // artık diğer tüm anahtarların yazımını düşürmüyor.
+    const r = await _syncWriteKeys(toSync);
+    console.debug('[KickAlert] Cloud sync: pushed', r.ok.length, 'keys', r.failed.length ? `(failed: ${r.failed.join(',')})` : '', r.tooBig.length ? `(over 8KB: ${r.tooBig.join(',')})` : '');
+    return r;
+  },
+
+  /** v2.5.66: Buluta yazılamamış (bekleyen) anahtarları tekrar dene */
+  async flushSyncPending() {
+    if (!_syncEnabled) return;
+    const pend = await _getSyncPending();
+    const keys = Object.keys(pend);
+    if (!keys.length) return;
+    const local = await chrome.storage.local.get(keys);
+    await _syncWriteKeys(local);
+  },
+
+  /** v2.5.66: Ayarlar'daki uyarı için — 8 KB sınırını aşan anahtarlar { key: bayt } */
+  async getSyncIssues() {
+    try { return (await chrome.storage.local.get(SYNC_ISSUE_KEY))[SYNC_ISSUE_KEY] || {}; } catch (e) { return {}; }
   },
 
   /** Pull all sync data and apply to local (for initial sync on new device) */
@@ -240,16 +329,18 @@ const Storage = {
     if (!_syncEnabled) return;
     try {
       const syncData = await chrome.storage.sync.get(null);
+      const pending = await _getSyncPending(); // v2.5.66: bu cihazdaki daha yeni değerler ezilmez
       const toLocal = {};
       for (const [key, value] of Object.entries(syncData)) {
-        if (!SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_')) {
+        if (_isSyncableKey(key) && !pending[key]) {
           toLocal[key] = value;
         }
       }
       if (Object.keys(toLocal).length > 0) {
         await chrome.storage.local.set(toLocal);
-        console.debug('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys');
+        console.debug('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys', Object.keys(pending).length ? `(kept local: ${Object.keys(pending).join(',')})` : '');
       }
+      await this.flushSyncPending();
     } catch (e) {
       console.warn('[KickAlert] Cloud sync pull failed:', e.message);
     }
@@ -259,11 +350,12 @@ const Storage = {
   _listenForSyncChanges() {
     if (_syncListenerAttached) return;
     _syncListenerAttached = true;
-    chrome.storage.onChanged.addListener((changes, area) => {
+    chrome.storage.onChanged.addListener(async (changes, area) => {
       if (area !== 'sync' || !_syncEnabled) return;
+      const pending = await _getSyncPending(); // v2.5.66: buluta yazılamamış yerel değer ezilmez
       const toLocal = {};
       for (const [key, { newValue }] of Object.entries(changes)) {
-        if (!SYNC_EXCLUDE_KEYS.has(key) && !key.startsWith('_') && newValue !== undefined) {
+        if (_isSyncableKey(key) && !pending[key] && newValue !== undefined) {
           toLocal[key] = newValue;
         }
       }
@@ -381,6 +473,44 @@ const Storage = {
       return this.set(StorageKeys.CHANNEL_SOUND_MODE, modes);
     });
   },
+
+  // v2.5.49: Kanal bazlı ek bildirim tercihleri (değişim, yayın bitti, raid,
+  // kategori/anahtar kelime filtresi). Boş kalan kanal kaydı saklanmaz.
+  async getChannelAlertPrefs() {
+    const v = await this.get(StorageKeys.CHANNEL_ALERT_PREFS);
+    return v && typeof v === 'object' ? v : {};
+  },
+  async getChannelAlertPref(slug) {
+    const all = await this.getChannelAlertPrefs();
+    return all[slug] || {};
+  },
+  async updateChannelAlertPref(slug, patch) {
+    return _withKeyLock(StorageKeys.CHANNEL_ALERT_PREFS, async () => {
+      const all = await this.getChannelAlertPrefs();
+      const next = { ...(all[slug] || {}), ...patch };
+      Object.keys(next).forEach(k => {
+        const v = next[k];
+        if (v === false || v === null || v === undefined || (Array.isArray(v) && v.length === 0)) delete next[k];
+      });
+      if (Object.keys(next).length) all[slug] = next; else delete all[slug];
+      await this.set(StorageKeys.CHANNEL_ALERT_PREFS, all);
+      return all[slug] || {};
+    });
+  },
+
+  async getEventSound() {
+    const v = await this.get(StorageKeys.EVENT_SOUND);
+    return ['soft', 'chime', 'tick', 'windows', 'silent'].includes(v) ? v : 'soft';
+  },
+  async setEventSound(v) { return this.set(StorageKeys.EVENT_SOUND, v); },
+  async getEventSoundVolume() {
+    const v = Number(await this.get(StorageKeys.EVENT_SOUND_VOLUME));
+    return Number.isFinite(v) && v >= 0 && v <= 100 ? v : 60;
+  },
+  async setEventSoundVolume(v) { return this.set(StorageKeys.EVENT_SOUND_VOLUME, Math.max(0, Math.min(100, Math.round(+v || 0)))); },
+
+  async getWatchTimeEnabled() { return (await this.get(StorageKeys.WATCH_TIME_ENABLED)) !== false; },
+  async setWatchTimeEnabled(v) { return this.set(StorageKeys.WATCH_TIME_ENABLED, !!v); },
 
   async getFavoriteChannels() {
     return (await this.get(StorageKeys.FAVORITE_CHANNELS)) || {};
@@ -625,11 +755,7 @@ const Storage = {
   // Artık her chatSettings yazımı buluta da yansıyor, böylece pull hep güncel veriyi geri getiriyor.
   async _mirrorChatSettingsToSync(settings) {
     if (!_syncEnabled || SYNC_EXCLUDE_KEYS.has(StorageKeys.CHAT_SETTINGS)) return;
-    try {
-      await chrome.storage.sync.set({ [StorageKeys.CHAT_SETTINGS]: settings });
-    } catch (e) {
-      console.warn('[KickAlert] Sync write failed:', StorageKeys.CHAT_SETTINGS, e.message);
-    }
+    await _syncWriteKeys({ [StorageKeys.CHAT_SETTINGS]: settings });
   },
 
   // ─── v2.3.0: Bot Tracker ───
@@ -740,6 +866,8 @@ const EXPORTABLE_SETTINGS_KEYS = [
   StorageKeys.CHAT_INTEGRATION_ENABLED, StorageKeys.CHAT_SETTINGS, StorageKeys.BOT_TRACKER_ENABLED,
   StorageKeys.BOT_TRACKER_NOTIFY, StorageKeys.BOT_SCORE_ALWAYS_VISIBLE, StorageKeys.AD_BLOCK_ENABLED,
   StorageKeys.CHANNEL_THUMBNAILS_ENABLED, StorageKeys.GROUP_FILTER_EXPANDED,
+  StorageKeys.CHANNEL_ALERT_PREFS, StorageKeys.WATCH_TIME_ENABLED,
+  StorageKeys.EVENT_SOUND, StorageKeys.EVENT_SOUND_VOLUME,
 ];
 
 const SETTINGS_EXPORT_FORMAT_VERSION = 1;
@@ -822,6 +950,7 @@ async function restorePreChangeSnapshot() {
   const snapshot = result[StorageKeys.PRE_IMPORT_SNAPSHOT];
   if (!snapshot || !snapshot.keys) return { ok: false, error: 'NO_SNAPSHOT' };
   await storageSet(snapshot.keys);
+  await _mirrorBulkToSync(snapshot.keys); // v2.5.66
   await storageRemove(StorageKeys.PRE_IMPORT_SNAPSHOT);
   return { ok: true };
 }
@@ -850,6 +979,7 @@ async function importSettingsFromObject(obj) {
   try {
     await createPreChangeSnapshot(Object.keys(toWrite));
     await storageSet(toWrite);
+    await _mirrorBulkToSync(toWrite); // v2.5.66: yoksa bir sonraki açılışta buluttaki eski kopya geri gelirdi
   } catch (e) {
     // v2.5.38: Artık storage yazma hatası (kota aşımı, izin sorunu vb.)
     // burada YAKALANIYOR ve çağıran tarafa açıkça bildiriliyor — sessizce
@@ -871,6 +1001,7 @@ async function resetSettingsToDefaults() {
   try {
     await createPreChangeSnapshot(Object.keys(toWrite));
     await storageSet(toWrite);
+    await _mirrorBulkToSync(toWrite); // v2.5.66
   } catch (e) {
     return { ok: false, error: (e && e.message) || 'STORAGE_WRITE_FAILED' };
   }

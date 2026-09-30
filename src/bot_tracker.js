@@ -48,6 +48,10 @@ const BotTracker = {
   // Map<chatroomId, { slug, userId, messages: [{t, userId}], modes: {...} }>
   channels: new Map(),
 
+  // v2.5.54: Raid (host) olayı geldiğinde çağrılır: ({ slug, raider, viewers, message, event, raw })
+  // Chrome: offscreen.js bunu arka plana mesajla iletir. Firefox: background.js doğrudan bağlar.
+  onRaid: null,
+
   // Connect WebSocket if not already connected
   async ensureConnection() {
     if (this.isConnected) return true;
@@ -151,6 +155,16 @@ const BotTracker = {
       return;
     }
 
+    // v2.5.54: Gelen raid. Kick, raid alan kanalın chatroom kanalına
+    // StreamHostEvent (chatrooms.{id}.v2) ve StreamHostedEvent (chatrooms.{id})
+    // gönderiyor. Alan adları (host_username, number_viewers, optional_message)
+    // açık kaynak projelerden; gerçek olayla doğrulanana kadar esnek okunuyor
+    // ve ham veri loglanıyor.
+    if (data.event === 'App\\Events\\StreamHostEvent' || data.event === 'App\\Events\\StreamHostedEvent') {
+      this._handleHostEvent(data);
+      return;
+    }
+
     // Chatroom mode updates: slow mode / sub-only mode
     if (data.event === 'App\\Events\\ChatroomUpdatedEvent') {
       this._handleChatroomUpdate(data);
@@ -181,6 +195,21 @@ const BotTracker = {
     while (info.messages.length > 0 && info.messages[0].t < cutoff) {
       info.messages.shift();
     }
+  },
+
+  _handleHostEvent(data) {
+    const channelMatch = data.channel?.match(/^chatrooms?[._](\d+)/);
+    if (!channelMatch) return;
+    const info = this.channels.get(parseInt(channelMatch[1], 10));
+    if (!info) return;
+    let p;
+    try { p = typeof data.data === 'string' ? JSON.parse(data.data) : (data.data || {}); } catch { return; }
+    const raider = p.host_username || p.hostUsername || p.host?.username || p.user?.username || p.username || '';
+    const vRaw = p.number_viewers ?? p.numberViewers ?? p.viewers_count ?? p.viewers;
+    const viewers = (vRaw != null && vRaw !== '' && Number.isFinite(Number(vRaw))) ? Number(vRaw) : null;
+    const message = typeof p.optional_message === 'string' ? p.optional_message : '';
+    relayLog('info', 'RAID-00', `${data.event.split('\\').pop()} ← ${info.slug}: ${JSON.stringify(p).slice(0, 300)}`);
+    try { if (typeof this.onRaid === 'function') this.onRaid({ slug: info.slug, raider, viewers, message, event: data.event, raw: p }); } catch (e) {}
   },
 
   _handleChatroomUpdate(data) {
