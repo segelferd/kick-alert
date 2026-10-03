@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await startAutoRefresh();
   await updateEmailLoginNoticeDot();
   setupWhatsNewBannerButtons(); // v2.5.11: Banner butonlarını bir kez bağla
+  setupMutedBanner(); // v2.5.74
   setupWhatsNewRelink();        // v2.5.11: Kalıcı "What's New" linki
   setupReleaseHistoryModal();   // v2.5.16: Sürüm Geçmişi modalı
   setupChannelAlertModal();     // v2.5.49: Kanal bazlı ek bildirim ayarları
@@ -493,7 +494,7 @@ async function renderFollowing(categoryFilter) {
   const cardMode = 'detail'; // Compact mod kaldırıldı
 
   // Batch yükle — her kart için ayrı storage.get yerine tek seferde
-  const [favMap, groupMap2, bellMap, groupList, botScoresRes, botScoreAlways, alertPrefs] = await Promise.all([
+  const [favMap, groupMap2, bellMap, groupList, botScoresRes, botScoreAlways, alertPrefs, defaultMode] = await Promise.all([
     Storage.getFavoriteChannels(),
     Storage.getChannelGroupMap(),
     Storage.getAllChannelSoundModes(),
@@ -504,9 +505,10 @@ async function renderFollowing(categoryFilter) {
     // v2.3.0: "Her zaman göster" toggle'ı (default false)
     Storage.getBotScoreAlwaysVisible(),
     Storage.getChannelAlertPrefs(), // v2.5.49
+    Storage.getDefaultChannelMode(), // v2.5.74
   ]);
   const botScores = (botScoresRes?.success && botScoresRes.scores) ? botScoresRes.scores : {};
-  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList, botScores, botScoreAlways, alertPrefs };
+  const batchData = { favMap, groupMap: groupMap2, bellMap, groupList, botScores, botScoreAlways, alertPrefs, defaultMode };
 
   // v2.3.26: Kanal Önizlemeleri (Thumbnail).
   // v2.4.5 DÜZELTME: Önceden burada TÜM canlı kanalların thumbnail'i bitene
@@ -683,13 +685,14 @@ async function renderAutoLaunch() {
 
   el.innerHTML = '';
   const alCardMode = 'detail';
-  const [alFavMap, alGroupMap, alBellMap, alGroupList] = await Promise.all([
+  const [alFavMap, alGroupMap, alBellMap, alGroupList, alDefaultMode] = await Promise.all([
     Storage.getFavoriteChannels(),
     Storage.getChannelGroupMap(),
     Storage.getAllChannelSoundModes(),
     Storage.getChannelGroups(),
+    Storage.getDefaultChannelMode(), // v2.5.74
   ]);
-  const alBatch = { favMap: alFavMap, groupMap: alGroupMap, bellMap: alBellMap, groupList: alGroupList };
+  const alBatch = { favMap: alFavMap, groupMap: alGroupMap, bellMap: alBellMap, groupList: alGroupList, defaultMode: alDefaultMode };
   // v2.5.46: "Live · N" / "Offline · N" section labels between the two blocks.
   // setupSearch() hides a label when none of its cards match the search.
   const liveCount = sorted.filter(c => c.isLive).length;
@@ -1002,7 +1005,7 @@ async function channelCard(ch, cardMode, batch) {
   }
 
   // Bell button — her zaman (live ve offline)
-  const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
+  const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || batch.defaultMode || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
   const bellBtn = createBellButton(ch.channelSlug, bellMode);
   btnGroup.appendChild(bellBtn);
 
@@ -1189,7 +1192,7 @@ async function autoLaunchCard(ch, cardMode, batch) {
   card.appendChild(starBtn);
 
   // Bell button
-  const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
+  const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || batch.defaultMode || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
   const bellBtn = createBellButton(ch.channelSlug, bellMode);
   card.appendChild(bellBtn);
 
@@ -1427,6 +1430,8 @@ function setupWhatsNewBannerButtons() {
 
 async function checkWhatsNewBanner() {
   try {
+    // v2.5.74: yeni kurulumda önce "kanal bildirimleri kapalı" bilgisi (Yenilikler yeni kullanıcı için anlamsız)
+    if (await maybeShowMutedBanner()) return;
     const currentVersion = chrome.runtime.getManifest().version;
     const dismissedVersion = await Storage.get(StorageKeys.WHATSNEW_DISMISSED_VERSION);
     if (dismissedVersion === currentVersion) return;
@@ -1935,6 +1940,8 @@ async function maybeShowRateBanner() {
   if (!banner) return;
   const wn = document.getElementById('whatsnew-banner');
   if (wn && wn.style.display !== 'none') return; // aynı anda iki bant gösterme
+  const mb = document.getElementById('muted-banner'); // v2.5.74
+  if (mb && mb.style.display !== 'none') return;
   if (document.getElementById('options-panel')?.style.display === 'block') return;
   const st = await getRateState();
   if (!(await isRatePromptDue(st))) return;
@@ -2016,6 +2023,8 @@ function showOptionsPanel() {
   if (wnBanner) wnBanner.style.display = 'none';
   const rtBanner = document.getElementById('rate-banner'); // v2.5.52
   if (rtBanner) rtBanner.style.display = 'none';
+  const mtBanner = document.getElementById('muted-banner'); // v2.5.74
+  if (mtBanner) mtBanner.style.display = 'none';
   renderLangSelector();
   applyOptionsI18n();
   loadOptionsSettings();
@@ -2367,6 +2376,13 @@ async function loadOptionsSettings() {
 
   // Ad Block (v2.3.18, DENEYSEL)
   optEl('opt-ad-block').checked = (await Storage.get(StorageKeys.AD_BLOCK_ENABLED)) === true;
+  await optSyncAdDiagBox(); // v2.5.74
+
+  // v2.5.74: varsayılan kanal bildirimi + Geri al görünürlüğü
+  if (optEl('opt-default-channel-mode')) {
+    optEl('opt-default-channel-mode').value = await Storage.getDefaultChannelMode();
+    await optSyncApplyUndo();
+  }
 
   // Channel Thumbnails (v2.3.26, DENEYSEL)
   optEl('opt-channel-thumbnails').checked = (await Storage.get(StorageKeys.CHANNEL_THUMBNAILS_ENABLED)) === true;
@@ -2461,6 +2477,133 @@ function optUpdateBotScoreInfoVisibility() {
   if (info) info.classList.toggle('disabled', !on);
 }
 
+// ─── v2.5.74: Varsayılan kanal bildirimi / Tüm kanallara uygula / Geri al ───
+async function optSyncApplyUndo() {
+  const undo = optEl('opt-apply-mode-undo');
+  if (!undo) return;
+  const b = (await chrome.storage.local.get(StorageKeys.CHANNEL_MODE_BACKUP))[StorageKeys.CHANNEL_MODE_BACKUP];
+  undo.style.display = (b && typeof b.map === 'object' && Date.now() - (b.at || 0) <= 24 * 3600e3) ? '' : 'none'; // 24 saat geçerli
+}
+function setupDefaultChannelModeControls() {
+  const sel = optEl('opt-default-channel-mode');
+  const applyBtn = optEl('opt-apply-mode-all');
+  const undoBtn = optEl('opt-apply-mode-undo');
+  const modal = document.getElementById('apply-mode-confirm-modal');
+  if (!sel || !applyBtn || !modal) return;
+  sel.addEventListener('change', async () => {
+    await Storage.setDefaultChannelMode(sel.value);
+    await dismissMutedBanner(); // kullanıcı ayarı gördü, bilgi bandına gerek kalmadı
+  });
+  const close = () => { modal.style.display = 'none'; };
+  applyBtn.addEventListener('click', () => {
+    // #options-panel dışında: metinler açılışta Utils.i18n ile dolduruluyor
+    const modeName = Utils.i18n(BELL_TITLES[sel.value] || 'bellSilent') || sel.value;
+    modal.querySelector('.confirm-modal-title').textContent = Utils.i18n('applyModeConfirmTitle') || 'Apply to all channels?';
+    modal.querySelector('.confirm-modal-body').textContent = (Utils.i18n('applyModeConfirmBody', [modeName]) || 'Every channel will be set to "$1". Bell settings you chose on channel cards will be replaced. You can undo this right after.').replace('$1', modeName);
+    document.getElementById('apply-mode-confirm-cancel').textContent = Utils.i18n('cancel') || 'Cancel';
+    document.getElementById('apply-mode-confirm-accept').textContent = Utils.i18n('applyModeConfirmAccept') || 'Apply';
+    modal.style.display = 'flex';
+  });
+  document.getElementById('apply-mode-confirm-cancel')?.addEventListener('click', close);
+  modal.querySelector('.confirm-modal-backdrop')?.addEventListener('click', close);
+  document.getElementById('apply-mode-confirm-accept')?.addEventListener('click', async () => {
+    close();
+    const r = await Storage.applyModeToAllChannels(sel.value);
+    if (r && r.ok) { await dismissMutedBanner(); optFlashStatus(Utils.i18n('applyModeDone') || 'Applied to all channels'); }
+    await optSyncApplyUndo();
+  });
+  undoBtn?.addEventListener('click', async () => {
+    const r = await Storage.undoApplyModeToAll();
+    sel.value = await Storage.getDefaultChannelMode();
+    if (r && r.ok) optFlashStatus(Utils.i18n('applyModeUndone') || 'Previous channel settings restored');
+    await optSyncApplyUndo();
+  });
+}
+// Ayarlar içinde kısa durum mesajı (içe/dışa aktarma satırını kullanır, 3 sn)
+function optFlashStatus(text) {
+  const box = document.getElementById('opt-apply-mode-status') || (() => {
+    const b = document.createElement('div');
+    b.id = 'opt-apply-mode-status';
+    b.style.cssText = 'font-size:11px;color:var(--accent);padding:2px 0 0 0;';
+    optEl('opt-apply-mode-all')?.closest('.opt-row')?.after(b);
+    return b;
+  })();
+  box.textContent = text;
+  clearTimeout(box._t);
+  box._t = setTimeout(() => { box.textContent = ''; }, 3000);
+}
+
+// ─── v2.5.74: Yeni kurulum bilgi bandı (kanal bildirimleri kapalı) ───
+async function mutedBannerDue() {
+  const d = await chrome.storage.local.get([StorageKeys.DEFAULT_CHANNEL_MODE, StorageKeys.INSTALL_DEFAULT_MODE, StorageKeys.CHANNEL_SOUND_MODE, '_mutedNoticeDismissed']);
+  if (d._mutedNoticeDismissed) return false;
+  if (d[StorageKeys.INSTALL_DEFAULT_MODE] !== 'muted' || d[StorageKeys.DEFAULT_CHANNEL_MODE] !== 'muted') return false;
+  return Object.keys(d[StorageKeys.CHANNEL_SOUND_MODE] || {}).length === 0;
+}
+async function maybeShowMutedBanner() {
+  const banner = document.getElementById('muted-banner');
+  if (!banner || !(await mutedBannerDue())) return false;
+  document.getElementById('muted-banner-text').textContent = Utils.i18n('mutedNoticeText') || 'Channel alerts are off on a new install. Turn on the channels you want with the bell on their card, or all at once in';
+  document.getElementById('muted-banner-settings').textContent = Utils.i18n('mutedNoticeSettings') || 'Settings';
+  banner.style.display = 'flex';
+  return true;
+}
+async function dismissMutedBanner() {
+  const banner = document.getElementById('muted-banner');
+  if (banner) banner.style.display = 'none';
+  await chrome.storage.local.set({ _mutedNoticeDismissed: true });
+}
+function setupMutedBanner() {
+  document.getElementById('muted-banner-close')?.addEventListener('click', () => dismissMutedBanner());
+  document.getElementById('muted-banner-settings')?.addEventListener('click', async (e) => {
+    e.preventDefault();
+    await dismissMutedBanner();
+    showOptionsPanel();
+    // Bildirimler grubunu açıp varsayılan ayara kaydır
+    setTimeout(() => {
+      const grp = document.getElementById('opt-group-notifications');
+      if (grp && grp.classList.contains('collapsed')) grp.querySelector('.opt-group-header')?.click();
+      setTimeout(() => optEl('opt-default-channel-mode')?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 250);
+    }, 100);
+  });
+}
+
+// ─── v2.5.74: Reklam teşhisi paylaşımı (isteğe bağlı, varsayılan kapalı) ───
+const KA_IS_FIREFOX = typeof browser !== 'undefined' && !!browser.runtime && typeof browser.runtime.getBrowserInfo === 'function';
+async function optSyncAdDiagBox() {
+  const box = optEl('opt-ad-diag-box');
+  if (!box) return;
+  const adOn = optEl('opt-ad-block')?.checked === true;
+  box.style.display = adOn ? '' : 'none';
+  const share = (await chrome.storage.local.get('adDiagShareEnabled')).adDiagShareEnabled === true;
+  let ok = share;
+  if (share && KA_IS_FIREFOX) {
+    try { ok = await browser.permissions.contains({ data_collection: ['technicalAndInteraction'] }); } catch (e) { ok = false; }
+  }
+  if (optEl('opt-ad-diag-share')) optEl('opt-ad-diag-share').checked = ok;
+  refreshAllOptGroupHeights?.();
+}
+function setupAdDiagToggle() {
+  const cb = optEl('opt-ad-diag-share');
+  const denied = optEl('opt-ad-diag-denied');
+  if (!cb) return;
+  cb.addEventListener('change', async () => {
+    if (denied) denied.style.display = 'none';
+    if (cb.checked) {
+      if (KA_IS_FIREFOX) {
+        // Firefox: veri izni kullanıcı hareketi içinde, ilk await olarak istenmeli
+        let granted = false;
+        try { granted = await browser.permissions.request({ data_collection: ['technicalAndInteraction'] }); } catch (e) { granted = false; }
+        if (!granted) { cb.checked = false; if (denied) denied.style.display = ''; await chrome.storage.local.set({ adDiagShareEnabled: false }); return; }
+      }
+      await chrome.storage.local.set({ adDiagShareEnabled: true });
+    } else {
+      await chrome.storage.local.set({ adDiagShareEnabled: false });
+      if (KA_IS_FIREFOX) { try { await browser.permissions.remove({ data_collection: ['technicalAndInteraction'] }); } catch (e) {} }
+    }
+  });
+}
+
 // v2.4.8: Reklam Engelleme AÇARKEN onay modalı gösterir, KAPATIRKEN doğrudan uygular.
 function setupAdBlockToggle() {
   const checkbox = optEl('opt-ad-block');
@@ -2473,6 +2616,7 @@ function setupAdBlockToggle() {
   async function applyEnabled(v) {
     await Storage.set(StorageKeys.AD_BLOCK_ENABLED, v);
     syncCollapsibleDesc('opt-ad-block', 'ad-block-desc');
+    await optSyncAdDiagBox(); // v2.5.74
   }
 
   function closeModal() {
@@ -2553,6 +2697,8 @@ function setupOptionsListeners() {
   optBind('opt-show-offline', v => Storage.setShowOfflineChannels(v));
   if (optEl('opt-watch-time')) optBind('opt-watch-time', async v => { await Storage.setWatchTimeEnabled(v); renderWatchSummary(); }); // v2.5.55
   optBind('opt-show-notification', v => Storage.setShowNotification(v));
+  setupDefaultChannelModeControls(); // v2.5.74
+  setupAdDiagToggle(); // v2.5.74
   optBind('opt-auto-refresh', v => Storage.setAutoRefreshPopup(v));
   // v2.3.0: Bot skor görünürlüğü değişince popup'ı anında yenile
   optBind('opt-bot-score-always-visible', async (v) => {

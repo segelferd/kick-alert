@@ -28,6 +28,12 @@ const StorageKeys = {
   DND_MUTE_AUTOLAUNCH: 'dndMuteAutolaunch',
   SOUND_MODE: 'soundMode',
   CHANNEL_SOUND_MODE: 'channelSoundMode',
+  // v2.5.74: kendi zil ayarı olmayan (ve yeni takip edilen) kanalların modu.
+  // 'main' | 'sub' | 'silent' | 'muted'. Yeni kurulumda 'muted' yazılır;
+  // güncellemede ve anahtar hiç yoksa eski davranış ('silent') geçerlidir.
+  DEFAULT_CHANNEL_MODE: 'defaultChannelMode',
+  CHANNEL_MODE_BACKUP: '_channelModeBackup',      // "Tümüne uygula" öncesi yedek (Geri al)
+  INSTALL_DEFAULT_MODE: '_installDefaultMode',    // kurulum türüne göre sıfırlama varsayılanı
   // v2.5.49: kanal bazlı ek bildirim tercihleri, hepsi varsayılan KAPALI.
   // { slug: { change: bool, end: bool, raid: bool, cats: [str], words: [str] } }
   CHANNEL_ALERT_PREFS: 'channelAlertPrefs',
@@ -86,6 +92,7 @@ const SYNC_EXCLUDE_KEYS = new Set([
   StorageKeys.CHATROOM_ID_CACHE,       // v2.3.0: internal API cache
   StorageKeys.BOT_SCORES,              // v2.3.0: runtime calculated, no need to sync
   StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED, // v2.3.15: cihaza özel, her cihaz bir kez görmeli
+  'adDiagShareEnabled',               // v2.5.74: teşhis paylaşım onayı cihaza özel, senkronize edilmez
   '_liveSlugs', '_notifiedLives', '_lastCheckDone', // internal state
 ]);
 
@@ -336,6 +343,13 @@ const Storage = {
           toLocal[key] = value;
         }
       }
+      // v2.5.74: eski sürümden gelen kanal modları 'sessiz'i saklamazdı
+      // (varsayılandı). Bulutta varsayılan yoksa eski anlamı koru.
+      // Bulutta veri var ama varsayılan anahtarı yoksa veri eski sürümden gelir
+      // (hiç zil ayarı yapılmamışsa channelSoundMode anahtarı da olmayabilir).
+      if (Object.keys(toLocal).length > 0 && syncData[StorageKeys.DEFAULT_CHANNEL_MODE] === undefined && !pending[StorageKeys.DEFAULT_CHANNEL_MODE]) {
+        toLocal[StorageKeys.DEFAULT_CHANNEL_MODE] = 'silent';
+      }
       if (Object.keys(toLocal).length > 0) {
         await chrome.storage.local.set(toLocal);
         console.debug('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys', Object.keys(pending).length ? `(kept local: ${Object.keys(pending).join(',')})` : '');
@@ -453,9 +467,59 @@ const Storage = {
   async getSoundMode() { return (await this.get(StorageKeys.SOUND_MODE)) || 'extension'; },
   async setSoundMode(v) { return this.set(StorageKeys.SOUND_MODE, v); },
 
+  async getDefaultChannelMode() {
+    const v = (await chrome.storage.local.get(StorageKeys.DEFAULT_CHANNEL_MODE))[StorageKeys.DEFAULT_CHANNEL_MODE];
+    return ['main', 'sub', 'silent', 'muted'].includes(v) ? v : 'silent'; // yoksa eski davranış
+  },
+  async setDefaultChannelMode(v) {
+    if (!['main', 'sub', 'silent', 'muted'].includes(v)) return;
+    return this.set(StorageKeys.DEFAULT_CHANNEL_MODE, v);
+  },
   async getChannelSoundMode(slug) {
     const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
-    return modes[slug] || 'silent'; // default: silent notification
+    return modes[slug] || (await this.getDefaultChannelMode()); // v2.5.74: varsayılan ayarlanabilir
+  },
+  // v2.5.74: { mode, explicit } — explicit=false ise kanal varsayılanı izliyor.
+  // Varsayılan 'muted' iken kullanıcının kanal için AÇIKÇA seçtiği otomatik
+  // açma / kanal olayı bildirimleri engellenmez; sadece kanal zilinden yapılan
+  // 'Bildirim yok' seçimi bunları da susturur (eski davranış).
+  async getChannelSoundModeInfo(slug) {
+    const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
+    if (modes[slug]) return { mode: modes[slug], explicit: true };
+    return { mode: await this.getDefaultChannelMode(), explicit: false };
+  },
+  // v2.5.74: tüm kanallara tek mod. Önce mevcut durum yedeklenir (Geri al, 24 saat).
+  // 'Bildirim yok' seçilirse bilinen her kanal AÇIKÇA susturulur: kanal zilinden
+  // yapılan susturma gibi otomatik açmayı ve kanal olaylarını da durdurur
+  // ("tüm bildirimleri kapat"). Diğer modlarda harita boşaltılıp varsayılan
+  // değiştirilir (8 KB senkron sınırına yük bindirmemek için).
+  async applyModeToAllChannels(mode) {
+    if (!['main', 'sub', 'silent', 'muted'].includes(mode)) return { ok: false };
+    return _withKeyLock(StorageKeys.CHANNEL_SOUND_MODE, async () => {
+      const cur = await chrome.storage.local.get([StorageKeys.CHANNEL_SOUND_MODE, StorageKeys.DEFAULT_CHANNEL_MODE, '_cachedChannels']);
+      const oldMap = cur[StorageKeys.CHANNEL_SOUND_MODE] || {};
+      await chrome.storage.local.set({ [StorageKeys.CHANNEL_MODE_BACKUP]: { at: Date.now(), map: oldMap, def: cur[StorageKeys.DEFAULT_CHANNEL_MODE] || null } });
+      const next = {};
+      if (mode === 'muted') {
+        const slugs = new Set(Object.keys(oldMap));
+        (Array.isArray(cur._cachedChannels) ? cur._cachedChannels : []).forEach(c => { if (c && c.channelSlug) slugs.add(c.channelSlug); });
+        slugs.forEach(sl => { next[sl] = 'muted'; });
+      }
+      await this.set(StorageKeys.CHANNEL_SOUND_MODE, next);
+      await this.set(StorageKeys.DEFAULT_CHANNEL_MODE, mode);
+      return { ok: true };
+    });
+  },
+  async undoApplyModeToAll() {
+    return _withKeyLock(StorageKeys.CHANNEL_SOUND_MODE, async () => {
+      const b = (await chrome.storage.local.get(StorageKeys.CHANNEL_MODE_BACKUP))[StorageKeys.CHANNEL_MODE_BACKUP];
+      if (!b || typeof b.map !== 'object' || Date.now() - (b.at || 0) > 24 * 3600e3) return { ok: false };
+      await this.set(StorageKeys.CHANNEL_SOUND_MODE, b.map);
+      if (b.def) await this.set(StorageKeys.DEFAULT_CHANNEL_MODE, b.def);
+      else { await chrome.storage.local.remove(StorageKeys.DEFAULT_CHANNEL_MODE); try { if (_syncEnabled) await chrome.storage.sync.remove(StorageKeys.DEFAULT_CHANNEL_MODE); } catch (e) {} }
+      await chrome.storage.local.remove(StorageKeys.CHANNEL_MODE_BACKUP);
+      return { ok: true };
+    });
   },
   async getAllChannelSoundModes() {
     // channelSoundMode key'inde { slug: mode } formatında saklanıyor
@@ -465,11 +529,9 @@ const Storage = {
   async setChannelSoundMode(slug, mode) {
     return _withKeyLock(StorageKeys.CHANNEL_SOUND_MODE, async () => {
       const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
-      if (mode === 'silent') {
-        delete modes[slug]; // silent is default, don't store
-      } else {
-        modes[slug] = mode;
-      }
+      // v2.5.74: varsayılan artık ayarlanabilir; kullanıcının seçimi (sessiz
+      // dahil) her zaman açıkça saklanır, varsayılan değişse de korunur.
+      modes[slug] = mode;
       return this.set(StorageKeys.CHANNEL_SOUND_MODE, modes);
     });
   },
@@ -859,7 +921,7 @@ const EXPORTABLE_SETTINGS_KEYS = [
   StorageKeys.CUSTOM_SOUND_MAIN, StorageKeys.CUSTOM_SOUND_SUB, StorageKeys.USER_LANGUAGE,
   StorageKeys.USE_BROWSER_LANGUAGE, StorageKeys.DND_ENABLED, StorageKeys.DND_START, StorageKeys.DND_END,
   StorageKeys.DND_MUTE_NOTIF, StorageKeys.DND_MUTE_SOUND, StorageKeys.DND_MUTE_AUTOLAUNCH,
-  StorageKeys.SOUND_MODE, StorageKeys.CHANNEL_SOUND_MODE, StorageKeys.FAVORITE_CHANNELS,
+  StorageKeys.SOUND_MODE, StorageKeys.CHANNEL_SOUND_MODE, StorageKeys.DEFAULT_CHANNEL_MODE, StorageKeys.FAVORITE_CHANNELS,
   StorageKeys.CLOUD_SYNC_ENABLED, StorageKeys.THEME, StorageKeys.CHANNEL_GROUPS,
   StorageKeys.CHANNEL_GROUP_MAP, StorageKeys.ANOMALY_SETTINGS, StorageKeys.NOTIF_DELAY,
   StorageKeys.AUTO_OPEN_DELAY, StorageKeys.FOLLOW_SORT_BY, StorageKeys.FOLLOW_SORT_DIR,
@@ -974,6 +1036,13 @@ async function importSettingsFromObject(obj) {
     }
   }
   if (importedCount === 0) return { ok: false, error: 'EMPTY' };
+  // v2.5.74: eski yedeklerde varsayılan kanal modu yok ve 'sessiz' kanallar
+  // saklanmazdı; o dosyanın anlamını korumak için 'sessiz' varsayılanı yaz.
+  // (Hiç zil ayarı yapmamış eski kullanıcının dosyasında channelSoundMode da yoktur;
+  // bu yüzden karar sadece varsayılan anahtarının yokluğuna göre verilir.)
+  if (!Object.prototype.hasOwnProperty.call(toWrite, StorageKeys.DEFAULT_CHANNEL_MODE)) {
+    toWrite[StorageKeys.DEFAULT_CHANNEL_MODE] = 'silent';
+  }
   // v2.5.19: Üzerine yazmadan HEMEN ÖNCE, sadece değişecek anahtarların
   // mevcut halini yedekle — kullanıcı yanlış dosyayı seçtiyse tek tıkla geri dönebilsin.
   try {
@@ -998,6 +1067,11 @@ async function resetSettingsToDefaults() {
       toWrite[key] = StorageDefaults[key];
     }
   }
+  // v2.5.74: varsayılan kanal modu kurulum türüne göre (yeni kurulum: kapalı, güncelleme: sessiz)
+  try {
+    const inst = (await chrome.storage.local.get(StorageKeys.INSTALL_DEFAULT_MODE))[StorageKeys.INSTALL_DEFAULT_MODE];
+    toWrite[StorageKeys.DEFAULT_CHANNEL_MODE] = inst === 'muted' ? 'muted' : 'silent';
+  } catch (e) {}
   try {
     await createPreChangeSnapshot(Object.keys(toWrite));
     await storageSet(toWrite);

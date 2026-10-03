@@ -645,7 +645,7 @@
     "message": "Aún no sigues a nadie. Sigue un canal en Kick y aparecerá aquí automáticamente."
   },
   "whatsNewBannerText": {
-    "message": "Nuevo: alertas por canal para cambios de categoría, fin del directo y raids, además del tiempo de visualización. Usa el botón de ajustes de la tarjeta y elige su sonido en <a id=\"whatsnew-settings-link\">Ajustes</a>."
+    "message": "Novedades: el bloqueo de anuncios en directo vuelve a funcionar tras el cambio de Kick, y puedes elegir una alerta de canal predeterminada o aplicarla a todos los canales en <a id=\"whatsnew-settings-link\">Ajustes</a>."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -672,22 +672,22 @@
     "message": "Cerrar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.67 — Alertas por canal, tiempo de visualización y correcciones"
+    "message": "v2.5.75 — El bloqueo de anuncios vuelve a funcionar, inicio más tranquilo"
   },
   "releaseHistoryV0Body": {
-    "message": "• Nueva ventana de alertas por canal (botón de ajustes en la tarjeta): recibe un aviso cuando un canal cambia de categoría o título, cuando termina un directo (con su duración) y cuando recibe un raid (de quién y con cuántos espectadores). Todo viene desactivado\n• Filtro por canal: avisar solo si la categoría es una de las que elegiste o el título contiene una de tus palabras\n• Estas alertas tienen su propio sonido más suave (Gota suave, Campanilla suave, Tic), el sonido de Windows o silencio, con volumen aparte\n• Tiempo de visualización: el historial muestra cuánto viste en los últimos 7 días y tus canales principales (solo se guarda en este dispositivo)\n• Pasa el cursor sobre la vista previa de un canal para verla en grande; los botones de las tarjetas siempre caben\n• Corregido en Chrome actual (148+): en el modo \"Sonidos de la extensión\" las notificaciones sonaban también con el sonido de Windows y perdían sus botones Abrir / Silenciar\n• La sincronización en la nube ya no deshace un archivo de ajustes importado, y un ajuste demasiado grande para sincronizar se conserva en lugar de sobrescribirse\n• Los ajustes ya no se cortan en idiomas más largos; método de respaldo más sólido para saltar anuncios en directo"
+    "message": "• El bloqueo de anuncios en directo se adaptó al cambio de Kick de octubre: el reproductor abre desde el inicio el stream sin anuncios. Las emisiones pasadas también usan la nueva vía sin anuncios\n• En una instalación nueva las alertas de canal empiezan desactivadas, así que seguir muchos canales ya no significa una avalancha de notificaciones. Activa los canales que quieras con la campana de su tarjeta. Al actualizar se conservan tus ajustes\n• Ajustes: \"Alerta de canal predeterminada\" para canales sin ajuste de campana propio y \"Aplicar a todos los canales\" con Deshacer. Para silenciar todo solo a ciertas horas, usa No molestar\n• Con el predeterminado desactivado, la apertura automática y las alertas de canal que activaste siguen funcionando\n• Opcional y desactivado por defecto: compartir un resumen técnico de diagnóstico de anuncios (sin nombres de canales ni datos personales) para arreglar el bloqueo más rápido"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.46 — Un aspecto totalmente nuevo"
+    "message": "v2.5.67 — Alertas por canal, tiempo de visualización y correcciones"
   },
   "releaseHistoryV1Body": {
-    "message": "• Popup rediseñado: cabecera más limpia, contadores en las pestañas (canales en vivo, notificaciones nuevas), tarjetas más sobrias y un mismo estilo de interruptor en todos los ajustes\n• Nuevo tema \"Sistema\" que sigue el modo claro u oscuro de tu equipo\n• Las fuentes y los iconos ahora vienen dentro de la extensión: los nombres de iconos ya no aparecen como texto con conexiones lentas y el popup no hace peticiones a Google\n• Historial: las notificaciones idénticas repetidas se agrupan y las categorías vacías se ocultan\n• Iconos de modo de sonido más claros, foco de teclado visible y respeto al ajuste del sistema \"reducir movimiento\""
+    "message": "• Nueva ventana de alertas por canal (botón de ajustes en la tarjeta): recibe un aviso cuando un canal cambia de categoría o título, cuando termina un directo (con su duración) y cuando recibe un raid (de quién y con cuántos espectadores). Todo viene desactivado\n• Filtro por canal: avisar solo si la categoría es una de las que elegiste o el título contiene una de tus palabras\n• Estas alertas tienen su propio sonido más suave (Gota suave, Campanilla suave, Tic), el sonido de Windows o silencio, con volumen aparte\n• Tiempo de visualización: el historial muestra cuánto viste en los últimos 7 días y tus canales principales (solo se guarda en este dispositivo)\n• Pasa el cursor sobre la vista previa de un canal para verla en grande; los botones de las tarjetas siempre caben\n• Corregido en Chrome actual (148+): en el modo \"Sonidos de la extensión\" las notificaciones sonaban también con el sonido de Windows y perdían sus botones Abrir / Silenciar\n• La sincronización en la nube ya no deshace un archivo de ajustes importado, y un ajuste demasiado grande para sincronizar se conserva en lugar de sobrescribirse\n• Los ajustes ya no se cortan en idiomas más largos; método de respaldo más sólido para saltar anuncios en directo"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.45 — Correcciones de integridad de datos y sincronización en la nube"
+    "message": "v2.5.46 — Un aspecto totalmente nuevo"
   },
   "releaseHistoryV2Body": {
-    "message": "• Corregido: el campo de nombre de usuario de Kick en la pestaña Chat no guardaba su valor si lo escribías y cerrabas el popup enseguida\n• Corregido el mismo problema en otros lugares: los canales favoritos, el modo de sonido por canal, los grupos de canales, la lista de apertura automática, la caché de ID de chatroom/canal, las puntuaciones de bots y el historial de notificaciones podían perder un cambio si dos actualizaciones ocurrían muy seguidas — todos ahora pasan por una cola de escritura, así que esto ya no puede pasar\n• Corregido un error crítico de sincronización en la nube: si la sincronización en la nube estaba activada, los ajustes de la pestaña Chat podían volver silenciosamente a un estado antiguo/vacío horas después sin ninguna interacción, debido a que una comprobación de sincronización en segundo plano reaplicaba constantemente una copia obsoleta de la nube. Ahora los ajustes de chat se sincronizan de inmediato con cada cambio, y esa comprobación en segundo plano ya no descarga datos de la nube por su cuenta"
+    "message": "• Popup rediseñado: cabecera más limpia, contadores en las pestañas (canales en vivo, notificaciones nuevas), tarjetas más sobrias y un mismo estilo de interruptor en todos los ajustes\n• Nuevo tema \"Sistema\" que sigue el modo claro u oscuro de tu equipo\n• Las fuentes y los iconos ahora vienen dentro de la extensión: los nombres de iconos ya no aparecen como texto con conexiones lentas y el popup no hace peticiones a Google\n• Historial: las notificaciones idénticas repetidas se agrupan y las categorías vacías se ocultan\n• Iconos de modo de sonido más claros, foco de teclado visible y respeto al ajuste del sistema \"reducir movimiento\""
   },
   "settingsBackupTitle": {
     "message": "Copia de seguridad y restauración"
@@ -1026,5 +1026,47 @@
   "syncNameChat": {
     "message": "Ajustes del chat",
     "description": "Setting name in the sync warning: chat tab settings"
+  },
+  "adDiagShareDenied": {
+    "message": "Firefox no concedió el permiso de datos, el uso compartido sigue desactivado."
+  },
+  "adDiagShareDesc": {
+    "message": "Cuando el bloqueo de anuncios detecta un marcador de stream desconocido o una pausa publicitaria, se envía al desarrollador un resumen técnico para arreglar el bloqueo más rápido: nombre del marcador, cantidad, horas en que se vio, duración de la pausa, líneas de etiquetas del stream limpiadas (sin direcciones ni identificadores), versión de la extensión, tipo de navegador e idioma. Nunca se envían nombres de canales, lo que ves ni datos de la cuenta. Desactivado por defecto."
+  },
+  "adDiagShareTitle": {
+    "message": "Compartir diagnósticos de anuncios"
+  },
+  "applyModeAllBtn": {
+    "message": "Aplicar a todos los canales"
+  },
+  "applyModeConfirmAccept": {
+    "message": "Aplicar"
+  },
+  "applyModeConfirmBody": {
+    "message": "Todos los canales pasarán a \"$1\". Se reemplazarán los ajustes de campana que elegiste en las tarjetas de canal. Puedes deshacerlo justo después."
+  },
+  "applyModeConfirmTitle": {
+    "message": "¿Aplicar a todos los canales?"
+  },
+  "applyModeDone": {
+    "message": "Aplicado a todos los canales"
+  },
+  "applyModeUndoBtn": {
+    "message": "Deshacer"
+  },
+  "applyModeUndone": {
+    "message": "Ajustes de canal anteriores restaurados"
+  },
+  "defaultChannelModeHint": {
+    "message": "La usan los canales sin ajuste de campana propio y los canales que sigas a partir de ahora. Para silenciar todo solo a ciertas horas, usa No molestar más abajo."
+  },
+  "defaultChannelModeLabel": {
+    "message": "Alerta de canal predeterminada"
+  },
+  "mutedNoticeSettings": {
+    "message": "Opciones"
+  },
+  "mutedNoticeText": {
+    "message": "En una instalación nueva las alertas de canal están desactivadas. Activa los canales que quieras con la campana de su tarjeta, o todos a la vez en"
   }
 }

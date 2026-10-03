@@ -314,6 +314,7 @@
     <button class="tab active" data-view="scenarios" role="tab"><span class="mi">play_circle</span>Senaryolar</button>
     <button class="tab" data-view="events" role="tab"><span class="mi">notifications_active</span>Kanal olayları</button>
     <button class="tab" data-view="state" role="tab"><span class="mi">table_chart</span>Canlı durum</button>
+    <button class="tab" data-view="addiag" role="tab"><span class="mi">troubleshoot</span>Reklam teşhisi</button>
     <button class="tab" data-view="tools" role="tab"><span class="mi">build</span>Araçlar</button>
   </nav>
 </div>
@@ -560,6 +561,43 @@
       <div class="section">
         <div class="section-title"><span class="mi">info</span>Sistem</div>
         <div id="diag-system-info" class="out"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════ REKLAM TEŞHİSİ (v2.5.74) ═══════ -->
+  <section class="view" id="view-addiag">
+    <div class="view-head">
+      <div>
+        <div class="view-title">Reklam teşhisi</div>
+        <div class="view-desc">Reklam izleyicinin yakaladığı reklam araları ve henüz tanımlanmamış akış işaretleri. Sadece bu cihazda birikir; kanal adı ve video adresi saklanmaz. Ayarlar'da paylaşım açıksa geliştiriciye gönderilir.</div>
+      </div>
+      <button id="btn-ad-refresh"><span class="mi">refresh</span>Yenile</button>
+    </div>
+    <div class="grid2">
+      <div class="section span-all">
+        <div class="section-title"><span class="mi">info</span>Durum</div>
+        <div id="ad-status"></div>
+        <div class="row" style="margin-top:10px;">
+          <button id="btn-ad-copy" class="sm"><span class="mi">content_copy</span>Panoya kopyala (JSON)</button>
+          <button id="btn-ad-download" class="sm"><span class="mi">download</span>JSON indir</button>
+          <button id="btn-ad-send" class="sm"><span class="mi">send</span>Şimdi gönder</button>
+          <button id="btn-ad-clear" class="sm"><span class="mi">delete</span>Temizle</button>
+        </div>
+        <div id="ad-out" class="out"></div>
+      </div>
+      <div class="section span-all">
+        <div class="section-title"><span class="mi">list</span>Kayıtlar</div>
+        <div id="ad-items"></div>
+        <pre id="ad-sample" class="out" style="white-space:pre-wrap;"></pre>
+      </div>
+      <div class="section span-all">
+        <div class="section-title"><span class="mi">link</span>Toplayıcı adresi (test)</div>
+        <div class="view-desc" style="margin-bottom:8px;">Apps Script web uygulaması adresi (https://script.google.com/macros/s/.../exec). Boş bırakılırsa eklentinin varsayılan adresi kullanılır.</div>
+        <div class="row">
+          <input id="ad-endpoint" type="text" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;min-width:280px;">
+          <button id="btn-ad-endpoint" class="sm">Kaydet</button>
+        </div>
       </div>
     </div>
   </section>

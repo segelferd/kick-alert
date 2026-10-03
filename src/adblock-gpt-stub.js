@@ -32,7 +32,7 @@
   try {
     var __diagVal = null;
     try { __diagVal = localStorage.getItem('__ka_ab_video'); } catch (e) { __diagVal = 'OKUMA HATASI: ' + e.message; }
-    try { console.log('[KickAlert][AdBlock][TEŞHİS]', 'gpt-stub.js calisti, __ka_ab_video okunan deger=' + JSON.stringify(__diagVal)); } catch (e) {}
+    try { console.log('%c KickAlert \u00b7 ADB-09 %c TEŞHİS: gpt-stub.js calisti, __ka_ab_video okunan deger=' + JSON.stringify(__diagVal), 'background:#616161;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
     window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-09', text: 'gpt-stub.js calisti, __ka_ab_video okunan deger=' + JSON.stringify(__diagVal) }, '*');
   } catch (e) {}
 
@@ -50,7 +50,7 @@
   var thisRef = function () { return this; };
 
   function log(text) {
-    try { console.log('[KickAlert][AdBlock]', text); } catch (e) {}
+    try { console.log('%c KickAlert \u00b7 ADB-07 %c ' + text, 'background:#8e24aa;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
     try {
       window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-07', text: text }, '*');
     } catch (e) {}

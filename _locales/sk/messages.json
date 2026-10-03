@@ -612,7 +612,7 @@
     "message": "Zatiaľ nikoho nesleduješ. Sleduj kanál na Kick a automaticky sa zobrazí tu."
   },
   "whatsNewBannerText": {
-    "message": "Novinka: upozornenia pre jednotlivé kanály na zmenu kategórie, koniec streamu a raidy a tiež čas sledovania. Použite tlačidlo nastavenia na karte kanála, zvuk vyberiete v <a id=\"whatsnew-settings-link\">Nastaveniach</a>."
+    "message": "Novinka: blokovanie reklám v živom vysielaní po zmene Kicku opäť funguje a v <a id=\"whatsnew-settings-link\">Nastaveniach</a> môžete nastaviť predvolené upozornenie kanála alebo ho použiť na všetky kanály."
   },
   "optGroupGeneral": {
     "message": "Všeobecné"
@@ -639,22 +639,22 @@
     "message": "Zavrieť"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.67 — Upozornenia pre jednotlivé kanály, čas sledovania a opravy"
+    "message": "v2.5.75 — Blokovanie reklám opäť funguje, pokojnejší začiatok"
   },
   "releaseHistoryV0Body": {
-    "message": "• Nové okno upozornení kanála (tlačidlo nastavení na karte kanála): dostanete upozornenie, keď kanál zmení kategóriu alebo názov, keď stream skončí (aj s dĺžkou) a keď príde raid (od koho a s koľkými divákmi). Všetko je predvolene vypnuté\n• Filter kanála: upozorniť len vtedy, keď je kategória z vášho výberu alebo názov obsahuje jedno z vašich slov\n• Tieto upozornenia majú vlastný tichší zvuk (Jemná kvapka, Ľahká zvonkohra, Cvaknutie), zvuk Windows alebo ticho, s vlastnou hlasitosťou\n• Čas sledovania: história ukazuje, ako dlho ste sledovali za posledných 7 dní, a vaše najsledovanejšie kanály (uložené len v tomto zariadení)\n• Po prejdení myšou na náhľad kanála sa zobrazí vo veľkom; tlačidlá na kartách sa vždy zmestia\n• Opravené v aktuálnom Chrome (148+): v režime „Zvuky rozšírenia\" oznámenia prehrávali zvuk Windows a prišli o tlačidlá Otvoriť / Stlmiť\n• Cloudová synchronizácia už nevracia späť importovaný súbor nastavení a nastavenie príliš veľké na synchronizáciu sa zachová namiesto prepísania\n• Nastavenia sa v dlhších jazykoch už neorezávajú; silnejší záložný spôsob preskakovania reklám v živom vysielaní"
+    "message": "• Blokovanie reklám v živom vysielaní bolo upravené na októbrovú zmenu Kicku: prehrávač teraz hneď od začiatku otvára stream bez reklám. Minulé vysielania tiež používajú novú cestu bez reklám\n• Po novej inštalácii sú upozornenia kanálov vypnuté, takže sledovanie mnohých kanálov už neznamená záplavu upozornení. Požadované kanály zapnite zvončekom na ich karte. Pri aktualizácii zostanú vaše nastavenia zachované\n• Nastavenia: „Predvolené upozornenie kanála“ pre kanály bez vlastného nastavenia zvončeka a „Použiť na všetky kanály“ s možnosťou vrátenia. Ak chcete všetko stlmiť len v určitých hodinách, použite Nerušiť\n• Aj keď je predvolený stav vypnutý, automatické otváranie a upozornenia kanála, ktoré ste pre kanál zapli, fungujú ďalej\n• Voliteľné, predvolene vypnuté: zdieľanie technického zhrnutia diagnostiky reklám (bez názvov kanálov a osobných údajov), aby sa blokovanie dalo opraviť rýchlejšie"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.46 — Úplne nový vzhľad"
+    "message": "v2.5.67 — Upozornenia pre jednotlivé kanály, čas sledovania a opravy"
   },
   "releaseHistoryV1Body": {
-    "message": "• Prepracované okno: čistejšia hlavička, počítadlá na kartách (živé kanály, nové oznámenia), pokojnejšie karty a jednotný štýl prepínačov vo všetkých nastaveniach\n• Nová téma „Systémová“, ktorá sa riadi svetlým alebo tmavým režimom počítača\n• Písma a ikony sú teraz súčasťou rozšírenia: na pomalom pripojení sa už nezobrazujú názvy ikon ako text a okno neposiela žiadne požiadavky na Google\n• História: opakované rovnaké oznámenia sa zlučujú a prázdne kategórie sa skrývajú\n• Zrozumiteľnejšie ikony režimu zvuku, viditeľné zameranie klávesnicou a rešpektovanie systémového nastavenia „obmedziť pohyb“"
+    "message": "• Nové okno upozornení kanála (tlačidlo nastavení na karte kanála): dostanete upozornenie, keď kanál zmení kategóriu alebo názov, keď stream skončí (aj s dĺžkou) a keď príde raid (od koho a s koľkými divákmi). Všetko je predvolene vypnuté\n• Filter kanála: upozorniť len vtedy, keď je kategória z vášho výberu alebo názov obsahuje jedno z vašich slov\n• Tieto upozornenia majú vlastný tichší zvuk (Jemná kvapka, Ľahká zvonkohra, Cvaknutie), zvuk Windows alebo ticho, s vlastnou hlasitosťou\n• Čas sledovania: história ukazuje, ako dlho ste sledovali za posledných 7 dní, a vaše najsledovanejšie kanály (uložené len v tomto zariadení)\n• Po prejdení myšou na náhľad kanála sa zobrazí vo veľkom; tlačidlá na kartách sa vždy zmestia\n• Opravené v aktuálnom Chrome (148+): v režime „Zvuky rozšírenia\" oznámenia prehrávali zvuk Windows a prišli o tlačidlá Otvoriť / Stlmiť\n• Cloudová synchronizácia už nevracia späť importovaný súbor nastavení a nastavenie príliš veľké na synchronizáciu sa zachová namiesto prepísania\n• Nastavenia sa v dlhších jazykoch už neorezávajú; silnejší záložný spôsob preskakovania reklám v živom vysielaní"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.45 — Opravy integrity dát a cloudovej synchronizácie"
+    "message": "v2.5.46 — Úplne nový vzhľad"
   },
   "releaseHistoryV2Body": {
-    "message": "• Opravené: pole používateľského mena Kick na karte Chat neuložilo hodnotu, ak si ho napísal a hneď zavrel vyskakovacie okno\n• Opravený rovnaký problém inde: obľúbené kanály, režim zvuku podľa kanála, skupiny kanálov, zoznam automatického otvárania, medzipamäť ID chatroomu/kanála, skóre botov a história oznámení mohli stratiť zmenu, ak dve aktualizácie prišli tesne po sebe — teraz všetko prechádza frontou zápisu, takže sa to už nemôže stať\n• Opravená kritická chyba cloudovej synchronizácie: ak bola zapnutá cloudová synchronizácia, nastavenia karty Chat sa mohli po hodinách bez akejkoľvek interakcie ticho vrátiť do starého/prázdneho stavu — spôsobovala to rutinná kontrola synchronizácie na pozadí, ktorá opakovane znova aplikovala zastaranú kópiu z cloudu. Nastavenia chatu sa teraz synchronizujú okamžite pri každej zmene a táto kontrola na pozadí už sama od seba nesťahuje dáta z cloudu"
+    "message": "• Prepracované okno: čistejšia hlavička, počítadlá na kartách (živé kanály, nové oznámenia), pokojnejšie karty a jednotný štýl prepínačov vo všetkých nastaveniach\n• Nová téma „Systémová“, ktorá sa riadi svetlým alebo tmavým režimom počítača\n• Písma a ikony sú teraz súčasťou rozšírenia: na pomalom pripojení sa už nezobrazujú názvy ikon ako text a okno neposiela žiadne požiadavky na Google\n• História: opakované rovnaké oznámenia sa zlučujú a prázdne kategórie sa skrývajú\n• Zrozumiteľnejšie ikony režimu zvuku, viditeľné zameranie klávesnicou a rešpektovanie systémového nastavenia „obmedziť pohyb“"
   },
   "settingsBackupTitle": {
     "message": "Zálohovanie a obnovenie"
@@ -993,5 +993,47 @@
   "syncNameChat": {
     "message": "Nastavenia chatu",
     "description": "Setting name in the sync warning: chat tab settings"
+  },
+  "adDiagShareDenied": {
+    "message": "Firefox neudelil povolenie k údajom, zdieľanie zostáva vypnuté."
+  },
+  "adDiagShareDesc": {
+    "message": "Keď blokovanie reklám nájde neznámu značku streamu alebo reklamnú prestávku, odošle sa vývojárovi technické zhrnutie, aby sa blokovanie dalo opraviť rýchlejšie: názov značky, počet, časy výskytu, dĺžka prestávky, vyčistené riadky značiek streamu (adresy a identifikátory odstránené), verzia rozšírenia, typ prehliadača a jazyk. Názvy kanálov, čo sledujete, ani údaje o účte sa nikdy neodosielajú. Predvolene vypnuté."
+  },
+  "adDiagShareTitle": {
+    "message": "Zdieľať diagnostiku reklám"
+  },
+  "applyModeAllBtn": {
+    "message": "Použiť na všetky kanály"
+  },
+  "applyModeConfirmAccept": {
+    "message": "Použiť"
+  },
+  "applyModeConfirmBody": {
+    "message": "Všetky kanály budú nastavené na „$1“. Nastavenia zvončeka zvolené na kartách kanálov budú nahradené. Hneď potom to môžete vrátiť."
+  },
+  "applyModeConfirmTitle": {
+    "message": "Použiť na všetky kanály?"
+  },
+  "applyModeDone": {
+    "message": "Použité na všetky kanály"
+  },
+  "applyModeUndoBtn": {
+    "message": "Vrátiť"
+  },
+  "applyModeUndone": {
+    "message": "Predchádzajúce nastavenia kanálov obnovené"
+  },
+  "defaultChannelModeHint": {
+    "message": "Používajú ho kanály bez vlastného nastavenia zvončeka a kanály, ktoré začnete sledovať odteraz. Ak chcete všetko stlmiť len v určitých hodinách, použite nižšie Nerušiť."
+  },
+  "defaultChannelModeLabel": {
+    "message": "Predvolené upozornenie kanála"
+  },
+  "mutedNoticeSettings": {
+    "message": "Nastavenia"
+  },
+  "mutedNoticeText": {
+    "message": "Po novej inštalácii sú upozornenia kanálov vypnuté. Zapnite požadované kanály zvončekom na ich karte alebo všetky naraz v"
   }
 }

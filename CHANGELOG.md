@@ -5,6 +5,53 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.75 — Store release: ad blocking works again, quieter start for new users
+
+- Store release covering v2.5.68 → v2.5.74 (see the entries below)
+- Ad diagnostics collector address built in (sharing still off by default)
+- What's New banner and Release History updated in all 14 languages
+
+## v2.5.74 — Channel alerts off on new installs, apply to all channels, ad diagnostics
+
+- New installs: channel alerts start off ("No notification"). A one-time banner explains how to turn on channels from the bell on their card or all at once in Options. Updating users keep their current behaviour exactly ("Silent notification" default as before)
+- Options → Notification Settings: "Default channel alert" (used by channels without their own bell setting and by newly followed channels), "Apply to all channels" with confirmation and a 24-hour Undo, plus a pointer to Do Not Disturb for silencing only at certain hours
+- With the default set to "No notification", channel-specific choices you made still work: per-channel auto-open and channel alerts (category change, stream end, raid) keep firing; a mute chosen from a channel's bell (or "Apply to all → No notification") still silences everything for that channel
+- Importing an older settings file or pulling cloud data from an older device keeps its original meaning (silent notification default)
+- Ad blocking: console lines are colour-coded with their ADB code; ad breaks and unknown stream markers are kept in a small local log (test panel → Ad diagnostics: copy, download, clear)
+- Optional, off-by-default "Share ad diagnostics" (Options → Ad Blocking): sends a cleaned technical summary (no channel names, addresses or account data) to the developer's Google Apps Script. Firefox asks for the "technical and interaction data" permission. Privacy policy updated
+- `#EXT-X-TWITCH-LIVE-SEQUENCE` (seen after ad breaks) is a known marker and no longer raises a diagnostic warning
+
+## v2.5.73 — Turkish ad format confirmed and recognised
+
+- First live ad break caught in Turkey (03.10): Kick's ads arrive as Amazon IVS stitched ads (DATERANGE classes `live-video-net-stitched-ad-break-start` and `live-video-net-stitched-ad-creative-start`, with `#EXT-X-DISCONTINUITY`). The player stayed on the ad-free stream and the watcher logged ADB-12
+- These markers are now known: they no longer raise the ADB-16 diagnostic warning, and the ADB-12 line names the exact ad marker
+
+## v2.5.72 — Server assignment marker marked as known
+
+- The `live-video-net-assignment` DATERANGE seen once per channel in Turkey was confirmed from its full line (serving id, node, cluster) to be a server assignment, not an ad; it no longer triggers the ADB-16 diagnostic warning
+
+## v2.5.71 — Fuller diagnostic samples
+
+- Diagnostic samples of the ad watcher now keep DATERANGE lines in full (segment addresses stay shortened), so the attributes of an unknown marker can be read from `window.__ka_ab_adMonSamples`
+
+## v2.5.70 — Ad watcher diagnostics
+
+- The live ad watcher now reports its own health: `window.__ka_ab_adMonStatus()` in the page console shows checks, successes, errors, address refreshes, caught ad breaks and any new markers; a summary line (ADB-15) is logged about every 10 minutes
+- Any tag or DATERANGE class not seen in normal Kick live playlists is logged once (ADB-16) and a short excerpt is kept in `window.__ka_ab_adMonSamples`, so an ad format Kick uses in a specific region can be identified without watching the ad
+- Ad detection now also checks IVS prefetch lines (long dna parameter, foreign host)
+
+## v2.5.69 — Ad break detection for live streams
+
+- Since the player now opens the ad-free stream from the start, ads never reach it, so nothing showed that an ad had been blocked. A lightweight watcher now checks only the text playlist of Kick's ad-carrying stream every 10 seconds (no video is downloaded) and logs "ad break started, blocked" (ADB-12) and "ad break ended" (ADB-13) in the console and the test panel activity log
+- The watcher refreshes Kick's 10-minute stream address automatically, stops when you leave the channel or turn ad blocking off, and never touches playback
+
+## v2.5.68 — Live ad blocking adapted to Kick's October change
+
+- Kick started returning live stream addresses that carry server-side ad parameters (MediaTailor) again. The ad-free address is now swapped in at page level, before the player even sees the playback response, so the player opens the ad-free stream from the start. The earlier player-worker swap stays as a backup
+- Safety: the swap is applied only when both addresses point to the same stream (identical path, only the token differs); on any error or after 2.5 seconds the original response is used and playback continues
+- Past broadcasts: Kick's new MediaTailor VOD session is redirected to the ad-free original recording after verifying it is a real video manifest
+- The player worker no longer swaps a stream that is already ad-free, so the blocked-ads counter is not counted twice
+
 ## v2.5.67 — Store release: per-channel alerts, watch time and fixes
 
 - Store release covering v2.5.48 → v2.5.66 (see the entries below)

@@ -45,6 +45,15 @@
     </button>
   </div>
 
+  <!-- v2.5.74: Yeni kurulumda kanal bildirimleri kapalı; nasıl açılacağını bir kez anlatır -->
+  <div id="muted-banner" class="whatsnew-banner" style="display:none;">
+    <span class="material-icons-outlined">notifications_off</span>
+    <span class="whatsnew-banner-text"><span id="muted-banner-text"></span> <a href="#" id="muted-banner-settings"></a></span>
+    <button type="button" id="muted-banner-close" class="whatsnew-banner-close">
+      <span class="material-icons-outlined">close</span>
+    </button>
+  </div>
+
   <!-- v2.5.52: Değerlendirme isteği; sadece gerçekten kullanan birine, en fazla iki kez -->
   <div id="rate-banner" class="whatsnew-banner rate-banner" style="display:none;">
     <span class="material-icons-outlined">star_rate</span>
@@ -443,6 +452,21 @@
           <input type="checkbox" id="opt-show-notification" />
           <span data-i18n="showNotificationCheckbox">Show desktop notifications</span>
         </label>
+        <!-- v2.5.74: kendi zil ayarı olmayan ve yeni takip edilen kanallar için varsayılan + tümüne uygula -->
+        <div class="opt-slider-row opt-slider-row-compact">
+          <span class="opt-slider-label" data-i18n="defaultChannelModeLabel">Default channel alert</span>
+          <select id="opt-default-channel-mode" class="opt-dnd-select opt-event-select">
+            <option value="main" data-i18n="bellMain">Main sound</option>
+            <option value="sub" data-i18n="bellSub">Secondary sound</option>
+            <option value="silent" data-i18n="bellSilent">Silent notification</option>
+            <option value="muted" data-i18n="bellMuted">No notification</option>
+          </select>
+        </div>
+        <div class="opt-row" style="gap:14px;padding-top:2px;">
+          <button type="button" id="opt-apply-mode-all" class="opt-text-btn" data-i18n="applyModeAllBtn">Apply to all channels</button>
+          <button type="button" id="opt-apply-mode-undo" class="opt-text-btn" style="display:none;" data-i18n="applyModeUndoBtn">Undo</button>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);padding:2px 0 4px 0;line-height:1.5;" data-i18n="defaultChannelModeHint">Used by channels without their own bell setting and by channels you follow from now on. To silence everything only at certain hours, use Do Not Disturb below.</div>
         <div class="opt-slider-row opt-slider-row-compact">
           <span class="opt-slider-label" data-i18n="autoOpenDelayLabel">Tab open delay</span>
           <input type="range" id="opt-auto-open-delay-slider" min="3" max="9" step="2" />
@@ -708,6 +732,18 @@
           </label>
         </div>
         <div id="ad-block-desc" class="opt-adblock-warning opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
+        <!-- v2.5.74: isteğe bağlı reklam teşhisi paylaşımı (varsayılan kapalı, sadece reklam engeli açıkken görünür) -->
+        <div id="opt-ad-diag-box" style="display:none;padding:8px 0 0 22px;">
+          <div class="opt-row" style="justify-content:space-between;padding:0;">
+            <span style="font-size:12px;color:var(--text-secondary);flex:1;" data-i18n="adDiagShareTitle">Share ad diagnostics</span>
+            <label class="toggle-switch toggle-switch-sm">
+              <input type="checkbox" id="opt-ad-diag-share" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div style="font-size:11px;color:var(--text-muted);padding:4px 0 0 0;line-height:1.5;" data-i18n="adDiagShareDesc">When ad blocking finds an unknown stream marker or an ad break, a technical summary is sent to the developer so blocking can be fixed faster: marker name, count, times seen, ad break length, cleaned stream tag lines (addresses and identifiers removed), extension version, browser type and language. Channel names, what you watch and account details are never sent. Off by default.</div>
+          <div id="opt-ad-diag-denied" style="display:none;font-size:11px;color:var(--warn);padding:4px 0 0 0;line-height:1.5;" data-i18n="adDiagShareDenied">Firefox did not grant the data permission, sharing stays off.</div>
+        </div>
       </div>
       <!-- Channel Thumbnails Section (v2.3.26) -->
       <div class="opt-section">
@@ -893,6 +929,21 @@
       <div class="confirm-modal-actions">
         <button id="reset-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel" data-i18n="cancel">Cancel</button>
         <button id="reset-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept" data-i18n="resetConfirmAccept">Reset Everything</button>
+      </div>
+    </div>
+  </div>
+  <!-- v2.5.74: Tüm kanallara uygula onay modalı -->
+  <div id="apply-mode-confirm-modal" class="confirm-modal" style="display:none">
+    <div class="confirm-modal-backdrop"></div>
+    <div class="confirm-modal-box">
+      <div class="confirm-modal-icon">
+        <span class="material-icons-outlined">notifications</span>
+      </div>
+      <div class="confirm-modal-title"></div>
+      <div class="confirm-modal-body"></div>
+      <div class="confirm-modal-actions">
+        <button id="apply-mode-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel"></button>
+        <button id="apply-mode-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept"></button>
       </div>
     </div>
   </div>

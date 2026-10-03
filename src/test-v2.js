@@ -87,6 +87,7 @@ function showView(name) {
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + name));
   try { localStorage.setItem('ka-test-tab', name); } catch (e) {}
   if (name === 'state') renderStateTables();
+  if (name === 'addiag') renderAdDiag();
 }
 
 // ─── Log araçları ───
@@ -576,6 +577,70 @@ async function pusherReal() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// REKLAM TEŞHİSİ (v2.5.74) — src/ad-diag.js deposu
+// ═══════════════════════════════════════════════════════════════════════════
+
+let adDiagLast = null;
+const AD_REASON = { disabled: 'Ayarlar\'da paylaşım kapalı', 'no-consent': 'Firefox veri izni verilmemiş', 'no-endpoint': 'Toplayıcı adresi tanımlı değil', unavailable: 'Teşhis modülü yüklenmedi' };
+async function renderAdDiag() {
+  const st = await send({ type: 'GET_AD_DIAG' });
+  adDiagLast = st;
+  if (!st || !Array.isArray(st.items)) { mount('ad-status', el('div', { class: 'empty', text: 'Teşhis modülüne ulaşılamadı' })); return; }
+  const items = [...st.items].sort((a, b) => b.lastAt - a.lastAt);
+  const ads = items.filter(x => x.kind === 'adbreak'), marks = items.filter(x => x.kind === 'marker');
+  const unsent = items.reduce((n, x) => n + (x.unsent || 0), 0);
+  mount('ad-status', el('dl', { class: 'kv' },
+    el('dt', { text: 'Paylaşım' }), el('dd', null, st.share ? tag('açık', 'ok') : tag('kapalı', 'warn')),
+    st.firefox ? [el('dt', { text: 'Firefox veri izni' }), el('dd', null, st.consent ? tag('verildi', 'ok') : tag('yok', 'warn'))] : null,
+    el('dt', { text: 'Toplayıcı' }), el('dd', { class: 'mono', text: st.endpoint || 'tanımlı değil' }),
+    el('dt', { text: 'Son gönderim' }), el('dd', { text: st.lastSendAt ? ago(st.lastSendAt) + ' · ' + (st.lastSendResult || '') : '—' }),
+    el('dt', { text: 'Kayıt' }), el('dd', { text: `${ads.length} reklam işareti · ${marks.length} tanımsız işaret · ${unsent} gönderilmemiş olay` })));
+  const epBox = document.getElementById('ad-endpoint');
+  if (epBox && document.activeElement !== epBox) epBox.value = st.endpoint || '';
+  mount('ad-items', table(['Tür', 'İşaret', 'Sayı', 'Gönderilmemiş', 'İlk', 'Son', 'Ort. süre', 'Sürüm', ''],
+    items.map(x => [x.kind === 'adbreak' ? tag('reklam', 'ok') : tag('tanımsız', 'warn'), td(x.marker, 'mono trunc', x.marker), String(x.count), String(x.unsent || 0),
+      td(new Date(x.firstAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }), 'mono'), td(ago(x.lastAt), 'mono'),
+      x.avgDurationSec ? x.avgDurationSec + ' sn' : '—', x.version || '',
+      (() => { const b = el('button', { class: 'sm', text: 'Örnek' }); b.addEventListener('click', () => { const pre = document.getElementById('ad-sample'); if (pre) pre.textContent = x.marker + '\n\n' + (x.sample || '(örnek yok)'); }); return b; })()])));
+}
+function adDiagJson() {
+  const st = adDiagLast || {};
+  return JSON.stringify({ exportedAt: new Date().toISOString(), version: chrome.runtime.getManifest().version, browser: isFF ? 'firefox' : 'chrome', items: st.items || [] }, null, 2);
+}
+async function adDiagCopy() {
+  await renderAdDiag();
+  try { await navigator.clipboard.writeText(adDiagJson()); out('ad-out', 'Panoya kopyalandı (' + ((adDiagLast && adDiagLast.items) || []).length + ' kayıt)', 'ok'); }
+  catch (e) { out('ad-out', 'Kopyalanamadı: ' + e.message, 'err'); }
+}
+async function adDiagDownload() {
+  await renderAdDiag();
+  const blob = new Blob([adDiagJson()], { type: 'application/json' });
+  const a = el('a', { href: URL.createObjectURL(blob), download: 'kickalert-reklam-teshis-' + localDay() + '.json' });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  out('ad-out', 'JSON indirildi', 'ok');
+}
+async function adDiagSend() {
+  out('ad-out', 'Gönderiliyor…');
+  const r = await send({ type: 'SEND_AD_DIAG_NOW' });
+  if (r && r.ok) out('ad-out', r.sent ? r.sent + ' kayıt gönderildi' : 'Gönderilecek yeni kayıt yok', 'ok');
+  else out('ad-out', 'Gönderilmedi: ' + (AD_REASON[r && r.reason] || (r && (r.note || r.reason)) || 'bilinmeyen hata'), 'warn');
+  renderAdDiag();
+}
+async function adDiagClear() {
+  if (!confirm('Bu cihazdaki tüm reklam teşhis kayıtları silinsin mi?')) return;
+  await send({ type: 'CLEAR_AD_DIAG' });
+  out('ad-out', 'Kayıtlar temizlendi', 'ok');
+  renderAdDiag();
+}
+async function adDiagSetEndpoint() {
+  const v = (document.getElementById('ad-endpoint')?.value || '').trim();
+  const r = await send({ type: 'SET_AD_DIAG_ENDPOINT', url: v });
+  out('ad-out', r && r.ok ? (v ? 'Toplayıcı adresi kaydedildi' : 'Varsayılan adrese dönüldü') : 'Geçersiz adres (https://script.google.com/macros/s/.../exec olmalı)', r && r.ok ? 'ok' : 'err');
+  renderAdDiag();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // BAŞLAT
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -620,6 +685,12 @@ document.addEventListener('DOMContentLoaded', () => {
   on('btn-rate-restore', rateRestore);
   on('btn-rate-reset', rateReset);
   on('btn-state-refresh', renderStateTables);
+  on('btn-ad-refresh', renderAdDiag);
+  on('btn-ad-copy', adDiagCopy);
+  on('btn-ad-download', adDiagDownload);
+  on('btn-ad-send', adDiagSend);
+  on('btn-ad-clear', adDiagClear);
+  on('btn-ad-endpoint', adDiagSetEndpoint);
   on('btn-real-notif', realLiveNotif);
   on('btn-pusher-real', pusherReal);
   on('btn-bot-status', async () => showJson('modules-out', await send({ type: 'GET_BOT_TRACKER_STATUS' })));

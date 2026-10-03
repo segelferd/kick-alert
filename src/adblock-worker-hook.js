@@ -26,6 +26,12 @@
   if (window.__ka_ab_hook) return;
   window.__ka_ab_hook = true;
 
+  var KA_LOG_STYLES = { 'ADB-12': 'background:#53FC18;color:#000;font-weight:bold', 'ADB-13': 'background:#1f6f2a;color:#fff', 'ADB-16': 'background:#ff9800;color:#000;font-weight:bold', 'ADB-11': 'background:#ffd54f;color:#000', 'ADB-03': 'background:#ffd54f;color:#000', 'ADB-14': 'background:#1e88e5;color:#fff', 'ADB-15': 'background:#1e88e5;color:#fff', 'ADB-10': 'background:#00897b;color:#fff', 'ADB-02': 'background:#00897b;color:#fff', 'ADB-04': 'background:#00897b;color:#fff', 'ADB-09': 'background:#616161;color:#fff', 'ADB-01': 'background:#5e35b1;color:#fff', 'ADB-05': 'background:#5e35b1;color:#fff', 'ADB-06': 'background:#5e35b1;color:#fff', 'ADB-07': 'background:#8e24aa;color:#fff', 'ADB-08': 'background:#6d4c41;color:#fff' };
+  // v2.5.74: konsolda renkli rozet: "KickAlert · ADB-xx" + metin (konsol filtresi 'kickalert' çalışmaya devam eder)
+  function kaClog(code, text) {
+    try { console.log('%c KickAlert \u00b7 ' + code + ' %c ' + text, (KA_LOG_STYLES[code] || 'background:#37474f;color:#fff') + ';border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
+  }
+
   var pageNonce = null;
   var pageEnabled = true; // canlı yayın reklamı ayarı
   try { pageEnabled = localStorage.getItem('__ka_ab_video') === '1'; } catch (e) {}
@@ -37,7 +43,7 @@
   try {
     var __diagRaw = null;
     try { __diagRaw = localStorage.getItem('__ka_ab_video'); } catch (e) { __diagRaw = 'OKUMA HATASI'; }
-    try { console.log('[KickAlert][AdBlock][TEŞHİS]', 'worker-hook.js calisti, __ka_ab_video=' + JSON.stringify(__diagRaw) + ' pageEnabled=' + pageEnabled + ' pageVod=' + pageVod); } catch (e) {}
+    kaClog('ADB-09', 'TEŞHİS: worker-hook.js calisti, __ka_ab_video=' + JSON.stringify(__diagRaw) + ' pageEnabled=' + pageEnabled + ' pageVod=' + pageVod);
     window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-09', text: 'worker-hook.js calisti, __ka_ab_video=' + JSON.stringify(__diagRaw) + ' pageEnabled=' + pageEnabled + ' pageVod=' + pageVod }, '*');
   } catch (e) {}
 
@@ -217,6 +223,362 @@
     try { return /\/videos\/[0-9a-f-]{8,}/i.test(window.location.pathname); } catch (e) { return false; }
   }
 
+  // v2.5.68: SAYFA SEVİYESİNDE CANLI DEĞİŞİM (ClearKick 1.0.3 ve Kick Ad
+  // Blocker 1.1.0'ın Ekim 2026 yöntemi). Kick oynatıcısı akış adresini
+  // /api/v1/stream/<id>/playback yanıtından alıyor; bu yanıttaki
+  // playback_url.live token'ı reklam parametreleri (aws:ads-player-params,
+  // MediaTailor SSAI) taşıyor. Aynı kanalın /api/v2/channels/<slug>
+  // adresi ise aws:ads-opt-out=true. Yanıt oynatıcıya ulaşmadan önce adresi
+  // değiştiriyoruz; böylece worker sarmalaması tutmasa bile oynatıcı en
+  // baştan reklamsız akışı açıyor. Worker'daki master değişimi yedek olarak
+  // duruyor.
+  // GÜVENLİK: iki adresin yolu birebir aynı olmalı (aynı IVS kanalı, sadece
+  // token farklı); değilse dokunulmuyor. Her hata ve 2.5 sn zaman aşımı
+  // durumunda orijinal yanıt dönüyor.
+  var LIVE_RESERVED = { video: 1, videos: 1, clips: 1, clip: 1, category: 1, categories: 1, browse: 1, following: 1, search: 1, drops: 1, subscriptions: 1, messages: 1, dashboard: 1, settings: 1, api: 1, popout: 1, help: 1, about: 1 };
+  function liveSlug() {
+    try {
+      var segs = window.location.pathname.split('/').filter(Boolean);
+      if (segs.length !== 1) return '';
+      return LIVE_RESERVED[segs[0].toLowerCase()] ? '' : segs[0];
+    } catch (e) { return ''; }
+  }
+  function sameChannel(a, b) {
+    try { return new URL(a).pathname === new URL(b).pathname; } catch (e) { return false; }
+  }
+  var liveAf = { slug: '', url: '', ts: 0, inflight: null, inflightSlug: '' };
+  function getLiveAdFree(slug) {
+    if (!slug || typeof origPageFetch !== 'function') return Promise.resolve(null);
+    var now = Date.now();
+    if (liveAf.slug === slug && liveAf.url && (now - liveAf.ts) < 60000) return Promise.resolve(liveAf.url);
+    if (liveAf.inflight && liveAf.inflightSlug === slug) return liveAf.inflight;
+    var pr = origPageFetch.call(window, 'https://kick.com/api/v2/channels/' + slug, { credentials: 'include' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var pu = j && j.playback_url;
+        var u = typeof pu === 'string' ? pu : (pu && typeof pu.live === 'string' ? pu.live : '');
+        if (!u || !/^https:\/\//i.test(u)) return null;
+        liveAf.slug = slug; liveAf.url = u; liveAf.ts = Date.now();
+        return u;
+      })
+      .catch(function () { return null; })
+      .finally(function () { if (liveAf.inflight === pr) { liveAf.inflight = null; liveAf.inflightSlug = ''; } });
+    liveAf.inflight = pr; liveAf.inflightSlug = slug;
+    return pr;
+  }
+  function primeLiveAdFree() {
+    try { if (pageEnabled) { var s = liveSlug(); if (s) getLiveAdFree(s); } } catch (e) {}
+  }
+  function withTimeout(promise, ms) {
+    return new Promise(function (resolve) {
+      var done = false;
+      var t = setTimeout(function () { if (!done) { done = true; resolve(null); } }, ms);
+      Promise.resolve(promise).then(function (v) { if (!done) { done = true; clearTimeout(t); resolve(v); } }, function () { if (!done) { done = true; clearTimeout(t); resolve(null); } });
+    });
+  }
+  function pageLog(code, text, level) {
+    kaClog(code, text);
+    try { window.postMessage({ source: 'ka-ab-log', level: level || 'info', code: code, text: text }, '*'); } catch (e) {}
+  }
+  function handleLivePlayback(j, resp, slug) {
+    var touched = neutralizeAds(j);
+    var pu = j && j.playback_url;
+    var cur = typeof pu === 'string' ? pu : (pu && typeof pu.live === 'string' ? pu.live : '');
+    if (!cur) return touched ? jsonResponse(j, resp) : resp;
+    return withTimeout(getLiveAdFree(slug), 2500).then(function (af) {
+      if (!af) { pageLog('ADB-11', 'Canlı: reklamsız adres alınamadı (zaman aşımı veya hata), orijinal yanıt kullanıldı', 'warn'); return touched ? jsonResponse(j, resp) : resp; }
+      if (af === cur) return touched ? jsonResponse(j, resp) : resp;
+      if (!sameChannel(cur, af)) { pageLog('ADB-11', 'Canlı: yanıt farklı bir kanala ait görünüyor, dokunulmadı', 'warn'); return touched ? jsonResponse(j, resp) : resp; }
+      if (typeof pu === 'string') j.playback_url = af; else pu.live = af;
+      try { window.__ka_ab_adsBlocked = (window.__ka_ab_adsBlocked || 0) + 1; } catch (e) {}
+      try { window.__ka_ab_pageSwap = (window.__ka_ab_pageSwap || 0) + 1; } catch (e) {}
+      try { window.postMessage({ source: 'ka-ab', type: 'adDetected', kind: 'video', n: pageNonce }, '*'); } catch (e) {}
+      pageLog('ADB-10', 'Canlı yayın adresi oynatıcıya gitmeden reklamsız akışla değiştirildi (sayfa seviyesi, slug=' + slug + ')');
+      startAdMonitor(slug, cur);
+      return jsonResponse(j, resp);
+    }).catch(function () { return resp; });
+  }
+
+  // v2.5.69: REKLAM ARASI İZLEYİCİ (sadece tespit, oynatmaya dokunmaz).
+  // Sayfa seviyesi değişimden sonra oynatıcı reklamsız akışta olduğu için
+  // reklam hiç gelmiyor ve "engellendi" diye bir olay da oluşmuyordu. Bu
+  // izleyici, Kick'in oynatıcıya vermek istediği REKLAMLI akışın sadece medya
+  // listesine (birkaç KB metin, video segmenti indirilmez) 10 sn'de bir bakar;
+  // reklam arası başlayınca ADB-12, bitince ADB-13 yazar ve sayaçları artırır.
+  // Reklamlı adresin token'ı ~10 dk geçerli; liste 403 verirse Kick'in kendi
+  // /playback isteği (yakalanan aynı istek) tekrarlanıp yeni adres alınır.
+  // Kanal değişince, ayar kapanınca veya 3 başarısız yenilemede durur.
+  var AD_DNA_RE = /[?&]dna=([^&#\s]+)/;
+  function detectAdMarkers(txt) {
+    if (typeof txt !== 'string' || txt.indexOf('#EXTINF') === -1) return '';
+    if (txt.indexOf('#EXT-X-CUE-OUT') !== -1) return 'CUE-OUT';
+    if (txt.indexOf('stitched-ad') !== -1) {
+      // v2.5.73: işaretin tam sınıf adını yaz (ör. live-video-net-stitched-ad-break-start)
+      var sm = /CLASS="([^"]*stitched-ad[^"]*)"/i.exec(txt);
+      return sm ? sm[1] : 'stitched-ad';
+    }
+    var lines = txt.split('\n'), liveLabel = 0, i, l, m, src;
+    for (i = 0; i < lines.length; i++) {
+      l = lines[i];
+      m = /X-NET-LIVE-VIDEO-STREAM-SOURCE="?([^",]+)/i.exec(l);
+      if (m && m[1].trim().toLowerCase() !== 'live') return 'kaynak=' + m[1].trim();
+      if (l.indexOf('#EXTINF:') === 0) {
+        var ci = l.indexOf(',');
+        src = (ci >= 0 ? l.slice(ci + 1) : '').trim().toLowerCase();
+        if (src === 'live') liveLabel++;
+        else if (src) return 'etiket=' + src;
+      } else if (l.indexOf('#EXT-X-PREFETCH:') === 0) {
+        // v2.5.70: IVS önceden yükleme satırı; adres etiketle aynı satırda
+        var pd = AD_DNA_RE.exec(l);
+        if (pd && pd[1].length >= 1200) return 'uzun-dna (prefetch)';
+        var pu2 = l.slice(16).trim();
+        if (/^https?:\/\//i.test(pu2)) {
+          try { if (!/\.live-video\.net$/i.test(new URL(pu2).hostname)) return 'yabanci-host (prefetch)=' + new URL(pu2).hostname; } catch (e) {}
+        }
+      } else if (l && l.charAt(0) !== '#') {
+        var d = AD_DNA_RE.exec(l);
+        if (d && d[1].length >= 1200) return 'uzun-dna';
+        if (/^https?:\/\//i.test(l)) {
+          try { if (!/\.live-video\.net$/i.test(new URL(l).hostname)) return 'yabanci-host=' + new URL(l).hostname; } catch (e) {}
+        }
+      }
+    }
+    return '';
+  }
+  // v2.5.70: TEŞHİS. Normal Kick canlı listesinde görülen etiketler ve
+  // DATERANGE sınıfları. Reklamlı akışta bunların dışında bir şey çıkarsa
+  // (TR'de farklı reklam işareti kullanılıyor olabilir) sayfa başına bir kez
+  // ADB-16 olarak yazılır ve listenin o kısmı örnek olarak saklanır.
+  var KNOWN_TAGS = { '#EXT-X-TWITCH-LIVE-SEQUENCE': 1, '#EXT-X-DISCONTINUITY': 1, '#EXTM3U': 1, '#EXT-X-VERSION': 1, '#EXT-X-TARGETDURATION': 1, '#EXT-X-MEDIA-SEQUENCE': 1, '#EXT-X-NET-LIVE-VIDEO-LIVE-SEQUENCE': 1, '#EXT-X-NET-LIVE-VIDEO-ELAPSED-SECS': 1, '#EXT-X-NET-LIVE-VIDEO-TOTAL-SECS': 1, '#EXT-X-DATERANGE': 1, '#EXT-X-PROGRAM-DATE-TIME': 1, '#EXT-X-PREFETCH': 1, '#EXTINF': 1 };
+  var KNOWN_CLASSES = { 'timestamp': 1, 'live-video-net-stream-source': 1, 'live-video-net-assignment': 1 }; // v2.5.72: assignment = sunucu ataması (SERVING-ID/NODE/CLUSTER), TR testinde doğrulandı, reklam değil
+  var diag = { polls: 0, ok: 0, errors: 0, refreshes: 0, lastPollAt: 0, lastOkAt: 0, lastError: '', startedAt: 0, seen: {}, findings: [], samples: [] };
+  function diagSample(txt, idx, why) {
+    try {
+      var lines = txt.split('\n');
+      var from = Math.max(0, idx - 6), to = Math.min(lines.length, idx + 10);
+      // v2.5.71: DATERANGE satırları teşhis için tam saklanır (öznitelik adları görünsün), segment adresleri kısaltılır
+      var snip = lines.slice(from, to).map(function (x) { var lim = x.indexOf('#EXT-X-DATERANGE') === 0 ? 2500 : 220; return x.length > lim ? x.slice(0, lim) + '…(' + x.length + ')' : x; }).join('\n');
+      diag.samples.push({ at: new Date().toISOString(), slug: adMon.slug, why: why, text: snip });
+      if (diag.samples.length > 5) diag.samples.shift();
+      window.__ka_ab_adMonSamples = diag.samples;
+    } catch (e) {}
+  }
+  // v2.5.74: biriktirme / isteğe bağlı gönderim için TEMİZLENMİŞ örnek:
+  // sadece '#' etiket satırları; tüm adresler <url>, 24+ karakterlik kimlik
+  // benzeri değerler <id> olur. Kanal adı, video adresi, token gönderilmez.
+  function sanitizeSample(txt, idx) {
+    try {
+      var lines = String(txt).split('\n');
+      var from = Math.max(0, (idx || 0) - 12), to = Math.min(lines.length, (idx || 0) + 20);
+      var out = [];
+      for (var i = from; i < to && out.length < 30; i++) {
+        var l = lines[i];
+        if (!l || l.charAt(0) !== '#') continue;
+        l = strictTagLine(l);
+        out.push(l.length > 400 ? l.slice(0, 400) + '…' : l);
+      }
+      return out.join('\n');
+    } catch (e) { return ''; }
+  }
+  // v2.5.74: SIKI temizlik - etiket adı ve öznitelik ADLARI kalır; değer
+  // sadece güvenli listedeki özniteliklerde (CLASS, süre, tarih, kaynak) ve
+  // kısa/sade ise korunur, diğer tüm değerler <v> olur. Adresler <url>.
+  var SAFE_ATTRS = { CLASS: 1, DURATION: 1, 'PLANNED-DURATION': 1, 'END-ON-NEXT': 1, 'X-NET-LIVE-VIDEO-STREAM-SOURCE': 1, 'START-DATE': 1, 'END-DATE': 1 };
+  function strictTagLine(l) {
+    l = String(l).replace(/https?:\/\/[^\s",]+/gi, '<url>');
+    var ci = l.indexOf(':');
+    if (ci < 0) return l.slice(0, 80);
+    var tag = l.slice(0, ci), rest = l.slice(ci + 1);
+    if (tag === '#EXTINF') { var m = /^([0-9.]+)\s*,?\s*(.{0,20})/.exec(rest); return '#EXTINF:' + (m ? m[1] + ',' + m[2].replace(/[^A-Za-z0-9 _.-]/g, '').trim() : '<v>'); }
+    if (rest.indexOf('=') === -1) return tag + ':' + (/^[A-Za-z0-9 _.:+-]{1,32}$/.test(rest) ? rest : '<v>');
+    var parts = rest.match(/[A-Z0-9-]+=("[^"]*"|[^,]*)/g) || [];
+    return tag + ':' + parts.map(function (kv) {
+      var eq = kv.indexOf('='), k = kv.slice(0, eq), v = kv.slice(eq + 1), raw = v.replace(/^"|"$/g, '');
+      var keep = SAFE_ATTRS[k] && /^[A-Za-z0-9 _.:+-]{1,64}$/.test(raw);
+      return k + '=' + (keep ? v : '<v>');
+    }).join(',');
+  }
+  function emitDiag(kind, marker, extra) {
+    try {
+      var m = { source: 'ka-ab-diag', kind: kind, marker: String(marker || '').slice(0, 120), n: pageNonce };
+      if (extra) for (var k in extra) m[k] = extra[k];
+      window.postMessage(m, '*');
+    } catch (e) {}
+  }
+  function firstLineIndex(txt, needle) {
+    try { var ls = txt.split('\n'); for (var i = 0; i < ls.length; i++) if (ls[i].indexOf(needle) !== -1) return i; } catch (e) {}
+    return 0;
+  }
+
+  function diagnosePlaylist(txt) {
+    try {
+      var lines = txt.split('\n');
+      for (var i = 0; i < lines.length; i++) {
+        var l = lines[i];
+        if (!l || l.charAt(0) !== '#') continue;
+        var ci = l.indexOf(':');
+        var tag = ci > 0 ? l.slice(0, ci) : l.trim();
+        var key = '', label = '';
+        if (!KNOWN_TAGS[tag]) { key = 'tag:' + tag; label = 'yeni etiket ' + tag; }
+        else if (tag === '#EXT-X-DATERANGE') {
+          var cm = /CLASS="([^"]*)"/i.exec(l);
+          var cls = cm ? cm[1] : '(sinifsiz)';
+          // v2.5.73: TR'de 03.10'da doğrulanan reklam sınıfları (live-video-net-stitched-ad-break-start / -creative-start ...) bilinen reklam işareti; ADB-12 zaten yazıyor
+          if (!KNOWN_CLASSES[cls] && cls.indexOf('stitched-ad') === -1) { key = 'class:' + cls; label = 'yeni DATERANGE sinifi ' + cls; }
+        }
+        if (key && !diag.seen[key]) {
+          diag.seen[key] = 1;
+          diag.findings.push({ at: new Date().toISOString(), slug: adMon.slug, what: label });
+          diagSample(txt, i, label);
+          emitDiag('marker', key, { sample: sanitizeSample(txt, i) });
+          pageLog('ADB-16', 'TEŞHİS: reklamlı akışta ' + label + ' görüldü (slug=' + adMon.slug + '). Örnek: window.__ka_ab_adMonSamples', 'warn');
+        }
+      }
+    } catch (e) {}
+  }
+  function adMonStatus() {
+    return {
+      calisiyor: !!adMon.timer, kanal: adMon.slug, reklamArasinda: adMon.inAd,
+      kontrol: diag.polls, basarili: diag.ok, hata: diag.errors, adresYenileme: diag.refreshes,
+      sonKontrol: diag.lastPollAt ? new Date(diag.lastPollAt).toLocaleTimeString() : '-',
+      sonBasarili: diag.lastOkAt ? new Date(diag.lastOkAt).toLocaleTimeString() : '-',
+      sonHata: diag.lastError || '-',
+      yakalananReklamArasi: window.__ka_ab_adBreaks || 0,
+      yeniIsaretler: diag.findings.slice()
+    };
+  }
+  try { window.__ka_ab_adMonStatus = adMonStatus; } catch (e) {}
+
+  var lastPlaybackReq = null; // { url, init } — Kick'in kendi /playback isteği
+  var adMon = { slug: '', master: '', media: '', timer: null, inAd: false, adStart: 0, reason: '', fails: 0, refreshFails: 0, lastRefresh: 0, busy: false };
+  function stopAdMonitor(why) {
+    if (adMon.timer) { clearInterval(adMon.timer); adMon.timer = null; }
+    if (adMon.slug && why) pageLog('ADB-14', 'Reklam izleyici durdu (' + why + ')');
+    adMon.slug = ''; adMon.master = ''; adMon.media = ''; adMon.inAd = false; adMon.busy = false;
+  }
+  function startAdMonitor(slug, adsUrl) {
+    try {
+      if (!slug || !adsUrl || typeof origPageFetch !== 'function') return;
+      var same = adMon.slug === slug && adMon.timer;
+      adMon.master = adsUrl; adMon.media = ''; adMon.fails = 0; adMon.refreshFails = 0;
+      if (same) return; // izleyici zaten çalışıyor, sadece adres tazelendi
+      stopAdMonitor('');
+      adMon.slug = slug; adMon.master = adsUrl; adMon.inAd = false;
+      adMon.timer = setInterval(adMonTick, 10000);
+      pageLog('ADB-14', 'Reklam izleyici başladı (slug=' + slug + '): Kick\'in reklamlı akışı 10 sn\'de bir kontrol ediliyor, oynatıcı reklamsız akışta');
+      setTimeout(adMonTick, 1500);
+    } catch (e) {}
+  }
+  function pickMediaUrl(masterTxt, base) {
+    var best = '', bestBw = Infinity, lines = masterTxt.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var m = /^#EXT-X-STREAM-INF:.*?BANDWIDTH=(\d+)/i.exec(lines[i]);
+      if (!m) continue;
+      var u = (lines[i + 1] || '').trim();
+      if (!u || u.charAt(0) === '#') continue;
+      var bw = Number(m[1]);
+      if (bw < bestBw) { bestBw = bw; try { best = new URL(u, base).href; } catch (e) {} }
+    }
+    return best;
+  }
+  function refreshAdsUrl() {
+    if (!lastPlaybackReq || Date.now() - adMon.lastRefresh < 60000) return Promise.resolve(false);
+    adMon.lastRefresh = Date.now();
+    return origPageFetch.call(window, lastPlaybackReq.url, lastPlaybackReq.init)
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        var pu = j && j.playback_url;
+        var u = typeof pu === 'string' ? pu : (pu && typeof pu.live === 'string' ? pu.live : '');
+        if (!u || (adMon.master && !sameChannel(u, adMon.master))) return false;
+        adMon.master = u; adMon.media = '';
+        return true;
+      }).catch(function () { return false; });
+  }
+  function adMonTick() {
+    if (adMon.busy || !adMon.slug) return;
+    if (!pageEnabled || liveSlug() !== adMon.slug) { stopAdMonitor(!pageEnabled ? 'reklam engelleme kapatıldı' : 'kanal değişti'); return; }
+    adMon.busy = true;
+    var forSlug = adMon.slug;
+    diag.polls++; diag.lastPollAt = Date.now();
+    // v2.5.70: ~10 dakikada bir özet (ADB-15) - izleyicinin gerçekten çalıştığının kanıtı
+    if (diag.polls % 60 === 0) pageLog('ADB-15', 'Reklam izleyici özeti (slug=' + forSlug + '): ' + diag.polls + ' kontrol, ' + diag.ok + ' başarılı, ' + diag.errors + ' hata, ' + diag.refreshes + ' adres yenileme, yakalanan reklam arası: ' + (window.__ka_ab_adBreaks || 0) + ', yeni işaret: ' + diag.findings.length + (diag.lastError ? ', son hata: ' + diag.lastError : ''));
+    var getMedia = adMon.media ? Promise.resolve(adMon.media) : origPageFetch.call(window, adMon.master, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('master ' + r.status); return r.text(); })
+      .then(function (t) { var u = pickMediaUrl(t, adMon.master); if (!u) throw new Error('varyant yok'); adMon.media = u; return u; });
+    getMedia.then(function (mu) {
+      return origPageFetch.call(window, mu, { cache: 'no-store' }).then(function (r) {
+        if (!r.ok) throw new Error('liste ' + r.status);
+        return r.text();
+      });
+    }).then(function (txt) {
+      if (adMon.slug !== forSlug) return;
+      adMon.fails = 0; adMon.refreshFails = 0;
+      diag.ok++; diag.lastOkAt = Date.now();
+      diagnosePlaylist(txt);
+      var reason = detectAdMarkers(txt);
+      if (reason && !adMon.inAd) {
+        adMon.inAd = true; adMon.adStart = Date.now(); adMon.reason = reason;
+        diagSample(txt, Math.floor(txt.split('\n').length / 2), 'reklam: ' + reason);
+        emitDiag('adbreak', reason, { sample: sanitizeSample(txt, firstLineIndex(txt, reason.indexOf('-') > 0 ? reason : 'EXT-X-CUE-OUT')) });
+        try { window.__ka_ab_adBreaks = (window.__ka_ab_adBreaks || 0) + 1; } catch (e) {}
+        try { window.__ka_ab_adsBlocked = (window.__ka_ab_adsBlocked || 0) + 1; } catch (e) {}
+        try { window.postMessage({ source: 'ka-ab', type: 'adDetected', kind: 'video', n: pageNonce }, '*'); } catch (e) {}
+        pageLog('ADB-12', 'REKLAM GELDİ, ENGELLENDİ: Kick reklamlı akışta reklam arası başlattı (' + reason + '), oynatıcı reklamsız akışta kaldı (slug=' + forSlug + ', bugüne kadar: ' + window.__ka_ab_adBreaks + ')', 'warn');
+      } else if (!reason && adMon.inAd) {
+        adMon.inAd = false;
+        var durSec = Math.round((Date.now() - adMon.adStart) / 1000);
+        pageLog('ADB-13', 'Reklam arası bitti (yaklaşık ' + durSec + ' sn sürdü, işaret: ' + adMon.reason + ')');
+        emitDiag('adbreak-end', adMon.reason, { durationSec: durSec });
+      }
+    }).catch(function (err) {
+      if (adMon.slug !== forSlug) return;
+      diag.errors++; diag.lastError = String(err && err.message || err).slice(0, 80) + ' @' + new Date().toLocaleTimeString();
+      adMon.fails++;
+      adMon.media = '';
+      if (adMon.fails < 2) return;
+      return refreshAdsUrl().then(function (ok) {
+        if (ok) { adMon.fails = 0; diag.refreshes++; return; }
+        adMon.refreshFails++;
+        if (adMon.refreshFails >= 3) stopAdMonitor('reklamlı akış adresi yenilenemedi: ' + String(err && err.message || err).slice(0, 60));
+      });
+    }).then(function () { adMon.busy = false; }, function () { adMon.busy = false; });
+  }
+
+  // v2.5.68: ClearKick 1.0.3'ten uyarlandı. Yeni VOD akışında oynatıcı
+  // /api/v1/stream/vod_session ucundan bir MediaTailor manifestUrl'i alıyor:
+  //   https://<mt>/v1/master/<imza>/<yapılandırma>/<VARLIK-YOLU>.m3u8
+  // Aynı varlık reklamsız olarak https://stream.kick.com/<VARLIK-YOLU>
+  // adresinde duruyor. Türetilen adres önce çekilip gerçek bir HLS manifesti
+  // olduğu doğrulanıyor; doğrulanamazsa yanıta dokunulmuyor.
+  var VOD_SESSION_RE = /\/api\/v\d+\/stream\/vod_session/i;
+  function vodOriginFromMediaTailor(mtUrl) {
+    try {
+      var m = /^https?:\/\/[^/]+\/v1\/master\/[0-9a-f]+\/[^/]+\/(.+\.m3u8)$/i.exec(String(mtUrl).split('?')[0]);
+      return m ? 'https://stream.kick.com/' + m[1] : '';
+    } catch (e) { return ''; }
+  }
+  function handleVodSession(p) {
+    return p.then(function (resp) {
+      try {
+        return resp.clone().json().then(function (j) {
+          var org = j && typeof j.manifestUrl === 'string' ? vodOriginFromMediaTailor(j.manifestUrl) : '';
+          if (!org) return resp;
+          return withTimeout(origPageFetch.call(window, org).then(function (probe) {
+            return probe.ok ? probe.text() : null;
+          }), 2500).then(function (t) {
+            if (typeof t !== 'string' || t.indexOf('#EXTM3U') !== 0) return resp;
+            j.manifestUrl = org;
+            vodUrlBildir(org);
+            try { window.__ka_ab_adsBlocked = (window.__ka_ab_adsBlocked || 0) + 1; } catch (e) {}
+            try { window.postMessage({ source: 'ka-ab', type: 'adDetected', kind: 'video', n: pageNonce }, '*'); } catch (e) {}
+            pageLog('ADB-04', 'Geçmiş yayın (VOD) MediaTailor oturumu reklamsız kaynakla değiştirildi');
+            return jsonResponse(j, resp);
+          }).catch(function () { return resp; });
+        }).catch(function () { return resp; });
+      } catch (e) { return resp; }
+    }).catch(function (e) { throw e; });
+  }
+
   try {
     var origPageFetch = window.fetch;
     if (typeof origPageFetch === 'function') {
@@ -224,7 +586,18 @@
         var url = '';
         try { url = typeof input === 'string' ? input : (input && input.url) || ''; } catch (e) {}
         var p = origPageFetch.apply(this, arguments);
-        if (!pageVod || !url || !PLAYBACK_PAGE_RE.test(url)) return p;
+        if (!url) return p;
+        try {
+          if (VOD_SESSION_RE.test(url)) return pageVod ? handleVodSession(p) : p;
+        } catch (e) { return p; }
+        if (!PLAYBACK_PAGE_RE.test(url)) return p;
+        var lSlug = '';
+        try { lSlug = (pageEnabled && !isVodUrlPage()) ? liveSlug() : ''; } catch (e) { lSlug = ''; }
+        if (!pageVod && !lSlug) return p;
+        // v2.5.69: reklam izleyicinin adres yenilemesi için Kick'in isteğini sakla
+        if (lSlug && typeof input === 'string') {
+          try { lastPlaybackReq = { url: url, init: init ? { method: init.method, headers: init.headers, body: typeof init.body === 'string' ? init.body : undefined, credentials: init.credentials } : undefined }; } catch (e) {}
+        }
         // v2.5.0: PureKick v10.15'in aynı sorununa karşı ekledikleri savunmadan
         // esinlenildi. Ham istek (p) ağ hatasıyla reddederse, bizim eklediğimiz
         // .then() zinciri bu reddi hiç yakalamadan çağırana (Kick'in kendi
@@ -237,15 +610,18 @@
           try {
             return resp.clone().json().then(function (j) {
               var vs = j && j.video_session, pu = j && j.playback_url;
-              var touched = neutralizeAds(j);
               var isVod = vs && String(vs.video_stream_status || '').toLowerCase() === 'vod';
+              // v2.5.68: canlı kanal sayfasında canlı yanıt → sayfa seviyesi değişim
+              if (!isVod && lSlug) return handleLivePlayback(j, resp, lSlug);
+              if (!pageVod) return resp; // sadece canlı açık, bu yanıt VOD: eski davranış (dokunma)
+              var touched = neutralizeAds(j);
 
               // v2.5.3: Mo'Kick'in kenar durumu — VOD sayfasındayız ama akış
               // hâlâ CANLI (henüz VOD'a dönüşmemiş). Reklamsız kaynak aramanın
               // bir anlamı yok, sadece izleme oturumunu temizleyip dokunmadan geç.
               if (!isVod && pu && isVodUrlPage() && pu.vod_session) {
                 pu.vod_session = '';
-                try { console.log('[KickAlert][AdBlock] VOD sayfasinda ama akis hala canli, sadece oturum temizlendi'); } catch (e) {}
+                kaClog('ADB-04', 'VOD sayfasinda ama akis hala canli, sadece oturum temizlendi');
                 return jsonResponse(j, resp);
               }
 
@@ -260,7 +636,7 @@
               var sourcePromise = derivedFast
                 ? Promise.resolve(derivedFast)
                 : cleanVodSource(vs, (slugFromPayload(j) || slugNow()), origPageFetch);
-              if (derivedFast) { try { console.log('[KickAlert][AdBlock] VOD kaynagi thumbnail\'den turetildi (hizli yol):', derivedFast); } catch (e) {} }
+              if (derivedFast) { kaClog('ADB-04', 'VOD kaynagi thumbnail\'den turetildi (hizli yol): ' + derivedFast); }
 
               return sourcePromise
                 .then(function (result) {
@@ -269,7 +645,7 @@
                     var timer = setTimeout(function () {
                       if (settled) return;
                       settled = true;
-                      try { console.log('[KickAlert][AdBlock] VOD temiz kaynak arama zaman asimina ugradi (2.5sn), orijinal kullanildi'); } catch (e) {}
+                      kaClog('ADB-04', 'VOD temiz kaynak arama zaman asimina ugradi (2.5sn), orijinal kullanildi');
                       resolve(null);
                     }, 2500); // v2.5.2: Mo'Kick'in swapBudgetMs'inden esinlenildi — arama asla akışı süresiz bekletmesin
                     Promise.resolve(result).then(function (v) {
@@ -281,13 +657,13 @@
                   });
                 })
                 .then(function (clean) {
-                if (!clean) { try { console.log('[KickAlert][AdBlock] VOD temiz kaynak bulunamadi, dokunulmadi'); } catch (e) {} return touched ? jsonResponse(j, resp) : resp; }
+                if (!clean) { kaClog('ADB-04', 'VOD temiz kaynak bulunamadi, dokunulmadi'); return touched ? jsonResponse(j, resp) : resp; }
                 pu.vod = clean;
                 vodUrlBildir(clean);
                 pu.vod_session = '';
                 try { window.__ka_ab_adsBlocked = (window.__ka_ab_adsBlocked || 0) + 1; } catch (e) {}
                 try { window.postMessage({ source: 'ka-ab', type: 'adDetected', kind: 'video', n: pageNonce }, '*'); } catch (e) {}
-                try { console.log('[KickAlert][AdBlock] VOD reklami atlandi (temiz kaynak kullanildi)'); } catch (e) {}
+                kaClog('ADB-04', 'VOD reklami atlandi (temiz kaynak kullanildi)');
                 try { window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-04', text: 'Geçmiş yayın (VOD) reklamı atlandı, temiz kaynak kullanıldı' }, '*'); } catch (e) {}
                 return jsonResponse(j, resp);
               }).catch(function () { return resp; });
@@ -327,7 +703,7 @@
     function post(m) { try { if (bc) { m._n = KA_AB_NONCE; bc.postMessage(m); } } catch (e) {} }
     function log() {
       var args = [].slice.call(arguments);
-      try { console.log.apply(console, ['[KickAlert][AdBlock]'].concat(args)); } catch (e) {}
+      try { console.log('%c KickAlert \u00b7 ADB-06 (worker) %c ' + args.join(' '), 'background:#5e35b1;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
       // v2.3.20: Worker'ın kendi metin logları da sayfa katmanına (ve oradan
       // background.js'e) iletilsin — 3 önceki event'in (ADB-01/02/03) yanı sıra,
       // "master prefetch önbellekten", "worker kancası kuruldu" gibi metin
@@ -400,6 +776,20 @@
         }
         return lines.join('\n');
       } catch (e) { return text; }
+    }
+
+    // v2.5.68: IVS playback token'ı (JWT) aws:ads-opt-out=true taşıyor mu?
+    function isOptOutUrl(u) {
+      try {
+        var m = /[?&]token=([^&#]+)/.exec(String(u));
+        if (!m) return false;
+        var part = decodeURIComponent(m[1]).split('.')[1];
+        if (!part) return false;
+        part = part.replace(/-/g, '+').replace(/_/g, '/');
+        while (part.length % 4) part += '=';
+        var payload = JSON.parse(atob(part));
+        return !!payload && payload['aws:ads-opt-out'] === true;
+      } catch (e) { return false; }
     }
 
     function neutralizePlayback(json) {
@@ -659,6 +1049,10 @@
             return resp.clone().text().then(function (txt) {
               if (txt.indexOf('#EXT-X-STREAM-INF') !== -1) {
                 if (VOD_MASTER_RE.test(url)) return resp;
+                // v2.5.68: sayfa seviyesi değişim tuttuysa oynatıcı zaten
+                // reklamsız (ads-opt-out) adresi istiyor; tekrar değiştirip
+                // sayacı iki kez artırmaya gerek yok.
+                if (isOptOutUrl(url)) { log('master zaten reklamsiz adresten (sayfa seviyesi), dokunulmadi'); return resp; }
                 if (masterCache.text && masterCache.slug === KA_AB_SLUG && (Date.now() - masterCache.ts) < 30000) {
                   post({ kaAbSwapped: 1 });
                   log('master prefetch onbellekten (aninda)');
@@ -811,14 +1205,14 @@
             .replace('"__KA_AB_NONCE__"', JSON.stringify(pageNonce || ''));
           var blob = new Blob([shim + src], { type: 'text/javascript' });
           window.__ka_ab_wrapCount = (window.__ka_ab_wrapCount || 0) + 1;
-          try { console.log('[KickAlert][AdBlock] IVS worker sarmalandi, slug=' + currentSlug()); } catch (e) {}
+          kaClog('ADB-05', 'IVS worker sarmalandi, slug=' + currentSlug());
           try { window.postMessage({ source: 'ka-ab-log', level: 'info', code: 'ADB-05', text: 'IVS oynatıcı worker\'ı sarmalandı (slug=' + currentSlug() + ')' }, '*'); } catch (e) {}
           return new OrigWorker(URL.createObjectURL(blob), options);
         }
-        try { console.log('[KickAlert][AdBlock] worker script indirilemedi, sarmalanmadan gecildi'); } catch (e) {}
+        kaClog('ADB-05', 'worker script indirilemedi, sarmalanmadan gecildi');
       }
     } catch (e) {
-      try { console.log('[KickAlert][AdBlock] wrap hatasi, passthrough:', String(e).slice(0, 100)); } catch (er) {}
+      kaClog('ADB-05', 'wrap hatasi, passthrough: ' + String(e).slice(0, 100));
     }
     return new OrigWorker(scriptURL, options);
   }
@@ -861,7 +1255,7 @@
     });
     var lastSlug = '';
     function pushSlug() {
-      try { var s = (window.location.pathname.split('/').filter(Boolean)[0] || ''); if (s && s !== lastSlug) { lastSlug = s; bc.postMessage({ kaAbSlug: s, _n: pageNonce }); } } catch (er) {}
+      try { var s = (window.location.pathname.split('/').filter(Boolean)[0] || ''); if (s && s !== lastSlug) { lastSlug = s; bc.postMessage({ kaAbSlug: s, _n: pageNonce }); primeLiveAdFree(); } } catch (er) {}
     }
     pushSlug();
     setInterval(pushSlug, 2000);

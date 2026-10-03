@@ -158,7 +158,7 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 
 ## Privacy
 
-KickAlert does not collect, transmit, or store any personal data externally. It communicates only with `kick.com` and Kick's real-time WebSocket service. All data stays in your browser. See [Privacy Policy](https://raw.githubusercontent.com/segelferd/kick-alert/main/privacy-policy.md).
+KickAlert does not collect, transmit, or store any personal data externally. It communicates only with `kick.com` and Kick's real-time WebSocket service, plus, only if you turn on the off-by-default *Share ad diagnostics* option, a technical ad diagnostics summary without personal data sent to the developer's Google Apps Script. Everything else stays in your browser. See [Privacy Policy](https://raw.githubusercontent.com/segelferd/kick-alert/main/privacy-policy.md).
 
 ## Support
 

@@ -7,7 +7,7 @@
 
 // Chrome uses service_worker (needs importScripts), Firefox uses background.scripts (auto-loaded)
 if (typeof importScripts === 'function') {
-  importScripts('./storage.js', './kickapi.js', './utils.js', './pusher.js');
+  importScripts('./storage.js', './kickapi.js', './utils.js', './pusher.js', './ad-diag.js');
 }
 
 // v2.5.65: Firefox tespiti. Chrome 148'den beri eklentilerde `browser` ad alanı
@@ -550,7 +550,8 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   const dndMuteSound = dndActive && await Storage.getDndMuteSound();
   const dndMuteAutolaunch = dndActive && await Storage.getDndMuteAutolaunch();
   const soundMode = await Storage.getSoundMode();
-  const chSoundPref = await Storage.getChannelSoundMode(slug);
+  const chModeInfo = await Storage.getChannelSoundModeInfo(slug);
+  const chSoundPref = chModeInfo.mode;
   KLog.debug('NOTIF-50', `${slug} ayarlar: showNotif=${showNotif} suspended=${suspended} dnd=${dndActive} chSoundPref=${chSoundPref}`);
 
   // ── NOTIF-51: Bildirim gecikmesi (kullanıcı ayarı, opsiyonel) ──
@@ -594,7 +595,17 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   // slug liveSlugs'ta kilitli kalır → bildirim GİTMEDİ → kalıcı kayıp.
   // Hata olursa rollback yapıp sonraki event'in tekrar denemesine izin veriyoruz.
   try {
-    if (chSoundPref !== 'muted' && pusherFilter.pass) {
+    // v2.5.74: varsayılan (açıkça seçilmemiş) 'Bildirim yok' sadece bildirim ve sesi susturur;
+    // kullanıcının bu kanal için açtığı otomatik açma çalışmaya devam eder.
+    const chMuteDefault = chSoundPref === 'muted' && !chModeInfo.explicit;
+    if (chMuteDefault && pusherFilter.pass) {
+      if (!suspended && !dndMuteAutolaunch && await shouldAutoOpen(ch)) {
+        const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: true });
+        KLog.info('TAB-70', `${slug} → SEKME AÇILDI (varsayılan bildirim kapalı, otomatik açma açık, tabId=${tab.id})`);
+      } else {
+        KLog.debug('NOTIF-54', `${slug} → bildirim yok (kanal varsayılanı), sadece geçmiş`);
+      }
+    } else if (chSoundPref !== 'muted' && pusherFilter.pass) {
       // NOTIF-54: Bildirim
       if (showNotif && !dndMuteNotif) {
         const isSilentNotif = soundMode === 'extension' || chSoundPref === 'silent';
@@ -896,7 +907,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 chrome.storage.onChanged.addListener(async (changes, area) => {
   if (area !== 'local') return;
   // Skip internal keys
-  const internalKeys = ['_liveSlugs', '_notifiedLives', '_lastCheckDone'];
+  const internalKeys = ['_liveSlugs', '_notifiedLives', '_lastCheckDone', '_adDiag']; // v2.5.74: teşhis deposu
   const changedKeys = Object.keys(changes);
   if (changedKeys.every(k => internalKeys.includes(k))) return;
 
@@ -1645,10 +1656,19 @@ async function _checkChannelsInner() {
     }
 
     // Channel-level sound preference: main / sub / silent / muted
-    const chSoundPref = await Storage.getChannelSoundMode(ch.channelSlug);
+    const chModeInfo = await Storage.getChannelSoundModeInfo(ch.channelSlug);
+    const chSoundPref = chModeInfo.mode;
 
     // Muted = no notification, no sound, only history
-    if (chSoundPref === 'muted') continue;
+    // v2.5.74: varsayılandan gelen 'Bildirim yok' kanalda açıkça açılmış otomatik açmayı engellemez
+    if (chSoundPref === 'muted') {
+      if (!chModeInfo.explicit && !suspended && !dndMuteAutolaunch && await shouldAutoOpen(ch)) {
+        const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: !_autoLaunchTabOpened });
+        KLog.info('TAB-71', `${ch.channelSlug} → polling SEKME AÇILDI (varsayılan bildirim kapalı, otomatik açma açık, tabId=${tab.id})`);
+        _autoLaunchTabOpened = true;
+      }
+      continue;
+    }
 
     // POLL-40: Send notification (if enabled and not DND-muted)
     if (showNotif && !dndMuteNotif) {
@@ -2107,8 +2127,9 @@ async function checkChannelMetaChanges(channels, notifiedLives, ctx) {
       KLog.debug('CHG-10', `${ch.channelSlug} değişim var ama bekleme süresinde`);
       continue;
     }
-    const soundPref = await Storage.getChannelSoundMode(ch.channelSlug);
-    if (soundPref === 'muted' || !ctx.showNotif || ctx.dndMuteNotif) continue;
+    // v2.5.74: kanal olayları kanal bazlı açıkça açılır; sadece kanal zilinden seçilen 'Bildirim yok' susturur
+    const soundInfo = await Storage.getChannelSoundModeInfo(ch.channelSlug);
+    if ((soundInfo.mode === 'muted' && soundInfo.explicit) || !ctx.showNotif || ctx.dndMuteNotif) continue;
     await Utils.ensureI18n();
     const title = catChanged
       ? (Utils.i18n('notifCategoryChanged', [ch.userUsername]) || `${ch.userUsername} switched category`)
@@ -2196,8 +2217,9 @@ async function processStreamEndCandidates(channels, nowLive, notifiedLives, ctx)
       timestamp: new Date().toISOString(),
       ...(lengthText ? { length: lengthText } : {}),
     });
-    const soundPref = await Storage.getChannelSoundMode(slug);
-    if (soundPref === 'muted' || !ctx.showNotif || ctx.dndMuteNotif) continue;
+    // v2.5.74: bkz. checkChannelMetaChanges, sadece açık 'Bildirim yok' susturur
+    const soundInfo = await Storage.getChannelSoundModeInfo(slug);
+    if ((soundInfo.mode === 'muted' && soundInfo.explicit) || !ctx.showNotif || ctx.dndMuteNotif) continue;
     await Utils.ensureI18n();
     const name = ch.userUsername || c.username || slug;
     const title = Utils.i18n('notifStreamEnded', [name]) || `${name} ended the stream`;
@@ -2305,8 +2327,9 @@ async function processRaidEvent(d) {
   const showNotif = await Storage.getShowNotification();
   const dndActive = await Storage.isDndActive();
   const dndMuteNotif = dndActive && await Storage.getDndMuteNotif();
-  const soundPref = await Storage.getChannelSoundMode(slug);
-  if (!showNotif || dndMuteNotif || soundPref === 'muted') return;
+  // v2.5.74: sadece kanal zilinden açıkça seçilen 'Bildirim yok' raid bildirimini susturur
+  const soundInfo = await Storage.getChannelSoundModeInfo(slug);
+  if (!showNotif || dndMuteNotif || (soundInfo.mode === 'muted' && soundInfo.explicit)) return;
   const soundMode = await Storage.getSoundMode();
   await Utils.ensureI18n();
   const name = ch.userUsername || slug;
@@ -2560,6 +2583,24 @@ async function injectContentScriptToOpenKickTabs() {
 
 chrome.runtime.onInstalled.addListener(async (details) => {
   await chrome.storage.local.set({ _sessionStart: Date.now() });
+  // v2.5.74: varsayılan kanal bildirim modu. YENİ kurulumda kanallar
+  // bildirim göndermez (kullanıcı istediğini açar). GÜNCELLEMEDE mevcut
+  // davranış korunur ('sessiz bildirim'); daha önce ayarlanmışsa dokunulmaz.
+  try {
+    const cur = await chrome.storage.local.get(['defaultChannelMode', '_installDefaultMode']);
+    if (details.reason === 'install') {
+      const upd = {};
+      if (!cur.defaultChannelMode) upd.defaultChannelMode = 'muted';
+      if (!cur._installDefaultMode) upd._installDefaultMode = 'muted';
+      if (Object.keys(upd).length) await chrome.storage.local.set(upd);
+      KLog.info('INST-01', 'Yeni kurulum: kanal bildirimleri varsayılan kapalı');
+    } else if (details.reason === 'update') {
+      const upd = {};
+      if (!cur.defaultChannelMode) upd.defaultChannelMode = 'silent';
+      if (!cur._installDefaultMode) upd._installDefaultMode = 'silent';
+      if (Object.keys(upd).length) await chrome.storage.local.set(upd);
+    }
+  } catch (e) { console.warn('[KickAlert] varsayılan kanal modu yazılamadı:', e && e.message); }
   // Reset state only on fresh install or extension update, not on every browser start
   if (details.reason === 'install' || details.reason === 'update') {
     await resetPersistedState();
@@ -2636,6 +2677,20 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   // adblock-worker-hook.js (MAIN dünya + IVS worker thread'i) kendi konsoluna
   // yazan logları content.js üzerinden buraya iletiyor. Tek amaç: test
   // panelindeki Aktivite Logu'nda TÜM eklenti aktivitesini tek yerde görmek.
+  // v2.5.74: reklam teşhisleri (biriktirme + isteğe bağlı gönderim) - src/ad-diag.js
+  if (msg.type === 'AD_DIAG') {
+    if (typeof AdDiag !== 'undefined') AdDiag.record(msg);
+    return false;
+  }
+  if (msg.type === 'GET_AD_DIAG' || msg.type === 'CLEAR_AD_DIAG' || msg.type === 'SEND_AD_DIAG_NOW' || msg.type === 'SET_AD_DIAG_ENDPOINT') {
+    if (typeof AdDiag === 'undefined') { respond({ ok: false, reason: 'unavailable' }); return false; }
+    const job = msg.type === 'GET_AD_DIAG' ? AdDiag.status()
+      : msg.type === 'CLEAR_AD_DIAG' ? AdDiag.clear()
+      : msg.type === 'SEND_AD_DIAG_NOW' ? AdDiag.send('manual')
+      : AdDiag.setEndpoint(msg.url);
+    job.then(r => respond(r)).catch(e => respond({ ok: false, reason: String(e && e.message || e) }));
+    return true;
+  }
   if (msg.type === 'AD_BLOCK_LOG') {
     const level = msg.level === 'warn' ? 'warn' : 'info';
     KLog[level](msg.code || 'ADB-00', msg.text || '');

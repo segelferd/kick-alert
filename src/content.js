@@ -169,13 +169,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     // v2.5.14: TEŞHİS LOGU — chrome.storage.local'dan GERÇEKTE ne okunduğunu
     // ve localStorage'a ne yazıldığını görmemiz için.
-    try { console.log('[KickAlert][AdBlock][TEŞHİS]', 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0')); } catch (e) {}
+    try { console.log('%c KickAlert \u00b7 ADB-09 %c TEŞHİS: content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0'), 'background:#616161;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
     kaSend({
       type: 'AD_BLOCK_LOG', level: 'info', code: 'ADB-09',
       text: 'content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0'),
     });
 
     const nonce = (crypto?.randomUUID?.() || String(Date.now()) + Math.random());
+    kaAbNonce = nonce; // v2.5.74: teşhis köprüsü aynı jetonu doğrular
     window.postMessage({
       source: 'ka-ab-cfg',
       n: nonce,
@@ -219,6 +220,31 @@ window.addEventListener('message', function kaAdLogBridge(e) {
       text: d.text,
     }); // SW uykuda olabilir, sorun değil — bu log kaybolur ama kritik değil
   }
+});
+
+// ─── 6) v2.5.74: Reklam teşhis köprüsü ───
+// adblock-worker-hook.js (MAIN) yeni/tanımsız akış işaretlerini ve reklam
+// aralarını 'ka-ab-diag' olarak yayınlar; burada jeton ve boyut doğrulanıp
+// arka plana (AD_DIAG) iletilir, arka plan _adDiag deposunda biriktirir.
+// Sayfa başına en fazla 40 mesaj (bozuk/döngüsel bir durumda taşmasın).
+// var: eklenti güncellemesinde betik aynı dünyaya yeniden enjekte edilir; let/const 'already declared' hatası verirdi
+var kaAbNonce = null;
+var kaDiagCount = 0;
+window.addEventListener('message', function kaAdDiagBridge(e) {
+  if (e.source !== window) return;
+  const d = e.data;
+  if (!d || d.source !== 'ka-ab-diag') return;
+  if (!kaContextAlive()) { window.removeEventListener('message', kaAdDiagBridge); return; }
+  if (!kaAbNonce || d.n !== kaAbNonce) return;
+  if (++kaDiagCount > 40) return;
+  const kind = ['marker', 'adbreak', 'adbreak-end'].includes(d.kind) ? d.kind : null;
+  if (!kind || typeof d.marker !== 'string' || !d.marker) return;
+  kaSend({
+    type: 'AD_DIAG', kind,
+    marker: d.marker.slice(0, 120),
+    sample: typeof d.sample === 'string' ? d.sample.slice(0, 6000) : '',
+    durationSec: Number.isFinite(d.durationSec) ? Math.max(0, Math.min(3600, Math.round(d.durationSec))) : null,
+  });
 });
 
 // ─── 3) v2.5.55: İzleme süresi (sadece bu cihazda) ───

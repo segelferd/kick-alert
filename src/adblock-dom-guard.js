@@ -50,7 +50,7 @@
   var observer = null;
 
   function log(text, level) {
-    try { console.log('[KickAlert][AdBlock]', text); } catch (e) {}
+    try { console.log('%c KickAlert \u00b7 ADB-08 %c ' + text, 'background:#6d4c41;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
     try {
       window.postMessage({ source: 'ka-ab-log', level: level || 'info', code: 'ADB-08', text: text }, '*');
     } catch (e) {}

@@ -645,7 +645,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Yeni: kategori değişimi, yayın bitti ve raid için kanal bazlı bildirimler ve izleme süresi. Kanal kartındaki ayar butonunu kullan, seslerini <a id=\"whatsnew-settings-link\">Ayarlar</a>'dan seç."
+    "message": "Yeni: canlı yayın reklam engeli Kick'in değişikliğinden sonra yeniden çalışıyor; varsayılan kanal bildirimini <a id=\"whatsnew-settings-link\">Ayarlar</a>'dan seçebilir ya da tüm kanallara uygulayabilirsin."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -672,22 +672,22 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.67 — Kanal bazlı bildirimler, izleme süresi ve düzeltmeler"
+    "message": "v2.5.75 — Reklam engeli yeniden çalışıyor, daha sakin başlangıç"
   },
   "releaseHistoryV0Body": {
-    "message": "• Yeni kanal bildirimleri penceresi (kanal kartındaki ayar butonu): kanal kategori veya başlık değiştirince, yayın bitince (ne kadar sürdüğüyle) ve kanala raid gelince (kimden ve kaç izleyiciyle) bildirim al. Hepsi varsayılan olarak kapalı\n• Kanal filtresi: sadece seçtiğin kategorilerde veya başlıkta senin kelimelerinden biri geçtiğinde bildir\n• Bu bildirimlerin kendi, daha kısık sesi var (Yumuşak damla, Hafif çan, Tık); istersen Windows sesi veya sessiz, ayrı ses seviyesiyle\n• İzleme süresi: Geçmiş sekmesi son 7 günde ne kadar izlediğini ve en çok izlediğin kanalları gösterir (sadece bu cihazda saklanır)\n• Kanal önizleme görselinin üzerinde durunca büyük hali açılır; kart butonları artık hep sığıyor\n• Güncel Chrome'da (148+) düzeltildi: \"Eklenti sesleri\" modunda bildirimler Windows sesini de çalıyordu ve Aç / Sustur butonları kaybolmuştu\n• Bulut Senkronu artık içe aktarılan ayar dosyasını geri almıyor; senkron için çok büyük bir ayar ezilmek yerine korunuyor\n• Uzun dillerde ayarlar artık kesilmiyor; canlı yayında reklam atlama için daha güçlü yedek yöntem"
+    "message": "• Canlı yayın reklam engeli Kick'in Ekim değişikliğine uyarlandı: oynatıcı artık yayını en baştan reklamsız akışla açıyor. Geçmiş yayınlar da yeni reklamsız yolu kullanıyor\n• Yeni kurulumda kanal bildirimleri kapalı başlar; çok kanal takip etmek artık bildirim yağmuru demek değil. İstediğin kanalları kartındaki zil ile aç. Güncellemede mevcut ayarların korunur\n• Ayarlar: kendi zil ayarı olmayan kanallar için \"Varsayılan kanal bildirimi\" ve Geri al seçeneğiyle \"Tüm kanallara uygula\". Her şeyi sadece belirli saatlerde susturmak için Rahatsız Etme'yi kullan\n• Varsayılan kapalıyken de kanal için açtığın otomatik açma ve kanal bildirimleri çalışmaya devam eder\n• İsteğe bağlı, varsayılan kapalı: reklam engelinin daha hızlı düzeltilebilmesi için teknik reklam teşhis özetini paylaş (kanal adı ya da kişisel veri yok)"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.46 — Yepyeni bir görünüm"
+    "message": "v2.5.67 — Kanal bazlı bildirimler, izleme süresi ve düzeltmeler"
   },
   "releaseHistoryV1Body": {
-    "message": "• Popup yeniden tasarlandı: daha sade üst bar, sekmelerde sayaçlar (canlı kanallar, yeni bildirimler), daha sakin kartlar ve tüm ayarlarda tek tip anahtar görünümü\n• Bilgisayarının açık/koyu moduna uyan yeni \"Sistem\" teması\n• Fontlar ve ikonlar artık eklentinin içinde: yavaş bağlantıda ikon adları yazı olarak görünmüyor, popup Google'a hiç istek atmıyor\n• Geçmiş: tekrarlanan aynı bildirimler birleştiriliyor, boş kategoriler gizleniyor\n• Daha anlaşılır ses modu ikonları, görünür klavye odağı ve sistemin \"hareketi azalt\" ayarına uyum"
+    "message": "• Yeni kanal bildirimleri penceresi (kanal kartındaki ayar butonu): kanal kategori veya başlık değiştirince, yayın bitince (ne kadar sürdüğüyle) ve kanala raid gelince (kimden ve kaç izleyiciyle) bildirim al. Hepsi varsayılan olarak kapalı\n• Kanal filtresi: sadece seçtiğin kategorilerde veya başlıkta senin kelimelerinden biri geçtiğinde bildir\n• Bu bildirimlerin kendi, daha kısık sesi var (Yumuşak damla, Hafif çan, Tık); istersen Windows sesi veya sessiz, ayrı ses seviyesiyle\n• İzleme süresi: Geçmiş sekmesi son 7 günde ne kadar izlediğini ve en çok izlediğin kanalları gösterir (sadece bu cihazda saklanır)\n• Kanal önizleme görselinin üzerinde durunca büyük hali açılır; kart butonları artık hep sığıyor\n• Güncel Chrome'da (148+) düzeltildi: \"Eklenti sesleri\" modunda bildirimler Windows sesini de çalıyordu ve Aç / Sustur butonları kaybolmuştu\n• Bulut Senkronu artık içe aktarılan ayar dosyasını geri almıyor; senkron için çok büyük bir ayar ezilmek yerine korunuyor\n• Uzun dillerde ayarlar artık kesilmiyor; canlı yayında reklam atlama için daha güçlü yedek yöntem"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.45 — Veri bütünlüğü ve Bulut Senkronu düzeltmeleri"
+    "message": "v2.5.46 — Yepyeni bir görünüm"
   },
   "releaseHistoryV2Body": {
-    "message": "• Chat sekmesindeki Kick kullanıcı adı alanına yazıp popup'ı hemen kapatınca değerin kaydedilmediği hata giderildi\n• Aynı kökten gelen başka bir sorun da düzeltildi: favori kanallar, kanal başına ses modu, kanal grupları, otomatik açma listesi, chatroom/kanal ID önbelleği, bot skorları ve bildirim geçmişi — bunların hepsi art arda hızlı yapılan iki değişiklikte birbirini ezip veri kaybına yol açabiliyordu; artık hepsi bir yazma sırasından geçiyor ve bu mümkün değil\n• Bulut Senkronu'nda kritik bir hata düzeltildi: Bulut Senkronu açıksa, Chat sekmesi ayarların hiçbir dokunma olmadan saatler sonra eski/boş haline dönebiliyordu — sebebi, arka planda rutin çalışan bir senkron kontrolünün bayat bir bulut kopyasını sürekli geri uygulamasıydı. Artık chat ayarları her değişiklikte anında buluta yansıyor, ve bu arka plan kontrolü kendiliğinden buluttan veri çekmiyor"
+    "message": "• Popup yeniden tasarlandı: daha sade üst bar, sekmelerde sayaçlar (canlı kanallar, yeni bildirimler), daha sakin kartlar ve tüm ayarlarda tek tip anahtar görünümü\n• Bilgisayarının açık/koyu moduna uyan yeni \"Sistem\" teması\n• Fontlar ve ikonlar artık eklentinin içinde: yavaş bağlantıda ikon adları yazı olarak görünmüyor, popup Google'a hiç istek atmıyor\n• Geçmiş: tekrarlanan aynı bildirimler birleştiriliyor, boş kategoriler gizleniyor\n• Daha anlaşılır ses modu ikonları, görünür klavye odağı ve sistemin \"hareketi azalt\" ayarına uyum"
   },
   "settingsBackupTitle": {
     "message": "Yedekleme ve Geri Yükleme"
@@ -1026,5 +1026,47 @@
   "syncNameChat": {
     "message": "Chat ayarları",
     "description": "Setting name in the sync warning: chat tab settings"
+  },
+  "adDiagShareDenied": {
+    "message": "Firefox veri iznini vermedi, paylaşım kapalı kaldı."
+  },
+  "adDiagShareDesc": {
+    "message": "Reklam engeli bilinmeyen bir akış işareti ya da reklam arası yakaladığında, engelin daha hızlı düzeltilebilmesi için geliştiriciye teknik bir özet gönderilir: işaret adı, sayı, görülme zamanları, reklam arası süresi, temizlenmiş akış etiket satırları (adresler ve kimlikler çıkarılır), eklenti sürümü, tarayıcı türü ve dil. Kanal adları, ne izlediğin ve hesap bilgilerin asla gönderilmez. Varsayılan olarak kapalı."
+  },
+  "adDiagShareTitle": {
+    "message": "Reklam teşhislerini paylaş"
+  },
+  "applyModeAllBtn": {
+    "message": "Tüm kanallara uygula"
+  },
+  "applyModeConfirmAccept": {
+    "message": "Uygula"
+  },
+  "applyModeConfirmBody": {
+    "message": "Tüm kanallar \"$1\" olarak ayarlanacak. Kanal kartlarında tek tek seçtiğin zil ayarlarının yerini alır. Hemen ardından geri alabilirsin."
+  },
+  "applyModeConfirmTitle": {
+    "message": "Tüm kanallara uygulansın mı?"
+  },
+  "applyModeDone": {
+    "message": "Tüm kanallara uygulandı"
+  },
+  "applyModeUndoBtn": {
+    "message": "Geri al"
+  },
+  "applyModeUndone": {
+    "message": "Önceki kanal ayarları geri yüklendi"
+  },
+  "defaultChannelModeHint": {
+    "message": "Kendi zil ayarı olmayan kanallar ve bundan sonra takip edeceğin kanallar bunu kullanır. Her şeyi sadece belirli saatlerde susturmak için aşağıdaki Rahatsız Etme'yi kullan."
+  },
+  "defaultChannelModeLabel": {
+    "message": "Varsayılan kanal bildirimi"
+  },
+  "mutedNoticeSettings": {
+    "message": "Seçenekler"
+  },
+  "mutedNoticeText": {
+    "message": "Yeni kurulumda kanal bildirimleri kapalı gelir. İstediğin kanalları kartlarındaki zil ile aç ya da hepsini birden aç:"
   }
 }
