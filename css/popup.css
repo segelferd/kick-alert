@@ -2235,7 +2235,14 @@ input[type="range"]:focus-visible, .tab-button:focus-visible {
 /* ─── Modals ─── */
 .confirm-modal-box, .vh-modal-box { border-radius: var(--r-lg); border-color: var(--border-strong); }
 .confirm-modal-icon { background: var(--warn-soft); color: var(--warn); }
-.confirm-modal-btn { height: 34px; border-radius: 8px; border-color: var(--border-strong); }
+.confirm-modal-btn { height: auto; min-height: 34px; border-radius: 8px; border-color: var(--border-strong); }
+/* v2.5.76: uzun dillerde buton metni sığsın. Metin tek satıra sığmazsa
+   iki satıra ortalı kırılır; popup.js bunu ölçüp butonları alt alta dizer
+   (.ka-stacked), böylece her buton tam genişlikte tek satır kalır. */
+.confirm-modal-btn { display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1.3; padding: 7px 10px; white-space: normal; overflow-wrap: anywhere; }
+.confirm-modal-actions.ka-stacked { flex-direction: column; }
+.confirm-modal-actions.ka-stacked .confirm-modal-btn { flex: none; width: 100%; }
+.confirm-modal-actions.ka-stacked .confirm-modal-btn-accept { order: -1; }
 .confirm-modal-btn-accept { background: var(--warn-soft); color: var(--warn); border-color: var(--warn-line); }
 .release-history-version { color: var(--accent-text); }
 

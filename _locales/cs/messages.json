@@ -674,10 +674,10 @@
     "message": "Zavřít"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Blokování reklam opět funguje, klidnější začátek"
+    "message": "v2.5.76 — Blokování reklam opět funguje, klidnější začátek"
   },
   "releaseHistoryV0Body": {
-    "message": "• Blokování reklam v živém vysílání bylo upraveno na říjnovou změnu Kicku: přehrávač nyní hned od začátku otevírá stream bez reklam. Minulá vysílání také používají novou cestu bez reklam\n• Po nové instalaci jsou upozornění kanálů vypnutá, takže sledování mnoha kanálů už neznamená záplavu upozornění. Požadované kanály zapněte zvonkem na jejich kartě. Při aktualizaci zůstane vaše nastavení zachováno\n• Nastavení: „Výchozí upozornění kanálu“ pro kanály bez vlastního nastavení zvonku a „Použít na všechny kanály“ s možností vrácení. Chcete-li vše ztlumit jen v určitých hodinách, použijte Nerušit\n• I když je výchozí stav vypnutý, automatické otevírání a upozornění kanálu, které jste pro kanál zapnuli, fungují dál\n• Volitelné, ve výchozím stavu vypnuté: sdílení technického shrnutí diagnostiky reklam (bez názvů kanálů a osobních údajů), aby šlo blokování opravit rychleji"
+    "message": "• Blokování reklam v živém vysílání bylo upraveno na říjnovou změnu Kicku: přehrávač nyní hned od začátku otevírá stream bez reklam. Minulá vysílání také používají novou cestu bez reklam\n• Po nové instalaci jsou upozornění kanálů vypnutá, takže sledování mnoha kanálů už neznamená záplavu upozornění. Požadované kanály zapněte zvonkem na jejich kartě. Při aktualizaci zůstane vaše nastavení zachováno\n• Nastavení: „Výchozí upozornění kanálu“ pro kanály bez vlastního nastavení zvonku a „Použít na všechny kanály“ s možností vrácení. Chcete-li vše ztlumit jen v určitých hodinách, použijte Nerušit\n• I když je výchozí stav vypnutý, automatické otevírání a upozornění kanálu, které jste pro kanál zapnuli, fungují dál\n• Volitelné, ve výchozím stavu vypnuté: sdílení technického shrnutí diagnostiky reklam (bez názvů kanálů a osobních údajů), aby šlo blokování opravit rychleji\n• Tlačítka v potvrzovacích oknech nyní pojmou svůj text v každém jazyce (při dlouhém textu jsou pod sebou)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Upozornění pro jednotlivé kanály, doba sledování a opravy"

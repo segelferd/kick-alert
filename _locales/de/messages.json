@@ -674,10 +674,10 @@
     "message": "Schließen"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Werbeblockierung funktioniert wieder, ruhigerer Start"
+    "message": "v2.5.76 — Werbeblockierung funktioniert wieder, ruhigerer Start"
   },
   "releaseHistoryV0Body": {
-    "message": "• Die Live-Werbeblockierung wurde an Kicks Änderung im Oktober angepasst: Der Player öffnet jetzt von Anfang an den werbefreien Stream. Vergangene Übertragungen nutzen ebenfalls den neuen werbefreien Weg\n• Bei Neuinstallationen sind Kanalbenachrichtigungen zunächst aus, viele gefolgte Kanäle bedeuten also keine Benachrichtigungsflut mehr. Schalte gewünschte Kanäle mit der Glocke auf ihrer Karte ein. Bei einem Update bleiben deine Einstellungen erhalten\n• Einstellungen: „Standard-Kanalbenachrichtigung“ für Kanäle ohne eigene Glocken-Einstellung und „Auf alle Kanäle anwenden“ mit Rückgängig. Um alles nur zu bestimmten Zeiten stummzuschalten, nutze „Nicht stören“\n• Auch wenn der Standard aus ist, funktionieren das automatische Öffnen und die Kanalbenachrichtigungen, die du für einen Kanal eingeschaltet hast, weiter\n• Optional und standardmäßig aus: eine technische Werbe-Diagnose (ohne Kanalnamen oder persönliche Daten) teilen, damit die Blockierung schneller repariert werden kann"
+    "message": "• Die Live-Werbeblockierung wurde an Kicks Änderung im Oktober angepasst: Der Player öffnet jetzt von Anfang an den werbefreien Stream. Vergangene Übertragungen nutzen ebenfalls den neuen werbefreien Weg\n• Bei Neuinstallationen sind Kanalbenachrichtigungen zunächst aus, viele gefolgte Kanäle bedeuten also keine Benachrichtigungsflut mehr. Schalte gewünschte Kanäle mit der Glocke auf ihrer Karte ein. Bei einem Update bleiben deine Einstellungen erhalten\n• Einstellungen: „Standard-Kanalbenachrichtigung“ für Kanäle ohne eigene Glocken-Einstellung und „Auf alle Kanäle anwenden“ mit Rückgängig. Um alles nur zu bestimmten Zeiten stummzuschalten, nutze „Nicht stören“\n• Auch wenn der Standard aus ist, funktionieren das automatische Öffnen und die Kanalbenachrichtigungen, die du für einen Kanal eingeschaltet hast, weiter\n• Optional und standardmäßig aus: eine technische Werbe-Diagnose (ohne Kanalnamen oder persönliche Daten) teilen, damit die Blockierung schneller repariert werden kann\n• Die Schaltflächen in Bestätigungsdialogen passen jetzt in jeder Sprache zu ihrem Text (bei langem Text untereinander)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Kanalbezogene Benachrichtigungen, Wiedergabezeit und Korrekturen"

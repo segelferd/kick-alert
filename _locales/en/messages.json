@@ -674,10 +674,10 @@
     "message": "Close"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Ad blocking works again, quieter start"
+    "message": "v2.5.76 — Ad blocking works again, quieter start"
   },
   "releaseHistoryV0Body": {
-    "message": "• Live ad blocking adapted to Kick's October change: the player now opens the ad-free stream from the start. Past broadcasts use the new ad-free path too\n• New installs start with channel alerts off, so following many channels no longer means a flood of notifications. Turn on the channels you want with the bell on their card. Updating keeps your current settings\n• Settings: \"Default channel alert\" for channels without their own bell setting, and \"Apply to all channels\" with Undo. To silence everything only at certain hours, use Do Not Disturb\n• With the default off, per-channel auto-open and channel alerts you turned on keep working\n• Optional, off by default: share a technical ad diagnostics summary (no channel names or personal data) so ad blocking can be fixed faster"
+    "message": "• Live ad blocking adapted to Kick's October change: the player now opens the ad-free stream from the start. Past broadcasts use the new ad-free path too\n• New installs start with channel alerts off, so following many channels no longer means a flood of notifications. Turn on the channels you want with the bell on their card. Updating keeps your current settings\n• Settings: \"Default channel alert\" for channels without their own bell setting, and \"Apply to all channels\" with Undo. To silence everything only at certain hours, use Do Not Disturb\n• With the default off, per-channel auto-open and channel alerts you turned on keep working\n• Optional, off by default: share a technical ad diagnostics summary (no channel names or personal data) so ad blocking can be fixed faster\n• Confirmation dialog buttons now fit their text in every language (they stack when a label is long)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Per-channel alerts, watch time and fixes"

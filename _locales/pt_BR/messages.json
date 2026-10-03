@@ -672,10 +672,10 @@
     "message": "Fechar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Bloqueio de anúncios funcionando de novo, início mais tranquilo"
+    "message": "v2.5.76 — Bloqueio de anúncios funcionando de novo, início mais tranquilo"
   },
   "releaseHistoryV0Body": {
-    "message": "• O bloqueio de anúncios ao vivo foi adaptado à mudança da Kick em outubro: o player agora abre o stream sem anúncios desde o início. Transmissões passadas também usam o novo caminho sem anúncios\n• Em uma instalação nova os alertas de canal começam desativados, então seguir muitos canais não significa mais uma enxurrada de notificações. Ative os canais que quiser pelo sino no cartão deles. Ao atualizar, suas configurações são mantidas\n• Configurações: \"Alerta de canal padrão\" para canais sem configuração de sino própria e \"Aplicar a todos os canais\" com Desfazer. Para silenciar tudo só em certos horários, use Não perturbe\n• Com o padrão desativado, a abertura automática e os alertas de canal que você ativou continuam funcionando\n• Opcional e desativado por padrão: compartilhar um resumo técnico de diagnóstico de anúncios (sem nomes de canais ou dados pessoais) para corrigir o bloqueio mais rápido"
+    "message": "• O bloqueio de anúncios ao vivo foi adaptado à mudança da Kick em outubro: o player agora abre o stream sem anúncios desde o início. Transmissões passadas também usam o novo caminho sem anúncios\n• Em uma instalação nova os alertas de canal começam desativados, então seguir muitos canais não significa mais uma enxurrada de notificações. Ative os canais que quiser pelo sino no cartão deles. Ao atualizar, suas configurações são mantidas\n• Configurações: \"Alerta de canal padrão\" para canais sem configuração de sino própria e \"Aplicar a todos os canais\" com Desfazer. Para silenciar tudo só em certos horários, use Não perturbe\n• Com o padrão desativado, a abertura automática e os alertas de canal que você ativou continuam funcionando\n• Opcional e desativado por padrão: compartilhar um resumo técnico de diagnóstico de anúncios (sem nomes de canais ou dados pessoais) para corrigir o bloqueio mais rápido\n• Os botões das janelas de confirmação agora mostram todo o texto em todos os idiomas (empilham quando o texto é longo)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Alertas por canal, tempo assistido e correções"

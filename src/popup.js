@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await applyTheme();
   await Utils.initI18n();
   setupI18n();
+  setupConfirmButtonFit(); // v2.5.76: erken bağla (sonraki adımlar hata verse de onay pencereleri ölçülsün)
   applyOptionsI18n();   // Translate #options-panel + #chat-panel + tab buttons on first load (v2.0.1)
   setupTabs();
   setupMenu();
@@ -2475,6 +2476,33 @@ function optUpdateBotScoreInfoVisibility() {
   const on = optEl('opt-bot-score-always-visible')?.checked;
   const info = document.getElementById('bot-score-info');
   if (info) info.classList.toggle('disabled', !on);
+}
+
+// ─── v2.5.76: Onay penceresi butonları her dilde sığsın ───
+// Pencere açılınca (display değişince) butonların metni tek satıra sığıyor
+// mu ölçülür; sığmayan varsa butonlar alt alta dizilir (tam genişlik).
+function fitConfirmButtons(modal) {
+  try {
+    modal.querySelectorAll('.confirm-modal-actions').forEach(row => {
+      row.classList.remove('ka-stacked');
+      const btns = [...row.querySelectorAll('.confirm-modal-btn')].filter(b => b.offsetParent !== null);
+      if (btns.length < 2) return;
+      // Normal (yan yana) düzende metin birden fazla satıra kırılıyor mu?
+      const wraps = btns.some(b => {
+        const lh = parseFloat(getComputedStyle(b).lineHeight) || 16;
+        const rg = document.createRange();
+        rg.selectNodeContents(b);
+        return rg.getBoundingClientRect().height > lh * 1.5 || b.scrollWidth > b.clientWidth + 1;
+      });
+      if (wraps) row.classList.add('ka-stacked');
+    });
+  } catch (e) {}
+}
+function setupConfirmButtonFit() {
+  document.querySelectorAll('.confirm-modal').forEach(modal => {
+    const run = () => { if (modal.style.display !== 'none' && modal.style.display !== '') requestAnimationFrame(() => fitConfirmButtons(modal)); };
+    new MutationObserver(run).observe(modal, { attributes: true, attributeFilter: ['style'] }); // sadece pencerenin görünürlüğü (ölçüm buton stilini geçici değiştirir, döngü olmasın)
+  });
 }
 
 // ─── v2.5.74: Varsayılan kanal bildirimi / Tüm kanallara uygula / Geri al ───

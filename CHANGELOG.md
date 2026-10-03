@@ -5,6 +5,11 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.76 — Confirmation buttons fit in every language
+
+- Confirmation dialog buttons (Enable Ad Blocking, Reset Everything, Apply to all channels) no longer overflow in longer languages: the fixed button height was removed, text wraps cleanly, and when a label does not fit on one line the two buttons are stacked full width (primary on top). Measured in all 14 languages; previously 9 labels overflowed (English, German, French, Russian, Japanese, Korean, Czech, Slovak)
+- Release History: v2.5.76 entry
+
 ## v2.5.75 — Store release: ad blocking works again, quieter start for new users
 
 - Store release covering v2.5.68 → v2.5.74 (see the entries below)

@@ -672,10 +672,10 @@
     "message": "Cerrar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — El bloqueo de anuncios vuelve a funcionar, inicio más tranquilo"
+    "message": "v2.5.76 — El bloqueo de anuncios vuelve a funcionar, inicio más tranquilo"
   },
   "releaseHistoryV0Body": {
-    "message": "• El bloqueo de anuncios en directo se adaptó al cambio de Kick de octubre: el reproductor abre desde el inicio el stream sin anuncios. Las emisiones pasadas también usan la nueva vía sin anuncios\n• En una instalación nueva las alertas de canal empiezan desactivadas, así que seguir muchos canales ya no significa una avalancha de notificaciones. Activa los canales que quieras con la campana de su tarjeta. Al actualizar se conservan tus ajustes\n• Ajustes: \"Alerta de canal predeterminada\" para canales sin ajuste de campana propio y \"Aplicar a todos los canales\" con Deshacer. Para silenciar todo solo a ciertas horas, usa No molestar\n• Con el predeterminado desactivado, la apertura automática y las alertas de canal que activaste siguen funcionando\n• Opcional y desactivado por defecto: compartir un resumen técnico de diagnóstico de anuncios (sin nombres de canales ni datos personales) para arreglar el bloqueo más rápido"
+    "message": "• El bloqueo de anuncios en directo se adaptó al cambio de Kick de octubre: el reproductor abre desde el inicio el stream sin anuncios. Las emisiones pasadas también usan la nueva vía sin anuncios\n• En una instalación nueva las alertas de canal empiezan desactivadas, así que seguir muchos canales ya no significa una avalancha de notificaciones. Activa los canales que quieras con la campana de su tarjeta. Al actualizar se conservan tus ajustes\n• Ajustes: \"Alerta de canal predeterminada\" para canales sin ajuste de campana propio y \"Aplicar a todos los canales\" con Deshacer. Para silenciar todo solo a ciertas horas, usa No molestar\n• Con el predeterminado desactivado, la apertura automática y las alertas de canal que activaste siguen funcionando\n• Opcional y desactivado por defecto: compartir un resumen técnico de diagnóstico de anuncios (sin nombres de canales ni datos personales) para arreglar el bloqueo más rápido\n• Los botones de las ventanas de confirmación ya muestran todo su texto en cada idioma (se apilan si el texto es largo)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Alertas por canal, tiempo de visualización y correcciones"

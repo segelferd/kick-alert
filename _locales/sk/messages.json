@@ -639,10 +639,10 @@
     "message": "Zavrieť"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Blokovanie reklám opäť funguje, pokojnejší začiatok"
+    "message": "v2.5.76 — Blokovanie reklám opäť funguje, pokojnejší začiatok"
   },
   "releaseHistoryV0Body": {
-    "message": "• Blokovanie reklám v živom vysielaní bolo upravené na októbrovú zmenu Kicku: prehrávač teraz hneď od začiatku otvára stream bez reklám. Minulé vysielania tiež používajú novú cestu bez reklám\n• Po novej inštalácii sú upozornenia kanálov vypnuté, takže sledovanie mnohých kanálov už neznamená záplavu upozornení. Požadované kanály zapnite zvončekom na ich karte. Pri aktualizácii zostanú vaše nastavenia zachované\n• Nastavenia: „Predvolené upozornenie kanála“ pre kanály bez vlastného nastavenia zvončeka a „Použiť na všetky kanály“ s možnosťou vrátenia. Ak chcete všetko stlmiť len v určitých hodinách, použite Nerušiť\n• Aj keď je predvolený stav vypnutý, automatické otváranie a upozornenia kanála, ktoré ste pre kanál zapli, fungujú ďalej\n• Voliteľné, predvolene vypnuté: zdieľanie technického zhrnutia diagnostiky reklám (bez názvov kanálov a osobných údajov), aby sa blokovanie dalo opraviť rýchlejšie"
+    "message": "• Blokovanie reklám v živom vysielaní bolo upravené na októbrovú zmenu Kicku: prehrávač teraz hneď od začiatku otvára stream bez reklám. Minulé vysielania tiež používajú novú cestu bez reklám\n• Po novej inštalácii sú upozornenia kanálov vypnuté, takže sledovanie mnohých kanálov už neznamená záplavu upozornení. Požadované kanály zapnite zvončekom na ich karte. Pri aktualizácii zostanú vaše nastavenia zachované\n• Nastavenia: „Predvolené upozornenie kanála“ pre kanály bez vlastného nastavenia zvončeka a „Použiť na všetky kanály“ s možnosťou vrátenia. Ak chcete všetko stlmiť len v určitých hodinách, použite Nerušiť\n• Aj keď je predvolený stav vypnutý, automatické otváranie a upozornenia kanála, ktoré ste pre kanál zapli, fungujú ďalej\n• Voliteľné, predvolene vypnuté: zdieľanie technického zhrnutia diagnostiky reklám (bez názvov kanálov a osobných údajov), aby sa blokovanie dalo opraviť rýchlejšie\n• Tlačidlá v potvrdzovacích oknách teraz pojmú svoj text v každom jazyku (pri dlhom texte sú pod sebou)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Upozornenia pre jednotlivé kanály, čas sledovania a opravy"

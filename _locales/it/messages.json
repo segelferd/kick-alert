@@ -672,10 +672,10 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Il blocco pubblicità funziona di nuovo, avvio più tranquillo"
+    "message": "v2.5.76 — Il blocco pubblicità funziona di nuovo, avvio più tranquillo"
   },
   "releaseHistoryV0Body": {
-    "message": "• Il blocco della pubblicità in diretta è stato adattato al cambiamento di Kick di ottobre: il player ora apre fin dall'inizio lo stream senza pubblicità. Anche le trasmissioni passate usano la nuova via senza pubblicità\n• Con una nuova installazione gli avvisi dei canali partono disattivati, quindi seguire molti canali non significa più una valanga di notifiche. Attiva i canali che vuoi con la campanella sulla loro scheda. Con un aggiornamento le tue impostazioni restano\n• Impostazioni: \"Avviso canale predefinito\" per i canali senza impostazione della campanella e \"Applica a tutti i canali\" con Annulla. Per silenziare tutto solo in certi orari, usa Non disturbare\n• Anche con il predefinito disattivato, l'apertura automatica e gli avvisi di canale che hai attivato continuano a funzionare\n• Facoltativo, disattivato per impostazione predefinita: condividi un riepilogo tecnico di diagnostica pubblicità (senza nomi di canali o dati personali) per correggere il blocco più in fretta"
+    "message": "• Il blocco della pubblicità in diretta è stato adattato al cambiamento di Kick di ottobre: il player ora apre fin dall'inizio lo stream senza pubblicità. Anche le trasmissioni passate usano la nuova via senza pubblicità\n• Con una nuova installazione gli avvisi dei canali partono disattivati, quindi seguire molti canali non significa più una valanga di notifiche. Attiva i canali che vuoi con la campanella sulla loro scheda. Con un aggiornamento le tue impostazioni restano\n• Impostazioni: \"Avviso canale predefinito\" per i canali senza impostazione della campanella e \"Applica a tutti i canali\" con Annulla. Per silenziare tutto solo in certi orari, usa Non disturbare\n• Anche con il predefinito disattivato, l'apertura automatica e gli avvisi di canale che hai attivato continuano a funzionare\n• Facoltativo, disattivato per impostazione predefinita: condividi un riepilogo tecnico di diagnostica pubblicità (senza nomi di canali o dati personali) per correggere il blocco più in fretta\n• I pulsanti delle finestre di conferma ora mostrano tutto il testo in ogni lingua (si impilano se il testo è lungo)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Avvisi per canale, tempo di visione e correzioni"

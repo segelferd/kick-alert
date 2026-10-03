@@ -672,10 +672,10 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Reklam engeli yeniden çalışıyor, daha sakin başlangıç"
+    "message": "v2.5.76 — Reklam engeli yeniden çalışıyor, daha sakin başlangıç"
   },
   "releaseHistoryV0Body": {
-    "message": "• Canlı yayın reklam engeli Kick'in Ekim değişikliğine uyarlandı: oynatıcı artık yayını en baştan reklamsız akışla açıyor. Geçmiş yayınlar da yeni reklamsız yolu kullanıyor\n• Yeni kurulumda kanal bildirimleri kapalı başlar; çok kanal takip etmek artık bildirim yağmuru demek değil. İstediğin kanalları kartındaki zil ile aç. Güncellemede mevcut ayarların korunur\n• Ayarlar: kendi zil ayarı olmayan kanallar için \"Varsayılan kanal bildirimi\" ve Geri al seçeneğiyle \"Tüm kanallara uygula\". Her şeyi sadece belirli saatlerde susturmak için Rahatsız Etme'yi kullan\n• Varsayılan kapalıyken de kanal için açtığın otomatik açma ve kanal bildirimleri çalışmaya devam eder\n• İsteğe bağlı, varsayılan kapalı: reklam engelinin daha hızlı düzeltilebilmesi için teknik reklam teşhis özetini paylaş (kanal adı ya da kişisel veri yok)"
+    "message": "• Canlı yayın reklam engeli Kick'in Ekim değişikliğine uyarlandı: oynatıcı artık yayını en baştan reklamsız akışla açıyor. Geçmiş yayınlar da yeni reklamsız yolu kullanıyor\n• Yeni kurulumda kanal bildirimleri kapalı başlar; çok kanal takip etmek artık bildirim yağmuru demek değil. İstediğin kanalları kartındaki zil ile aç. Güncellemede mevcut ayarların korunur\n• Ayarlar: kendi zil ayarı olmayan kanallar için \"Varsayılan kanal bildirimi\" ve Geri al seçeneğiyle \"Tüm kanallara uygula\". Her şeyi sadece belirli saatlerde susturmak için Rahatsız Etme'yi kullan\n• Varsayılan kapalıyken de kanal için açtığın otomatik açma ve kanal bildirimleri çalışmaya devam eder\n• İsteğe bağlı, varsayılan kapalı: reklam engelinin daha hızlı düzeltilebilmesi için teknik reklam teşhis özetini paylaş (kanal adı ya da kişisel veri yok)\n• Onay pencerelerindeki butonlar artık her dilde metnine sığıyor (uzun metinde alt alta dizilir)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Kanal bazlı bildirimler, izleme süresi ve düzeltmeler"

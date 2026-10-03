@@ -672,10 +672,10 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.75 — Le blocage des publicités refonctionne, démarrage plus calme"
+    "message": "v2.5.76 — Le blocage des publicités refonctionne, démarrage plus calme"
   },
   "releaseHistoryV0Body": {
-    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite"
+    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite\n• Les boutons des fenêtres de confirmation affichent désormais tout leur texte dans chaque langue (empilés si le libellé est long)"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.67 — Alertes par chaîne, temps de visionnage et corrections"
