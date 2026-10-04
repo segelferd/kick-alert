@@ -647,7 +647,7 @@
     "message": "Zatím nikoho nesledujete. Sledujte kanál na Kicku a automaticky se zobrazí zde."
   },
   "whatsNewBannerText": {
-    "message": "Novinka: blokování reklam v živém vysílání po změně Kicku opět funguje a v <a id=\"whatsnew-settings-link\">Nastavení</a> můžete nastavit výchozí upozornění kanálu nebo ho použít na všechny kanály."
+    "message": "Novinka: upozornění na změnu kategorie a názvu jsou přesnější; krátkodobě chybná hodnota z Kicku už nepošle obrácené upozornění."
   },
   "optGroupGeneral": {
     "message": "Obecné"
@@ -674,22 +674,22 @@
     "message": "Zavřít"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.76 — Blokování reklam opět funguje, klidnější začátek"
+    "message": "v2.5.77 — Přesnější upozornění kanálů"
   },
   "releaseHistoryV0Body": {
-    "message": "• Blokování reklam v živém vysílání bylo upraveno na říjnovou změnu Kicku: přehrávač nyní hned od začátku otevírá stream bez reklam. Minulá vysílání také používají novou cestu bez reklam\n• Po nové instalaci jsou upozornění kanálů vypnutá, takže sledování mnoha kanálů už neznamená záplavu upozornění. Požadované kanály zapněte zvonkem na jejich kartě. Při aktualizaci zůstane vaše nastavení zachováno\n• Nastavení: „Výchozí upozornění kanálu“ pro kanály bez vlastního nastavení zvonku a „Použít na všechny kanály“ s možností vrácení. Chcete-li vše ztlumit jen v určitých hodinách, použijte Nerušit\n• I když je výchozí stav vypnutý, automatické otevírání a upozornění kanálu, které jste pro kanál zapnuli, fungují dál\n• Volitelné, ve výchozím stavu vypnuté: sdílení technického shrnutí diagnostiky reklam (bez názvů kanálů a osobních údajů), aby šlo blokování opravit rychleji\n• Tlačítka v potvrzovacích oknech nyní pojmou svůj text v každém jazyce (při dlouhém textu jsou pod sebou)"
+    "message": "• Přesnější upozornění na změnu kategorie a názvu: krátkodobě chybná hodnota z Kicku už nespustí upozornění a změna provedená během 5minutového čekání se oznámí po jeho skončení\n• Změny, ke kterým došlo během pozastavených upozornění (Nerušit, ztlumený kanál), už nepřijdou později jako stará zpráva"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.67 — Upozornění pro jednotlivé kanály, doba sledování a opravy"
+    "message": "v2.5.76 — Blokování reklam opět funguje, klidnější začátek"
   },
   "releaseHistoryV1Body": {
-    "message": "• Nové okno upozornění kanálu (tlačítko nastavení na kartě kanálu): dostanete upozornění, když kanál změní kategorii nebo název, když stream skončí (i s délkou) a když přijde raid (od koho a s kolika diváky). Vše je ve výchozím stavu vypnuté\n• Filtr kanálu: upozornit jen tehdy, když je kategorie z vašeho výběru nebo název obsahuje jedno z vašich slov\n• Tato upozornění mají vlastní tišší zvuk (Jemná kapka, Lehká zvonkohra, Cvaknutí), zvuk Windows nebo ticho, s vlastní hlasitostí\n• Doba sledování: historie ukazuje, jak dlouho jste sledovali za posledních 7 dní, a vaše nejsledovanější kanály (uloženo jen v tomto zařízení)\n• Po najetí na náhled kanálu se zobrazí ve velkém; tlačítka na kartách se vždy vejdou\n• Opraveno v aktuálním Chrome (148+): v režimu „Zvuky rozšíření\" oznámení přehrávala zvuk Windows a přišla o tlačítka Otevřít / Ztlumit\n• Cloudová synchronizace už nevrací zpět importovaný soubor nastavení a nastavení příliš velké pro synchronizaci se zachová místo přepsání\n• Nastavení se v delších jazycích už neořezává; silnější záložní způsob přeskakování reklam v živém vysílání"
+    "message": "• Blokování reklam v živém vysílání bylo upraveno na říjnovou změnu Kicku: přehrávač nyní hned od začátku otevírá stream bez reklam. Minulá vysílání také používají novou cestu bez reklam\n• Po nové instalaci jsou upozornění kanálů vypnutá, takže sledování mnoha kanálů už neznamená záplavu upozornění. Požadované kanály zapněte zvonkem na jejich kartě. Při aktualizaci zůstane vaše nastavení zachováno\n• Nastavení: „Výchozí upozornění kanálu“ pro kanály bez vlastního nastavení zvonku a „Použít na všechny kanály“ s možností vrácení. Chcete-li vše ztlumit jen v určitých hodinách, použijte Nerušit\n• I když je výchozí stav vypnutý, automatické otevírání a upozornění kanálu, které jste pro kanál zapnuli, fungují dál\n• Volitelné, ve výchozím stavu vypnuté: sdílení technického shrnutí diagnostiky reklam (bez názvů kanálů a osobních údajů), aby šlo blokování opravit rychleji\n• Tlačítka v potvrzovacích oknech nyní pojmou svůj text v každém jazyce (při dlouhém textu jsou pod sebou)"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.46 — Úplně nový vzhled"
+    "message": "v2.5.67 — Upozornění pro jednotlivé kanály, doba sledování a opravy"
   },
   "releaseHistoryV2Body": {
-    "message": "• Přepracované okno: čistší záhlaví, počítadla na kartách (živé kanály, nová oznámení), klidnější karty a jednotný styl přepínačů ve všech nastaveních\n• Nový motiv „Systémový“, který se řídí světlým nebo tmavým režimem počítače\n• Písma a ikony jsou nyní součástí rozšíření: na pomalém připojení se už nezobrazují názvy ikon jako text a okno neposílá žádné požadavky na Google\n• Historie: opakovaná stejná oznámení se slučují a prázdné kategorie se skrývají\n• Srozumitelnější ikony režimu zvuku, viditelné zaměření klávesnicí a respektování systémového nastavení „omezit pohyb“"
+    "message": "• Nové okno upozornění kanálu (tlačítko nastavení na kartě kanálu): dostanete upozornění, když kanál změní kategorii nebo název, když stream skončí (i s délkou) a když přijde raid (od koho a s kolika diváky). Vše je ve výchozím stavu vypnuté\n• Filtr kanálu: upozornit jen tehdy, když je kategorie z vašeho výběru nebo název obsahuje jedno z vašich slov\n• Tato upozornění mají vlastní tišší zvuk (Jemná kapka, Lehká zvonkohra, Cvaknutí), zvuk Windows nebo ticho, s vlastní hlasitostí\n• Doba sledování: historie ukazuje, jak dlouho jste sledovali za posledních 7 dní, a vaše nejsledovanější kanály (uloženo jen v tomto zařízení)\n• Po najetí na náhled kanálu se zobrazí ve velkém; tlačítka na kartách se vždy vejdou\n• Opraveno v aktuálním Chrome (148+): v režimu „Zvuky rozšíření\" oznámení přehrávala zvuk Windows a přišla o tlačítka Otevřít / Ztlumit\n• Cloudová synchronizace už nevrací zpět importovaný soubor nastavení a nastavení příliš velké pro synchronizaci se zachová místo přepsání\n• Nastavení se v delších jazycích už neořezává; silnější záložní způsob přeskakování reklam v živém vysílání"
   },
   "settingsBackupTitle": {
     "message": "Zálohování a obnovení"

@@ -5,6 +5,16 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.77 — Store release: accurate category and title change alerts
+
+- Category/title change alerts are now compared with the value you were last told about, not with the previous check. Previously a change made during the 5-minute wait after an alert was silently dropped, and a single inconsistent reading from Kick's followed-channels endpoint (the old category coming back for one check) produced a reversed alert such as "Just Chatting → Arkheron" while the stream was actually in Just Chatting
+- A new category or title must be seen in two consecutive checks (at least 20 seconds apart) before it is announced; a one-off reading that flips back is ignored. This adds one check interval of delay (about 1 to 1.5 minutes with default settings)
+- A change confirmed during the 5-minute wait is no longer lost: it is announced when the wait ends, unless the channel went back to the announced value in the meantime
+- Changes that happen while Do Not Disturb, a channel mute or notifications-off is active are not delivered later as stale news; turning on change alerts in the middle of a stream does not announce older changes
+- A category alert still covers a simultaneous title change (one alert, as before)
+- Test panel: channel events scenario follows the two-reading flow; the change tracking table shows the announced value and any pending candidate
+- Store release. What's New banner and Release History updated in all 14 languages (v2.5.77 entry added; v2.5.76 and v2.5.67 kept, v2.5.46 dropped)
+
 ## v2.5.76 — Confirmation buttons fit in every language
 
 - Confirmation dialog buttons (Enable Ad Blocking, Reset Everything, Apply to all channels) no longer overflow in longer languages: the fixed button height was removed, text wraps cleanly, and when a label does not fit on one line the two buttons are stacked full width (primary on top). Measured in all 14 languages; previously 9 labels overflowed (English, German, French, Russian, Japanese, Korean, Czech, Slovak)

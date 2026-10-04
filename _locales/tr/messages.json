@@ -645,7 +645,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Yeni: canlı yayın reklam engeli Kick'in değişikliğinden sonra yeniden çalışıyor; varsayılan kanal bildirimini <a id=\"whatsnew-settings-link\">Ayarlar</a>'dan seçebilir ya da tüm kanallara uygulayabilirsin."
+    "message": "Yeni: kategori ve başlık değişim bildirimleri daha doğru; Kick'ten gelen anlık hatalı bir okuma artık ters bildirim göndermiyor."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -672,22 +672,22 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.76 — Reklam engeli yeniden çalışıyor, daha sakin başlangıç"
+    "message": "v2.5.77 — Daha doğru kanal bildirimleri"
   },
   "releaseHistoryV0Body": {
-    "message": "• Canlı yayın reklam engeli Kick'in Ekim değişikliğine uyarlandı: oynatıcı artık yayını en baştan reklamsız akışla açıyor. Geçmiş yayınlar da yeni reklamsız yolu kullanıyor\n• Yeni kurulumda kanal bildirimleri kapalı başlar; çok kanal takip etmek artık bildirim yağmuru demek değil. İstediğin kanalları kartındaki zil ile aç. Güncellemede mevcut ayarların korunur\n• Ayarlar: kendi zil ayarı olmayan kanallar için \"Varsayılan kanal bildirimi\" ve Geri al seçeneğiyle \"Tüm kanallara uygula\". Her şeyi sadece belirli saatlerde susturmak için Rahatsız Etme'yi kullan\n• Varsayılan kapalıyken de kanal için açtığın otomatik açma ve kanal bildirimleri çalışmaya devam eder\n• İsteğe bağlı, varsayılan kapalı: reklam engelinin daha hızlı düzeltilebilmesi için teknik reklam teşhis özetini paylaş (kanal adı ya da kişisel veri yok)\n• Onay pencerelerindeki butonlar artık her dilde metnine sığıyor (uzun metinde alt alta dizilir)"
+    "message": "• Kategori ve başlık bildirimleri daha doğru: Kick'ten gelen anlık hatalı bir okuma artık bildirim göndermiyor, 5 dakikalık bekleme sırasında yapılan değişiklik süre dolunca bildiriliyor\n• Bildirimler duraklatılmışken (Rahatsız Etme, susturulmuş kanal) olan değişiklikler sonradan eski haber olarak gelmiyor"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.67 — Kanal bazlı bildirimler, izleme süresi ve düzeltmeler"
+    "message": "v2.5.76 — Reklam engeli yeniden çalışıyor, daha sakin başlangıç"
   },
   "releaseHistoryV1Body": {
-    "message": "• Yeni kanal bildirimleri penceresi (kanal kartındaki ayar butonu): kanal kategori veya başlık değiştirince, yayın bitince (ne kadar sürdüğüyle) ve kanala raid gelince (kimden ve kaç izleyiciyle) bildirim al. Hepsi varsayılan olarak kapalı\n• Kanal filtresi: sadece seçtiğin kategorilerde veya başlıkta senin kelimelerinden biri geçtiğinde bildir\n• Bu bildirimlerin kendi, daha kısık sesi var (Yumuşak damla, Hafif çan, Tık); istersen Windows sesi veya sessiz, ayrı ses seviyesiyle\n• İzleme süresi: Geçmiş sekmesi son 7 günde ne kadar izlediğini ve en çok izlediğin kanalları gösterir (sadece bu cihazda saklanır)\n• Kanal önizleme görselinin üzerinde durunca büyük hali açılır; kart butonları artık hep sığıyor\n• Güncel Chrome'da (148+) düzeltildi: \"Eklenti sesleri\" modunda bildirimler Windows sesini de çalıyordu ve Aç / Sustur butonları kaybolmuştu\n• Bulut Senkronu artık içe aktarılan ayar dosyasını geri almıyor; senkron için çok büyük bir ayar ezilmek yerine korunuyor\n• Uzun dillerde ayarlar artık kesilmiyor; canlı yayında reklam atlama için daha güçlü yedek yöntem"
+    "message": "• Canlı yayın reklam engeli Kick'in Ekim değişikliğine uyarlandı: oynatıcı artık yayını en baştan reklamsız akışla açıyor. Geçmiş yayınlar da yeni reklamsız yolu kullanıyor\n• Yeni kurulumda kanal bildirimleri kapalı başlar; çok kanal takip etmek artık bildirim yağmuru demek değil. İstediğin kanalları kartındaki zil ile aç. Güncellemede mevcut ayarların korunur\n• Ayarlar: kendi zil ayarı olmayan kanallar için \"Varsayılan kanal bildirimi\" ve Geri al seçeneğiyle \"Tüm kanallara uygula\". Her şeyi sadece belirli saatlerde susturmak için Rahatsız Etme'yi kullan\n• Varsayılan kapalıyken de kanal için açtığın otomatik açma ve kanal bildirimleri çalışmaya devam eder\n• İsteğe bağlı, varsayılan kapalı: reklam engelinin daha hızlı düzeltilebilmesi için teknik reklam teşhis özetini paylaş (kanal adı ya da kişisel veri yok)\n• Onay pencerelerindeki butonlar artık her dilde metnine sığıyor (uzun metinde alt alta dizilir)"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.46 — Yepyeni bir görünüm"
+    "message": "v2.5.67 — Kanal bazlı bildirimler, izleme süresi ve düzeltmeler"
   },
   "releaseHistoryV2Body": {
-    "message": "• Popup yeniden tasarlandı: daha sade üst bar, sekmelerde sayaçlar (canlı kanallar, yeni bildirimler), daha sakin kartlar ve tüm ayarlarda tek tip anahtar görünümü\n• Bilgisayarının açık/koyu moduna uyan yeni \"Sistem\" teması\n• Fontlar ve ikonlar artık eklentinin içinde: yavaş bağlantıda ikon adları yazı olarak görünmüyor, popup Google'a hiç istek atmıyor\n• Geçmiş: tekrarlanan aynı bildirimler birleştiriliyor, boş kategoriler gizleniyor\n• Daha anlaşılır ses modu ikonları, görünür klavye odağı ve sistemin \"hareketi azalt\" ayarına uyum"
+    "message": "• Yeni kanal bildirimleri penceresi (kanal kartındaki ayar butonu): kanal kategori veya başlık değiştirince, yayın bitince (ne kadar sürdüğüyle) ve kanala raid gelince (kimden ve kaç izleyiciyle) bildirim al. Hepsi varsayılan olarak kapalı\n• Kanal filtresi: sadece seçtiğin kategorilerde veya başlıkta senin kelimelerinden biri geçtiğinde bildir\n• Bu bildirimlerin kendi, daha kısık sesi var (Yumuşak damla, Hafif çan, Tık); istersen Windows sesi veya sessiz, ayrı ses seviyesiyle\n• İzleme süresi: Geçmiş sekmesi son 7 günde ne kadar izlediğini ve en çok izlediğin kanalları gösterir (sadece bu cihazda saklanır)\n• Kanal önizleme görselinin üzerinde durunca büyük hali açılır; kart butonları artık hep sığıyor\n• Güncel Chrome'da (148+) düzeltildi: \"Eklenti sesleri\" modunda bildirimler Windows sesini de çalıyordu ve Aç / Sustur butonları kaybolmuştu\n• Bulut Senkronu artık içe aktarılan ayar dosyasını geri almıyor; senkron için çok büyük bir ayar ezilmek yerine korunuyor\n• Uzun dillerde ayarlar artık kesilmiyor; canlı yayında reklam atlama için daha güçlü yedek yöntem"
   },
   "settingsBackupTitle": {
     "message": "Yedekleme ve Geri Yükleme"

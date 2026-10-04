@@ -380,12 +380,12 @@ async function simulateCategoryChange() {
   const fr = await send({ type: 'FORCE_RECHECK' });
   const { _channelMeta } = await lget('_channelMeta');
   const m = (_channelMeta || {})[slug];
-  if (m && m.c !== '(test) Önceki kategori' && m.n && Date.now() - m.n < 60000) {
-    out('chg-out', `Bildirim gönderildi: (test) Önceki kategori → ${m.c}`, 'ok');
+  if (m && m.nc !== '(test) Önceki kategori' && m.n && Date.now() - m.n < 60000) {
+    out('chg-out', `Bildirim gönderildi: (test) Önceki kategori → ${m.nc || m.c}`, 'ok');
     dlog(`✓ ${slug} kategori değişim bildirimi gönderildi`, 'ok');
   } else if (!fr?.success) {
     out('chg-out', 'Kontrol yapılamadı (' + (fr?.error || 'backoff olabilir') + '); bir sonraki otomatik kontrolde bildirim gelir', 'warn');
-  } else if (m && m.c === '(test) Önceki kategori') {
+  } else if (m && m.nc === '(test) Önceki kategori') {
     out('chg-out', 'Bu kontrolde taze veri gelmedi (Cloudflare/backoff olabilir). Değişim beklemede; bildirim bir sonraki başarılı kontrolde gelir.', 'warn');
     dlog(`⚠ ${slug} değişim bekliyor: taze veri gelmedi`, 'warn');
   } else {
@@ -493,12 +493,15 @@ async function renderStateTables() {
 
   // Değişim takibi
   const meta = d._channelMeta || {};
-  mount('st-meta', table(['Kanal', 'Durum', 'Kategori', 'Başlık', 'Başlangıç', 'Süre', 'Son kontrol', 'Son değişim bildirimi', 'Değişim'],
+  mount('st-meta', table(['Kanal', 'Durum', 'Kategori', 'Başlık', 'Bildirilen / aday', 'Başlangıç', 'Süre', 'Son kontrol', 'Son değişim bildirimi', 'Değişim'],
     Object.entries(meta).sort((a, b) => (a[1].off ? 1 : 0) - (b[1].off ? 1 : 0) || (b[1].at || 0) - (a[1].at || 0)).map(([s, m]) => {
       const start = m.s ? new Date(m.s).getTime() : null;
       return [
         nameOf(s), m.off ? tag('kapalı') : tag('takipte', 'ok'), m.c || '—',
-        td(m.t || '—', 'trunc', m.t || ''), start ? hhmm(start) : tag('bilinmiyor', 'warn'),
+        td(m.t || '—', 'trunc', m.t || ''),
+        // v2.5.77: kullanıcıya en son bildirilen kategori ve doğrulama bekleyen aday
+        m.pcn ? tag(`${m.nc || '—'} → ${m.pc} (${m.pcn}/2)`, 'warn') : (m.ptn ? tag(`başlık adayı (${m.ptn}/2)`, 'warn') : td(m.nc !== undefined ? (m.nc || '—') : '—', 'trunc', m.nc || '')),
+        start ? hhmm(start) : tag('bilinmiyor', 'warn'),
         start && !m.off ? dur(Date.now() - start) : '—',
         td(ago(m.at), 'mono'), m.n ? ago(m.n) : '—', onOff(prefs[s]?.change),
       ];

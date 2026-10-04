@@ -647,7 +647,7 @@
     "message": "Sie folgen noch niemandem. Folgen Sie einem Kanal auf Kick, und er erscheint hier automatisch."
   },
   "whatsNewBannerText": {
-    "message": "Neu: Die Live-Werbeblockierung funktioniert nach Kicks Änderung wieder, und in den <a id=\"whatsnew-settings-link\">Einstellungen</a> kannst du eine Standard-Kanalbenachrichtigung festlegen oder auf alle Kanäle anwenden."
+    "message": "Neu: Kategorie- und Titelhinweise sind genauer; ein kurzer falscher Wert von Kick löst keinen umgekehrten Hinweis mehr aus."
   },
   "optGroupGeneral": {
     "message": "Allgemein"
@@ -674,22 +674,22 @@
     "message": "Schließen"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.76 — Werbeblockierung funktioniert wieder, ruhigerer Start"
+    "message": "v2.5.77 — Genauere Kanalhinweise"
   },
   "releaseHistoryV0Body": {
-    "message": "• Die Live-Werbeblockierung wurde an Kicks Änderung im Oktober angepasst: Der Player öffnet jetzt von Anfang an den werbefreien Stream. Vergangene Übertragungen nutzen ebenfalls den neuen werbefreien Weg\n• Bei Neuinstallationen sind Kanalbenachrichtigungen zunächst aus, viele gefolgte Kanäle bedeuten also keine Benachrichtigungsflut mehr. Schalte gewünschte Kanäle mit der Glocke auf ihrer Karte ein. Bei einem Update bleiben deine Einstellungen erhalten\n• Einstellungen: „Standard-Kanalbenachrichtigung“ für Kanäle ohne eigene Glocken-Einstellung und „Auf alle Kanäle anwenden“ mit Rückgängig. Um alles nur zu bestimmten Zeiten stummzuschalten, nutze „Nicht stören“\n• Auch wenn der Standard aus ist, funktionieren das automatische Öffnen und die Kanalbenachrichtigungen, die du für einen Kanal eingeschaltet hast, weiter\n• Optional und standardmäßig aus: eine technische Werbe-Diagnose (ohne Kanalnamen oder persönliche Daten) teilen, damit die Blockierung schneller repariert werden kann\n• Die Schaltflächen in Bestätigungsdialogen passen jetzt in jeder Sprache zu ihrem Text (bei langem Text untereinander)"
+    "message": "• Genauere Kategorie- und Titelhinweise: Ein kurzer falscher Wert von Kick löst keinen Hinweis mehr aus, und eine Änderung während der 5-minütigen Wartezeit wird danach gemeldet\n• Änderungen, während Hinweise pausiert waren (Nicht stören, stummgeschalteter Kanal), kommen nicht mehr später als alte Nachricht an"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.67 — Kanalbezogene Benachrichtigungen, Wiedergabezeit und Korrekturen"
+    "message": "v2.5.76 — Werbeblockierung funktioniert wieder, ruhigerer Start"
   },
   "releaseHistoryV1Body": {
-    "message": "• Neues Fenster für Kanalbenachrichtigungen (Regler-Symbol auf der Kanalkarte): Lass dich benachrichtigen, wenn ein Kanal Kategorie oder Titel ändert, wenn ein Stream endet (mit Dauer) und wenn er geraidet wird (von wem und mit wie vielen Zuschauern). Standardmäßig ist alles aus\n• Kanalfilter: Nur benachrichtigen, wenn die Kategorie zu deiner Auswahl gehört oder der Titel eines deiner Wörter enthält\n• Diese Benachrichtigungen haben einen eigenen, leiseren Ton (Sanfter Tropfen, Leichtes Glockenspiel, Tick), den Windows-Ton oder Stille, mit eigener Lautstärke\n• Wiedergabezeit: Der Verlauf zeigt, wie lange du in den letzten 7 Tagen zugeschaut hast, und deine Top-Kanäle (nur auf diesem Gerät gespeichert)\n• Beim Verweilen über einem Kanal-Vorschaubild wird es groß angezeigt; die Kartenbuttons passen jetzt immer\n• Behoben im aktuellen Chrome (148+): Benachrichtigungen spielten im Modus „Erweiterungstöne\" den Windows-Ton und verloren ihre Buttons Öffnen / Stummschalten\n• Die Cloud-Synchronisierung macht einen importierten Einstellungsstand nicht mehr rückgängig, und eine für die Synchronisierung zu große Einstellung bleibt erhalten statt überschrieben zu werden\n• Einstellungen werden in längeren Sprachen nicht mehr abgeschnitten; stärkere Ausweichlösung zum Überspringen von Live-Werbung"
+    "message": "• Die Live-Werbeblockierung wurde an Kicks Änderung im Oktober angepasst: Der Player öffnet jetzt von Anfang an den werbefreien Stream. Vergangene Übertragungen nutzen ebenfalls den neuen werbefreien Weg\n• Bei Neuinstallationen sind Kanalbenachrichtigungen zunächst aus, viele gefolgte Kanäle bedeuten also keine Benachrichtigungsflut mehr. Schalte gewünschte Kanäle mit der Glocke auf ihrer Karte ein. Bei einem Update bleiben deine Einstellungen erhalten\n• Einstellungen: „Standard-Kanalbenachrichtigung“ für Kanäle ohne eigene Glocken-Einstellung und „Auf alle Kanäle anwenden“ mit Rückgängig. Um alles nur zu bestimmten Zeiten stummzuschalten, nutze „Nicht stören“\n• Auch wenn der Standard aus ist, funktionieren das automatische Öffnen und die Kanalbenachrichtigungen, die du für einen Kanal eingeschaltet hast, weiter\n• Optional und standardmäßig aus: eine technische Werbe-Diagnose (ohne Kanalnamen oder persönliche Daten) teilen, damit die Blockierung schneller repariert werden kann\n• Die Schaltflächen in Bestätigungsdialogen passen jetzt in jeder Sprache zu ihrem Text (bei langem Text untereinander)"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.46 — Ein frischer neuer Look"
+    "message": "v2.5.67 — Kanalbezogene Benachrichtigungen, Wiedergabezeit und Korrekturen"
   },
   "releaseHistoryV2Body": {
-    "message": "• Neu gestaltetes Popup: aufgeräumte Kopfzeile, Zähler in den Tabs (Live-Kanäle, neue Benachrichtigungen), ruhigere Karten und ein einheitlicher Schalterstil in allen Einstellungen\n• Neues Design „System“, das dem hellen oder dunklen Modus Ihres Computers folgt\n• Schriften und Symbole sind jetzt in der Erweiterung enthalten: Symbolnamen erscheinen bei langsamer Verbindung nicht mehr als Text, und das Popup sendet keine Anfragen an Google\n• Verlauf: wiederholte identische Benachrichtigungen werden zusammengefasst, leere Kategorien ausgeblendet\n• Klarere Symbole für den Tonmodus, sichtbarer Tastaturfokus und Berücksichtigung der Systemeinstellung „Bewegung reduzieren“"
+    "message": "• Neues Fenster für Kanalbenachrichtigungen (Regler-Symbol auf der Kanalkarte): Lass dich benachrichtigen, wenn ein Kanal Kategorie oder Titel ändert, wenn ein Stream endet (mit Dauer) und wenn er geraidet wird (von wem und mit wie vielen Zuschauern). Standardmäßig ist alles aus\n• Kanalfilter: Nur benachrichtigen, wenn die Kategorie zu deiner Auswahl gehört oder der Titel eines deiner Wörter enthält\n• Diese Benachrichtigungen haben einen eigenen, leiseren Ton (Sanfter Tropfen, Leichtes Glockenspiel, Tick), den Windows-Ton oder Stille, mit eigener Lautstärke\n• Wiedergabezeit: Der Verlauf zeigt, wie lange du in den letzten 7 Tagen zugeschaut hast, und deine Top-Kanäle (nur auf diesem Gerät gespeichert)\n• Beim Verweilen über einem Kanal-Vorschaubild wird es groß angezeigt; die Kartenbuttons passen jetzt immer\n• Behoben im aktuellen Chrome (148+): Benachrichtigungen spielten im Modus „Erweiterungstöne\" den Windows-Ton und verloren ihre Buttons Öffnen / Stummschalten\n• Die Cloud-Synchronisierung macht einen importierten Einstellungsstand nicht mehr rückgängig, und eine für die Synchronisierung zu große Einstellung bleibt erhalten statt überschrieben zu werden\n• Einstellungen werden in längeren Sprachen nicht mehr abgeschnitten; stärkere Ausweichlösung zum Überspringen von Live-Werbung"
   },
   "settingsBackupTitle": {
     "message": "Sicherung & Wiederherstellung"

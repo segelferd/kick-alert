@@ -2075,6 +2075,11 @@ const CHANGE_MAX_GAP_MS = 60 * 60 * 1000;
 // bu süre boyunca saklanır; "yayın bitti" bildirimi süreyi ve başlığı buradan alır.
 const CHANGE_META_KEEP_OFFLINE_MS = 3 * 60 * 60 * 1000;
 const CHANGE_COOLDOWN_MS = 5 * 60 * 1000;
+// v2.5.77: yeni kategori/başlık art arda bu kadar kontrolde görülmeden bildirilmez
+const CHANGE_CONFIRM_POLLS = 2;
+// v2.5.77: İki okuma arasında en az bu kadar süre olmalı (popup açılışı gibi
+// art arda gelen yenilemeler aynı tutarsız yanıtı iki kez sayamasın)
+const CHANGE_CONFIRM_MIN_MS = 20 * 1000;
 
 function _sameSession(a, b) {
   if (!a || !b) return false;
@@ -2114,29 +2119,62 @@ async function checkChannelMetaChanges(channels, notifiedLives, ctx) {
       else KLog.debug('CHG-04', `${slug} başlangıç bilinmiyor, kesintisiz canlı gözlemle takip`);
     }
     cur.n = same ? (prev.n || 0) : 0; // son bildirim zamanı
+    // v2.5.77: kullanıcıya en son bildirilen (ya da oturumun ilk) kategori/başlık
+    // ve doğrulama bekleyen aday. Karşılaştırma artık son GÖZLEMLE değil,
+    // kullanıcının BİLDİĞİ değerle yapılıyor; böylece bekleme süresinde yutulan
+    // değişim kaybolmuyor, tek seferlik tutarsız API okuması bildirim üretmiyor.
+    if (same && prevOn) {
+      cur.nc = prev.nc !== undefined ? prev.nc : prev.c; // eski kayıtlardan geçiş
+      cur.nt = prev.nt !== undefined ? prev.nt : prev.t;
+      cur.pc = prev.pc || ''; cur.pcn = prev.pcn || 0; cur.pca = prev.pca || 0;
+      cur.pt = prev.pt || ''; cur.ptn = prev.ptn || 0; cur.pta = prev.pta || 0;
+    } else {
+      cur.nc = cur.c; cur.nt = cur.t; cur.pc = ''; cur.pcn = 0; cur.pca = 0; cur.pt = ''; cur.ptn = 0; cur.pta = 0;
+    }
     next[slug] = cur;
-    if (!pref.change) continue;
+    // Takip kapalıyken, ilk gözlemde, yeni oturumda veya uzun boşlukta referans
+    // güncel değere çekilir; takip sonradan açılınca eski değerle kıyas yapılmaz.
+    const absorb = () => { cur.nc = cur.c; cur.nt = cur.t; cur.pc = ''; cur.pcn = 0; cur.pca = 0; cur.pt = ''; cur.ptn = 0; cur.pta = 0; };
+    if (!pref.change) { absorb(); continue; }
     if (!prevOn) { KLog.debug('CHG-05', `${slug} ilk gözlem: kategori="${cur.c}" başlık="${cur.t.slice(0, 60)}"`); continue; }
     if (!same) { KLog.debug('CHG-06', `${slug} yeni yayın oturumu, karşılaştırma yok`); continue; }
-    if (now - (prev.at || 0) > CHANGE_MAX_GAP_MS) { KLog.info('CHG-07', `${ch.channelSlug} son taze gözlem ${Math.round((now - prev.at) / 60000)} dk önce, karşılaştırma atlandı`); continue; }
-    const catChanged = prev.c && cur.c && prev.c !== cur.c;
-    const titleChanged = prev.t && cur.t && prev.t !== cur.t;
-    KLog.debug('CHG-08', `${ch.channelSlug} kontrol: kategori "${prev.c}"→"${cur.c}" başlık ${titleChanged ? 'DEĞİŞTİ' : 'aynı'}`);
-    if (!catChanged && !titleChanged) continue;
+    if (now - (prev.at || 0) > CHANGE_MAX_GAP_MS) { KLog.info('CHG-07', `${ch.channelSlug} son taze gözlem ${Math.round((now - prev.at) / 60000)} dk önce, karşılaştırma atlandı`); absorb(); continue; }
+    // v2.5.77: Aday doğrulama. Yeni değer art arda CHANGE_CONFIRM_POLLS kez
+    // görülmeden bildirilmez (Kick'in takip listesi uç noktası zaman zaman bir
+    // önceki kategoriyi tek seferlik geri döndürebiliyor). Değer bildirilen
+    // değere geri dönerse aday silinir, bildirim gitmez.
+    const track = (val, base, pKey, nKey, aKey) => {
+      if (!val || !base || val === base) { cur[pKey] = ''; cur[nKey] = 0; cur[aKey] = 0; return false; }
+      if (cur[pKey] === val) cur[nKey] = (cur[nKey] || 0) + 1; else { cur[pKey] = val; cur[nKey] = 1; cur[aKey] = now; }
+      return cur[nKey] >= CHANGE_CONFIRM_POLLS && now - (cur[aKey] || 0) >= CHANGE_CONFIRM_MIN_MS;
+    };
+    const catReady = track(cur.c, cur.nc, 'pc', 'pcn', 'pca');
+    const titleReady = track(cur.t, cur.nt, 'pt', 'ptn', 'pta');
+    KLog.debug('CHG-08', `${ch.channelSlug} kontrol: bildirilen "${cur.nc}" · önceki "${prev.c}" · şimdi "${cur.c}"${cur.pcn ? ` (aday ${cur.pcn}/${CHANGE_CONFIRM_POLLS})` : ''} · başlık ${cur.ptn ? `aday ${cur.ptn}/${CHANGE_CONFIRM_POLLS}` : 'aynı'}`);
+    if (!catReady && !titleReady) continue;
     if (now - (cur.n || 0) < CHANGE_COOLDOWN_MS) {
-      KLog.debug('CHG-10', `${ch.channelSlug} değişim var ama bekleme süresinde`);
+      KLog.debug('CHG-10', `${ch.channelSlug} değişim doğrulandı ama bekleme süresinde, süre dolunca bildirilecek`);
       continue;
     }
+    const catChanged = catReady;
+    const titleChanged = !catReady && titleReady;
     // v2.5.74: kanal olayları kanal bazlı açıkça açılır; sadece kanal zilinden seçilen 'Bildirim yok' susturur
     const soundInfo = await Storage.getChannelSoundModeInfo(ch.channelSlug);
-    if ((soundInfo.mode === 'muted' && soundInfo.explicit) || !ctx.showNotif || ctx.dndMuteNotif) continue;
+    if ((soundInfo.mode === 'muted' && soundInfo.explicit) || !ctx.showNotif || ctx.dndMuteNotif) {
+      // Kullanıcı bu anda bildirim istemiyor: değişim yutulur, sonradan eski haber olarak gelmez
+      absorb(); continue;
+    }
     await Utils.ensureI18n();
     const title = catChanged
       ? (Utils.i18n('notifCategoryChanged', [ch.userUsername]) || `${ch.userUsername} switched category`)
       : (Utils.i18n('notifTitleChanged', [ch.userUsername]) || `${ch.userUsername} changed the stream title`);
-    const message = catChanged ? `${prev.c} → ${cur.c}` : cur.t;
+    const message = catChanged ? `${cur.nc} → ${cur.c}` : cur.t;
     await sendChannelEventNotification(ch, title, message, notifiedLives);
     cur.n = now;
+    // Bildirilen değerler kullanıcının artık bildiği değerler olur
+    // (kategori bildirimi başlığı da kapsar; eskisi gibi ayrıca başlık bildirimi gitmez)
+    if (catChanged) absorb();
+    else { cur.nt = cur.t; cur.pt = ''; cur.ptn = 0; cur.pta = 0; }
     KLog.info('CHG-20', `${ch.channelSlug} → ${catChanged ? 'kategori' : 'başlık'} değişim bildirimi gönderildi`);
   }
   // v2.5.58: Canlı olmayan kanalların son kaydını hemen silme (bkz. CHANGE_META_KEEP_OFFLINE_MS).
@@ -3907,13 +3945,22 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           m ? `Kaydedildi: "${m.c}" · başlangıç ${m.s ? 'var' : 'yok'} · bildirim yok (beklenen)` : 'Kayıt oluşmadı');
         await checkChannelMetaChanges([mk('Slots', 'Test yayını', null)], nl, ctx);
         m = ((await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {})[T];
+        log('Tek okuma bildirim üretmez', Object.keys(nl).length === 0 && m?.pc === 'Slots' && m?.pcn === 1 ? 'ok' : 'error',
+          Object.keys(nl).length === 0 ? `İlk okumada aday kaydedildi (${m?.pcn}/${CHANGE_CONFIRM_POLLS}), bildirim yok (beklenen)` : 'Tek okumada bildirim gitti');
+        // ikinci okuma: adayın ilk görülme anını geri al (gerçekte bir sonraki kontrol)
+        { const all = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {}; if (all[T]) { all[T].pca -= CHANGE_CONFIRM_MIN_MS + 1000; all[T].at = Date.now(); await chrome.storage.local.set({ [CHANGE_META_KEY]: all }); } }
+        await checkChannelMetaChanges([mk('Slots', 'Test yayını', null)], nl, ctx);
+        m = ((await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {})[T];
         const chgIds = Object.keys(nl);
         log('Kategori değişimi (başlangıç saati boş)', chgIds.length === 1 && m?.c === 'Slots' ? 'ok' : 'error',
           chgIds.length === 1 ? 'Just Chatting → Slots bildirimi gönderildi (ekranda görünmeli)' : `Bildirim sayısı: ${chgIds.length}`);
         log('Başlangıç saati taşındı', m?.s === s0 ? 'ok' : 'warn', m?.s === s0 ? 'Aynı yayın olarak tanındı' : `s=${m?.s}`);
         await checkChannelMetaChanges([mk('Slots', 'Yeni başlık', null)], nl, ctx);
-        log('Bekleme süresi (5 dk)', Object.keys(nl).length === 1 ? 'ok' : 'error',
-          Object.keys(nl).length === 1 ? 'Hemen ardından gelen başlık değişimi susturuldu' : 'Bekleme süresine rağmen ikinci bildirim gitti');
+        { const all = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {}; if (all[T]) { all[T].pta -= CHANGE_CONFIRM_MIN_MS + 1000; await chrome.storage.local.set({ [CHANGE_META_KEY]: all }); } }
+        await checkChannelMetaChanges([mk('Slots', 'Yeni başlık', null)], nl, ctx);
+        m = ((await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {})[T];
+        log('Bekleme süresi (5 dk)', Object.keys(nl).length === 1 && m?.nt === 'Test yayını' && m?.pt === 'Yeni başlık' ? 'ok' : 'error',
+          Object.keys(nl).length === 1 ? 'Doğrulanan başlık değişimi bekleme süresinde tutuldu, süre dolunca bildirilecek' : 'Bekleme süresine rağmen ikinci bildirim gitti');
 
         // 4) Yayın bitti (gerçek addStreamEndCandidate + processStreamEndCandidates)
         await chrome.storage.local.set({ [END_PENDING_KEY]: {} }); // gerçek adaylar test sırasında işlenmesin
@@ -4031,7 +4078,14 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       const m = all[slug];
       if (!pref.change) return respond({ success: false, error: 'Bu kanalda "kategori veya başlık değişince" kapalı' });
       if (!m || m.off) return respond({ success: false, error: 'Kanal şu an takipte değil (canlı görülmemiş)' });
-      m.c = '(test) Önceki kategori'; m.n = 0; m.at = Date.now();
+      // v2.5.77: bildirilen kategori test değeriyle değiştirilir ve gerçek kategori
+      // bir kez görülmüş aday olarak işaretlenir; böylece zorlanan kontrol ikinci
+      // okuma sayılır ve bildirim gider (gerçek akıştaki 2 okuma doğrulamasıyla aynı yol)
+      const real = m.c || '';
+      m.nc = '(test) Önceki kategori'; m.nt = m.t || '';
+      m.pc = real; m.pcn = real ? 1 : 0; m.pca = Date.now() - CHANGE_CONFIRM_MIN_MS - 1000;
+      m.pt = ''; m.ptn = 0; m.pta = 0;
+      m.n = 0; m.at = Date.now();
       await chrome.storage.local.set({ [CHANGE_META_KEY]: all });
       respond({ success: true });
     })().catch(e => respond({ success: false, error: e.message }));

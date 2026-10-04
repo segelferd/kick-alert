@@ -645,7 +645,7 @@
     "message": "Você ainda não segue ninguém. Siga um canal na Kick e ele aparecerá aqui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Novidades: o bloqueio de anúncios ao vivo voltou a funcionar após a mudança da Kick, e você pode definir um alerta de canal padrão ou aplicá-lo a todos os canais nas <a id=\"whatsnew-settings-link\">Configurações</a>."
+    "message": "Novo: alertas de categoria e título mais precisos; uma leitura errada momentânea do Kick não envia mais um alerta invertido."
   },
   "optGroupGeneral": {
     "message": "Geral"
@@ -672,22 +672,22 @@
     "message": "Fechar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.76 — Bloqueio de anúncios funcionando de novo, início mais tranquilo"
+    "message": "v2.5.77 — Alertas de canal mais precisos"
   },
   "releaseHistoryV0Body": {
-    "message": "• O bloqueio de anúncios ao vivo foi adaptado à mudança da Kick em outubro: o player agora abre o stream sem anúncios desde o início. Transmissões passadas também usam o novo caminho sem anúncios\n• Em uma instalação nova os alertas de canal começam desativados, então seguir muitos canais não significa mais uma enxurrada de notificações. Ative os canais que quiser pelo sino no cartão deles. Ao atualizar, suas configurações são mantidas\n• Configurações: \"Alerta de canal padrão\" para canais sem configuração de sino própria e \"Aplicar a todos os canais\" com Desfazer. Para silenciar tudo só em certos horários, use Não perturbe\n• Com o padrão desativado, a abertura automática e os alertas de canal que você ativou continuam funcionando\n• Opcional e desativado por padrão: compartilhar um resumo técnico de diagnóstico de anúncios (sem nomes de canais ou dados pessoais) para corrigir o bloqueio mais rápido\n• Os botões das janelas de confirmação agora mostram todo o texto em todos os idiomas (empilham quando o texto é longo)"
+    "message": "• Alertas de categoria e título mais precisos: uma leitura errada momentânea do Kick não gera mais alerta, e uma mudança feita durante a espera de 5 minutos é avisada quando ela termina\n• Mudanças feitas com os alertas pausados (Não perturbe, canal silenciado) não chegam mais depois como notícia velha"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.67 — Alertas por canal, tempo assistido e correções"
+    "message": "v2.5.76 — Bloqueio de anúncios funcionando de novo, início mais tranquilo"
   },
   "releaseHistoryV1Body": {
-    "message": "• Nova janela de alertas por canal (botão de ajustes no card): seja avisado quando um canal mudar de categoria ou título, quando uma live terminar (com a duração) e quando ele receber uma raid (de quem e com quantos espectadores). Tudo vem desativado\n• Filtro por canal: avisar só quando a categoria for uma das escolhidas ou o título tiver uma das suas palavras\n• Esses alertas têm um som próprio, mais baixo (Gota suave, Sino leve, Tique), o som do Windows ou silêncio, com volume separado\n• Tempo assistido: o histórico mostra quanto você assistiu nos últimos 7 dias e seus canais principais (salvo só neste dispositivo)\n• Passe o mouse sobre a prévia de um canal para vê-la em tamanho grande; os botões dos cards sempre cabem\n• Corrigido no Chrome atual (148+): no modo \"Sons da extensão\" as notificações tocavam também o som do Windows e perdiam os botões Abrir / Silenciar\n• A sincronização na nuvem não desfaz mais um arquivo de configurações importado, e uma configuração grande demais para sincronizar é mantida em vez de sobrescrita\n• As configurações não são mais cortadas em idiomas mais longos; método reserva mais forte para pular anúncios na live"
+    "message": "• O bloqueio de anúncios ao vivo foi adaptado à mudança da Kick em outubro: o player agora abre o stream sem anúncios desde o início. Transmissões passadas também usam o novo caminho sem anúncios\n• Em uma instalação nova os alertas de canal começam desativados, então seguir muitos canais não significa mais uma enxurrada de notificações. Ative os canais que quiser pelo sino no cartão deles. Ao atualizar, suas configurações são mantidas\n• Configurações: \"Alerta de canal padrão\" para canais sem configuração de sino própria e \"Aplicar a todos os canais\" com Desfazer. Para silenciar tudo só em certos horários, use Não perturbe\n• Com o padrão desativado, a abertura automática e os alertas de canal que você ativou continuam funcionando\n• Opcional e desativado por padrão: compartilhar um resumo técnico de diagnóstico de anúncios (sem nomes de canais ou dados pessoais) para corrigir o bloqueio mais rápido\n• Os botões das janelas de confirmação agora mostram todo o texto em todos os idiomas (empilham quando o texto é longo)"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.46 — Um visual totalmente novo"
+    "message": "v2.5.67 — Alertas por canal, tempo assistido e correções"
   },
   "releaseHistoryV2Body": {
-    "message": "• Popup redesenhado: cabeçalho mais limpo, contadores nas abas (canais ao vivo, novas notificações), cartões mais discretos e um único estilo de interruptor em todas as configurações\n• Novo tema \"Sistema\" que segue o modo claro ou escuro do seu computador\n• Fontes e ícones agora vêm dentro da extensão: nomes de ícones não aparecem mais como texto em conexões lentas e o popup não faz requisições ao Google\n• Histórico: notificações idênticas repetidas são agrupadas e categorias vazias ficam ocultas\n• Ícones de modo de som mais claros, foco de teclado visível e respeito à configuração do sistema \"reduzir movimento\""
+    "message": "• Nova janela de alertas por canal (botão de ajustes no card): seja avisado quando um canal mudar de categoria ou título, quando uma live terminar (com a duração) e quando ele receber uma raid (de quem e com quantos espectadores). Tudo vem desativado\n• Filtro por canal: avisar só quando a categoria for uma das escolhidas ou o título tiver uma das suas palavras\n• Esses alertas têm um som próprio, mais baixo (Gota suave, Sino leve, Tique), o som do Windows ou silêncio, com volume separado\n• Tempo assistido: o histórico mostra quanto você assistiu nos últimos 7 dias e seus canais principais (salvo só neste dispositivo)\n• Passe o mouse sobre a prévia de um canal para vê-la em tamanho grande; os botões dos cards sempre cabem\n• Corrigido no Chrome atual (148+): no modo \"Sons da extensão\" as notificações tocavam também o som do Windows e perdiam os botões Abrir / Silenciar\n• A sincronização na nuvem não desfaz mais um arquivo de configurações importado, e uma configuração grande demais para sincronizar é mantida em vez de sobrescrita\n• As configurações não são mais cortadas em idiomas mais longos; método reserva mais forte para pular anúncios na live"
   },
   "settingsBackupTitle": {
     "message": "Backup e restauração"

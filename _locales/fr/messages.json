@@ -645,7 +645,7 @@
     "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
   },
   "whatsNewBannerText": {
-    "message": "Nouveau : le blocage des publicités en live refonctionne après le changement de Kick, et vous pouvez définir une alerte de chaîne par défaut ou l'appliquer à toutes les chaînes dans les <a id=\"whatsnew-settings-link\">Paramètres</a>."
+    "message": "Nouveau : les alertes de catégorie et de titre sont plus fiables ; une lecture erronée passagère de Kick n'envoie plus d'alerte inversée."
   },
   "optGroupGeneral": {
     "message": "Général"
@@ -672,22 +672,22 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.76 — Le blocage des publicités refonctionne, démarrage plus calme"
+    "message": "v2.5.77 — Alertes de chaîne plus fiables"
   },
   "releaseHistoryV0Body": {
-    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite\n• Les boutons des fenêtres de confirmation affichent désormais tout leur texte dans chaque langue (empilés si le libellé est long)"
+    "message": "• Alertes de catégorie et de titre plus fiables : une lecture erronée passagère de Kick ne déclenche plus d'alerte, et un changement fait pendant l'attente de 5 minutes est signalé à la fin de celle-ci\n• Les changements survenus pendant la pause des alertes (Ne pas déranger, chaîne en sourdine) n'arrivent plus plus tard comme une vieille nouvelle"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.67 — Alertes par chaîne, temps de visionnage et corrections"
+    "message": "v2.5.76 — Le blocage des publicités refonctionne, démarrage plus calme"
   },
   "releaseHistoryV1Body": {
-    "message": "• Nouvelle fenêtre d'alertes par chaîne (bouton de réglage sur la carte) : soyez prévenu quand une chaîne change de catégorie ou de titre, quand un live se termine (avec sa durée) et quand elle reçoit un raid (de qui et avec combien de spectateurs). Tout est désactivé par défaut\n• Filtre par chaîne : n'être prévenu que si la catégorie fait partie de votre sélection ou si le titre contient l'un de vos mots\n• Ces alertes ont leur propre son plus discret (Goutte douce, Carillon léger, Tic), le son Windows ou le silence, avec un volume séparé\n• Temps de visionnage : l'historique indique combien de temps vous avez regardé ces 7 derniers jours et vos chaînes principales (stocké uniquement sur cet appareil)\n• Survolez l'aperçu d'une chaîne pour l'afficher en grand ; les boutons des cartes tiennent toujours\n• Corrigé sur Chrome récent (148+) : en mode « Sons de l'extension », les notifications jouaient le son Windows et perdaient leurs boutons Ouvrir / Couper le son\n• La synchronisation cloud n'annule plus un fichier de paramètres importé, et un paramètre trop volumineux pour être synchronisé est conservé au lieu d'être écrasé\n• Les paramètres ne sont plus coupés dans les langues longues ; méthode de secours renforcée pour sauter les publicités en live"
+    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite\n• Les boutons des fenêtres de confirmation affichent désormais tout leur texte dans chaque langue (empilés si le libellé est long)"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.46 — Un tout nouveau look"
+    "message": "v2.5.67 — Alertes par chaîne, temps de visionnage et corrections"
   },
   "releaseHistoryV2Body": {
-    "message": "• Popup repensé : en-tête épuré, compteurs sur les onglets (chaînes en direct, nouvelles notifications), cartes plus sobres et un style d'interrupteur unique dans tous les paramètres\n• Nouveau thème « Système » qui suit le mode clair ou sombre de votre ordinateur\n• Les polices et icônes sont désormais intégrées à l'extension : les noms d'icônes n'apparaissent plus en texte sur une connexion lente, et le popup n'envoie aucune requête à Google\n• Historique : les notifications identiques répétées sont regroupées et les catégories vides masquées\n• Icônes de mode sonore plus claires, focus clavier visible et respect du réglage système « réduire les animations »"
+    "message": "• Nouvelle fenêtre d'alertes par chaîne (bouton de réglage sur la carte) : soyez prévenu quand une chaîne change de catégorie ou de titre, quand un live se termine (avec sa durée) et quand elle reçoit un raid (de qui et avec combien de spectateurs). Tout est désactivé par défaut\n• Filtre par chaîne : n'être prévenu que si la catégorie fait partie de votre sélection ou si le titre contient l'un de vos mots\n• Ces alertes ont leur propre son plus discret (Goutte douce, Carillon léger, Tic), le son Windows ou le silence, avec un volume séparé\n• Temps de visionnage : l'historique indique combien de temps vous avez regardé ces 7 derniers jours et vos chaînes principales (stocké uniquement sur cet appareil)\n• Survolez l'aperçu d'une chaîne pour l'afficher en grand ; les boutons des cartes tiennent toujours\n• Corrigé sur Chrome récent (148+) : en mode « Sons de l'extension », les notifications jouaient le son Windows et perdaient leurs boutons Ouvrir / Couper le son\n• La synchronisation cloud n'annule plus un fichier de paramètres importé, et un paramètre trop volumineux pour être synchronisé est conservé au lieu d'être écrasé\n• Les paramètres ne sont plus coupés dans les langues longues ; méthode de secours renforcée pour sauter les publicités en live"
   },
   "settingsBackupTitle": {
     "message": "Sauvegarde et restauration"
