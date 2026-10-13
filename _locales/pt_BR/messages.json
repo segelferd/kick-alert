@@ -645,7 +645,7 @@
     "message": "Você ainda não segue ninguém. Siga um canal na Kick e ele aparecerá aqui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Corrigido: alertas instantâneos de live, alertas de raid e a pontuação de bots voltaram a funcionar após a mudança no serviço em tempo real do Kick."
+    "message": "Novo: pontuação de bot no Firefox e um guia rápido para as permissões de site desativadas após uma atualização."
   },
   "optGroupGeneral": {
     "message": "Geral"
@@ -672,22 +672,22 @@
     "message": "Fechar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — Alertas instantâneos e raids de volta"
+    "message": "v2.5.81 — Pontuação de bot no Firefox, guia de permissões"
   },
   "releaseHistoryV0Body": {
-    "message": "• Alertas instantâneos de live, alertas de raid e a pontuação de bots voltaram a funcionar: o Kick trocou a chave do seu serviço em tempo real e o KickAlert agora obtém a chave atual do Kick automaticamente\n• Se o Kick trocar de novo, a extensão pega a nova chave sozinha em vez de repetir erros\n• O popup não mostra mais uma segunda barra de rolagem nem espaço vazio no fim das Configurações"
+    "message": "• A pontuação de bot agora também funciona no Firefox, assim como no Chrome\n• Depois de uma atualização, um guia rápido mostra as permissões de site desativadas, explica por que são necessárias e permite ativá-las\n• Firefox: as solicitações por uma aba do Kick aberta voltaram a funcionar"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — Alertas de canal mais precisos"
+    "message": "v2.5.79 — Alertas instantâneos e raids de volta"
   },
   "releaseHistoryV1Body": {
-    "message": "• Alertas de categoria e título mais precisos: uma leitura errada momentânea do Kick não gera mais alerta, e uma mudança feita durante a espera de 5 minutos é avisada quando ela termina\n• Mudanças feitas com os alertas pausados (Não perturbe, canal silenciado) não chegam mais depois como notícia velha"
+    "message": "• Alertas instantâneos de live, alertas de raid e a pontuação de bots voltaram a funcionar: o Kick trocou a chave do seu serviço em tempo real e o KickAlert agora obtém a chave atual do Kick automaticamente\n• Se o Kick trocar de novo, a extensão pega a nova chave sozinha em vez de repetir erros\n• O popup não mostra mais uma segunda barra de rolagem nem espaço vazio no fim das Configurações"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — Bloqueio de anúncios funcionando de novo, início mais tranquilo"
+    "message": "v2.5.77 — Alertas de canal mais precisos"
   },
   "releaseHistoryV2Body": {
-    "message": "• O bloqueio de anúncios ao vivo foi adaptado à mudança da Kick em outubro: o player agora abre o stream sem anúncios desde o início. Transmissões passadas também usam o novo caminho sem anúncios\n• Em uma instalação nova os alertas de canal começam desativados, então seguir muitos canais não significa mais uma enxurrada de notificações. Ative os canais que quiser pelo sino no cartão deles. Ao atualizar, suas configurações são mantidas\n• Configurações: \"Alerta de canal padrão\" para canais sem configuração de sino própria e \"Aplicar a todos os canais\" com Desfazer. Para silenciar tudo só em certos horários, use Não perturbe\n• Com o padrão desativado, a abertura automática e os alertas de canal que você ativou continuam funcionando\n• Opcional e desativado por padrão: compartilhar um resumo técnico de diagnóstico de anúncios (sem nomes de canais ou dados pessoais) para corrigir o bloqueio mais rápido\n• Os botões das janelas de confirmação agora mostram todo o texto em todos os idiomas (empilham quando o texto é longo)"
+    "message": "• Alertas de categoria e título mais precisos: uma leitura errada momentânea do Kick não gera mais alerta, e uma mudança feita durante a espera de 5 minutos é avisada quando ela termina\n• Mudanças feitas com os alertas pausados (Não perturbe, canal silenciado) não chegam mais depois como notícia velha"
   },
   "settingsBackupTitle": {
     "message": "Backup e restauração"
@@ -1068,5 +1068,83 @@
   },
   "mutedNoticeText": {
     "message": "Em uma instalação nova os alertas de canal vêm desativados. Ative os canais que quiser pelo sino no cartão deles, ou todos de uma vez em"
+  },
+  "permWizHeader": {
+    "message": "Permissões da extensão"
+  },
+  "permWizRequired": {
+    "message": "Obrigatória"
+  },
+  "permWizRecommended": {
+    "message": "Recomendada"
+  },
+  "permWizIfOff": {
+    "message": "Se desativada"
+  },
+  "permWizSkip": {
+    "message": "Agora não"
+  },
+  "permWizNext": {
+    "message": "Avançar"
+  },
+  "permWizFinish": {
+    "message": "Concluir"
+  },
+  "permWizKickTitle": {
+    "message": "Acesso à sua conta Kick"
+  },
+  "permWizKickWhy": {
+    "message": "Busca no kick.com os canais que você segue e quais estão ao vivo, e lê o cookie de login do Kick para reconhecer sua conta."
+  },
+  "permWizKickOff": {
+    "message": "A extensão não vê nenhum canal: sua lista fica vazia e nenhum alerta chega."
+  },
+  "permWizKickLabel": {
+    "message": "Acesso ao kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Configurações de conexão do Kick"
+  },
+  "permWizWebWhy": {
+    "message": "Pergunta ao Kick qual endereço usar para o serviço de alertas instantâneos. O próprio site do Kick faz a mesma pergunta."
+  },
+  "permWizWebOff": {
+    "message": "Funciona por enquanto, mas se o Kick mudar os dados de conexão, os alertas instantâneos vão parar."
+  },
+  "permWizWebLabel": {
+    "message": "Acesso ao web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "Serviço de alertas instantâneos"
+  },
+  "permWizPusherWhy": {
+    "message": "O serviço em tempo real do Kick. Os alertas de início de live e de raid chegam por ele."
+  },
+  "permWizPusherOff": {
+    "message": "Os alertas chegam com 1 a 1,5 minuto de atraso, e os alertas de raid não funcionam."
+  },
+  "permWizPusherLabel": {
+    "message": "Acesso ao ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "Obrigado!"
+  },
+  "permWizDoneBody": {
+    "message": "Você concedeu as permissões de que o KickAlert precisa. Os alertas instantâneos estão prontos."
+  },
+  "permWizPartialTitle": {
+    "message": "Algumas permissões ainda estão desativadas"
+  },
+  "permWizPartialBody": {
+    "message": "Ainda desativadas: $1. Você pode ativá-las quando quiser pelo lembrete acima da sua lista de canais."
+  },
+  "permWizCloses": {
+    "message": "Fecha em 3 segundos"
+  },
+  "permRemindText": {
+    "message": "Algumas permissões estão desativadas, então os alertas instantâneos podem não funcionar por completo."
+  },
+  "permRemindButton": {
+    "message": "Ativar"
   }
 }

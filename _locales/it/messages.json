@@ -645,7 +645,7 @@
     "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Risolto: gli avvisi istantanei di live, gli avvisi di raid e il punteggio bot funzionano di nuovo dopo il cambio del servizio in tempo reale di Kick."
+    "message": "Novità: punteggio bot su Firefox e una breve guida per le autorizzazioni dei siti disattivate dopo un aggiornamento."
   },
   "optGroupGeneral": {
     "message": "Generale"
@@ -672,22 +672,22 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — Avvisi istantanei e raid di nuovo attivi"
+    "message": "v2.5.81 — Punteggio bot su Firefox, guida alle autorizzazioni"
   },
   "releaseHistoryV0Body": {
-    "message": "• Gli avvisi istantanei di live, gli avvisi di raid e il punteggio bot funzionano di nuovo: Kick ha sostituito la chiave del suo servizio in tempo reale e KickAlert ora ottiene automaticamente la chiave attuale da Kick\n• Se Kick la cambia di nuovo, l'estensione prende da sola la nuova chiave invece di ripetere errori\n• Il popup non mostra più una seconda barra di scorrimento né spazio vuoto in fondo alle Impostazioni"
+    "message": "• Il punteggio bot ora funziona anche su Firefox, come su Chrome\n• Dopo un aggiornamento, una breve guida mostra le autorizzazioni dei siti disattivate, spiega a cosa servono e ti permette di attivarle\n• Firefox: le richieste tramite una scheda di Kick aperta funzionano di nuovo"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — Avvisi dei canali più precisi"
+    "message": "v2.5.79 — Avvisi istantanei e raid di nuovo attivi"
   },
   "releaseHistoryV1Body": {
-    "message": "• Avvisi di categoria e titolo più precisi: una lettura errata momentanea di Kick non genera più un avviso e un cambio fatto durante l'attesa di 5 minuti viene notificato al termine\n• I cambi avvenuti con gli avvisi in pausa (Non disturbare, canale silenziato) non arrivano più dopo come notizia vecchia"
+    "message": "• Gli avvisi istantanei di live, gli avvisi di raid e il punteggio bot funzionano di nuovo: Kick ha sostituito la chiave del suo servizio in tempo reale e KickAlert ora ottiene automaticamente la chiave attuale da Kick\n• Se Kick la cambia di nuovo, l'estensione prende da sola la nuova chiave invece di ripetere errori\n• Il popup non mostra più una seconda barra di scorrimento né spazio vuoto in fondo alle Impostazioni"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — Il blocco pubblicità funziona di nuovo, avvio più tranquillo"
+    "message": "v2.5.77 — Avvisi dei canali più precisi"
   },
   "releaseHistoryV2Body": {
-    "message": "• Il blocco della pubblicità in diretta è stato adattato al cambiamento di Kick di ottobre: il player ora apre fin dall'inizio lo stream senza pubblicità. Anche le trasmissioni passate usano la nuova via senza pubblicità\n• Con una nuova installazione gli avvisi dei canali partono disattivati, quindi seguire molti canali non significa più una valanga di notifiche. Attiva i canali che vuoi con la campanella sulla loro scheda. Con un aggiornamento le tue impostazioni restano\n• Impostazioni: \"Avviso canale predefinito\" per i canali senza impostazione della campanella e \"Applica a tutti i canali\" con Annulla. Per silenziare tutto solo in certi orari, usa Non disturbare\n• Anche con il predefinito disattivato, l'apertura automatica e gli avvisi di canale che hai attivato continuano a funzionare\n• Facoltativo, disattivato per impostazione predefinita: condividi un riepilogo tecnico di diagnostica pubblicità (senza nomi di canali o dati personali) per correggere il blocco più in fretta\n• I pulsanti delle finestre di conferma ora mostrano tutto il testo in ogni lingua (si impilano se il testo è lungo)"
+    "message": "• Avvisi di categoria e titolo più precisi: una lettura errata momentanea di Kick non genera più un avviso e un cambio fatto durante l'attesa di 5 minuti viene notificato al termine\n• I cambi avvenuti con gli avvisi in pausa (Non disturbare, canale silenziato) non arrivano più dopo come notizia vecchia"
   },
   "settingsBackupTitle": {
     "message": "Backup e ripristino"
@@ -1068,5 +1068,83 @@
   },
   "mutedNoticeText": {
     "message": "Con una nuova installazione gli avvisi dei canali sono disattivati. Attiva i canali che vuoi con la campanella sulla loro scheda, o tutti insieme in"
+  },
+  "permWizHeader": {
+    "message": "Autorizzazioni dell'estensione"
+  },
+  "permWizRequired": {
+    "message": "Obbligatoria"
+  },
+  "permWizRecommended": {
+    "message": "Consigliata"
+  },
+  "permWizIfOff": {
+    "message": "Se disattivata"
+  },
+  "permWizSkip": {
+    "message": "Non ora"
+  },
+  "permWizNext": {
+    "message": "Avanti"
+  },
+  "permWizFinish": {
+    "message": "Fine"
+  },
+  "permWizKickTitle": {
+    "message": "Accesso al tuo account Kick"
+  },
+  "permWizKickWhy": {
+    "message": "Recupera da kick.com i canali che segui e quali sono in diretta, e legge il cookie di accesso di Kick per riconoscere il tuo account."
+  },
+  "permWizKickOff": {
+    "message": "L'estensione non vede nessun canale: la tua lista resta vuota e non arriva alcun avviso."
+  },
+  "permWizKickLabel": {
+    "message": "Accesso a kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Impostazioni di connessione di Kick"
+  },
+  "permWizWebWhy": {
+    "message": "Chiede a Kick quale indirizzo usare per il suo servizio di avvisi istantanei. Anche il sito di Kick fa la stessa domanda."
+  },
+  "permWizWebOff": {
+    "message": "Per ora funziona, ma se Kick cambia i dati di connessione, gli avvisi istantanei si fermano."
+  },
+  "permWizWebLabel": {
+    "message": "Accesso a web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "Servizio di avvisi istantanei"
+  },
+  "permWizPusherWhy": {
+    "message": "Il servizio in tempo reale di Kick. Da qui arrivano gli avvisi di inizio diretta e di raid."
+  },
+  "permWizPusherOff": {
+    "message": "Gli avvisi arrivano con 1-1,5 minuti di ritardo e gli avvisi di raid non funzionano."
+  },
+  "permWizPusherLabel": {
+    "message": "Accesso a ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "Grazie!"
+  },
+  "permWizDoneBody": {
+    "message": "Hai concesso le autorizzazioni di cui KickAlert ha bisogno. Gli avvisi istantanei sono pronti."
+  },
+  "permWizPartialTitle": {
+    "message": "Alcune autorizzazioni sono ancora disattivate"
+  },
+  "permWizPartialBody": {
+    "message": "Ancora disattivate: $1. Puoi attivarle quando vuoi dal promemoria sopra l'elenco dei canali."
+  },
+  "permWizCloses": {
+    "message": "Si chiude tra 3 secondi"
+  },
+  "permRemindText": {
+    "message": "Alcune autorizzazioni sono disattivate, quindi gli avvisi istantanei potrebbero non funzionare del tutto."
+  },
+  "permRemindButton": {
+    "message": "Attiva"
   }
 }

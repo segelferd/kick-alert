@@ -54,6 +54,16 @@
     </button>
   </div>
 
+  <!-- v2.5.81: Sihirbazda atlanan site izni varsa küçük hatırlatma -->
+  <div id="perm-reminder" class="whatsnew-banner perm-reminder" style="display:none;">
+    <span class="material-icons-outlined">shield</span>
+    <span class="whatsnew-banner-text" data-i18n="permRemindText">Some permissions are off, so instant alerts may not work fully.</span>
+    <button type="button" id="perm-reminder-open" class="perm-reminder-btn" data-i18n="permRemindButton">Turn on</button>
+    <button type="button" id="perm-reminder-close" class="whatsnew-banner-close" aria-label="Close">
+      <span class="material-icons-outlined">close</span>
+    </button>
+  </div>
+
   <!-- v2.5.52: Değerlendirme isteği; sadece gerçekten kullanan birine, en fazla iki kez -->
   <div id="rate-banner" class="whatsnew-banner rate-banner" style="display:none;">
     <span class="material-icons-outlined">star_rate</span>
@@ -999,6 +1009,42 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+  <!-- v2.5.81: Güncelleme sonrası izin sihirbazı (sadece kapalı site izinleri) -->
+  <div id="perm-wizard" class="permwiz" style="display:none;">
+    <div class="permwiz-backdrop"></div>
+    <div class="permwiz-box" id="permwiz-step" role="dialog" aria-modal="true" aria-labelledby="permwiz-title">
+      <div class="permwiz-top">
+        <span class="permwiz-hdr"><span data-i18n="permWizHeader">Extension permissions</span> · <span id="permwiz-pos">1/3</span></span>
+        <span class="permwiz-dots" id="permwiz-dots"></span>
+      </div>
+      <div class="permwiz-head">
+        <div class="permwiz-icon"><span class="material-icons-outlined" id="permwiz-icon">group</span></div>
+        <div class="permwiz-headtext">
+          <div class="permwiz-titlerow"><h2 id="permwiz-title"></h2><span id="permwiz-badge" class="permwiz-badge"></span></div>
+          <p id="permwiz-why"></p>
+        </div>
+      </div>
+      <div class="permwiz-off">
+        <div class="permwiz-offlbl" data-i18n="permWizIfOff">If off</div>
+        <div id="permwiz-offtext"></div>
+      </div>
+      <button type="button" role="switch" aria-checked="false" id="permwiz-switch" class="permwiz-switch">
+        <span class="permwiz-switch-text"><span id="permwiz-label"></span><span id="permwiz-host" class="permwiz-host" dir="ltr"></span></span>
+        <span class="permwiz-track"><span class="permwiz-knob"></span></span>
+      </button>
+      <div class="permwiz-actions">
+        <button type="button" id="permwiz-skip" class="permwiz-skip" data-i18n="permWizSkip">Not now</button>
+        <button type="button" id="permwiz-next" class="permwiz-next">Next</button>
+      </div>
+    </div>
+    <div class="permwiz-box permwiz-done" id="permwiz-done" role="status" style="display:none;">
+      <div class="permwiz-done-icon" id="permwiz-done-icon"><span class="material-icons-outlined" id="permwiz-done-glyph">check</span></div>
+      <h2 id="permwiz-done-title"></h2>
+      <p id="permwiz-done-body"></p>
+      <div class="permwiz-progress"><div></div></div>
+      <div class="permwiz-closes" data-i18n="permWizCloses">Closes in 3 seconds</div>
     </div>
   </div>
 </body>

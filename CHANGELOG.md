@@ -5,6 +5,19 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.81 — Bot score on Firefox, permission guide
+
+- **Bot score on Firefox.** Until now Firefox ran the chat connection in raid-only mode and never computed bot scores (`syncBotTracker`: `raidOnly = !enabled || !hasOffscreen`). Firefox now computes and stores scores exactly like Chrome; BotTracker runs in the background page, scoring goes through the existing local `BotTrackerHost` path. Verified against live Kick chat (152 messages/min, 117 chatters → score stored)
+- **Permission guide after updates.** Firefox does not ask for or grant host permissions added in an update (Firefox bug 1893232), and Chrome users can withhold site access. After an update the popup now shows only the site permissions that are off (kick.com required; web.kick.com and ws-us2.pusher.com recommended), one step each: why it is needed, what happens when it is off, and a switch that opens the browser's own permission prompt (`permissions.request`, inside the click). Finish shows "Thank you" or the permissions still off, then closes after 3 seconds; skipped permissions leave a small reminder band above the channel list (closable). If Firefox closes the popup while the prompt is open, the next popup opening continues. All texts in 14 languages, proofread by a separate reviewer
+- Background reacts to newly granted permissions: web.kick.com → asks Kick for the current Pusher key right away; ws-us2.pusher.com (Firefox) → reconnects immediately
+- BotTracker no longer logs "Shutdown" on every check when it was not running
+- What's New banner and Release History (v2.5.81, v2.5.79, v2.5.77) in 14 languages
+
+## v2.5.80 — Firefox: requests through the open Kick tab work again
+
+- Firefox: the content script relays API requests through an open kick.com tab ("Plan C", used when background requests are blocked by Cloudflare). Copying the response headers with `headers.entries()` threw "is not iterable" in Firefox, so every relayed request failed and fell back to the background request. Headers are now read with `forEach` (with a per-header fallback). Chrome was not affected
+- Confirmed on Firefox: with the `ws-us2.pusher.com` permission off the real-time connection does not come up; with it on it connects. The permission is needed
+
 ## v2.5.79 — No double scrollbar in the popup
 
 - Settings: the hidden radio inputs of the anomaly alert options were `position: absolute` without a positioned parent, so they escaped the Settings scroll area and stretched the popup page by about 2,300 px. The popup showed a second (outer) scrollbar and a long empty area below the footer (reported on Firefox). `.options-body` and `.opt-radio-row` are now positioned

@@ -647,7 +647,7 @@
     "message": "Zatím nikoho nesledujete. Sledujte kanál na Kicku a automaticky se zobrazí zde."
   },
   "whatsNewBannerText": {
-    "message": "Opraveno: okamžitá upozornění na živé vysílání, upozornění na raidy a bot skóre po změně služby Kicku v reálném čase opět fungují."
+    "message": "Novinka: skóre botů ve Firefoxu a krátký průvodce pro oprávnění webů vypnutá po aktualizaci."
   },
   "optGroupGeneral": {
     "message": "Obecné"
@@ -674,22 +674,22 @@
     "message": "Zavřít"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — Okamžitá upozornění a raidy opět fungují"
+    "message": "v2.5.81 — Skóre botů ve Firefoxu, průvodce oprávněními"
   },
   "releaseHistoryV0Body": {
-    "message": "• Okamžitá upozornění na živé vysílání, upozornění na raidy a bot skóre opět fungují: Kick vyměnil klíč své služby v reálném čase a KickAlert nyní získává aktuální klíč od Kicku automaticky\n• Pokud ho Kick změní znovu, rozšíření si nový klíč vezme samo místo opakování chyb\n• Okno už nezobrazuje druhý posuvník ani prázdné místo na konci Nastavení"
+    "message": "• Skóre botů teď funguje i ve Firefoxu, stejně jako v Chromu\n• Po aktualizaci krátký průvodce ukáže vypnutá oprávnění pro weby, vysvětlí, k čemu jsou potřeba, a umožní je zapnout\n• Firefox: požadavky přes otevřenou kartu Kick opět fungují"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — Přesnější upozornění kanálů"
+    "message": "v2.5.79 — Okamžitá upozornění a raidy opět fungují"
   },
   "releaseHistoryV1Body": {
-    "message": "• Přesnější upozornění na změnu kategorie a názvu: krátkodobě chybná hodnota z Kicku už nespustí upozornění a změna provedená během 5minutového čekání se oznámí po jeho skončení\n• Změny, ke kterým došlo během pozastavených upozornění (Nerušit, ztlumený kanál), už nepřijdou později jako stará zpráva"
+    "message": "• Okamžitá upozornění na živé vysílání, upozornění na raidy a bot skóre opět fungují: Kick vyměnil klíč své služby v reálném čase a KickAlert nyní získává aktuální klíč od Kicku automaticky\n• Pokud ho Kick změní znovu, rozšíření si nový klíč vezme samo místo opakování chyb\n• Okno už nezobrazuje druhý posuvník ani prázdné místo na konci Nastavení"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — Blokování reklam opět funguje, klidnější začátek"
+    "message": "v2.5.77 — Přesnější upozornění kanálů"
   },
   "releaseHistoryV2Body": {
-    "message": "• Blokování reklam v živém vysílání bylo upraveno na říjnovou změnu Kicku: přehrávač nyní hned od začátku otevírá stream bez reklam. Minulá vysílání také používají novou cestu bez reklam\n• Po nové instalaci jsou upozornění kanálů vypnutá, takže sledování mnoha kanálů už neznamená záplavu upozornění. Požadované kanály zapněte zvonkem na jejich kartě. Při aktualizaci zůstane vaše nastavení zachováno\n• Nastavení: „Výchozí upozornění kanálu“ pro kanály bez vlastního nastavení zvonku a „Použít na všechny kanály“ s možností vrácení. Chcete-li vše ztlumit jen v určitých hodinách, použijte Nerušit\n• I když je výchozí stav vypnutý, automatické otevírání a upozornění kanálu, které jste pro kanál zapnuli, fungují dál\n• Volitelné, ve výchozím stavu vypnuté: sdílení technického shrnutí diagnostiky reklam (bez názvů kanálů a osobních údajů), aby šlo blokování opravit rychleji\n• Tlačítka v potvrzovacích oknech nyní pojmou svůj text v každém jazyce (při dlouhém textu jsou pod sebou)"
+    "message": "• Přesnější upozornění na změnu kategorie a názvu: krátkodobě chybná hodnota z Kicku už nespustí upozornění a změna provedená během 5minutového čekání se oznámí po jeho skončení\n• Změny, ke kterým došlo během pozastavených upozornění (Nerušit, ztlumený kanál), už nepřijdou později jako stará zpráva"
   },
   "settingsBackupTitle": {
     "message": "Zálohování a obnovení"
@@ -1070,5 +1070,83 @@
   },
   "mutedNoticeText": {
     "message": "Po nové instalaci jsou upozornění kanálů vypnutá. Zapněte požadované kanály zvonkem na jejich kartě nebo všechny najednou v"
+  },
+  "permWizHeader": {
+    "message": "Oprávnění rozšíření"
+  },
+  "permWizRequired": {
+    "message": "Povinné"
+  },
+  "permWizRecommended": {
+    "message": "Doporučené"
+  },
+  "permWizIfOff": {
+    "message": "Když je vypnuto"
+  },
+  "permWizSkip": {
+    "message": "Teď ne"
+  },
+  "permWizNext": {
+    "message": "Další"
+  },
+  "permWizFinish": {
+    "message": "Dokončit"
+  },
+  "permWizKickTitle": {
+    "message": "Přístup k vašemu účtu Kick"
+  },
+  "permWizKickWhy": {
+    "message": "Načítá z kick.com kanály, které sledujete, a zjišťuje, které z nich vysílají. Čte také přihlašovací cookie Kicku, aby rozpoznalo váš účet."
+  },
+  "permWizKickOff": {
+    "message": "Rozšíření neuvidí žádný kanál: seznam zůstane prázdný a nepřijdou žádná upozornění."
+  },
+  "permWizKickLabel": {
+    "message": "Přístup ke kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Nastavení připojení ke Kicku"
+  },
+  "permWizWebWhy": {
+    "message": "Zjišťuje od Kicku, přes jakou adresu se připojit k jeho službě okamžitých upozornění. Stejný dotaz posílá i web Kicku."
+  },
+  "permWizWebOff": {
+    "message": "Zatím funguje, ale když Kick změní údaje pro připojení, okamžitá upozornění přestanou chodit."
+  },
+  "permWizWebLabel": {
+    "message": "Přístup k web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "Služba okamžitých upozornění"
+  },
+  "permWizPusherWhy": {
+    "message": "Služba Kicku v reálném čase. Přes ni chodí upozornění na začátek vysílání a na raidy."
+  },
+  "permWizPusherOff": {
+    "message": "Upozornění chodí se zpožděním 1 až 1,5 minuty a upozornění na raidy nefungují."
+  },
+  "permWizPusherLabel": {
+    "message": "Přístup k ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "Děkujeme!"
+  },
+  "permWizDoneBody": {
+    "message": "Udělili jste KickAlertu potřebná oprávnění. Okamžitá upozornění jsou připravena."
+  },
+  "permWizPartialTitle": {
+    "message": "Některá oprávnění jsou stále vypnutá"
+  },
+  "permWizPartialBody": {
+    "message": "Stále vypnuto: $1. Zapnout je můžete kdykoli z připomenutí nad seznamem kanálů."
+  },
+  "permWizCloses": {
+    "message": "Zavře se za 3 sekundy"
+  },
+  "permRemindText": {
+    "message": "Některá oprávnění jsou vypnutá, takže okamžitá upozornění nemusí plně fungovat."
+  },
+  "permRemindButton": {
+    "message": "Zapnout"
   }
 }

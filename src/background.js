@@ -326,6 +326,21 @@ KAPusherCfg.onChange(() => {
     try { if (typeof BotTracker !== 'undefined' && BotTracker.restart) BotTracker.restart(); } catch (e) {}
   }
 });
+// v2.5.81: Sihirbazdan (ya da tarayıcı ayarlarından) site izni verilince hemen kullan
+try {
+  chrome.permissions.onAdded.addListener((p) => {
+    const origins = (p && p.origins) || [];
+    if (origins.some(o => o.includes('web.kick.com'))) {
+      _pusherLastForce = 0;
+      ensurePusherConfig({ force: true, reason: 'web.kick.com izni verildi' }).catch(() => {});
+    }
+    if (origins.some(o => o.includes('pusher.com')) && !chrome.offscreen) {
+      try { if (typeof Pusher !== 'undefined' && Pusher._onLiveCallback && Pusher.restart) Pusher.restart(); } catch (e) {}
+    }
+    if (origins.length) KLog.info('PRM-01', `Site izni verildi: ${origins.join(', ')}`);
+  });
+} catch (e) {}
+
 // Firefox: kalıcı hata aynı bağlamda bildirilir (Chrome'da offscreen mesajla)
 KAPusherCfg.onInvalid = (d) => {
   KLog.info('PSH-12', `Pusher kalıcı hata (${d.code}, ${d.source}) · anahtar Kick'ten yeniden isteniyor`);
@@ -1958,8 +1973,10 @@ async function syncBotTracker(channels) {
   // kanalların chatroom'u dinlenir (sadece onlar; skor hesabı yapılmaz).
   const enabled = await Storage.getBotTrackerEnabled();
   const alertPrefs = await Storage.getChannelAlertPrefs();
-  // Firefox'ta (offscreen yok) BotTracker sadece raid için yüklü: skor yok.
-  const raidOnly = !enabled || !BotTrackerHost.hasOffscreen;
+  // v2.5.81: Firefox'ta da skor hesaplanır (önceden Firefox'ta BotTracker sadece
+  // raid için çalışıyordu, bot skoru hiç yoktu). Firefox'ta BotTracker arka plan
+  // sayfasında, Chrome'da offscreen'de; BotTrackerHost iki yolu da yönetiyor.
+  const raidOnly = !enabled;
   if (raidOnly && !channels.some(c => c.isLive && alertPrefs[c.channelSlug]?.raid)) {
     // Disabled olsa da çalışıyor olabilir — durdur
     await BotTrackerHost.stop();
@@ -2748,6 +2765,8 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       if (!cur.defaultChannelMode) upd.defaultChannelMode = 'silent';
       if (!cur._installDefaultMode) upd._installDefaultMode = 'silent';
       if (Object.keys(upd).length) await chrome.storage.local.set(upd);
+      // v2.5.81: güncellemeden sonra popup kapalı site izni varsa izin sihirbazını gösterir
+      await chrome.storage.local.set({ _permWizardPending: true, _permWizardStarted: false });
     }
   } catch (e) { console.warn('[KickAlert] varsayılan kanal modu yazılamadı:', e && e.message); }
   // Reset state only on fresh install or extension update, not on every browser start

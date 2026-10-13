@@ -647,7 +647,7 @@
     "message": "You're not following anyone yet. Follow a channel on Kick and it'll show up here automatically."
   },
   "whatsNewBannerText": {
-    "message": "Fixed: instant live alerts, raid alerts and the bot score work again after Kick's real-time service change."
+    "message": "New: bot score on Firefox, and a short guide for site permissions that are off after an update."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -674,22 +674,22 @@
     "message": "Close"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — Instant alerts and raids work again"
+    "message": "v2.5.81 — Bot score on Firefox, permission guide"
   },
   "releaseHistoryV0Body": {
-    "message": "• Instant live alerts, raid alerts and the bot score work again: Kick replaced the key of its real-time service, and KickAlert now gets the current key from Kick automatically\n• If Kick changes it again, the extension picks up the new key on its own instead of repeating errors\n• The popup no longer shows a second scrollbar or empty space at the bottom of Settings"
+    "message": "• Bot score now works on Firefox too, just like on Chrome\n• After an update, a short guide lists any site permission that is off, explains why it is needed and lets you turn it on\n• Firefox: requests through an open Kick tab work again"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — More accurate channel alerts"
+    "message": "v2.5.79 — Instant alerts and raids work again"
   },
   "releaseHistoryV1Body": {
-    "message": "• More accurate category and title alerts: a brief wrong reading from Kick no longer triggers an alert, and a change made during the 5-minute wait is sent once it ends\n• Changes made while alerts were paused (Do Not Disturb, a muted channel) no longer arrive later as old news"
+    "message": "• Instant live alerts, raid alerts and the bot score work again: Kick replaced the key of its real-time service, and KickAlert now gets the current key from Kick automatically\n• If Kick changes it again, the extension picks up the new key on its own instead of repeating errors\n• The popup no longer shows a second scrollbar or empty space at the bottom of Settings"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — Ad blocking works again, quieter start"
+    "message": "v2.5.77 — More accurate channel alerts"
   },
   "releaseHistoryV2Body": {
-    "message": "• Live ad blocking adapted to Kick's October change: the player now opens the ad-free stream from the start. Past broadcasts use the new ad-free path too\n• New installs start with channel alerts off, so following many channels no longer means a flood of notifications. Turn on the channels you want with the bell on their card. Updating keeps your current settings\n• Settings: \"Default channel alert\" for channels without their own bell setting, and \"Apply to all channels\" with Undo. To silence everything only at certain hours, use Do Not Disturb\n• With the default off, per-channel auto-open and channel alerts you turned on keep working\n• Optional, off by default: share a technical ad diagnostics summary (no channel names or personal data) so ad blocking can be fixed faster\n• Confirmation dialog buttons now fit their text in every language (they stack when a label is long)"
+    "message": "• More accurate category and title alerts: a brief wrong reading from Kick no longer triggers an alert, and a change made during the 5-minute wait is sent once it ends\n• Changes made while alerts were paused (Do Not Disturb, a muted channel) no longer arrive later as old news"
   },
   "settingsBackupTitle": {
     "message": "Backup & Restore"
@@ -1070,5 +1070,83 @@
   },
   "mutedNoticeText": {
     "message": "Channel alerts are off on a new install. Turn on the channels you want with the bell on their card, or all at once in"
+  },
+  "permWizHeader": {
+    "message": "Extension permissions"
+  },
+  "permWizRequired": {
+    "message": "Required"
+  },
+  "permWizRecommended": {
+    "message": "Recommended"
+  },
+  "permWizIfOff": {
+    "message": "If off"
+  },
+  "permWizSkip": {
+    "message": "Not now"
+  },
+  "permWizNext": {
+    "message": "Next"
+  },
+  "permWizFinish": {
+    "message": "Finish"
+  },
+  "permWizKickTitle": {
+    "message": "Access to your Kick account"
+  },
+  "permWizKickWhy": {
+    "message": "Gets the channels you follow and who is live from kick.com, and reads the Kick sign-in cookie to recognize your account."
+  },
+  "permWizKickOff": {
+    "message": "The extension cannot see any channel: your list stays empty and no alerts arrive."
+  },
+  "permWizKickLabel": {
+    "message": "Access to kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Kick connection settings"
+  },
+  "permWizWebWhy": {
+    "message": "Asks Kick which address to use for its instant alert service. Kick's own website asks the same question."
+  },
+  "permWizWebOff": {
+    "message": "Works for now, but if Kick changes its connection details, instant alerts will stop."
+  },
+  "permWizWebLabel": {
+    "message": "Access to web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "Instant alert service"
+  },
+  "permWizPusherWhy": {
+    "message": "Kick's real-time service. Go-live alerts and raid alerts arrive through it."
+  },
+  "permWizPusherOff": {
+    "message": "Alerts arrive 1 to 1.5 minutes late, and raid alerts do not work."
+  },
+  "permWizPusherLabel": {
+    "message": "Access to ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "Thank you!"
+  },
+  "permWizDoneBody": {
+    "message": "You have granted the permissions KickAlert needs. Instant alerts are ready."
+  },
+  "permWizPartialTitle": {
+    "message": "Some permissions are still off"
+  },
+  "permWizPartialBody": {
+    "message": "Still off: $1. You can turn them on any time from the reminder above your channel list."
+  },
+  "permWizCloses": {
+    "message": "Closes in 3 seconds"
+  },
+  "permRemindText": {
+    "message": "Some permissions are off, so instant alerts may not work fully."
+  },
+  "permRemindButton": {
+    "message": "Turn on"
   }
 }

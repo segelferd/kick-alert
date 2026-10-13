@@ -55,6 +55,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupChannelAlertModal();     // v2.5.49: Kanal bazlı ek bildirim ayarları
   setupRateBanner();            // v2.5.52: Değerlendirme isteği
   await checkWhatsNewBanner();   // v2.5.9: "Yenilikler" banner'ı
+  setupPermWizard();             // v2.5.81: güncelleme sonrası izin sihirbazı
+  try { await maybeShowPermWizard(); } catch (e) {}
   try { await trackPopupOpenForRating(); await maybeShowRateBanner(); } catch (e) {} // v2.5.52
   // v2.5.46: fonts are bundled now; once they are ready, re-measure the open
   // Settings groups so a late font swap can never clip their content.
@@ -3808,3 +3810,195 @@ document.addEventListener('DOMContentLoaded', () => {
   } catch (e) {}
   window.addEventListener('resize', fitContentContainer);
 });
+
+// ─── v2.5.81: Güncelleme sonrası izin sihirbazı ───
+// Firefox MV3, güncellemeyle eklenen site izinlerini kullanıcıya sormuyor ve
+// vermiyor (Firefox hata 1893232); kullanıcı eklenti ayarlarından elle açmadıkça
+// kapalı kalıyor. Chrome'da da kullanıcı "Site erişimi"ni kısıtlarsa aynı durum
+// olur. Güncellemeden sonra (background: _permWizardPending) kapalı olan site
+// izinleri tek tek, nedeniyle birlikte gösterilir; switch tarayıcının kendi onay
+// penceresini açar (permissions.request sadece tıklama içinde çağrılabilir).
+// Sihirbaz sadece kapalı izinleri gösterir; hepsi açıksa hiç görünmez.
+const PERM_STEPS = [
+  { id: 'kick', key: 'Kick', origin: 'https://kick.com/*', host: 'https://kick.com', short: 'kick.com', req: true, icon: 'group' },
+  { id: 'web', key: 'Web', origin: 'https://web.kick.com/*', host: 'https://web.kick.com', short: 'web.kick.com', req: false, icon: 'vpn_key' },
+  { id: 'pusher', key: 'Pusher', origin: 'wss://ws-us2.pusher.com/*', host: 'wss://ws-us2.pusher.com', short: 'ws-us2.pusher.com', req: false, icon: 'bolt' },
+];
+let _permWiz = null; // { steps, idx, on: {id: bool} }
+let _permDoneTimer = null;
+
+async function permHas(origin) {
+  // Desteklenmeyen bir desen hata verirse izin var sayılır (adım gösterilmez)
+  try { return await chrome.permissions.contains({ origins: [origin] }); } catch (e) { return true; }
+}
+async function permMissingSteps() {
+  const out = [];
+  for (const s of PERM_STEPS) { if (!(await permHas(s.origin))) out.push(s); }
+  return out;
+}
+
+async function maybeShowPermWizard() {
+  let st = {};
+  try { st = await chrome.storage.local.get(['_permWizardPending', '_permWizardStarted', '_permReminder']); } catch (e) { return false; }
+  const missing = await permMissingSteps();
+  if (st._permWizardPending) {
+    if (!missing.length) {
+      // Firefox onay penceresi popup'ı kapattıysa izin verilmiş olarak dönülür:
+      // kullanıcı sihirbazı başlatmışsa bitiş ekranını göster.
+      await chrome.storage.local.set({ _permWizardPending: false, _permWizardStarted: false, _permReminder: false });
+      if (st._permWizardStarted) { showPermWizardDone([]); return true; }
+      return false;
+    }
+    openPermWizard(missing);
+    return true;
+  }
+  if (st._permReminder) {
+    if (missing.length) showPermReminder(true);
+    else { showPermReminder(false); try { await chrome.storage.local.set({ _permReminder: false }); } catch (e) {} }
+  }
+  return false;
+}
+
+function showPermReminder(show) {
+  const band = document.getElementById('perm-reminder');
+  if (band) band.style.display = show ? 'flex' : 'none';
+}
+
+function openPermWizard(steps) {
+  const wiz = document.getElementById('perm-wizard');
+  if (!wiz || !steps.length) return;
+  _permWiz = { steps, idx: 0, on: {} };
+  try { chrome.storage.local.set({ _permWizardStarted: true }); } catch (e) {}
+  permWizSetDir(wiz);
+  document.getElementById('permwiz-step').style.display = '';
+  document.getElementById('permwiz-done').style.display = 'none';
+  wiz.style.display = 'flex';
+  renderPermWizard();
+}
+
+// Arapça metinler sağdan sola (popup'ın geri kalanından bağımsız)
+function permWizIsRtl() { try { return /^ar/.test(Utils.getCurrentLang ? Utils.getCurrentLang() : ''); } catch (e) { return false; } }
+function permWizSetDir(wiz) { if (wiz) wiz.setAttribute('dir', permWizIsRtl() ? 'rtl' : 'ltr'); }
+
+function renderPermWizard() {
+  if (!_permWiz) return;
+  const { steps, idx } = _permWiz;
+  const s = steps[idx];
+  const t = (k, f) => Utils.i18n(k) || f;
+  document.getElementById('permwiz-pos').textContent = `${idx + 1}/${steps.length}`;
+  const dots = document.getElementById('permwiz-dots');
+  dots.replaceChildren(...steps.map((_, i) => {
+    const d = document.createElement('span');
+    d.className = 'permwiz-dot' + (i === idx ? ' on' : i < idx ? ' past' : '');
+    return d;
+  }));
+  document.getElementById('permwiz-icon').textContent = s.icon;
+  document.getElementById('permwiz-title').textContent = t(`permWiz${s.key}Title`, s.short);
+  const badge = document.getElementById('permwiz-badge');
+  badge.textContent = s.req ? t('permWizRequired', 'Required') : t('permWizRecommended', 'Recommended');
+  badge.classList.toggle('req', !!s.req);
+  document.getElementById('permwiz-why').textContent = t(`permWiz${s.key}Why`, '');
+  document.getElementById('permwiz-offtext').textContent = t(`permWiz${s.key}Off`, '');
+  document.getElementById('permwiz-label').textContent = t(`permWiz${s.key}Label`, s.short);
+  document.getElementById('permwiz-host').textContent = s.host;
+  document.getElementById('permwiz-next').textContent = idx >= steps.length - 1 ? t('permWizFinish', 'Finish') : t('permWizNext', 'Next');
+  renderPermSwitch();
+}
+
+function renderPermSwitch() {
+  if (!_permWiz) return;
+  const s = _permWiz.steps[_permWiz.idx];
+  document.getElementById('permwiz-switch').setAttribute('aria-checked', _permWiz.on[s.id] ? 'true' : 'false');
+}
+
+async function advancePermWizard() {
+  if (!_permWiz) return;
+  if (_permWiz.idx < _permWiz.steps.length - 1) { _permWiz.idx++; renderPermWizard(); return; }
+  // Bitti: güncel durumu tarayıcıdan oku (popup dışında değişmiş olabilir)
+  const missing = await permMissingSteps();
+  try { await chrome.storage.local.set({ _permWizardPending: false, _permWizardStarted: false, _permReminder: missing.length > 0 }); } catch (e) {}
+  showPermWizardDone(missing);
+}
+
+function showPermWizardDone(missing) {
+  const wiz = document.getElementById('perm-wizard');
+  if (!wiz) return;
+  const t = (k, f) => Utils.i18n(k) || f;
+  const partial = missing.length > 0;
+  permWizSetDir(wiz);
+  document.getElementById('permwiz-step').style.display = 'none';
+  const done = document.getElementById('permwiz-done');
+  done.style.display = '';
+  document.getElementById('permwiz-done-icon').classList.toggle('partial', partial);
+  document.getElementById('permwiz-done-glyph').textContent = partial ? 'info' : 'check';
+  document.getElementById('permwiz-done-title').textContent = partial ? t('permWizPartialTitle', 'Some permissions are still off') : t('permWizDoneTitle', 'Thank you!');
+  const bodyEl = document.getElementById('permwiz-done-body');
+  if (partial) {
+    // Alan adları satır sonunda tireden bölünmesin (ws-us2.pusher.com): her biri nowrap
+    const MARK = '\u0001';
+    const msg = Utils.i18n('permWizPartialBody', [MARK]) || `Still off: ${MARK}.`;
+    const [before, after = ''] = msg.split(MARK);
+    const nodes = [document.createTextNode(before)];
+    missing.forEach((s, i) => {
+      if (i) nodes.push(document.createTextNode(permWizIsRtl() ? '، ' : ', '));
+      const sp = document.createElement('span');
+      sp.style.whiteSpace = 'nowrap';
+      sp.dir = 'ltr';
+      sp.textContent = s.short;
+      nodes.push(sp);
+    });
+    nodes.push(document.createTextNode(after));
+    bodyEl.replaceChildren(...nodes);
+  } else {
+    bodyEl.textContent = t('permWizDoneBody', 'You have granted the permissions KickAlert needs.');
+  }
+  wiz.style.display = 'flex';
+  done.classList.remove('running'); void done.offsetWidth; done.classList.add('running');
+  clearTimeout(_permDoneTimer);
+  _permDoneTimer = setTimeout(() => {
+    wiz.style.display = 'none';
+    done.classList.remove('running');
+    _permWiz = null;
+    showPermReminder(partial);
+  }, 3000);
+}
+
+function setupPermWizard() {
+  const sw = document.getElementById('permwiz-switch');
+  if (!sw) return;
+  sw.addEventListener('click', () => {
+    if (!_permWiz) return;
+    const s = _permWiz.steps[_permWiz.idx];
+    if (_permWiz.on[s.id]) {
+      // Geri kapatma: Chrome zorunlu izni kaldırmayı reddedebilir; o zaman açık kalır
+      Promise.resolve(chrome.permissions.remove({ origins: [s.origin] }))
+        .then((ok) => { if (ok) { _permWiz.on[s.id] = false; renderPermSwitch(); } })
+        .catch(() => {});
+      return;
+    }
+    // İstek tıklamanın içinde, ilk işlem olarak yapılmalı (öncesinde await yok)
+    let req;
+    try { req = chrome.permissions.request({ origins: [s.origin] }); } catch (e) { return; }
+    Promise.resolve(req).then((granted) => {
+      if (!_permWiz) return;
+      _permWiz.on[s.id] = !!granted;
+      renderPermSwitch();
+    }).catch(() => {});
+  });
+  document.getElementById('permwiz-next')?.addEventListener('click', () => advancePermWizard());
+  document.getElementById('permwiz-skip')?.addEventListener('click', () => advancePermWizard());
+  document.getElementById('perm-reminder-open')?.addEventListener('click', async () => {
+    const missing = await permMissingSteps();
+    if (!missing.length) { showPermReminder(false); try { await chrome.storage.local.set({ _permReminder: false }); } catch (e) {} return; }
+    showPermReminder(false);
+    openPermWizard(missing);
+  });
+  const close = document.getElementById('perm-reminder-close');
+  if (close) {
+    close.setAttribute('aria-label', Utils.i18n('close') || 'Close');
+    close.addEventListener('click', async () => {
+      showPermReminder(false);
+      try { await chrome.storage.local.set({ _permReminder: false }); } catch (e) {}
+    });
+  }
+}

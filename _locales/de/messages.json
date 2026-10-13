@@ -647,7 +647,7 @@
     "message": "Sie folgen noch niemandem. Folgen Sie einem Kanal auf Kick, und er erscheint hier automatisch."
   },
   "whatsNewBannerText": {
-    "message": "Behoben: Sofortige Live-Hinweise, Raid-Hinweise und der Bot-Score funktionieren nach Kicks Änderung am Echtzeitdienst wieder."
+    "message": "Neu: Bot-Score in Firefox und eine kurze Hilfe für Website-Berechtigungen, die nach einem Update ausgeschaltet sind."
   },
   "optGroupGeneral": {
     "message": "Allgemein"
@@ -674,22 +674,22 @@
     "message": "Schließen"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — Sofortige Hinweise und Raids funktionieren wieder"
+    "message": "v2.5.81 — Bot-Score in Firefox, Berechtigungshilfe"
   },
   "releaseHistoryV0Body": {
-    "message": "• Sofortige Live-Hinweise, Raid-Hinweise und der Bot-Score funktionieren wieder: Kick hat den Schlüssel seines Echtzeitdienstes ersetzt, KickAlert holt den aktuellen Schlüssel jetzt automatisch von Kick\n• Ändert Kick ihn erneut, übernimmt die Erweiterung den neuen Schlüssel selbst, statt Fehler zu wiederholen\n• Das Popup zeigt keine zweite Bildlaufleiste und keinen leeren Bereich mehr am Ende der Einstellungen"
+    "message": "• Der Bot-Score funktioniert jetzt auch in Firefox, genau wie in Chrome\n• Nach einem Update zeigt eine kurze Hilfe ausgeschaltete Website-Berechtigungen, erklärt, wofür sie nötig sind, und lässt dich sie einschalten\n• Firefox: Anfragen über einen geöffneten Kick-Tab funktionieren wieder"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — Genauere Kanalhinweise"
+    "message": "v2.5.79 — Sofortige Hinweise und Raids funktionieren wieder"
   },
   "releaseHistoryV1Body": {
-    "message": "• Genauere Kategorie- und Titelhinweise: Ein kurzer falscher Wert von Kick löst keinen Hinweis mehr aus, und eine Änderung während der 5-minütigen Wartezeit wird danach gemeldet\n• Änderungen, während Hinweise pausiert waren (Nicht stören, stummgeschalteter Kanal), kommen nicht mehr später als alte Nachricht an"
+    "message": "• Sofortige Live-Hinweise, Raid-Hinweise und der Bot-Score funktionieren wieder: Kick hat den Schlüssel seines Echtzeitdienstes ersetzt, KickAlert holt den aktuellen Schlüssel jetzt automatisch von Kick\n• Ändert Kick ihn erneut, übernimmt die Erweiterung den neuen Schlüssel selbst, statt Fehler zu wiederholen\n• Das Popup zeigt keine zweite Bildlaufleiste und keinen leeren Bereich mehr am Ende der Einstellungen"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — Werbeblockierung funktioniert wieder, ruhigerer Start"
+    "message": "v2.5.77 — Genauere Kanalhinweise"
   },
   "releaseHistoryV2Body": {
-    "message": "• Die Live-Werbeblockierung wurde an Kicks Änderung im Oktober angepasst: Der Player öffnet jetzt von Anfang an den werbefreien Stream. Vergangene Übertragungen nutzen ebenfalls den neuen werbefreien Weg\n• Bei Neuinstallationen sind Kanalbenachrichtigungen zunächst aus, viele gefolgte Kanäle bedeuten also keine Benachrichtigungsflut mehr. Schalte gewünschte Kanäle mit der Glocke auf ihrer Karte ein. Bei einem Update bleiben deine Einstellungen erhalten\n• Einstellungen: „Standard-Kanalbenachrichtigung“ für Kanäle ohne eigene Glocken-Einstellung und „Auf alle Kanäle anwenden“ mit Rückgängig. Um alles nur zu bestimmten Zeiten stummzuschalten, nutze „Nicht stören“\n• Auch wenn der Standard aus ist, funktionieren das automatische Öffnen und die Kanalbenachrichtigungen, die du für einen Kanal eingeschaltet hast, weiter\n• Optional und standardmäßig aus: eine technische Werbe-Diagnose (ohne Kanalnamen oder persönliche Daten) teilen, damit die Blockierung schneller repariert werden kann\n• Die Schaltflächen in Bestätigungsdialogen passen jetzt in jeder Sprache zu ihrem Text (bei langem Text untereinander)"
+    "message": "• Genauere Kategorie- und Titelhinweise: Ein kurzer falscher Wert von Kick löst keinen Hinweis mehr aus, und eine Änderung während der 5-minütigen Wartezeit wird danach gemeldet\n• Änderungen, während Hinweise pausiert waren (Nicht stören, stummgeschalteter Kanal), kommen nicht mehr später als alte Nachricht an"
   },
   "settingsBackupTitle": {
     "message": "Sicherung & Wiederherstellung"
@@ -1070,5 +1070,83 @@
   },
   "mutedNoticeText": {
     "message": "Bei einer Neuinstallation sind Kanalbenachrichtigungen aus. Schalte die gewünschten Kanäle mit der Glocke auf ihrer Karte ein oder alle auf einmal unter"
+  },
+  "permWizHeader": {
+    "message": "Berechtigungen der Erweiterung"
+  },
+  "permWizRequired": {
+    "message": "Erforderlich"
+  },
+  "permWizRecommended": {
+    "message": "Empfohlen"
+  },
+  "permWizIfOff": {
+    "message": "Wenn ausgeschaltet"
+  },
+  "permWizSkip": {
+    "message": "Nicht jetzt"
+  },
+  "permWizNext": {
+    "message": "Weiter"
+  },
+  "permWizFinish": {
+    "message": "Fertig"
+  },
+  "permWizKickTitle": {
+    "message": "Zugriff auf dein Kick-Konto"
+  },
+  "permWizKickWhy": {
+    "message": "Holt die Kanäle, denen du folgst, und ihren Live-Status von kick.com und liest das Kick-Anmelde-Cookie, um dein Konto zu erkennen."
+  },
+  "permWizKickOff": {
+    "message": "Die Erweiterung sieht keinen Kanal: Deine Liste bleibt leer, und es kommen keine Benachrichtigungen."
+  },
+  "permWizKickLabel": {
+    "message": "Zugriff auf kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Kick-Verbindungseinstellungen"
+  },
+  "permWizWebWhy": {
+    "message": "Fragt Kick, über welche Adresse sein Sofortbenachrichtigungsdienst erreichbar ist. Die Website von Kick stellt dieselbe Frage."
+  },
+  "permWizWebOff": {
+    "message": "Funktioniert vorerst, aber wenn Kick seine Verbindungsdaten ändert, kommen keine Sofortbenachrichtigungen mehr."
+  },
+  "permWizWebLabel": {
+    "message": "Zugriff auf web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "Sofortbenachrichtigungsdienst"
+  },
+  "permWizPusherWhy": {
+    "message": "Der Echtzeitdienst von Kick. Benachrichtigungen zum Streamstart und zu Raids kommen über ihn."
+  },
+  "permWizPusherOff": {
+    "message": "Benachrichtigungen kommen 1 bis 1,5 Minuten verspätet, Raid-Benachrichtigungen funktionieren nicht."
+  },
+  "permWizPusherLabel": {
+    "message": "Zugriff auf ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "Danke!"
+  },
+  "permWizDoneBody": {
+    "message": "Du hast KickAlert die nötigen Berechtigungen erteilt. Sofortbenachrichtigungen sind bereit."
+  },
+  "permWizPartialTitle": {
+    "message": "Einige Berechtigungen sind noch aus"
+  },
+  "permWizPartialBody": {
+    "message": "Noch aus: $1. Du kannst sie jederzeit über den Hinweis oberhalb deiner Kanalliste einschalten."
+  },
+  "permWizCloses": {
+    "message": "Schließt sich in 3 Sekunden"
+  },
+  "permRemindText": {
+    "message": "Einige Berechtigungen sind aus, daher funktionieren Sofortbenachrichtigungen möglicherweise nicht vollständig."
+  },
+  "permRemindButton": {
+    "message": "Einschalten"
   }
 }

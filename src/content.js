@@ -81,8 +81,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const body = await resp.text();
         // Response header'larından önemli olanları yakala (Retry-After vb.)
         const respHeaders = {};
-        for (const [k, v] of resp.headers.entries()) {
-          respHeaders[k.toLowerCase()] = v;
+        // v2.5.80: Firefox'ta içerik betiğinin fetch yanıtı sayfa bölmesinden
+        // gelebiliyor; headers.entries() yineleyicisi "is not iterable" hatası
+        // verip her proxy isteğini düşürüyordu (Plan C Firefox'ta hiç çalışmıyordu).
+        // forEach her iki tarayıcıda çalışır; o da olmazsa gereken başlıklar tek tek.
+        try {
+          resp.headers.forEach((v, k) => { respHeaders[String(k).toLowerCase()] = v; });
+        } catch (e) {
+          for (const k of ['retry-after', 'content-type', 'cf-mitigated', 'cf-ray']) {
+            try { const v = resp.headers.get(k); if (v != null) respHeaders[k] = v; } catch (e2) {}
+          }
         }
         sendResponse({
           ok: resp.ok,

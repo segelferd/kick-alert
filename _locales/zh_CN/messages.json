@@ -646,7 +646,7 @@
     "message": "你还没有关注任何人。在 Kick 上关注一个频道，它就会自动显示在这里。"
   },
   "whatsNewBannerText": {
-    "message": "已修复：Kick 更改实时服务后，开播即时提醒、突袭提醒和机器人评分恢复正常。"
+    "message": "新功能：Firefox 机器人评分，以及针对更新后未开启的网站权限的简短引导。"
   },
   "optGroupGeneral": {
     "message": "常规"
@@ -673,22 +673,22 @@
     "message": "关闭"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — 即时提醒和突袭恢复"
+    "message": "v2.5.81 — Firefox 机器人评分、权限引导"
   },
   "releaseHistoryV0Body": {
-    "message": "• 开播即时提醒、突袭提醒和机器人评分恢复正常：Kick 更换了实时服务的密钥，KickAlert 现在会自动从 Kick 获取最新密钥\n• 如果 Kick 再次更换，扩展会自行获取新密钥，而不是反复报错\n• 弹出窗口不再出现第二个滚动条，设置底部也不再有空白区域"
+    "message": "• 机器人评分现在也可在 Firefox 中使用，与 Chrome 相同\n• 更新后，简短的引导会列出未开启的网站权限，说明其用途，并可直接开启\n• Firefox：通过已打开的 Kick 标签页发出的请求恢复正常"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — 频道提醒更准确"
+    "message": "v2.5.79 — 即时提醒和突袭恢复"
   },
   "releaseHistoryV1Body": {
-    "message": "• 分类和标题变更提醒更准确：Kick 偶尔返回的错误数据不再触发提醒，5 分钟等待期间的变更会在等待结束后通知\n• 提醒暂停期间（免打扰、已静音的频道）发生的变更，不会再在之后作为旧消息送达"
+    "message": "• 开播即时提醒、突袭提醒和机器人评分恢复正常：Kick 更换了实时服务的密钥，KickAlert 现在会自动从 Kick 获取最新密钥\n• 如果 Kick 再次更换，扩展会自行获取新密钥，而不是反复报错\n• 弹出窗口不再出现第二个滚动条，设置底部也不再有空白区域"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — 广告拦截恢复，安静的开始"
+    "message": "v2.5.77 — 频道提醒更准确"
   },
   "releaseHistoryV2Body": {
-    "message": "• 直播广告拦截已适配 Kick 十月的变更：播放器现在从一开始就打开无广告的直播流。往期直播也使用新的无广告方式\n• 新安装时频道提醒默认关闭，关注很多频道也不会再被通知淹没。可用频道卡片上的铃铛开启想要的频道。更新时会保留你现有的设置\n• 设置：为没有单独设置铃铛的频道提供“默认频道提醒”，以及可撤销的“应用到所有频道”。如只想在特定时段全部静音，请使用免打扰\n• 即使默认关闭，你为某个频道开启的自动打开和频道提醒仍会继续工作\n• 可选，默认关闭：分享技术性的广告诊断摘要（不含频道名称或个人数据），以便更快修复广告拦截\n• 确认窗口中的按钮现在在所有语言下都能完整显示文字（文字较长时上下排列）"
+    "message": "• 分类和标题变更提醒更准确：Kick 偶尔返回的错误数据不再触发提醒，5 分钟等待期间的变更会在等待结束后通知\n• 提醒暂停期间（免打扰、已静音的频道）发生的变更，不会再在之后作为旧消息送达"
   },
   "settingsBackupTitle": {
     "message": "备份与恢复"
@@ -1069,5 +1069,83 @@
   },
   "mutedNoticeText": {
     "message": "新安装时频道提醒默认关闭。可用频道卡片上的铃铛开启想要的频道，或一次全部开启："
+  },
+  "permWizHeader": {
+    "message": "扩展权限"
+  },
+  "permWizRequired": {
+    "message": "必需"
+  },
+  "permWizRecommended": {
+    "message": "推荐"
+  },
+  "permWizIfOff": {
+    "message": "关闭时"
+  },
+  "permWizSkip": {
+    "message": "以后再说"
+  },
+  "permWizNext": {
+    "message": "下一步"
+  },
+  "permWizFinish": {
+    "message": "完成"
+  },
+  "permWizKickTitle": {
+    "message": "访问你的 Kick 账号"
+  },
+  "permWizKickWhy": {
+    "message": "从 kick.com 获取你关注的频道及其直播状态，并读取 Kick 登录 Cookie 以识别你的账号。"
+  },
+  "permWizKickOff": {
+    "message": "扩展将看不到任何频道：列表为空，也不会收到提醒。"
+  },
+  "permWizKickLabel": {
+    "message": "访问 kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Kick 连接设置"
+  },
+  "permWizWebWhy": {
+    "message": "向 Kick 询问其即时提醒服务应连接的地址。Kick 官网本身也会发出同样的请求。"
+  },
+  "permWizWebOff": {
+    "message": "目前仍可使用，但如果 Kick 更改连接信息，即时提醒将会停止。"
+  },
+  "permWizWebLabel": {
+    "message": "访问 web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "即时提醒服务"
+  },
+  "permWizPusherWhy": {
+    "message": "Kick 的实时服务。开播提醒和突袭提醒都通过它送达。"
+  },
+  "permWizPusherOff": {
+    "message": "提醒会延迟 1 到 1.5 分钟送达，突袭提醒无法使用。"
+  },
+  "permWizPusherLabel": {
+    "message": "访问 ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "谢谢！"
+  },
+  "permWizDoneBody": {
+    "message": "你已授予 KickAlert 所需的权限，即时提醒已就绪。"
+  },
+  "permWizPartialTitle": {
+    "message": "部分权限仍未开启"
+  },
+  "permWizPartialBody": {
+    "message": "仍未开启：$1。你可以随时通过频道列表上方的提示开启。"
+  },
+  "permWizCloses": {
+    "message": "3 秒后关闭"
+  },
+  "permRemindText": {
+    "message": "部分权限未开启，即时提醒可能无法完全正常工作。"
+  },
+  "permRemindButton": {
+    "message": "开启"
   }
 }

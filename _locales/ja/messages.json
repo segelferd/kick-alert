@@ -647,7 +647,7 @@
     "message": "まだ誰もフォローしていません。Kickでチャンネルをフォローすると、自動的にここに表示されます。"
   },
   "whatsNewBannerText": {
-    "message": "修正：Kickのリアルタイムサービス変更後も、配信開始の即時通知、レイド通知、ボットスコアが再び動作します。"
+    "message": "新機能：Firefoxでのボットスコアと、アップデート後にオフになっているサイト権限のための短いガイド。"
   },
   "optGroupGeneral": {
     "message": "一般"
@@ -674,22 +674,22 @@
     "message": "閉じる"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — 即時通知とレイドが復活"
+    "message": "v2.5.81 — Firefoxでボットスコア、権限ガイド"
   },
   "releaseHistoryV0Body": {
-    "message": "• 配信開始の即時通知、レイド通知、ボットスコアが再び動作します：Kickがリアルタイムサービスのキーを変更したため、KickAlertは最新のキーをKickから自動で取得するようになりました\n• Kickが再び変更しても、エラーを繰り返さずに拡張機能が新しいキーを自動で取得します\n• ポップアップに2本目のスクロールバーや設定画面下部の空白が表示されなくなりました"
+    "message": "• ボットスコアがChromeと同じくFirefoxでも使えるようになりました\n• アップデート後、オフになっているサイト権限を短いガイドで表示し、必要な理由を説明してオンにできるようにしました\n• Firefox：開いているKickタブ経由のリクエストが再び動作するようになりました"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — チャンネル通知がより正確に"
+    "message": "v2.5.79 — 即時通知とレイドが復活"
   },
   "releaseHistoryV1Body": {
-    "message": "• カテゴリー・タイトル変更の通知がより正確に：Kickから一時的に誤った値が返っても通知されず、5分間の待機中の変更は待機終了後に通知されます\n• 通知を一時停止していた間（おやすみモード、ミュート中のチャンネル）の変更が、後から古い知らせとして届かなくなりました"
+    "message": "• 配信開始の即時通知、レイド通知、ボットスコアが再び動作します：Kickがリアルタイムサービスのキーを変更したため、KickAlertは最新のキーをKickから自動で取得するようになりました\n• Kickが再び変更しても、エラーを繰り返さずに拡張機能が新しいキーを自動で取得します\n• ポップアップに2本目のスクロールバーや設定画面下部の空白が表示されなくなりました"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — 広告ブロックが復活、静かなスタート"
+    "message": "v2.5.77 — チャンネル通知がより正確に"
   },
   "releaseHistoryV2Body": {
-    "message": "• ライブ広告ブロックを Kick の10月の変更に対応させました。プレーヤーは最初から広告なしのストリームを開きます。過去の配信も新しい広告なしの経路を使います\n• 新規インストールではチャンネル通知がオフで始まるため、多くのチャンネルをフォローしても通知が殺到しません。必要なチャンネルはカードのベルでオンにしてください。アップデートでは現在の設定が保たれます\n• 設定：ベル設定のないチャンネル用の「チャンネル通知の既定」と、元に戻せる「すべてのチャンネルに適用」。特定の時間だけすべて止めたい場合はおやすみモードを使ってください\n• 既定がオフでも、チャンネルごとにオンにした自動オープンとチャンネル通知は引き続き動作します\n• 任意・既定でオフ：広告ブロックを早く直せるよう、技術的な広告診断の要約（チャンネル名や個人データは含みません）を共有できます\n• 確認ダイアログのボタンがどの言語でも文字に収まるようになりました（長い場合は縦に並びます）"
+    "message": "• カテゴリー・タイトル変更の通知がより正確に：Kickから一時的に誤った値が返っても通知されず、5分間の待機中の変更は待機終了後に通知されます\n• 通知を一時停止していた間（おやすみモード、ミュート中のチャンネル）の変更が、後から古い知らせとして届かなくなりました"
   },
   "settingsBackupTitle": {
     "message": "バックアップと復元"
@@ -1070,5 +1070,83 @@
   },
   "mutedNoticeText": {
     "message": "新規インストールではチャンネル通知はオフです。カードのベルで必要なチャンネルをオンにするか、まとめて次の場所でオンにできます:"
+  },
+  "permWizHeader": {
+    "message": "拡張機能の権限"
+  },
+  "permWizRequired": {
+    "message": "必須"
+  },
+  "permWizRecommended": {
+    "message": "推奨"
+  },
+  "permWizIfOff": {
+    "message": "オフの場合"
+  },
+  "permWizSkip": {
+    "message": "今はしない"
+  },
+  "permWizNext": {
+    "message": "次へ"
+  },
+  "permWizFinish": {
+    "message": "完了"
+  },
+  "permWizKickTitle": {
+    "message": "Kickアカウントへのアクセス"
+  },
+  "permWizKickWhy": {
+    "message": "フォロー中のチャンネルと配信中かどうかをkick.comから取得し、アカウントを識別するためにKickのログインCookieを読み取ります。"
+  },
+  "permWizKickOff": {
+    "message": "チャンネルが一つも表示されず、リストは空のままで通知も届きません。"
+  },
+  "permWizKickLabel": {
+    "message": "kick.comへのアクセス"
+  },
+  "permWizWebTitle": {
+    "message": "Kickの接続設定"
+  },
+  "permWizWebWhy": {
+    "message": "Kickの即時通知サービスにどのアドレスで接続するかをKickに問い合わせます。Kickの公式サイトも同じ問い合わせをしています。"
+  },
+  "permWizWebOff": {
+    "message": "当面は動作しますが、Kickが接続情報を変更すると即時通知が止まります。"
+  },
+  "permWizWebLabel": {
+    "message": "web.kick.comへのアクセス"
+  },
+  "permWizPusherTitle": {
+    "message": "即時通知サービス"
+  },
+  "permWizPusherWhy": {
+    "message": "Kickのリアルタイムサービスです。配信開始の通知とレイドの通知はここから届きます。"
+  },
+  "permWizPusherOff": {
+    "message": "通知が1〜1.5分遅れて届き、レイド通知は動作しません。"
+  },
+  "permWizPusherLabel": {
+    "message": "ws-us2.pusher.comへのアクセス"
+  },
+  "permWizDoneTitle": {
+    "message": "ありがとうございます！"
+  },
+  "permWizDoneBody": {
+    "message": "KickAlertに必要な権限が許可されました。即時通知の準備ができました。"
+  },
+  "permWizPartialTitle": {
+    "message": "一部の権限がオフのままです"
+  },
+  "permWizPartialBody": {
+    "message": "オフのまま：$1。チャンネルリスト上部のお知らせからいつでもオンにできます。"
+  },
+  "permWizCloses": {
+    "message": "3秒後に閉じます"
+  },
+  "permRemindText": {
+    "message": "一部の権限がオフのため、即時通知が正しく動作しない場合があります。"
+  },
+  "permRemindButton": {
+    "message": "オンにする"
   }
 }

@@ -645,7 +645,7 @@
     "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
   },
   "whatsNewBannerText": {
-    "message": "Corrigé : les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau après le changement du service temps réel de Kick."
+    "message": "Nouveau : score de bot sur Firefox et un court guide pour les autorisations de site désactivées après une mise à jour."
   },
   "optGroupGeneral": {
     "message": "Général"
@@ -672,22 +672,22 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.79 — Alertes instantanées et raids de retour"
+    "message": "v2.5.81 — Score de bot sur Firefox, guide des autorisations"
   },
   "releaseHistoryV0Body": {
-    "message": "• Les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau : Kick a remplacé la clé de son service temps réel, et KickAlert récupère désormais automatiquement la clé actuelle auprès de Kick\n• Si Kick la change encore, l'extension récupère la nouvelle clé d'elle-même au lieu de répéter des erreurs\n• La fenêtre n'affiche plus de seconde barre de défilement ni d'espace vide en bas des Paramètres"
+    "message": "• Le score de bot fonctionne désormais aussi sur Firefox, comme sur Chrome\n• Après une mise à jour, un court guide indique les autorisations de site désactivées, explique pourquoi elles sont nécessaires et vous permet de les activer\n• Firefox : les requêtes passant par un onglet Kick ouvert fonctionnent à nouveau"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.77 — Alertes de chaîne plus fiables"
+    "message": "v2.5.79 — Alertes instantanées et raids de retour"
   },
   "releaseHistoryV1Body": {
-    "message": "• Alertes de catégorie et de titre plus fiables : une lecture erronée passagère de Kick ne déclenche plus d'alerte, et un changement fait pendant l'attente de 5 minutes est signalé à la fin de celle-ci\n• Les changements survenus pendant la pause des alertes (Ne pas déranger, chaîne en sourdine) n'arrivent plus plus tard comme une vieille nouvelle"
+    "message": "• Les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau : Kick a remplacé la clé de son service temps réel, et KickAlert récupère désormais automatiquement la clé actuelle auprès de Kick\n• Si Kick la change encore, l'extension récupère la nouvelle clé d'elle-même au lieu de répéter des erreurs\n• La fenêtre n'affiche plus de seconde barre de défilement ni d'espace vide en bas des Paramètres"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.76 — Le blocage des publicités refonctionne, démarrage plus calme"
+    "message": "v2.5.77 — Alertes de chaîne plus fiables"
   },
   "releaseHistoryV2Body": {
-    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite\n• Les boutons des fenêtres de confirmation affichent désormais tout leur texte dans chaque langue (empilés si le libellé est long)"
+    "message": "• Alertes de catégorie et de titre plus fiables : une lecture erronée passagère de Kick ne déclenche plus d'alerte, et un changement fait pendant l'attente de 5 minutes est signalé à la fin de celle-ci\n• Les changements survenus pendant la pause des alertes (Ne pas déranger, chaîne en sourdine) n'arrivent plus plus tard comme une vieille nouvelle"
   },
   "settingsBackupTitle": {
     "message": "Sauvegarde et restauration"
@@ -1068,5 +1068,83 @@
   },
   "mutedNoticeText": {
     "message": "Les alertes de chaîne sont désactivées après une nouvelle installation. Activez les chaînes souhaitées avec la cloche de leur carte, ou toutes à la fois dans"
+  },
+  "permWizHeader": {
+    "message": "Autorisations de l'extension"
+  },
+  "permWizRequired": {
+    "message": "Obligatoire"
+  },
+  "permWizRecommended": {
+    "message": "Recommandée"
+  },
+  "permWizIfOff": {
+    "message": "Si désactivée"
+  },
+  "permWizSkip": {
+    "message": "Pas maintenant"
+  },
+  "permWizNext": {
+    "message": "Suivant"
+  },
+  "permWizFinish": {
+    "message": "Terminer"
+  },
+  "permWizKickTitle": {
+    "message": "Accès à votre compte Kick"
+  },
+  "permWizKickWhy": {
+    "message": "Récupère sur kick.com les chaînes que vous suivez et celles qui sont en direct, et lit le cookie de connexion Kick pour reconnaître votre compte."
+  },
+  "permWizKickOff": {
+    "message": "L'extension ne voit aucune chaîne : votre liste reste vide et aucune alerte n'arrive."
+  },
+  "permWizKickLabel": {
+    "message": "Accès à kick.com"
+  },
+  "permWizWebTitle": {
+    "message": "Paramètres de connexion Kick"
+  },
+  "permWizWebWhy": {
+    "message": "Demande à Kick quelle adresse utiliser pour son service d'alertes instantanées. Le site de Kick pose la même question."
+  },
+  "permWizWebOff": {
+    "message": "Fonctionne pour l'instant, mais si Kick modifie ses informations de connexion, les alertes instantanées s'arrêteront."
+  },
+  "permWizWebLabel": {
+    "message": "Accès à web.kick.com"
+  },
+  "permWizPusherTitle": {
+    "message": "Service d'alertes instantanées"
+  },
+  "permWizPusherWhy": {
+    "message": "Le service en temps réel de Kick. Les alertes de début de live et de raid passent par lui."
+  },
+  "permWizPusherOff": {
+    "message": "Les alertes arrivent avec 1 à 1,5 minute de retard, et les alertes de raid ne fonctionnent pas."
+  },
+  "permWizPusherLabel": {
+    "message": "Accès à ws-us2.pusher.com"
+  },
+  "permWizDoneTitle": {
+    "message": "Merci !"
+  },
+  "permWizDoneBody": {
+    "message": "Vous avez accordé les autorisations dont KickAlert a besoin. Les alertes instantanées sont prêtes."
+  },
+  "permWizPartialTitle": {
+    "message": "Certaines autorisations sont encore désactivées"
+  },
+  "permWizPartialBody": {
+    "message": "Encore désactivées : $1. Vous pouvez les activer à tout moment depuis le rappel au-dessus de votre liste de chaînes."
+  },
+  "permWizCloses": {
+    "message": "Se ferme dans 3 secondes"
+  },
+  "permRemindText": {
+    "message": "Certaines autorisations sont désactivées : les alertes instantanées risquent de ne pas fonctionner pleinement."
+  },
+  "permRemindButton": {
+    "message": "Activer"
   }
 }

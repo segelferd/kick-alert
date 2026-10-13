@@ -544,7 +544,10 @@ const BotTracker = {
   },
 
   shutdown() {
-    console.debug('[KickAlert][BotTracker] Shutdown');
+    // v2.5.81: zaten kapalıyken her kontrolde "Shutdown" yazmasın
+    if (this.ws || this.isConnected || this.isConnecting || this.reconnectTimer) {
+      console.debug('[KickAlert][BotTracker] Shutdown');
+    }
     clearInterval(this.pingTimer);
     clearTimeout(this.reconnectTimer);
     clearTimeout(this.connectionTimeoutTimer);
