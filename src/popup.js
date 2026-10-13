@@ -1873,7 +1873,9 @@ const RATE_INFER_SETTINGS_KEYS = ['theme', 'userLanguage', 'soundMode', 'dndEnab
   'checkInterval', 'showOfflineChannels', 'channelThumbnailsEnabled', 'adBlockEnabled', 'cloudSyncEnabled', 'botScoreAlwaysVisible'];
 
 function rateReviewUrl() {
-  const isFirefox = !chrome.runtime.getManifest().background?.service_worker;
+  // v2.5.79: Firefox manifest'inde de service_worker anahtarı var (Chrome uyumu için);
+  // tek başına güvenilir değil, getBrowserInfo kontrolü de eklendi
+  const isFirefox = (typeof browser !== 'undefined' && !!browser.runtime && typeof browser.runtime.getBrowserInfo === 'function') || !chrome.runtime.getManifest().background?.service_worker;
   return isFirefox
     ? 'https://addons.mozilla.org/firefox/addon/kickalert/reviews/'
     : 'https://chromewebstore.google.com/detail/dlchkgjgcmbgpbdiiipibnpjfhipkbac/reviews';
@@ -1995,7 +1997,7 @@ function setupRateLink() {
   const link = document.getElementById('rate-link');
   if (!link) return;
   const manifest = chrome.runtime.getManifest();
-  const isFirefox = !manifest.background?.service_worker;
+  const isFirefox = (typeof browser !== 'undefined' && !!browser.runtime && typeof browser.runtime.getBrowserInfo === 'function') || !manifest.background?.service_worker; // v2.5.79
   if (isFirefox) {
     link.href = 'https://addons.mozilla.org/firefox/addon/kickalert/';
   }
@@ -3776,3 +3778,33 @@ function setupListHandler(inputId, btnId, chipsId, settingKey) {
     if (e.key === 'Enter') { e.preventDefault(); addItem(); }
   });
 }
+
+// v2.5.79: Popup en fazla 600 px yüksekliğinde açılır (Chrome ve Firefox).
+// Liste alanı (.content-container) sabit 480 px'ti; üstte Yenilikler veya
+// "kanal bildirimleri kapalı" bandı görününce toplam yükseklik 600'ü aşıyor,
+// popup'ta ikinci (dış) kaydırma çubuğu çıkıyordu. Liste alanı artık üstündeki
+// öğelerin gerçek yüksekliğine göre küçülür (en fazla 480, en az 240 px).
+const KA_POPUP_MAX_H = 600;
+function fitContentContainer() {
+  const cc = document.querySelector('.content-container');
+  if (!cc || cc.style.display === 'none') return;
+  const top = cc.getBoundingClientRect().top + window.scrollY;
+  const h = Math.max(240, Math.min(480, Math.floor(KA_POPUP_MAX_H - top)));
+  if (cc.style.maxHeight !== h + 'px') cc.style.maxHeight = h + 'px';
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const cc = document.querySelector('.content-container');
+  if (!cc) return;
+  fitContentContainer();
+  // Liste alanının üstündeki öğelerin boyu değişince (bant açılıp kapanınca,
+  // dil değişince) yeniden hesapla. Sadece üstteki kardeşler izlenir; liste
+  // alanının kendisi izlenmediği için döngü oluşmaz.
+  try {
+    const ro = new ResizeObserver(() => fitContentContainer());
+    for (const el of cc.parentElement.children) {
+      if (el === cc) break;
+      ro.observe(el);
+    }
+  } catch (e) {}
+  window.addEventListener('resize', fitContentContainer);
+});

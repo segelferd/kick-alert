@@ -2370,3 +2370,10 @@ input[type="range"]:focus-visible, .tab-button:focus-visible {
 /* v2.5.63: kanal olayı sesi */
 .opt-event-select { flex: 1; min-width: 0; max-width: 200px; margin-left: auto; }
 #opt-event-volume-row.is-disabled { opacity: 0.45; pointer-events: none; }
+
+/* v2.5.79: Ayarlar sayfasında ikinci kaydırma çubuğu ve boş kayma alanı.
+   Görünmez radyo düğmeleri (Anomali bildirimi seçenekleri) position:absolute
+   ama konumlu bir üst öğeleri yoktu; .options-body'nin kaydırma alanından
+   kaçıp sayfayı ~2300 px uzatıyordu (popup'ta dış kaydırma çubuğu + boşluk). */
+.options-body { position: relative; }
+.opt-radio-row { position: relative; }

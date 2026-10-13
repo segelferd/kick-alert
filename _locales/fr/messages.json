@@ -672,10 +672,10 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.78 — Alertes instantanées et raids de retour"
+    "message": "v2.5.79 — Alertes instantanées et raids de retour"
   },
   "releaseHistoryV0Body": {
-    "message": "• Les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau : Kick a remplacé la clé de son service temps réel, et KickAlert récupère désormais automatiquement la clé actuelle auprès de Kick\n• Si Kick la change encore, l'extension récupère la nouvelle clé d'elle-même au lieu de répéter des erreurs"
+    "message": "• Les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau : Kick a remplacé la clé de son service temps réel, et KickAlert récupère désormais automatiquement la clé actuelle auprès de Kick\n• Si Kick la change encore, l'extension récupère la nouvelle clé d'elle-même au lieu de répéter des erreurs\n• La fenêtre n'affiche plus de seconde barre de défilement ni d'espace vide en bas des Paramètres"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.77 — Alertes de chaîne plus fiables"

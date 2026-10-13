@@ -672,10 +672,10 @@
     "message": "Fechar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.78 — Alertas instantâneos e raids de volta"
+    "message": "v2.5.79 — Alertas instantâneos e raids de volta"
   },
   "releaseHistoryV0Body": {
-    "message": "• Alertas instantâneos de live, alertas de raid e a pontuação de bots voltaram a funcionar: o Kick trocou a chave do seu serviço em tempo real e o KickAlert agora obtém a chave atual do Kick automaticamente\n• Se o Kick trocar de novo, a extensão pega a nova chave sozinha em vez de repetir erros"
+    "message": "• Alertas instantâneos de live, alertas de raid e a pontuação de bots voltaram a funcionar: o Kick trocou a chave do seu serviço em tempo real e o KickAlert agora obtém a chave atual do Kick automaticamente\n• Se o Kick trocar de novo, a extensão pega a nova chave sozinha em vez de repetir erros\n• O popup não mostra mais uma segunda barra de rolagem nem espaço vazio no fim das Configurações"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.77 — Alertas de canal mais precisos"

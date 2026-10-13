@@ -672,10 +672,10 @@
     "message": "Chiudi"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.78 — Avvisi istantanei e raid di nuovo attivi"
+    "message": "v2.5.79 — Avvisi istantanei e raid di nuovo attivi"
   },
   "releaseHistoryV0Body": {
-    "message": "• Gli avvisi istantanei di live, gli avvisi di raid e il punteggio bot funzionano di nuovo: Kick ha sostituito la chiave del suo servizio in tempo reale e KickAlert ora ottiene automaticamente la chiave attuale da Kick\n• Se Kick la cambia di nuovo, l'estensione prende da sola la nuova chiave invece di ripetere errori"
+    "message": "• Gli avvisi istantanei di live, gli avvisi di raid e il punteggio bot funzionano di nuovo: Kick ha sostituito la chiave del suo servizio in tempo reale e KickAlert ora ottiene automaticamente la chiave attuale da Kick\n• Se Kick la cambia di nuovo, l'estensione prende da sola la nuova chiave invece di ripetere errori\n• Il popup non mostra più una seconda barra di scorrimento né spazio vuoto in fondo alle Impostazioni"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.77 — Avvisi dei canali più precisi"

@@ -5,6 +5,13 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.79 — No double scrollbar in the popup
+
+- Settings: the hidden radio inputs of the anomaly alert options were `position: absolute` without a positioned parent, so they escaped the Settings scroll area and stretched the popup page by about 2,300 px. The popup showed a second (outer) scrollbar and a long empty area below the footer (reported on Firefox). `.options-body` and `.opt-radio-row` are now positioned
+- The channel list area had a fixed 480 px height; with the What's New or "channel alerts off" banner visible the popup grew past its 600 px limit and showed an outer scrollbar (Chat tab, long channel lists). The list now shrinks to the space left under the header and banners (240 to 480 px) and follows banner changes
+- Store links (Rate, Source) detect Firefox with `getBrowserInfo` as well; the Firefox manifest also carries a `service_worker` key, so the old check alone was not reliable
+- Release History: v2.5.79 entry
+
 ## v2.5.78 — Store release: real-time alerts work again after Kick's Pusher change
 
 - **Cause:** Kick shut down the Pusher app KickAlert connected to (`32cbd69e4b950bf97679`). Every connection was rejected with `4001 App key not in this cluster`, so instant live alerts, raid alerts and chat-based bot scores stopped (live alerts still arrived through the regular check, about 1 to 1.5 minutes late). Kick's own website now asks `web.kick.com/api/v1/realtime/connection` which app to use

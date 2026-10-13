@@ -672,10 +672,10 @@
     "message": "Kapat"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.78 — Anlık bildirimler ve raid yeniden çalışıyor"
+    "message": "v2.5.79 — Anlık bildirimler ve raid yeniden çalışıyor"
   },
   "releaseHistoryV0Body": {
-    "message": "• Anlık canlı yayın bildirimi, raid bildirimi ve bot skoru yeniden çalışıyor: Kick gerçek zamanlı servisinin anahtarını değiştirdi, KickAlert artık güncel anahtarı Kick'ten otomatik alıyor\n• Kick anahtarı yine değiştirirse eklenti hata tekrarlamak yerine yeni anahtarı kendisi alıyor"
+    "message": "• Anlık canlı yayın bildirimi, raid bildirimi ve bot skoru yeniden çalışıyor: Kick gerçek zamanlı servisinin anahtarını değiştirdi, KickAlert artık güncel anahtarı Kick'ten otomatik alıyor\n• Kick anahtarı yine değiştirirse eklenti hata tekrarlamak yerine yeni anahtarı kendisi alıyor\n• Popup'ta ikinci kaydırma çubuğu ve Ayarlar'ın altındaki boş kayma alanı giderildi"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.77 — Daha doğru kanal bildirimleri"

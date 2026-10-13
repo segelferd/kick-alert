@@ -672,10 +672,10 @@
     "message": "Cerrar"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.78 — Vuelven los avisos instantáneos y los raids"
+    "message": "v2.5.79 — Vuelven los avisos instantáneos y los raids"
   },
   "releaseHistoryV0Body": {
-    "message": "• Los avisos instantáneos de directo, los avisos de raid y la puntuación de bots vuelven a funcionar: Kick cambió la clave de su servicio en tiempo real y KickAlert ahora obtiene la clave actual de Kick automáticamente\n• Si Kick la vuelve a cambiar, la extensión obtiene la nueva clave por sí sola en lugar de repetir errores"
+    "message": "• Los avisos instantáneos de directo, los avisos de raid y la puntuación de bots vuelven a funcionar: Kick cambió la clave de su servicio en tiempo real y KickAlert ahora obtiene la clave actual de Kick automáticamente\n• Si Kick la vuelve a cambiar, la extensión obtiene la nueva clave por sí sola en lugar de repetir errores\n• La ventana ya no muestra una segunda barra de desplazamiento ni espacio vacío al final de Ajustes"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.77 — Avisos de canal más precisos"

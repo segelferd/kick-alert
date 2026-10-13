@@ -674,10 +674,10 @@
     "message": "Schließen"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.78 — Sofortige Hinweise und Raids funktionieren wieder"
+    "message": "v2.5.79 — Sofortige Hinweise und Raids funktionieren wieder"
   },
   "releaseHistoryV0Body": {
-    "message": "• Sofortige Live-Hinweise, Raid-Hinweise und der Bot-Score funktionieren wieder: Kick hat den Schlüssel seines Echtzeitdienstes ersetzt, KickAlert holt den aktuellen Schlüssel jetzt automatisch von Kick\n• Ändert Kick ihn erneut, übernimmt die Erweiterung den neuen Schlüssel selbst, statt Fehler zu wiederholen"
+    "message": "• Sofortige Live-Hinweise, Raid-Hinweise und der Bot-Score funktionieren wieder: Kick hat den Schlüssel seines Echtzeitdienstes ersetzt, KickAlert holt den aktuellen Schlüssel jetzt automatisch von Kick\n• Ändert Kick ihn erneut, übernimmt die Erweiterung den neuen Schlüssel selbst, statt Fehler zu wiederholen\n• Das Popup zeigt keine zweite Bildlaufleiste und keinen leeren Bereich mehr am Ende der Einstellungen"
   },
   "releaseHistoryV1Label": {
     "message": "v2.5.77 — Genauere Kanalhinweise"
