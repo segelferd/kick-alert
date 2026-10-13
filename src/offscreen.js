@@ -72,7 +72,8 @@ setInterval(async () => {
 // Event geldiğinde chrome.runtime.sendMessage ile SW'ye haber verir; SW
 // uykuda olsa bile mesaj onu uyandırır ve bildirim gönderilir.
 
-const LIVE_PUSHER_URL = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+// v2.5.78: Bağlantı adresi sabit değil; pusher-config.js'teki KAPusherCfg.url()
+// (anahtar arka plan tarafından Kick'ten alınıp mesajla iletilir).
 
 const LiveTracker = {
   ws: null,
@@ -100,12 +101,14 @@ const LiveTracker = {
     this.isConnecting = true;
     try {
       this.stats.connects++;
-      this.ws = new WebSocket(LIVE_PUSHER_URL);
+      const ws = new WebSocket(KAPusherCfg.url());
+      this.ws = ws;
 
       // BUG#5 FIX: 10sn'de bağlanamazsa (handshake gelmezse) ws.close() →
       // close handler reconnect tetikler. Aksi halde isConnecting=true
       // sonsuza kalır ve LiveTracker sessizce ölürdü.
       this.connectionTimeoutTimer = setTimeout(() => {
+        if (ws !== this.ws) return; // v2.5.78: yeniden başlatılmış eski bağlantı
         if (!this.isConnected) {
           console.warn('[KickAlert][LiveTracker] connection timeout (10sn) — kapatılıp yeniden denenecek');
           relayLog('warn', 'OFF-01', 'LiveTracker bağlantı zaman aşımı (10sn) — kapatılıp yeniden denenecek');
@@ -119,25 +122,31 @@ const LiveTracker = {
       }, 10000);
 
       // BUG#6 FIX: open listener (teşhis + timeout ile birlikte sağlamlık)
-      this.ws.addEventListener('open', () => {
+      ws.addEventListener('open', () => {
         console.debug('[KickAlert][LiveTracker] WebSocket open (handshake bekleniyor)');
       });
 
-      this.ws.addEventListener('message', (ev) => this._onMessage(ev));
+      ws.addEventListener('message', (ev) => { if (ws === this.ws) this._onMessage(ev); });
 
-      this.ws.addEventListener('close', () => {
+      ws.addEventListener('close', (ev) => {
+        if (ws !== this.ws) return; // v2.5.78: restart() ile bırakılan eski bağlantı
         this.isConnected = false;
         this.isConnecting = false;
         clearTimeout(this.connectionTimeoutTimer);
         clearInterval(this.pingTimer);
         this.pingTimer = null;
+        // v2.5.78: Kalıcı hata (4000-4099, ör. 4001 anahtar yok) ile kapandıysa
+        // her 30 sn'de tekrar deneyip hata yazmak yerine arka plana haber ver
+        // (anahtarı Kick'e yeniden sorar) ve aynı anahtarla 15 dk sonra dene.
+        const permanent = kaIsPermanentPusherCode(ev && ev.code);
+        if (permanent) KAPusherCfg.reportInvalid('live', ev.code, ev.reason || '');
         // Kanal varsa yeniden bağlan
         if (Object.keys(this.channelIdToSlug).length > 0) {
-          this._scheduleReconnect();
+          this._scheduleReconnect(permanent ? KA_PUSHER_PERMANENT_RETRY_MS : undefined);
         }
       });
 
-      this.ws.addEventListener('error', () => { /* close handler reconnect yapar */ });
+      ws.addEventListener('error', () => { /* close handler reconnect yapar */ });
     } catch (e) {
       this.isConnecting = false;
       clearTimeout(this.connectionTimeoutTimer);
@@ -147,9 +156,9 @@ const LiveTracker = {
     }
   },
 
-  _scheduleReconnect() {
+  _scheduleReconnect(fixedDelay) {
     if (this.reconnectTimer) return;
-    const delay = this.reconnectDelay + Math.random() * 1000;
+    const delay = fixedDelay || (this.reconnectDelay + Math.random() * 1000);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
       this.reconnectDelay = Math.min(this.reconnectDelay * 2, 30000);
@@ -203,6 +212,7 @@ const LiveTracker = {
       this.isConnected = true;
       this.isConnecting = false;
       this.reconnectDelay = 1000;
+      this._warnedKey = null; // v2.5.78
       this.lastPongAt = Date.now();
       clearTimeout(this.connectionTimeoutTimer); // BUG#5: başarılı bağlantı, timeout'u iptal et
       console.debug('[KickAlert][LiveTracker] bağlantı kuruldu');
@@ -238,10 +248,16 @@ const LiveTracker = {
       try { d = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data; } catch {}
       const code = d && (d.code ?? d.Code);
       const message = (d && (d.message ?? d.Message)) || '';
-      if (typeof code === 'number' && code >= 4000 && code <= 4099) {
-        // Kalıcı hata — gerçek sorun, logla
-        console.warn(`[KickAlert][LiveTracker] Pusher kalıcı hata (${code}): ${message}`);
-        relayLog('warn', 'OFF-03', `LiveTracker Pusher kalıcı hata (${code}): ${message}`);
+      if (kaIsPermanentPusherCode(code)) {
+        // Kalıcı hata — gerçek sorun. v2.5.78: aynı anahtar için bir kez uyar
+        // (önceden her yeniden denemede tarayıcının Hatalar listesine düşüyordu)
+        if (this._warnedKey !== KAPusherCfg.key) {
+          this._warnedKey = KAPusherCfg.key;
+          console.warn(`[KickAlert][LiveTracker] Pusher kalıcı hata (${code}): ${message}`);
+          relayLog('warn', 'OFF-03', `LiveTracker Pusher kalıcı hata (${code}): ${message} · anahtar Kick'ten yeniden isteniyor`);
+        } else {
+          dbg(`[KickAlert][LiveTracker] Pusher kalıcı hata (${code}) tekrarı`);
+        }
       } else {
         // Geçici hata (4100+, 4201 pong, vb.) — reconnect zaten devrede, sessiz geç
         dbg(`[KickAlert][LiveTracker] Pusher geçici hata (${code ?? '?'}): ${message} — reconnect devrede`);
@@ -381,9 +397,26 @@ const LiveTracker = {
     return { tracked: Object.keys(this.channelIdToSlug).length, added };
   },
 
+  // v2.5.78: Pusher anahtarı değişince eski bağlantıyı bırakıp yenisiyle bağlan
+  restart() {
+    clearTimeout(this.reconnectTimer); this.reconnectTimer = null;
+    clearTimeout(this.connectionTimeoutTimer);
+    clearInterval(this.pingTimer); this.pingTimer = null;
+    const old = this.ws;
+    this.ws = null;
+    this.isConnected = false;
+    this.isConnecting = false;
+    this.reconnectDelay = 1000;
+    this.subscribed.clear();
+    try { old?.close(); } catch {}
+    if (Object.keys(this.channelIdToSlug).length > 0) this.ensureConnection();
+  },
+
   getState() {
     return {
       connected: this.isConnected,
+      pusherKey: KAPusherCfg.key,
+      pusherCluster: KAPusherCfg.cluster,
       trackedCount: Object.keys(this.channelIdToSlug).length,
       subscribedCount: this.subscribed.size,
       stats: { ...this.stats },
@@ -414,6 +447,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // Bu sayede background'ın kendi handler'ı bu mesajları yakalayıp
   // promise loop'una sebep olmaz.
   if (msg.target !== 'offscreen') return false;
+
+  // v2.5.78: Arka plandan gelen Pusher ayarı (her senkron mesajında da gelir;
+  // offscreen yeniden açıldıysa ilk mesajla güncel anahtarı alır)
+  if (msg.pusherCfg) KAPusherCfg.set(msg.pusherCfg);
+  if (msg.type === 'PUSHER_CONFIG') {
+    sendResponse({ success: true, key: KAPusherCfg.key, cluster: KAPusherCfg.cluster });
+    return false;
+  }
 
   // ─── v2.3.1 Plan F: LiveTracker mesajları ───
   if (msg.type === 'LIVE_TRACK_SYNC') {
@@ -470,4 +511,17 @@ try {
       try { chrome.runtime.sendMessage({ type: 'RAID_EVENT', slug: d.slug, raider: d.raider, viewers: d.viewers, message: d.message, event: d.event }).catch(() => {}); } catch (e) {}
     };
   }
+} catch (e) {}
+
+// v2.5.78: Pusher anahtarı değişince iki bağlantı da yeniden kurulur;
+// kalıcı hata olursa arka plan anahtarı Kick'e yeniden sorar.
+try {
+  KAPusherCfg.onChange(() => {
+    relayLog('info', 'OFF-05', `Pusher anahtarı güncellendi (${KAPusherCfg.key}, ${KAPusherCfg.cluster}), bağlantılar yenileniyor`);
+    try { LiveTracker.restart(); } catch (e) {}
+    try { if (typeof BotTracker !== 'undefined' && BotTracker.restart) BotTracker.restart(); } catch (e) {}
+  });
+  KAPusherCfg.onInvalid = (d) => {
+    try { chrome.runtime.sendMessage({ type: 'PUSHER_KEY_INVALID', key: d.key, source: d.source, code: d.code, message: d.message }).catch(() => {}); } catch (e) {}
+  };
 } catch (e) {}

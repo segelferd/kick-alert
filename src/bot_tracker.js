@@ -15,7 +15,9 @@
 // BOT TRACKER — Pusher WebSocket
 // ═══════════════════════════════════════════════════════════════
 
-const PUSHER_URL = 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false';
+// v2.5.78: Bağlantı adresi pusher-config.js'teki KAPusherCfg.url() (Kick anahtarı
+// değiştirince arka plan yenisini alır). Chrome'da offscreen.html, Firefox'ta
+// manifest bu dosyadan önce pusher-config.js'i yükler.
 
 // v2.3.20: Chrome'da bu dosya offscreen.html içinde, kendi ayrı DevTools
 // context'inde çalışıyor — arka plan servisi konsolundan kopuk. Önemli
@@ -59,9 +61,11 @@ const BotTracker = {
 
     this.isConnecting = true;
     try {
-      this.ws = new WebSocket(PUSHER_URL);
+      const ws = new WebSocket(KAPusherCfg.url());
+      this.ws = ws;
 
       this.connectionTimeoutTimer = setTimeout(() => {
+        if (ws !== this.ws) return; // v2.5.78: bırakılmış eski bağlantı
         if (!this.isConnected) {
           console.warn('[KickAlert][BotTracker] Connection timeout');
           relayLog('warn', 'BOT-01', 'BotTracker bağlantı zaman aşımı');
@@ -69,18 +73,22 @@ const BotTracker = {
         }
       }, CONNECTION_TIMEOUT_MS);
 
-      this.ws.addEventListener('open', () => {
+      ws.addEventListener('open', () => {
         console.debug('[KickAlert][BotTracker] WebSocket open');
       });
 
-      this.ws.addEventListener('message', (ev) => this._handleMessage(ev));
+      ws.addEventListener('message', (ev) => { if (ws === this.ws) this._handleMessage(ev); });
 
-      this.ws.addEventListener('error', (err) => {
+      ws.addEventListener('error', (err) => {
+        if (ws !== this.ws) return;
+        // v2.5.78: kalıcı hata döngüsünde her denemede uyarı yazmasın
+        if (this._permanentKey === KAPusherCfg.key) return;
         console.warn('[KickAlert][BotTracker] WebSocket error');
         relayLog('warn', 'BOT-02', 'BotTracker WebSocket hatası');
       });
 
-      this.ws.addEventListener('close', () => {
+      ws.addEventListener('close', (ev) => {
+        if (ws !== this.ws) return; // v2.5.78: restart()/shutdown() ile bırakılan eski bağlantı
         console.debug('[KickAlert][BotTracker] WebSocket closed');
         this.isConnected = false;
         this.isConnecting = false;
@@ -88,9 +96,21 @@ const BotTracker = {
         clearInterval(this.pingTimer);
         this.pingTimer = null;
 
+        // v2.5.78: Kalıcı hata (4000-4099, ör. 4001 anahtar yok): arka plana
+        // haber ver, aynı anahtarla 15 dk sonra dene (sonsuz 30 sn döngüsü yerine)
+        const permanent = kaIsPermanentPusherCode(ev && ev.code);
+        if (permanent) {
+          if (this._permanentKey !== KAPusherCfg.key) {
+            this._permanentKey = KAPusherCfg.key;
+            console.warn(`[KickAlert][BotTracker] Pusher kalıcı hata (${ev.code}): ${ev.reason || ''}`);
+            relayLog('warn', 'BOT-05', `BotTracker Pusher kalıcı hata (${ev.code}): ${ev.reason || ''}`);
+          }
+          KAPusherCfg.reportInvalid('bot', ev.code, ev.reason || '');
+        }
+
         // Auto-reconnect if we still have channels to track
         if (this.channels.size > 0) {
-          this._scheduleReconnect();
+          this._scheduleReconnect(permanent ? KA_PUSHER_PERMANENT_RETRY_MS : undefined);
         }
       });
 
@@ -103,9 +123,9 @@ const BotTracker = {
     }
   },
 
-  _scheduleReconnect() {
+  _scheduleReconnect(fixedDelay) {
     if (this.reconnectTimer) return;
-    const delay = this.reconnectDelay;
+    const delay = fixedDelay || this.reconnectDelay;
     console.debug(`[KickAlert][BotTracker] Reconnect in ${delay}ms`);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
@@ -130,6 +150,7 @@ const BotTracker = {
       this.isConnected = true;
       this.isConnecting = false;
       this.reconnectDelay = RECONNECT_INITIAL_MS;
+      this._permanentKey = null;
       clearTimeout(this.connectionTimeoutTimer);
       console.debug('[KickAlert][BotTracker] Connection established');
       relayLog('info', 'BOT-04', 'BotTracker bağlantısı kuruldu');
@@ -512,6 +533,14 @@ const BotTracker = {
     }
 
     return out;
+  },
+
+  // v2.5.78: Pusher anahtarı değişince yeni anahtarla yeniden bağlan
+  restart() {
+    this.shutdown();
+    if (this.channels.size > 0) {
+      this.ensureConnection();
+    }
   },
 
   shutdown() {

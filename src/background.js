@@ -7,7 +7,7 @@
 
 // Chrome uses service_worker (needs importScripts), Firefox uses background.scripts (auto-loaded)
 if (typeof importScripts === 'function') {
-  importScripts('./storage.js', './kickapi.js', './utils.js', './pusher.js', './ad-diag.js');
+  importScripts('./storage.js', './kickapi.js', './utils.js', './pusher-config.js', './pusher.js', './ad-diag.js');
 }
 
 // v2.5.65: Firefox tespiti. Chrome 148'den beri eklentilerde `browser` ad alanı
@@ -230,6 +230,108 @@ async function initialize(isFreshSession = false) {
   _initRunning = false;
 }
 
+// ─── v2.5.78: Pusher anahtarı Kick'ten alınır ───
+// Kick Ekim 2026'da eski Pusher uygulamasını kapattı (4001 "App key not in
+// this cluster"). Kick'in kendi sayfası bağlanacağı uygulamayı her açılışta
+// web.kick.com/api/v1/realtime/connection adresine soruyor; biz de aynısını
+// yapıyoruz. Sorgu başarısızsa son başarılı anahtar, o da yoksa
+// pusher-config.js'teki yedek anahtar kullanılır. Kanal ve olay adları aynı.
+const PUSHER_CFG_KEY = '_pusherCfg';
+const PUSHER_CFG_TTL_MS = 12 * 60 * 60 * 1000;      // başarılı sorgu 12 saat geçerli
+const PUSHER_CFG_FAIL_TTL_MS = 30 * 60 * 1000;      // başarısız sorgudan sonra 30 dk bekle
+const PUSHER_FORCE_MIN_MS = 10 * 60 * 1000;         // kalıcı hata sonrası zorunlu sorgular arası
+const KICK_REALTIME_URL = 'https://web.kick.com/api/v1/realtime/connection';
+let _pusherCfgPromise = null;
+let _pusherLastForce = 0;
+
+function pusherCfgPayload() {
+  return { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster };
+}
+
+// Yanıt: { data: { connections: [{ provider: 'pusher', credentials: { app_key, cluster } }] } }
+function parseKickRealtimeResponse(j) {
+  const list = j && j.data && Array.isArray(j.data.connections) ? j.data.connections : [];
+  for (const c of list) {
+    if (c && c.provider === 'pusher' && c.credentials) {
+      const cfg = { key: c.credentials.app_key, cluster: c.credentials.cluster || 'us2' };
+      if (KAPusherCfg.valid(cfg)) return cfg;
+    }
+  }
+  return null;
+}
+
+async function fetchPusherConfigFromKick() {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    // Kick web istemcisiyle aynı gövde. id her istekte rastgele (kalıcı kimlik yok),
+    // çerez gönderilmez.
+    const body = { client: { id: crypto.randomUUID(), type: 'web' }, capabilities: { accepted_providers: [{ provider: 'pusher' }] } };
+    const r = await fetch(KICK_REALTIME_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', accept: 'application/json' },
+      body: JSON.stringify(body),
+      credentials: 'omit',
+      cache: 'no-store',
+      signal: ctrl.signal,
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const cfg = parseKickRealtimeResponse(await r.json());
+    if (!cfg) throw new Error('yanıtta Pusher bağlantısı yok');
+    return cfg;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Geçerli Pusher ayarını hazırlar. force: kalıcı Pusher hatasından sonra
+ * süreye bakmadan Kick'e yeniden sor (10 dk'da en fazla bir kez).
+ */
+async function ensurePusherConfig({ force = false, reason = '' } = {}) {
+  if (_pusherCfgPromise) return _pusherCfgPromise;
+  _pusherCfgPromise = (async () => {
+    const now = Date.now();
+    let stored = null;
+    try { stored = (await chrome.storage.local.get(PUSHER_CFG_KEY))[PUSHER_CFG_KEY] || null; } catch {}
+    if (stored && KAPusherCfg.valid(stored)) KAPusherCfg.set(stored);
+    const age = stored ? now - (stored.at || 0) : Infinity;
+    const fresh = !!stored && (stored.ok ? age < PUSHER_CFG_TTL_MS : age < PUSHER_CFG_FAIL_TTL_MS);
+    if (!force && fresh) return pusherCfgPayload();
+    if (force && now - _pusherLastForce < PUSHER_FORCE_MIN_MS) return pusherCfgPayload();
+    if (force) _pusherLastForce = now;
+    try {
+      const cfg = await fetchPusherConfigFromKick();
+      const before = KAPusherCfg.key;
+      const changed = KAPusherCfg.set(cfg);
+      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { key: cfg.key, cluster: cfg.cluster, at: now, ok: true } }); } catch {}
+      KLog.info('PSH-10', `Pusher anahtarı Kick'ten alındı: ${cfg.key} (${cfg.cluster})${changed ? ` · önceki ${before}` : ' · değişmedi'}${reason ? ' · ' + reason : ''}`);
+    } catch (e) {
+      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster, at: now, ok: false, err: String(e.message || e).slice(0, 80) } }); } catch {}
+      KLog.warn('PSH-11', `Pusher anahtarı Kick'ten alınamadı (${e.message}); ${KAPusherCfg.key} kullanılıyor`);
+    }
+    return pusherCfgPayload();
+  })();
+  try { return await _pusherCfgPromise; } finally { _pusherCfgPromise = null; }
+}
+
+// Anahtar değişince bağlantıları yenile. Chrome: offscreen'e ilet (orada
+// LiveTracker + BotTracker yeniden bağlanır). Firefox: aynı bağlamdaki
+// Pusher ve BotTracker'ı yeniden başlat.
+KAPusherCfg.onChange(() => {
+  if (chrome.offscreen) {
+    chrome.runtime.sendMessage({ target: 'offscreen', type: 'PUSHER_CONFIG', pusherCfg: pusherCfgPayload() }).catch(() => {});
+  } else {
+    try { if (typeof Pusher !== 'undefined' && Pusher.restart) Pusher.restart(); } catch (e) {}
+    try { if (typeof BotTracker !== 'undefined' && BotTracker.restart) BotTracker.restart(); } catch (e) {}
+  }
+});
+// Firefox: kalıcı hata aynı bağlamda bildirilir (Chrome'da offscreen mesajla)
+KAPusherCfg.onInvalid = (d) => {
+  KLog.info('PSH-12', `Pusher kalıcı hata (${d.code}, ${d.source}) · anahtar Kick'ten yeniden isteniyor`);
+  ensurePusherConfig({ force: true, reason: `kalıcı hata ${d.code}` }).catch(() => {});
+};
+
 /**
  * v2.3.1 Plan F: Pusher WebSocket başlat ve takip edilen kanallara subscribe et.
  *
@@ -241,6 +343,11 @@ async function initialize(isFreshSession = false) {
  * Çalışmazsa sessizce başarısız olur — checkChannels polling devam eder.
  */
 function startPusherIfPossible() {
+  // v2.5.78: önce güncel anahtarı hazırla (başarısız olsa da devam)
+  ensurePusherConfig({ reason: 'açılış' }).catch(() => {}).finally(_startPusherNow);
+}
+
+function _startPusherNow() {
   try {
     const hasOffscreen = !!chrome.offscreen;
 
@@ -283,6 +390,8 @@ function startPusherIfPossible() {
  */
 async function refreshPusherSubscriptions() {
   if (!chrome.offscreen && typeof Pusher === 'undefined') return;
+  // v2.5.78: 12 saatte bir anahtarı tazele (taze ise sadece depodan okur)
+  try { await ensurePusherConfig(); } catch {}
 
   // Storage'daki tüm channel_id cache'ini al
   let channelIdCache = {};
@@ -316,6 +425,7 @@ async function refreshPusherSubscriptions() {
       await sendToOffscreenWithRetry({
         target: 'offscreen',
         type: 'LIVE_TRACK_SYNC',
+        pusherCfg: pusherCfgPayload(),
         channels: subscribableItems,
         authoritative: true, // Bulgu#6: tam liste — offscreen unfollow edilenleri temizlesin
       });
@@ -397,6 +507,7 @@ async function harvestMissingChannelIds() {
             await sendToOffscreenWithRetry({
               target: 'offscreen',
               type: 'LIVE_TRACK_SYNC',
+              pusherCfg: pusherCfgPayload(),
               channels: [{ channelId, slug }],
             });
           } else if (typeof Pusher !== 'undefined') {
@@ -1794,7 +1905,7 @@ const BotTrackerHost = {
     }
     // Chrome: offscreen'e mesaj
     return chrome.runtime.sendMessage({
-      target: 'offscreen', type: 'BOT_TRACK_SYNC', channels,
+      target: 'offscreen', type: 'BOT_TRACK_SYNC', channels, pusherCfg: pusherCfgPayload(),
     });
   },
 
@@ -2750,6 +2861,18 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return false;
   }
 
+  // v2.5.78: offscreen'de Pusher kalıcı hata verdi (ör. 4001): anahtarı Kick'e yeniden sor
+  if (msg.type === 'PUSHER_KEY_INVALID') {
+    KLog.info('PSH-12', `Pusher kalıcı hata (${msg.code}, ${msg.source}) · anahtar Kick'ten yeniden isteniyor`);
+    ensurePusherConfig({ force: true, reason: `kalıcı hata ${msg.code}` }).then((cfg) => {
+      // Offscreen eski anahtarla kaldıysa (arka planda anahtar zaten güncel olabilir) gönder
+      if (cfg && msg.key !== cfg.key) {
+        chrome.runtime.sendMessage({ target: 'offscreen', type: 'PUSHER_CONFIG', pusherCfg: cfg }).catch(() => {});
+      }
+    }).catch(() => {});
+    return false;
+  }
+
   if (msg.type === 'OFFSCREEN_LOG') {
     const level = msg.level === 'warn' ? 'warn' : 'info';
     KLog[level](msg.code || 'OFF-00', msg.text || '');
@@ -2787,6 +2910,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
             await sendToOffscreenWithRetry({
               target: 'offscreen',
               type: 'LIVE_TRACK_SYNC',
+              pusherCfg: pusherCfgPayload(),
               channels: [{ channelId: msg.channelId, slug: msg.slug }],
             });
           } else if (typeof Pusher !== 'undefined') {

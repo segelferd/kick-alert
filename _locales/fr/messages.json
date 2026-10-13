@@ -645,7 +645,7 @@
     "message": "Vous ne suivez encore personne. Suivez une chaîne sur Kick, elle apparaîtra automatiquement ici."
   },
   "whatsNewBannerText": {
-    "message": "Nouveau : les alertes de catégorie et de titre sont plus fiables ; une lecture erronée passagère de Kick n'envoie plus d'alerte inversée."
+    "message": "Corrigé : les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau après le changement du service temps réel de Kick."
   },
   "optGroupGeneral": {
     "message": "Général"
@@ -672,22 +672,22 @@
     "message": "Fermer"
   },
   "releaseHistoryV0Label": {
-    "message": "v2.5.77 — Alertes de chaîne plus fiables"
+    "message": "v2.5.78 — Alertes instantanées et raids de retour"
   },
   "releaseHistoryV0Body": {
-    "message": "• Alertes de catégorie et de titre plus fiables : une lecture erronée passagère de Kick ne déclenche plus d'alerte, et un changement fait pendant l'attente de 5 minutes est signalé à la fin de celle-ci\n• Les changements survenus pendant la pause des alertes (Ne pas déranger, chaîne en sourdine) n'arrivent plus plus tard comme une vieille nouvelle"
+    "message": "• Les alertes de live instantanées, les alertes de raid et le score de bots fonctionnent à nouveau : Kick a remplacé la clé de son service temps réel, et KickAlert récupère désormais automatiquement la clé actuelle auprès de Kick\n• Si Kick la change encore, l'extension récupère la nouvelle clé d'elle-même au lieu de répéter des erreurs"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.76 — Le blocage des publicités refonctionne, démarrage plus calme"
+    "message": "v2.5.77 — Alertes de chaîne plus fiables"
   },
   "releaseHistoryV1Body": {
-    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite\n• Les boutons des fenêtres de confirmation affichent désormais tout leur texte dans chaque langue (empilés si le libellé est long)"
+    "message": "• Alertes de catégorie et de titre plus fiables : une lecture erronée passagère de Kick ne déclenche plus d'alerte, et un changement fait pendant l'attente de 5 minutes est signalé à la fin de celle-ci\n• Les changements survenus pendant la pause des alertes (Ne pas déranger, chaîne en sourdine) n'arrivent plus plus tard comme une vieille nouvelle"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.67 — Alertes par chaîne, temps de visionnage et corrections"
+    "message": "v2.5.76 — Le blocage des publicités refonctionne, démarrage plus calme"
   },
   "releaseHistoryV2Body": {
-    "message": "• Nouvelle fenêtre d'alertes par chaîne (bouton de réglage sur la carte) : soyez prévenu quand une chaîne change de catégorie ou de titre, quand un live se termine (avec sa durée) et quand elle reçoit un raid (de qui et avec combien de spectateurs). Tout est désactivé par défaut\n• Filtre par chaîne : n'être prévenu que si la catégorie fait partie de votre sélection ou si le titre contient l'un de vos mots\n• Ces alertes ont leur propre son plus discret (Goutte douce, Carillon léger, Tic), le son Windows ou le silence, avec un volume séparé\n• Temps de visionnage : l'historique indique combien de temps vous avez regardé ces 7 derniers jours et vos chaînes principales (stocké uniquement sur cet appareil)\n• Survolez l'aperçu d'une chaîne pour l'afficher en grand ; les boutons des cartes tiennent toujours\n• Corrigé sur Chrome récent (148+) : en mode « Sons de l'extension », les notifications jouaient le son Windows et perdaient leurs boutons Ouvrir / Couper le son\n• La synchronisation cloud n'annule plus un fichier de paramètres importé, et un paramètre trop volumineux pour être synchronisé est conservé au lieu d'être écrasé\n• Les paramètres ne sont plus coupés dans les langues longues ; méthode de secours renforcée pour sauter les publicités en live"
+    "message": "• Le blocage des publicités en live a été adapté au changement de Kick en octobre : le lecteur ouvre désormais le flux sans publicité dès le départ. Les rediffusions utilisent aussi la nouvelle voie sans publicité\n• Après une nouvelle installation, les alertes de chaîne sont désactivées : suivre beaucoup de chaînes ne signifie plus une avalanche de notifications. Activez les chaînes voulues avec la cloche de leur carte. Une mise à jour conserve vos réglages\n• Paramètres : « Alerte de chaîne par défaut » pour les chaînes sans réglage de cloche propre, et « Appliquer à toutes les chaînes » avec Annuler. Pour tout couper seulement à certaines heures, utilisez Ne pas déranger\n• Même avec le défaut désactivé, l'ouverture automatique et les alertes de chaîne que vous avez activées continuent de fonctionner\n• Facultatif, désactivé par défaut : partager un résumé technique des diagnostics publicitaires (sans noms de chaînes ni données personnelles) pour corriger le blocage plus vite\n• Les boutons des fenêtres de confirmation affichent désormais tout leur texte dans chaque langue (empilés si le libellé est long)"
   },
   "settingsBackupTitle": {
     "message": "Sauvegarde et restauration"

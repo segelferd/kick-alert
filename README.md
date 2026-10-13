@@ -99,6 +99,7 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 ```
 ├── src/
 │   ├── background.js    # Service worker — WebSocket coordination, notifications, anomaly detection
+│   ├── pusher-config.js # Pusher app key from Kick (web.kick.com), shared by all trackers
 │   ├── pusher.js        # Pusher WebSocket client — real-time live events
 │   ├── offscreen.js     # Offscreen document — persistent WebSocket + background audio
 │   ├── popup.js         # Popup UI — channel cards, sparklines, trend modal, options
@@ -141,6 +142,7 @@ Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickaler
 | `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API; optional ad-domain blocking ruleset (disabled by default) |
 | `scripting` | Inject content script into open kick.com tabs (reliability fallback) |
 | `host: kick.com` | Fetch followed channels & live status |
+| `host: web.kick.com` | Get the current real-time (Pusher) app key from Kick |
 | `host: ws-us2.pusher.com` | Real-time WebSocket live events |
 
 ## Technical Highlights

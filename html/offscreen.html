@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html><head><title>KickAlert Offscreen</title></head>
+<html><head><meta charset="UTF-8"><title>KickAlert Offscreen</title></head>
 <body>
   <!-- v2.3.0: bot_tracker.js önce yüklenmeli, offscreen.js içindeki message handler ona referans veriyor -->
+  <!-- v2.5.78: Pusher anahtarı (KAPusherCfg) diğer iki dosyadan önce yüklenmeli -->
+  <script src="../src/pusher-config.js"></script>
   <script src="../src/bot_tracker.js"></script>
   <script src="../src/offscreen.js"></script>
 </body>

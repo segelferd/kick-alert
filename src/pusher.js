@@ -40,8 +40,10 @@
 const Pusher = {
   // Pusher Channels app ID — reverse-engineered from Kick.com sayfa
   // (this is the same app every Kick browser tab connects to)
-  APP_KEY: '32cbd69e4b950bf97679',
-  WS_URL: 'wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0-rc2&flash=false',
+  // v2.5.78: Kick eski uygulamayı (32cbd69e4b950bf97679) kapattı. Anahtar artık
+  // pusher-config.js'teki KAPusherCfg'den gelir (background.js Kick'ten alır).
+  get APP_KEY() { return KAPusherCfg.key; },
+  get WS_URL() { return KAPusherCfg.url(); },
 
   // State
   _ws: null,                          // Current WebSocket instance
@@ -144,6 +146,24 @@ const Pusher = {
     };
   },
 
+  /**
+   * v2.5.78: Pusher anahtarı değişince yeni anahtarla yeniden bağlan.
+   * Abonelikler korunur, bağlanınca hepsi yeniden gönderilir.
+   */
+  restart() {
+    if (this._reconnectTimer) { clearTimeout(this._reconnectTimer); this._reconnectTimer = null; }
+    if (this._pingTimer) { clearInterval(this._pingTimer); this._pingTimer = null; }
+    const old = this._ws;
+    this._ws = null;
+    this._connected = false;
+    this._socketId = null;
+    this._reconnectAttempt = 0;
+    for (const ch of this._subscribedChannels) this._pendingSubscribes.add(ch);
+    this._subscribedChannels.clear();
+    try { old?.close(); } catch (e) { /* ignore */ }
+    if (this._onLiveCallback) this._connect();
+  },
+
   /** Force stop (cleanup) */
   stop() {
     if (this._reconnectTimer) {
@@ -169,17 +189,19 @@ const Pusher = {
     }
     try {
       console.debug('[KickAlert] Pusher: bağlanıyor...');
-      this._ws = new WebSocket(this.WS_URL);
+      const ws = new WebSocket(this.WS_URL);
+      this._ws = ws;
       this._stats.connects++;
 
-      this._ws.addEventListener('open', () => {
+      ws.addEventListener('open', () => {
         console.debug('[KickAlert] Pusher: WebSocket açıldı (handshake bekleniyor)');
         // Pusher will send pusher:connection_established next
       });
 
-      this._ws.addEventListener('message', (e) => this._onMessage(e));
+      ws.addEventListener('message', (e) => { if (ws === this._ws) this._onMessage(e); });
 
-      this._ws.addEventListener('close', (e) => {
+      ws.addEventListener('close', (e) => {
+        if (ws !== this._ws) return; // v2.5.78: restart()/stop() ile bırakılan eski bağlantı
         console.debug(`[KickAlert] Pusher: kapandı (code: ${e.code}, reason: ${e.reason || 'yok'})`);
         this._stats.disconnects++;
         this._connected = false;
@@ -188,10 +210,14 @@ const Pusher = {
           clearInterval(this._pingTimer);
           this._pingTimer = null;
         }
-        this._scheduleReconnect();
+        // v2.5.78: kalıcı hata (4000-4099, ör. 4001 anahtar yok): arka plan
+        // anahtarı Kick'e yeniden sorar; aynı anahtarla 15 dk sonra dener
+        const permanent = kaIsPermanentPusherCode(e && e.code);
+        if (permanent) KAPusherCfg.reportInvalid('pusher', e.code, e.reason || '');
+        this._scheduleReconnect(permanent ? KA_PUSHER_PERMANENT_RETRY_MS : undefined);
       });
 
-      this._ws.addEventListener('error', (e) => {
+      ws.addEventListener('error', (e) => {
         this._stats.errors++;
         // Don't log noisy 'error' — close handler will manage reconnect
       });
@@ -220,6 +246,7 @@ const Pusher = {
         this._socketId = data.socket_id;
         this._connected = true;
         this._reconnectAttempt = 0;
+        this._warnedKey = null; // v2.5.78
         this._lastPongAt = Date.now();
         console.debug(`[KickAlert] Pusher: bağlantı kuruldu (socket_id: ${this._socketId})`);
 
@@ -259,8 +286,12 @@ const Pusher = {
       try { d = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data; } catch {}
       const code = d && (d.code ?? d.Code);
       const message = (d && (d.message ?? d.Message)) || '';
-      if (typeof code === 'number' && code >= 4000 && code <= 4099) {
-        console.warn(`[KickAlert] Pusher kalıcı hata (${code}): ${message}`);
+      if (kaIsPermanentPusherCode(code)) {
+        // v2.5.78: aynı anahtar için bir kez uyar
+        if (this._warnedKey !== KAPusherCfg.key) {
+          this._warnedKey = KAPusherCfg.key;
+          console.warn(`[KickAlert] Pusher kalıcı hata (${code}): ${message}`);
+        }
       } else {
         console.debug(`[KickAlert] Pusher geçici hata (${code ?? '?'}): ${message} — reconnect devrede`);
       }
@@ -339,14 +370,14 @@ const Pusher = {
     }
   },
 
-  _scheduleReconnect() {
+  _scheduleReconnect(fixedDelay) {
     if (this._reconnectTimer) return; // Already scheduled
 
     // Exponential backoff: 1s, 2s, 4s, 8s, 16s, max 30s
     const delay = Math.min(1000 * Math.pow(2, this._reconnectAttempt), 30000);
     this._reconnectAttempt++;
     // Add small jitter to avoid thundering herd
-    const jitteredDelay = delay + Math.random() * 1000;
+    const jitteredDelay = fixedDelay || (delay + Math.random() * 1000);
 
     console.debug(`[KickAlert] Pusher: ${Math.round(jitteredDelay/1000)}sn sonra reconnect (deneme ${this._reconnectAttempt})`);
 

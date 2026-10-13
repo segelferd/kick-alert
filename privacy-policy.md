@@ -53,6 +53,7 @@ All settings listed above **except**: custom sound files, notification history, 
 | `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API requests |
 | `scripting` | Inject the content script into open kick.com tabs as a reliability fallback (reads only public channel status) |
 | `host: kick.com` | Fetch followed channels and live status; read session cookie for auth |
+| `host: web.kick.com` | Ask Kick which real-time (Pusher) app to connect to, the same request Kick's own website makes; no cookies or personal data are sent |
 | `host: ws-us2.pusher.com` | Connect to Kick's real-time WebSocket service for instant live-stream events |
 
 ## Third-Party Services
@@ -60,6 +61,7 @@ All settings listed above **except**: custom sound files, notification history, 
 KickAlert communicates only with:
 
 - **kick.com** — To fetch followed channels and their live status via the official API
+- **web.kick.com** — To get the current connection details (app key and region) for Kick's real-time service. The request contains only a random one-time identifier and the word "web", is sent without cookies, and is repeated at most every 12 hours or when the connection is rejected
 - **ws-us2.pusher.com** — Kick's own real-time WebSocket service, used to receive instant live-stream events for channels you follow (only public stream-start events are read)
 - **player.kick.com** — To embed live streams in the multi-stream viewer (via iframe)
 - **script.google.com** — Only if you turn on *Share ad diagnostics*: receives the technical ad diagnostics summary (no personal data)

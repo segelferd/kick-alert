@@ -5,6 +5,17 @@ meaningful milestone rather than every internal build — small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.5.78 — Store release: real-time alerts work again after Kick's Pusher change
+
+- **Cause:** Kick shut down the Pusher app KickAlert connected to (`32cbd69e4b950bf97679`). Every connection was rejected with `4001 App key not in this cluster`, so instant live alerts, raid alerts and chat-based bot scores stopped (live alerts still arrived through the regular check, about 1 to 1.5 minutes late). Kick's own website now asks `web.kick.com/api/v1/realtime/connection` which app to use
+- New `src/pusher-config.js` (`KAPusherCfg`): one shared Pusher key/cluster for the offscreen LiveTracker, BotTracker and the Firefox Pusher client
+- Background asks Kick for the current app (same request body as Kick's web client, random one-time id, no cookies), caches it for 12 hours (30 minutes after a failure) and falls back to the last good key, then to the built-in key `34bf7a0ff419a2a775b9`. The key reaches the offscreen document with every sync message
+- On a permanent Pusher error (4000-4099) trackers no longer retry every 30 seconds: they report it, the background asks Kick again (at most every 10 minutes) and resends the key if it changed; the same key is retried after 15 minutes. The warning is written once per key instead of on every retry
+- When the key changes, connections are rebuilt and subscriptions restored; old sockets can no longer trigger reconnects after a restart
+- `html/offscreen.html`: added `<meta charset="UTF-8">` (Turkish characters in offscreen warnings were garbled, e.g. "kalÃ±cÃ±")
+- New host permission `https://web.kick.com/*`. Chrome asks users to approve it after the update
+- Privacy policy and README updated; What's New banner and Release History (v2.5.78, v2.5.77, v2.5.76) in 14 languages
+
 ## v2.5.77 — Store release: accurate category and title change alerts
 
 - Category/title change alerts are now compared with the value you were last told about, not with the previous check. Previously a change made during the 5-minute wait after an alert was silently dropped, and a single inconsistent reading from Kick's followed-channels endpoint (the old category coming back for one check) produced a reversed alert such as "Just Chatting → Arkheron" while the stream was actually in Just Chatting
