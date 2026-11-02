@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://segelferd.github.io/kick-alert/sitemap.xml
