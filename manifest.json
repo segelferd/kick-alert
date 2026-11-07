@@ -2,9 +2,9 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "description": "__MSG_appDescription__",
-  "version": "2.5.81",
+  "version": "2.6.0",
   "author": "segelferd",
-  "homepage_url": "https://github.com/segelferd/kick-alert",
+  "homepage_url": "https://segelferd.github.io/kick-alert/",
   "default_locale": "en",
   "icons": {
     "48": "icons/icon48.png",
@@ -20,6 +20,7 @@
     {
       "js": [
         "src/content.js",
+        "src/textfold.js",
         "src/chat.js",
         "src/adblock-dom-guard.js"
       ],
@@ -53,6 +54,18 @@
     "https://kick.com/*",
     "https://web.kick.com/*",
     "wss://ws-us2.pusher.com/*"
+  ],
+  "optional_host_permissions": [
+    "*://*.kick.com/*",
+    "wss://*.kick.com/*",
+    "*://*.doubleclick.net/*",
+    "*://*.googlesyndication.com/*",
+    "*://*.googleadservices.com/*",
+    "*://imasdk.googleapis.com/*",
+    "*://kickproduction.api.useinsider.com/*",
+    "*://adservice.google.com/*",
+    "*://*.2mdn.net/*",
+    "*://*.googletagservices.com/*"
   ],
   "declarative_net_request": {
     "rule_resources": [

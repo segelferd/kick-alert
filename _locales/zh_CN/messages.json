@@ -64,10 +64,14 @@
     "message": "警告"
   },
   "appDescription": {
-    "message": "Kick.com开播第一时间通知你 — 即时提醒、无广告直播、无垃圾信息聊天，忍者直播也无处遁形 ;)"
+    "message": "关注的 Kick 主播一开播就提醒你。自动打开直播、拦截广告、过滤聊天，最多同时看 4 个直播。完全免费。"
   },
   "appName": {
-    "message": "KickAlert — Kick.com直播提醒"
+    "message": "KickAlert - Kick 开播提醒、自动打开直播、广告拦截"
+  },
+  "appNameShort": {
+    "message": "KickAlert - Kick 开播提醒、自动打开直播、广告拦截",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
     "message": "自动打开"
@@ -142,10 +146,14 @@
     "message": "过滤模式"
   },
   "chatFilterModeDesc": {
-    "message": "隐藏会移除消息。模糊会淡化 — 悬停查看。"
+    "message": "隐藏会移除消息。模糊会淡化 - 悬停查看。"
   },
   "chatIntegrationDesc": {
     "message": "开启后上方显示聊天标签。首次安装后请刷新已打开的 Kick 标签页。"
+  },
+  "chatNotifJump": {
+    "message": "前往聊天通知设置",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "聊天集成"
@@ -304,7 +312,7 @@
     "message": "正在使用浏览器语言：$1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "不支持浏览器语言 — 使用英语"
+    "message": "不支持浏览器语言 - 使用英语"
   },
   "langSectionTitle": {
     "message": "语言"
@@ -369,6 +377,98 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "浏览器重启时重置自动打开设置"
   },
+  "raidGuardCheckbox": {
+    "message": "直播转到其他频道时关闭自动打开的标签页",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "只关闭 KickAlert 自动打开的标签页。你自己打开的，或你自己切换到其他频道的标签页不受影响。",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "频道名称...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "添加",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "清空",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "移除所有直播",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "单个直播",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "并排",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "三列",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "2×2 网格",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "聚焦",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "在上方添加频道名称，即可同时观看多个直播。",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "拖放卡片即可调整顺序。",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "全屏",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "移除",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "只听这个直播",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "将此直播静音",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "聊天",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "显示聊天",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "关闭聊天",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "在新标签页中打开聊天",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "添加频道即可查看其聊天。",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "无法在这里发消息？请在新标签页中打开聊天。",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
+  },
   "searchChannels": {
     "message": "搜索频道..."
   },
@@ -394,13 +494,13 @@
     "message": "扩展提示音"
   },
   "soundModeExtensionTooltip": {
-    "message": "醒目的自定义提示音 — 不容易错过"
+    "message": "醒目的自定义提示音 - 不容易错过"
   },
   "soundModeWindows": {
     "message": "Windows 提示音"
   },
   "soundModeWindowsTooltip": {
-    "message": "标准系统提示音 — 日常中可能被忽略"
+    "message": "标准系统提示音 - 日常中可能被忽略"
   },
   "testSoundVolume": {
     "message": "[测试]"
@@ -421,34 +521,70 @@
     "message": "还有$1个"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — 没有直播"
+    "message": "KickAlert - 没有直播"
   },
   "viewerTrendTitle": {
     "message": "观众趋势"
   },
   "chatBroadcasterNotif": {
     "message": "主播消息通知",
-    "description": "Chat integration — chatBroadcasterNotif"
+    "description": "Chat integration - chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
     "message": "主播在聊天中发言时接收通知。每分钟最多 1 个通知。",
-    "description": "Chat integration — chatBroadcasterDesc"
+    "description": "Chat integration - chatBroadcasterDesc"
+  },
+  "radarTitle": {
+    "message": "后台聊天雷达",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "在频道直播时监视最多 5 个已关注频道的聊天，即使没有打开 Kick 标签页。有人写到你的用户名或下面的某个词时会通知你。",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "添加频道...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "提到 $1 的消息也会被捕捉（用户名来自提及通知）。",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "如需同时捕捉提及，请在提及通知中输入你的用户名。",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "请输入频道名称。",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 不在你关注的频道中。",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "最多可添加 $1 个频道。",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "$2 的聊天中出现“$1”",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
   },
   "chatBroadcasterNotifTitle": {
     "message": "$1 在聊天中发言",
-    "description": "Chat integration — chatBroadcasterNotifTitle"
+    "description": "Chat integration - chatBroadcasterNotifTitle"
   },
   "chatWordFilterDesc": {
     "message": "包含这些词语的消息将被隐藏或模糊处理。",
-    "description": "Chat integration — chatWordFilterDesc"
+    "description": "Chat integration - chatWordFilterDesc"
   },
   "chatUserFilterDesc": {
     "message": "列表中用户的消息将被隐藏或模糊处理。",
-    "description": "Chat integration — chatUserFilterDesc"
+    "description": "Chat integration - chatUserFilterDesc"
   },
   "chatEmojiSpamDesc": {
     "message": "淡化含有大量表情符号的消息（悬停以显示）。",
-    "description": "Chat integration — chatEmojiSpamDesc"
+    "description": "Chat integration - chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
     "message": "直播 $1 分钟",
@@ -460,7 +596,7 @@
   },
   "anomalyWindowLabel": {
     "message": "最近 $1 分钟",
-    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+    "description": "Anomaly notification - window over which the change happened. $1 = minutes."
   },
   "botScoreTooltip": {
     "message": "机器人嫌疑评分：$1%",
@@ -472,7 +608,7 @@
   },
   "botScoreAlwaysVisibleLabel": {
     "message": "在所有直播频道显示机器人评分",
-    "description": "Toggle label — show bot score badge on all live channels."
+    "description": "Toggle label - show bot score badge on all live channels."
   },
   "botScoreAlwaysVisibleHint": {
     "message": "关闭时，评分仅在激增时显示。",
@@ -488,19 +624,19 @@
   },
   "timeAgoDay": {
     "message": "$1 天前",
-    "description": "Relative time — timeAgoDay"
+    "description": "Relative time - timeAgoDay"
   },
   "timeAgoHour": {
     "message": "$1 小时前",
-    "description": "Relative time — timeAgoHour"
+    "description": "Relative time - timeAgoHour"
   },
   "timeAgoMin": {
     "message": "$1 分钟前",
-    "description": "Relative time — timeAgoMin"
+    "description": "Relative time - timeAgoMin"
   },
   "timeAgoJustNow": {
     "message": "刚刚",
-    "description": "Relative time — timeAgoJustNow"
+    "description": "Relative time - timeAgoJustNow"
   },
   "viewerHistoryNoData": {
     "message": "数据尚不足",
@@ -583,7 +719,7 @@
     "message": "你似乎已离线。请检查网络连接后重试。"
   },
   "fetchErrorRateLimited": {
-    "message": "Kick 暂时限制了请求频率，这会自动恢复 — 请稍候。"
+    "message": "Kick 暂时限制了请求频率，这会自动恢复 - 请稍候。"
   },
   "fetchErrorServerError": {
     "message": "Kick 的服务器目前出现问题，请几分钟后重试。"
@@ -592,7 +728,7 @@
     "message": "加载频道时出了点问题，请重试。"
   },
   "fetchErrorSessionRejected": {
-    "message": "你已登录，但 Kick 当前未能识别你的会话。这通常发生在使用 Google、Apple 或其他社交账号登录时，是 Kick 服务器端的不一致问题所致——并非本扩展程序的错误。解决方法：从 kick.com 退出登录，然后使用邮箱和密码重新登录。如果你没有密码（因为是通过 Google/Apple 注册的），可以在登录页面点击\"忘记密码？\"来设置一个。如果仍未解决，该问题通常会在几分钟内自行恢复。"
+    "message": "你已登录，但 Kick 当前未能识别你的会话。这通常发生在使用 Google、Apple 或其他社交账号登录时，是 Kick 服务器端的不一致问题所致--并非本扩展程序的错误。解决方法：从 kick.com 退出登录，然后使用邮箱和密码重新登录。如果你没有密码（因为是通过 Google/Apple 注册的），可以在登录页面点击\"忘记密码？\"来设置一个。如果仍未解决，该问题通常会在几分钟内自行恢复。"
   },
   "emailLoginNotice": {
     "message": "为确保 KickAlert 稳定运行，我们建议你使用邮箱和密码登录 Kick。使用\"Google\"、\"Apple\"或其他社交账号登录，有时会因 Kick 服务器端的不一致问题，导致扩展程序无法加载你的数据。"
@@ -601,7 +737,7 @@
     "message": "广告拦截"
   },
   "adBlockWarning": {
-    "message": "这是一项实验性且非官方的功能——依赖 Kick 的内部 API 结构，可能会在没有通知的情况下失效。启用即表示你接受这一风险。保持关闭则 KickAlert 将和以前一样正常运行，不受影响。 需要刷新已打开的 Kick 标签页才能生效。"
+    "message": "这是一项实验性且非官方的功能--依赖 Kick 的内部 API 结构，可能会在没有通知的情况下失效。启用即表示你接受这一风险。保持关闭则 KickAlert 将和以前一样正常运行，不受影响。 需要刷新已打开的 Kick 标签页才能生效。"
   },
   "emailLoginNoticeUrgentTag": {
     "message": "当前适用："
@@ -625,7 +761,7 @@
     "message": "要开启广告拦截吗？"
   },
   "adBlockConfirmBody": {
-    "message": "此功能为实验性且非官方功能——依赖于 Kick 的内部 API 结构，可能在没有通知的情况下失效，Kick 也可能检测到此行为。开启即表示你接受这些风险。"
+    "message": "此功能为实验性且非官方功能--依赖于 Kick 的内部 API 结构，可能在没有通知的情况下失效，Kick 也可能检测到此行为。开启即表示你接受这些风险。"
   },
   "adBlockConfirmAccept": {
     "message": "我了解，开启"
@@ -646,7 +782,7 @@
     "message": "你还没有关注任何人。在 Kick 上关注一个频道，它就会自动显示在这里。"
   },
   "whatsNewBannerText": {
-    "message": "新功能：Firefox 机器人评分，以及针对更新后未开启的网站权限的简短引导。"
+    "message": "此版本带来更流畅的界面、节日图标和撤销功能，以及暂停、后台聊天雷达和 Multi-Stream 改进。"
   },
   "optGroupGeneral": {
     "message": "常规"
@@ -672,23 +808,47 @@
   "close": {
     "message": "关闭"
   },
+  "cardOpenChannel": {
+    "message": "打开频道",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "添加到 Multi-Stream",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "添加到收藏",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "从收藏中移除",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "打开 Multi-Stream",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "打开 Kick.com",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — Firefox 机器人评分、权限引导"
+    "message": "v2.6.0 - 更流畅的界面、节日图标、撤销"
   },
   "releaseHistoryV0Body": {
-    "message": "• 机器人评分现在也可在 Firefox 中使用，与 Chrome 相同\n• 更新后，简短的引导会列出未开启的网站权限，说明其用途，并可直接开启\n• Firefox：通过已打开的 Kick 标签页发出的请求恢复正常"
+    "message": "• 更流畅的界面：频道开播时卡片会平滑移动到位，刚开播的频道会短暂显示绿色光环，开启铃铛时铃铛会摇动，标签页切换也更平滑\n• 暂停和“静音 1 小时”会以图标周围的圆环显示剩余时间\n• 更简洁的卡片：铃铛和星标始终显示，其他按钮在鼠标指向卡片时出现\n• 撤销：取消收藏、清空通知历史、删除分组或移除聊天词语后，可在底部提示条中撤销\n• 列表为空时会提示你下一步该做什么\n• 节日图标：在你所在地区的部分节日，工具栏图标会换上应景的样式（可在设置中关闭）\n• Multi-Stream：有声音的直播会显示小均衡器，切换布局时画面会平滑移动\n• 所有图标风格统一，滚动时排序栏固定在顶部\n• 新网站：segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — 即时提醒和突袭恢复"
+    "message": "v2.5.111 - 暂停、聊天雷达、事件声音、Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• 开播即时提醒、突袭提醒和机器人评分恢复正常：Kick 更换了实时服务的密钥，KickAlert 现在会自动从 Kick 获取最新密钥\n• 如果 Kick 再次更换，扩展会自行获取新密钥，而不是反复报错\n• 弹出窗口不再出现第二个滚动条，设置底部也不再有空白区域"
+    "message": "• 可从顶部栏将通知暂停 1 小时或到早上；Chrome 通知中的第二个按钮会将该频道静音 1 小时\n• 每个频道设置中的“会收到这个频道的通知吗？”检查会列出所有可能阻止提醒的因素\n• 后台聊天雷达：在最多 5 个频道中，有人写到你的用户名或你选择的词时会通知你，即使没有打开 Kick 标签页\n• 为突袭、直播结束、直播转移和分类变更制作的 10 个新声音，每个事件可单独选择声音\n• Multi-Stream：直播默认静音开始，一键只听一个直播，聊天在侧边面板中打开\n• 主播把直播转到其他频道时的可选提醒，以及届时关闭自动打开的标签页的选项\n• 卡片紧凑布局；聊天集成关闭时，聊天通知设置保持隐藏\n• 聊天过滤器也能识别伪装写法（相似字母、不可见字符、分隔开的字母）\n• 机器人评分从第一分钟起使用 Kick 自己的聊天人数，并考虑所有聊天模式\n• Kick 主服务停止发送时启用备用实时连接\n• 之前仍为英文的提示文字现在会显示为你选择的语言，并优化了多种语言的措辞\n• 修复：开启云同步时，在弹窗中更改的设置不再被还原；有额外的 kick.com 权限时 Multi-Stream 播放器可以正常使用；Chrome 图标卡片会列出正在直播的频道"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — 频道提醒更准确"
+    "message": "v2.5.87 - Firefox 机器人评分、权限、广告拦截修复"
   },
   "releaseHistoryV2Body": {
-    "message": "• 分类和标题变更提醒更准确：Kick 偶尔返回的错误数据不再触发提醒，5 分钟等待期间的变更会在等待结束后通知\n• 提醒暂停期间（免打扰、已静音的频道）发生的变更，不会再在之后作为旧消息送达"
+    "message": "• 机器人评分现在也可在 Firefox 中使用，与 Chrome 相同\n• 更新后，简短的引导会列出未开启的网站权限，说明其用途，并可直接开启\n• Firefox：通过已打开的 Kick 标签页发出的请求恢复正常\n• 广告拦截：拦截广告服务器现在真正生效（开启时 KickAlert 会请求访问广告域名）\n• 开启广告拦截时，直播结束后不再出现黑屏\n• 机器人评分从一开始就会考虑慢速模式和仅限订阅者聊天\n• 设置中新增“扩展权限”部分，可查看哪些权限已开启，并一键开启已关闭的权限；如有权限关闭，频道列表上方会显示提示"
   },
   "settingsBackupTitle": {
     "message": "备份与恢复"
@@ -715,7 +875,7 @@
     "message": "已导入！正在重新加载..."
   },
   "importSettingsFail": {
-    "message": "导入失败——文件可能已损坏"
+    "message": "导入失败--文件可能已损坏"
   },
   "importConfirmTitle": {
     "message": "要导入设置吗？"
@@ -769,7 +929,7 @@
     "message": "$1 回复了你"
   },
   "chatMentionSoundSmart": {
-    "message": "仅在你未主动观看时（标签页在后台、聊天已滚动、或 Kick 自己的聊天面板被隐藏）——适用于标记、回复和主播消息。"
+    "message": "仅在你未主动观看时（标签页在后台、聊天已滚动、或 Kick 自己的聊天面板被隐藏）--适用于标记、回复和主播消息。"
   },
   "chatMentionSoundEnabled": {
     "message": "同时播放声音"
@@ -788,6 +948,18 @@
   },
   "themeSystem": {
     "message": "跟随系统"
+  },
+  "cardDensityLabel": {
+    "message": "卡片样式",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "宽松",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "紧凑",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "过滤"
@@ -811,6 +983,62 @@
   "chipGuardLabel": {
     "message": "防重复",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "暂停",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "已暂停 · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "暂停通知一段时间",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "通知已暂停至 $1。点击查看选项。",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "暂停通知",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "1 小时",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "直到早上（$1）",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "收藏频道仍会通知",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "立即恢复通知",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "通知、声音和自动打开都会停止。开播的频道仍会保存到通知历史。",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "静音 1 小时",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "通知已暂停至 $1。",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "此频道已通过通知静音 1 小时，将于 $1 恢复通知。",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "通知已暂停至 $1，但此频道是收藏频道，仍会通知。",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "KickAlert 设置",
@@ -843,6 +1071,90 @@
   "chAlertSubtitle": {
     "message": "此频道的额外提醒。默认全部关闭。",
     "description": "Subtitle in the per-channel alerts window"
+  },
+  "diagTitle": {
+    "message": "会收到这个频道的通知吗？",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "会：这个频道开播时你会收到通知。",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "不会收到这个频道的通知：",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "设置中已关闭通知。",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "浏览器或操作系统正在阻止 KickAlert 的通知。",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "kick.com 的访问权限已关闭。",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "此频道设为“无通知”（卡片上的铃铛）。",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "此频道未选择模式，默认为“无通知”。请用卡片上的铃铛选择。",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "此频道设为“静音通知”：通知会到达但没有声音。",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "免打扰正在生效（$1 至 $2）：通知已静音。",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "免打扰会在 $1 至 $2 之间静音通知。",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "筛选：仅当直播符合 $1 时才通知。",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "当前直播不符合此频道的筛选条件（$1）。",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "即时连接目前中断：通知会在检查关注列表时送达，延迟 1 到 1.5 分钟。",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "此频道的即时追踪尚未就绪：通知会在检查关注列表时送达，延迟 1 到 1.5 分钟。",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "Kick 正在限制请求：约 $1 分钟后会再次检查关注列表。",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "最近记录的直播：$1。",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "上次直播（$1）被筛选跳过：$2。",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "历史记录中没有此频道的近期直播。KickAlert 启动时已在进行的直播不会通知。",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "分类不符",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "标题中没有该词",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
   },
   "chAlertChange": {
     "message": "分类或标题变更",
@@ -916,6 +1228,10 @@
     "message": "来自 $1 的突袭 · $2 名观众",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "已将观众带到 $1",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "直播结束",
     "description": "Per-channel alert option label"
@@ -932,6 +1248,10 @@
     "message": "带来 $1 名观众",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "$1 将直播转到了 $2",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "收到突袭",
     "description": "Per-channel alert option label"
@@ -939,6 +1259,14 @@
   "chAlertRaidDesc": {
     "message": "其他主播突袭此频道时提醒，并显示来自谁、带来多少观众。",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "直播转到其他频道",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "此主播将观众带到其他频道时提醒。点击提醒会打开该频道。",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "观看时长",
@@ -969,8 +1297,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "用于分类/标题变更、直播结束和突袭提醒。可选更轻的扩展声音、Windows 通知音或静音。",
+    "message": "用于分类/标题变更、直播结束、突袭和直播转移提醒。可选更轻的扩展声音、Windows 通知音或静音。",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "按事件使用不同声音",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "保持“通用声音”即使用上方的声音。",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "通用声音",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "通用",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "突袭",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "直播结束",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "直播转移",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "分类 / 标题变更",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "气泡",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "马林巴",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "号角",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "鼓声",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "结束铃声",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "关机",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "嗖",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "跳跃",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "翻页",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "更新提示音",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "声音",
@@ -1147,5 +1547,184 @@
   },
   "permRemindButton": {
     "message": "开启"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "接下来，浏览器会请求访问 Google 广告域名。KickAlert 仅用它来拦截 kick.com 上的广告请求。"
+  },
+  "permWizAdsTitle": {
+    "message": "拦截广告域名"
+  },
+  "permWizAdsWhy": {
+    "message": "让广告拦截可以阻止 kick.com 上发往 Google 广告服务器的请求。不会读取任何其他网站。"
+  },
+  "permWizAdsOff": {
+    "message": "广告拦截仍会通过播放器工作，但广告请求不会在网络层被拦截。"
+  },
+  "permWizAdsLabel": {
+    "message": "访问广告域名"
+  },
+  "permWizRtTitle": {
+    "message": "提醒备用连接"
+  },
+  "permWizRtWhy": {
+    "message": "允许连接到 Kick 的新实时服务器（*.kick.com）。如果 Pusher 服务停止响应，即时提醒会继续通过此备用连接送达。"
+  },
+  "permWizRtOff": {
+    "message": "当 Pusher 无响应时，提醒会延迟 1 到 1.5 分钟送达，突袭提醒无法使用。"
+  },
+  "permWizRtLabel": {
+    "message": "访问 Kick 子域名"
+  },
+  "permWinTitle": {
+    "message": "最后一步：在 Firefox 中批准",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "只有 Firefox 能授予权限。点击按钮，然后在弹出的 Firefox 窗口中批准。",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "打开 Firefox 权限窗口",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "未授予权限。你可以重试，或暂时关闭此窗口。",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "欢迎使用 KickAlert",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "你关注的主播一开播，你就能第一时间知道。为此，KickAlert 会使用以下访问权限：",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "读取你的关注列表以及频道是否正在直播。使用你的 Kick 登录会话，绝不会看到你的密码。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "即时连接",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "直播一开始就能获知。关闭时，提醒会延迟 1 到 1.5 分钟送达，突袭提醒无法使用。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "通知和标签页",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "显示桌面通知，并可按需在新标签页中打开直播。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "广告拦截",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "如有需要，可在设置中开启。开启时会另外请求广告域名的权限。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "可选",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "不会查看其他网站，不会读取你的浏览记录，也不会看到你的密码。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "浏览器会打开批准窗口",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "Firefox 会在小窗口中请求批准",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "一切就绪！",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "你关注的频道开播时，KickAlert 会提醒你。可用频道卡片上的铃铛按钮选择哪些频道发送提醒。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "前往我的频道",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "可在此开启已关闭的权限。浏览器会请求你批准。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "已开启",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "已关闭",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "开启",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "广告域名权限已关闭，因此广告请求不会在网络层面被拦截。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "静音至 $1",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "节日图标",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "在你所在地区的部分节日，工具栏图标会在当天换上应景的样式。",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "目前没有人在直播",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "你关注的频道一开播，我们就会立即通知你。",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "显示离线频道",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "你还没有关注任何人",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "在 Kick 上关注频道，KickAlert 会自动获取列表。",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "撤销",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "已将 $1 移出收藏",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "通知历史已清空",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "已删除分组“$1”",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "已删除“$1”",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }

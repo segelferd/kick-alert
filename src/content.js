@@ -1,7 +1,7 @@
 /**
  * KickAlert - Content Script
  * 1) Auto-unmute functionality for kick.com.
- * 2) Plan C (v2.3.1): API Proxy — background SW'in fetchKick'i bu sekmeyi
+ * 2) Plan C (v2.3.1): API Proxy - background SW'in fetchKick'i bu sekmeyi
  *    proxy olarak kullanır. Cloudflare için 'gerçek tarayıcı sekmesi' olduğumuz
  *    için 403 baskısı kırılır.
  * © 2025 Segelferd. All rights reserved.
@@ -36,10 +36,10 @@ function kaSend(msg) {
       observer.disconnect();
       // v2.3.27: Tarayıcının otomatik oynatma politikası, kullanıcı etkileşimi
       // olmayan sekmelerde (örn. "Otomatik Aç" ile arka planda açılan sekmeler)
-      // sesi açma girişimini engelleyip videoyu DURDURUYOR — sessiz ama oynayan
+      // sesi açma girişimini engelleyip videoyu DURDURUYOR - sessiz ama oynayan
       // bir video yerine tamamen donmuş bir video elde ediyorduk. Kısa bir süre
       // sonra videonun durdurulup durdurulmadığını kontrol ediyoruz; durduysa
-      // sessize geri dönüp oynatmayı devam ettiriyoruz — en azından akış kesilmesin.
+      // sessize geri dönüp oynatmayı devam ettiriyoruz - en azından akış kesilmesin.
       setTimeout(() => {
         if (video.paused) {
           video.muted = true;
@@ -53,7 +53,7 @@ function kaSend(msg) {
   setTimeout(() => observer.disconnect(), 30000);
 })();
 
-// ─── 2) Plan C: API Proxy — background SW'in fetchKick proxy isteklerine cevap ───
+// ─── 2) Plan C: API Proxy - background SW'in fetchKick proxy isteklerine cevap ───
 //
 // Background SW şu mesajı atar:
 //   { type: 'KICK_API_PROXY_FETCH', url: '...', headers: {Authorization: 'Bearer ...', ...} }
@@ -67,7 +67,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg && msg.type === 'KICK_API_PROXY_FETCH' && typeof msg.url === 'string') {
     (async () => {
       try {
-        // Sadece kick.com domain'ine izin ver — güvenlik koruması
+        // Sadece kick.com domain'ine izin ver - güvenlik koruması
         const url = new URL(msg.url);
         if (url.hostname !== 'kick.com' && !url.hostname.endsWith('.kick.com')) {
           sendResponse({ ok: false, error: 'Only kick.com URLs allowed' });
@@ -107,7 +107,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // Diğer mesaj tipleri için no-op
 });
 
-// ─── 3) Plan F (v2.3.1): channel_id harvest — sayfa context'inden ───
+// ─── 3) Plan F (v2.3.1): channel_id harvest - sayfa context'inden ───
 //
 // Pusher WebSocket subscribe için channel_id gerekli. SW'den /api/v2/channels/{slug}
 // çağırmak Cloudflare 403 riski taşıyor (peak saatte). AMA content script SAYFA
@@ -140,25 +140,25 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       credentials: 'include',
       headers: { 'Accept': 'application/json' },
     });
-    if (!resp.ok) return; // 403/404 — sessiz, harvest fallback devreye girer
+    if (!resp.ok) return; // 403/404 - sessiz, harvest fallback devreye girer
     const data = await resp.json();
     const channelId = data?.id ?? null;
     const chatroomId = data?.chatroom?.id ?? null;
     if (!channelId) return;
 
-    // SW'ye ilet — kalıcı cache + Pusher subscribe
+    // SW'ye ilet - kalıcı cache + Pusher subscribe
     kaSend({
       type: 'CHANNEL_ID_HARVESTED',
       slug,
       channelId,
       chatroomId,
-    }); // SW uykuda olabilir, sorun değil — sonra tekrar denenir
+    }); // SW uykuda olabilir, sorun değil - sonra tekrar denenir
   } catch (e) {
-    // Sessiz — sayfa context'i hatası kritik değil
+    // Sessiz - sayfa context'i hatası kritik değil
   }
 })();
 
-// ─── 4) Reklam Engelleme (DENEYSEL, v2.3.18) — ayar köprüsü ───
+// ─── 4) Reklam Engelleme (DENEYSEL, v2.3.18) - ayar köprüsü ───
 //
 // adblock-worker-hook.js (MAIN dünya) reklam mantığını çalıştırır, ama Chrome
 // storage'a MAIN dünyadan erişilemez. Bu köprü, ISOLATED dünyada storage'ı
@@ -169,13 +169,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   try {
     const result = await chrome.storage.local.get('adBlockEnabled');
     const enabled = result.adBlockEnabled === true;
-    // localStorage bayrakları — worker sarmalama kararı document_start'ta,
+    // localStorage bayrakları - worker sarmalama kararı document_start'ta,
     // storage.local'ı bekleyemeden ÖNCE alınıyor, bu yüzden senkron okunabilir
     // bir yere de yazmamız lazım.
     try { localStorage.setItem('__ka_ab_video', enabled ? '1' : '0'); } catch (e) {}
     try { localStorage.setItem('__ka_ab_vod', enabled ? '1' : '0'); } catch (e) {}
 
-    // v2.5.14: TEŞHİS LOGU — chrome.storage.local'dan GERÇEKTE ne okunduğunu
+    // v2.5.14: TEŞHİS LOGU - chrome.storage.local'dan GERÇEKTE ne okunduğunu
     // ve localStorage'a ne yazıldığını görmemiz için.
     try { console.log('%c KickAlert \u00b7 ADB-09 %c TEŞHİS: content.js koprusu calisti, chrome.storage.adBlockEnabled=' + JSON.stringify(result.adBlockEnabled) + ' -> localStorage yazildi=' + (enabled ? '1' : '0'), 'background:#616161;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
     kaSend({
@@ -204,14 +204,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       }, '*');
     });
   } catch (e) {
-    // Sessiz — reklam engelleme opsiyonel bir özellik, hata kritik değil
+    // Sessiz - reklam engelleme opsiyonel bir özellik, hata kritik değil
   }
 })();
 
-// ─── 5) Reklam Engelleme (DENEYSEL, v2.3.19) — log köprüsü ───
+// ─── 5) Reklam Engelleme (DENEYSEL, v2.3.19) - log köprüsü ───
 //
 // adblock-worker-hook.js (MAIN dünya, hatta bazı loglar onun içindeki AYRI
-// Worker thread'inde) kendi konsoluna yazıyor — bu, extension'ın arka plan
+// Worker thread'inde) kendi konsoluna yazıyor - bu, extension'ın arka plan
 // konsolundan tamamen kopuk, DevTools'ta ayrı context'ler gerektiriyor.
 // Bu köprü, o logları yakalayıp background.js'e iletir; background.js da
 // KLog'a yazar → test panelindeki TEK Aktivite Logu'nda hepsi bir arada görünür.
@@ -226,7 +226,7 @@ window.addEventListener('message', function kaAdLogBridge(e) {
       level: d.level || 'info',
       code: d.code || 'ADB-00',
       text: d.text,
-    }); // SW uykuda olabilir, sorun değil — bu log kaybolur ama kritik değil
+    }); // SW uykuda olabilir, sorun değil - bu log kaybolur ama kritik değil
   }
 });
 

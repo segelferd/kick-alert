@@ -7,7 +7,7 @@
 
 // Chrome uses service_worker (needs importScripts), Firefox uses background.scripts (auto-loaded)
 if (typeof importScripts === 'function') {
-  importScripts('./storage.js', './kickapi.js', './utils.js', './pusher-config.js', './pusher.js', './ad-diag.js');
+  importScripts('./storage.js', './kickapi.js', './utils.js', './textfold.js', './pusher-config.js', './pusher.js', './ad-diag.js', './specialday.js');
 }
 
 // v2.5.65: Firefox tespiti. Chrome 148'den beri eklentilerde `browser` ad alanı
@@ -145,7 +145,7 @@ let _initRunning = false;
 // v2.5.45 FIX: initialize() eskiden HER çağrıldığında (yani her alarm sonrası
 // service worker uyanışında, ~1 dakikada bir) Storage.pullFromSync() çalıştırıyordu.
 // pullFromSync() buluttaki veriyi hiçbir birleştirme yapmadan doğrudan yerel depoya
-// yazıyor — ve chatSettings o zamana kadar buluta hiç yansımadığı için (yukarıdaki
+// yazıyor - ve chatSettings o zamana kadar buluta hiç yansımadığı için (yukarıdaki
 // _mirrorChatSettingsToSync fix'inden önce), bu bayat/boş bulut kopyası kullanıcının
 // gerçek chat ayarlarını sessizce eziyordu. Artık pull sadece GERÇEK bir oturum
 // başlangıcında (tarayıcı açılışı / eklenti kurulumu-güncellemesi) çalışıyor;
@@ -159,7 +159,7 @@ async function initialize(isFreshSession = false) {
     const lockData = await chrome.storage.local.get('_initLock');
     const lock = lockData._initLock || 0;
     if (Date.now() - lock < 10000) {
-      dbg('[KickAlert] Init skipped — lock active');
+      dbg('[KickAlert] Init skipped - lock active');
       _initRunning = false;
       return;
     }
@@ -171,7 +171,25 @@ async function initialize(isFreshSession = false) {
   try {
     await Utils.initI18n();
     await Storage.initSyncState();
-    if (isFreshSession) await Storage.pullFromSync();
+    if (isFreshSession) {
+      // v2.5.88 (b042): v2.5.87 ve öncesinde popup'tan yapılan ayar değişiklikleri
+      // buluta yazılmıyordu; buluttaki kopya eski. Bu sürüme güncellemeden sonraki
+      // ilk oturum başlangıcında buluttan ÇEKMEK yerine bu cihazdaki ayarlar buluta
+      // yazılır (yerel kazanır). Sonraki oturumlarda normal çekme devam eder.
+      let lw = {};
+      try { lw = await chrome.storage.local.get('_syncLocalWins'); } catch (e) {}
+      if (lw._syncLocalWins) {
+        try {
+          if (await Storage.getCloudSyncEnabled()) {
+            const r = await Storage._pushAllToSync();
+            KLog.info('SYNC-02', `Güncelleme sonrası bu cihazdaki ayarlar buluta yazıldı (${(r && r.ok && r.ok.length) || 0} ayar)`);
+          }
+          await chrome.storage.local.set({ _syncLocalWins: false, _syncLocalWinsDone88: true });
+        } catch (e) { console.warn('[KickAlert] SYNC-02 başarısız:', e && e.message); }
+      } else {
+        await Storage.pullFromSync();
+      }
+    }
     else Storage.flushSyncPending().catch(() => {}); // v2.5.66: buluta yazılamamış ayarları tekrar dene
 
     const resetOnRestart = await Storage.getResetSuspendOnRestart();
@@ -181,7 +199,7 @@ async function initialize(isFreshSession = false) {
     await migrateAutoOpenChannels();
     await startOffscreen();
 
-    // v2.3.18: AdBlock DNR ruleset'ini kullanıcı ayarıyla senkronize et — SW
+    // v2.3.18: AdBlock DNR ruleset'ini kullanıcı ayarıyla senkronize et - SW
     // yeniden başladığında ya da ilk kurulumda tutarlı olsun diye.
     try {
       const adBlockEnabled = await Storage.get(StorageKeys.AD_BLOCK_ENABLED);
@@ -196,7 +214,7 @@ async function initialize(isFreshSession = false) {
     //
     // v2.3.1 fix: Plan C tab varsa backoff'u doğrudan sıfırla, refresh için bekleme!
     // Proxy zaten Cloudflare-safe, panic loop riski yok. Bu sayede eklenti açılışı
-    // 10-15 saniyeden 0 saniyeye iniyor — popup anında veri görür.
+    // 10-15 saniyeden 0 saniyeye iniyor - popup anında veri görür.
     try {
       await KickAPI._loadBackoffFromStorage();
       if (Date.now() < KickAPI._lastBackoffUntil) {
@@ -221,7 +239,7 @@ async function initialize(isFreshSession = false) {
     await scheduleAlarm();
     await scheduleSessionRefreshAlarm(); // v2.3.1: Cloudflare cookie tazeleme
 
-    // v2.3.1 Plan F: Pusher WebSocket — gerçek zamanlı StreamerIsLive event'leri.
+    // v2.3.1 Plan F: Pusher WebSocket - gerçek zamanlı StreamerIsLive event'leri.
     // İlk checkSafe'de cachedChannels dolduğu için channel_id'leri kullanabiliriz.
     startPusherIfPossible();
   } catch (e) {
@@ -240,12 +258,65 @@ const PUSHER_CFG_KEY = '_pusherCfg';
 const PUSHER_CFG_TTL_MS = 12 * 60 * 60 * 1000;      // başarılı sorgu 12 saat geçerli
 const PUSHER_CFG_FAIL_TTL_MS = 30 * 60 * 1000;      // başarısız sorgudan sonra 30 dk bekle
 const PUSHER_FORCE_MIN_MS = 10 * 60 * 1000;         // kalıcı hata sonrası zorunlu sorgular arası
+const CF_STICKY_MS = 6 * 60 * 60 * 1000;            // v2.5.90: Centrifugo'ya geçince en az 6 saat orada kal
 const KICK_REALTIME_URL = 'https://web.kick.com/api/v1/realtime/connection';
 let _pusherCfgPromise = null;
 let _pusherLastForce = 0;
 
 function pusherCfgPayload() {
-  return { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster };
+  return { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster, provider: KAPusherCfg.provider, cfUrl: KAPusherCfg.cfUrl };
+}
+
+// ─── v2.5.90 (b034): Centrifugo yedeği ───
+// İsteğe bağlı site izni (rules.json kural 2'nin Centrifugo websocket isteğinde
+// Origin'i kick.com yapabilmesi için gerekli). Verilmemişse yedek kullanılamaz;
+// popup bandı ve Ayarlar > Eklenti izinleri izni ister (_rtFallbackNeeded).
+const KA_RT_ORIGINS = ['*://*.kick.com/*', 'wss://*.kick.com/*'];
+async function rtFallbackPermitted() {
+  try { return await chrome.permissions.contains({ origins: KA_RT_ORIGINS }); } catch (e) { return false; }
+}
+async function fetchCentrifugoUrlFromKick() {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 8000);
+  try {
+    const body = { client: { id: crypto.randomUUID(), type: 'web' }, capabilities: { accepted_providers: [{ provider: 'centrifugo' }] } };
+    const r = await fetch(KICK_REALTIME_URL, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, body: JSON.stringify(body), credentials: 'omit', cache: 'no-store', signal: ctrl.signal });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const j = await r.json();
+    const list = j && j.data && Array.isArray(j.data.connections) ? j.data.connections : [];
+    for (const c of list) {
+      const url = c && c.provider === 'centrifugo' && c.credentials && c.credentials.url;
+      if (url && KA_CF_URL_RE.test(url)) return url;
+    }
+    throw new Error('yanıtta Centrifugo adresi yok');
+  } finally { clearTimeout(timer); }
+}
+// Centrifugo'ya geç. İzin yoksa izni istemek için bayrak bırakır.
+let _cfLastTry = 0;
+async function switchToCentrifugo(why, { now = false } = {}) {
+  if (!(await rtFallbackPermitted())) {
+    let already = false;
+    try { already = (await chrome.storage.local.get('_rtFallbackNeeded'))._rtFallbackNeeded === true; } catch (e) {}
+    if (!already) {
+      try { await chrome.storage.local.set({ _rtFallbackNeeded: true }); } catch (e) {}
+      KLog.warn('PSH-24', `Centrifugo yedeği gerekiyor (${why}) ama *.kick.com izni verilmemiş; popup izni isteyecek`);
+    }
+    return false;
+  }
+  // Başarısız denemeler arasında en az 5 dakika (izin verildiğinde hemen)
+  if (!now && Date.now() - _cfLastTry < 5 * 60 * 1000) return false;
+  _cfLastTry = Date.now();
+  try {
+    const cfUrl = await fetchCentrifugoUrlFromKick();
+    const cfg = { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster, provider: 'centrifugo', cfUrl };
+    KAPusherCfg.set(cfg);
+    try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { ...cfg, at: Date.now(), ok: true, cfSince: Date.now() }, _rtFallbackNeeded: false }); } catch (e) {}
+    KLog.warn('PSH-23', `Gerçek zamanlı bağlantı Centrifugo yedeğine geçti (${why}): ${cfUrl}`);
+    return true;
+  } catch (e) {
+    KLog.warn('PSH-25', `Centrifugo yedeğine geçilemedi (${why}): ${e && e.message}`);
+    return false;
+  }
 }
 
 // Yanıt: { data: { connections: [{ provider: 'pusher', credentials: { app_key, cluster } }] } }
@@ -276,8 +347,17 @@ async function fetchPusherConfigFromKick() {
       signal: ctrl.signal,
     });
     if (!r.ok) throw new Error('HTTP ' + r.status);
-    const cfg = parseKickRealtimeResponse(await r.json());
-    if (!cfg) throw new Error('yanıtta Pusher bağlantısı yok');
+    const j = await r.json();
+    const cfg = parseKickRealtimeResponse(j);
+    if (!cfg) {
+      // v2.5.82: Kick Pusher'ı sunmayı bırakırsa açıkça görünsün. Centrifugo
+      // sunucusu tarayıcı eklentisi kaynaklı bağlantıları reddediyor (14.10.2026
+      // testi), bu yüzden yedek anahtarla devam edilir; bildirimler yoklamayla gelir.
+      const provs = (j && j.data && Array.isArray(j.data.connections) ? j.data.connections : []).map(c => c && c.provider).filter(Boolean);
+      KLog.warn('PSH-13', `Kick gerçek zamanlı bağlantı için Pusher sunmadı (sağlayıcılar: ${provs.join(', ') || 'yok'})`);
+      const e = new Error('yanıtta Pusher bağlantısı yok'); e.noPusher = true;
+      throw e;
+    }
     return cfg;
   } finally {
     clearTimeout(timer);
@@ -300,15 +380,25 @@ async function ensurePusherConfig({ force = false, reason = '' } = {}) {
     if (!force && fresh) return pusherCfgPayload();
     if (force && now - _pusherLastForce < PUSHER_FORCE_MIN_MS) return pusherCfgPayload();
     if (force) _pusherLastForce = now;
+    // v2.5.90: Centrifugo yedeğindeyken olağan yenilemede 6 saat Pusher'a dönme
+    // (Pusher sessizken geri dönüp yeniden 10 dk beklememek için). Zorunlu
+    // sorgu (sessizlik ya da kalıcı hata) Pusher'ı yeniden dener.
+    if (!force && KAPusherCfg.provider === 'centrifugo' && stored && stored.cfSince && now - stored.cfSince < CF_STICKY_MS) {
+      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { ...stored, at: now } }); } catch {}
+      return pusherCfgPayload();
+    }
     try {
       const cfg = await fetchPusherConfigFromKick();
       const before = KAPusherCfg.key;
       const changed = KAPusherCfg.set(cfg);
-      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { key: cfg.key, cluster: cfg.cluster, at: now, ok: true } }); } catch {}
+      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { key: cfg.key, cluster: cfg.cluster, provider: 'pusher', cfUrl: '', at: now, ok: true } }); } catch {}
+      if (before && KAPusherCfg.provider === 'pusher') { try { await chrome.storage.local.set({ _rtFallbackNeeded: false }); } catch {} }
       KLog.info('PSH-10', `Pusher anahtarı Kick'ten alındı: ${cfg.key} (${cfg.cluster})${changed ? ` · önceki ${before}` : ' · değişmedi'}${reason ? ' · ' + reason : ''}`);
     } catch (e) {
-      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster, at: now, ok: false, err: String(e.message || e).slice(0, 80) } }); } catch {}
+      try { await chrome.storage.local.set({ [PUSHER_CFG_KEY]: { key: KAPusherCfg.key, cluster: KAPusherCfg.cluster, provider: KAPusherCfg.provider, cfUrl: KAPusherCfg.cfUrl, cfSince: (stored && stored.cfSince) || 0, at: now, ok: false, err: String(e.message || e).slice(0, 80) } }); } catch {}
       KLog.warn('PSH-11', `Pusher anahtarı Kick'ten alınamadı (${e.message}); ${KAPusherCfg.key} kullanılıyor`);
+      // v2.5.90: Kick Pusher'ı hiç sunmuyorsa Centrifugo yedeğine geç
+      if (e && e.noPusher) { try { await switchToCentrifugo('Kick Pusher sunmuyor'); } catch (e2) {} }
     }
     return pusherCfgPayload();
   })();
@@ -338,6 +428,10 @@ try {
       try { if (typeof Pusher !== 'undefined' && Pusher._onLiveCallback && Pusher.restart) Pusher.restart(); } catch (e) {}
     }
     if (origins.length) KLog.info('PRM-01', `Site izni verildi: ${origins.join(', ')}`);
+    // v2.5.90: Centrifugo yedeği izni verildi ve yedek bekleniyorsa hemen geç
+    if (origins.some(o => o.includes('*.kick.com'))) {
+      chrome.storage.local.get('_rtFallbackNeeded').then((d) => { if (d._rtFallbackNeeded) switchToCentrifugo('izin verildi', { now: true }).catch(() => {}); }).catch(() => {});
+    }
   });
 } catch (e) {}
 
@@ -355,7 +449,7 @@ KAPusherCfg.onInvalid = (d) => {
  *     (hiç uyumaz → event kaçmaz). SW sadece sync mesajı atar + event dinler.
  *   - Firefox (offscreen yok): pusher.js doğrudan SW'de çalışır (fallback).
  *
- * Çalışmazsa sessizce başarısız olur — checkChannels polling devam eder.
+ * Çalışmazsa sessizce başarısız olur - checkChannels polling devam eder.
  */
 function startPusherIfPossible() {
   // v2.5.78: önce güncel anahtarı hazırla (başarısız olsa da devam)
@@ -390,7 +484,7 @@ function _startPusherNow() {
         }
       );
       refreshPusherSubscriptions();
-      dbg('[KickAlert] Plan F: SW modu (Firefox — WebSocket SW\'de)');
+      dbg('[KickAlert] Plan F: SW modu (Firefox - WebSocket SW\'de)');
     }
   } catch (e) {
     console.warn('[KickAlert] Pusher start hatası:', e.message);
@@ -401,7 +495,7 @@ function _startPusherNow() {
  * v2.3.1 Plan F: Subscribed kanal listesini güncelle.
  * cachedChannels değişince (yeni takip / unfollow) çağrılır.
  * Storage'dan channel_id'leri okur (yapısı /api/v2/channels/followed dönmez,
- * sadece /api/v2/channels/{slug} verir — bot_tracker zaten bunları cache'liyor)
+ * sadece /api/v2/channels/{slug} verir - bot_tracker zaten bunları cache'liyor)
  */
 async function refreshPusherSubscriptions() {
   if (!chrome.offscreen && typeof Pusher === 'undefined') return;
@@ -429,7 +523,7 @@ async function refreshPusherSubscriptions() {
   if (subscribableItems.length > 0) {
     if (chrome.offscreen) {
       // Risk#5 FIX: Offscreen ölmüş olabilir (bellek baskısı, Chrome reload).
-      // Mesaj göndermeden önce açık olduğundan emin ol — startOffscreen
+      // Mesaj göndermeden önce açık olduğundan emin ol - startOffscreen
       // idempotent (zaten açıksa no-op). Bu, offscreen ölürse her checkChannels
       // (~1dk) tekrar açıp Plan F'in sessizce durmasını önler.
       try { await startOffscreen(); } catch (e) { /* sonraki retry halleder */ }
@@ -442,7 +536,7 @@ async function refreshPusherSubscriptions() {
         type: 'LIVE_TRACK_SYNC',
         pusherCfg: pusherCfgPayload(),
         channels: subscribableItems,
-        authoritative: true, // Bulgu#6: tam liste — offscreen unfollow edilenleri temizlesin
+        authoritative: true, // Bulgu#6: tam liste - offscreen unfollow edilenleri temizlesin
       });
     } else if (typeof Pusher !== 'undefined') {
       // Firefox: SW içi Pusher
@@ -450,7 +544,7 @@ async function refreshPusherSubscriptions() {
     }
     KLog.debug('PSH-01', `${subscribableItems.length}/${cachedChannels.length} kanala subscribe`);
   } else {
-    dbg(`[KickAlert] Pusher: subscribe edilecek kanal yok (channel_id cache boş — harvest başlatılacak)`);
+    dbg(`[KickAlert] Pusher: subscribe edilecek kanal yok (channel_id cache boş - harvest başlatılacak)`);
   }
 
   // Eksik channel_id'leri arka planda topla (yavaş tempo, sadece ilk kurulumda)
@@ -458,7 +552,7 @@ async function refreshPusherSubscriptions() {
     c.channelSlug && !channelIdCache[c.channelSlug]
   ).length;
   if (missingCount > 0) {
-    harvestMissingChannelIds(); // await YOK — arka planda çalışsın, init'i bloklamasın
+    harvestMissingChannelIds(); // await YOK - arka planda çalışsın, init'i bloklamasın
   }
 }
 
@@ -473,10 +567,10 @@ async function sendToOffscreenWithRetry(message, maxAttempts = 4) {
     try {
       const resp = await chrome.runtime.sendMessage(message);
       if (resp && resp.success) return resp;
-      // Yanıt geldi ama success değil — yine de "ulaştı" sayılır, döndür
+      // Yanıt geldi ama success değil - yine de "ulaştı" sayılır, döndür
       if (resp) return resp;
     } catch (e) {
-      // "Could not establish connection" — listener henüz yok, retry
+      // "Could not establish connection" - listener henüz yok, retry
     }
     // Son denemede bekleme
     if (attempt < maxAttempts) {
@@ -512,7 +606,7 @@ async function harvestMissingChannelIds() {
 
     for (const slug of missing) {
       // getChatroomId zaten channel_id'yi de cache'liyor (Plan F bonus).
-      // Bu çağrı Cloudflare'e gidebilir AMA sadece İLK KEZ — sonra kalıcı cache.
+      // Bu çağrı Cloudflare'e gidebilir AMA sadece İLK KEZ - sonra kalıcı cache.
       try {
         await KickAPI.getChatroomId(slug);
         const channelId = await Storage.getChannelId(slug);
@@ -530,7 +624,7 @@ async function harvestMissingChannelIds() {
             Pusher.subscribeChannel(channelId, slug);
           }
         }
-      } catch (e) { /* sessiz — sonraki harvest'e kalır */ }
+      } catch (e) { /* sessiz - sonraki harvest'e kalır */ }
 
       // Yavaş tempo: Cloudflare baskısını önle
       await new Promise(r => setTimeout(r, 2000));
@@ -551,13 +645,13 @@ async function harvestMissingChannelIds() {
  *
  * Akış:
  *   1. Duplicate kontrolü (zaten bildirildiyse skip)
- *   2. Yayın yaşı kontrolü (created_at — eski yayını bildirme)
+ *   2. Yayın yaşı kontrolü (created_at - eski yayını bildirme)
  *   3. cachedChannels'ta varsa state güncelle (yoksa minimal kanal objesi kur)
  *   4. DND / sound / showNotif ayarlarını uygula
  *   5. sendNotification + playSound + autoOpen
  *   6. Persisted state güncelle (liveSlugs, notifiedLives)
  *
- * API'ye HİÇ gitmez — checkChannels akışını TETİKLEMEZ.
+ * API'ye HİÇ gitmez - checkChannels akışını TETİKLEMEZ.
  */
 async function handlePusherLiveEvent(slug, livestreamData) {
   if (!slug) return;
@@ -567,7 +661,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
 
   const ls = livestreamData?.livestream || {};
 
-  // ── PUSH-11: Bulgu#6 — Kanal hâlâ takip ediliyor mu? ──
+  // ── PUSH-11: Bulgu#6 - Kanal hâlâ takip ediliyor mu? ──
   // Offscreen LiveTracker unfollow edilen kanalları unsubscribe eder, ama o
   // mesaj gecikebilir/kaçabilir. cachedChannels takip listesinin kaynağıysa
   // ve kanal orada YOKSA + cache taze ise → unfollow edilmiş, bildirme.
@@ -612,10 +706,10 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   }
 
   // ── PUSH-15: Baseline guard'ı ──
-  // İlk kurulum: lastCheckDone yoksa baseline kurulmadı — sessizce kaydet,
+  // İlk kurulum: lastCheckDone yoksa baseline kurulmadı - sessizce kaydet,
   // badge'e dokunma (polling baseline kurunca tutarlı sayı yazacak).
   if (!state.lastCheckDone) {
-    KLog.warn('PUSH-15', `${slug} — baseline kurulmadan geldi, sessizce kaydedildi (polling badge düzeltecek)`);
+    KLog.warn('PUSH-15', `${slug} - baseline kurulmadan geldi, sessizce kaydedildi (polling badge düzeltecek)`);
     _markPusherLive(slug);
     return;
   }
@@ -629,7 +723,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   // kayboldu → sekme yayın daha hazır değilken açılıyor. Sabit küçük bir gecikme
   // bu yarışı kapatır. Bildirim+ses+tab hepsi bu gecikmeden SONRA gider,
   // dolayısıyla davranış v2.3.3 polling akışına yakınsar.
-  // NOT: liveSlugs.add() yukarıda yapıldı (PUSH-13) — bu gecikme boyunca polling
+  // NOT: liveSlugs.add() yukarıda yapıldı (PUSH-13) - bu gecikme boyunca polling
   // veya 2. WS event'i ÇİFT BİLDİRİM üretemez ("zaten live listesinde, skip").
   // v2.3.5: süre artık kullanıcı ayarı (Storage.AUTO_OPEN_DELAY: 3/5/7/9 sn).
   const autoOpenDelaySec = await Storage.getAutoOpenDelay();
@@ -699,6 +793,8 @@ async function handlePusherLiveEvent(slug, livestreamData) {
   }
   const pusherFilter = matchChannelFilter(pusherPref, ch.categoryName, ch.sessionTitle);
   if (!pusherFilter.pass) KLog.info('FLT-20', `${slug} → filtreye takıldı (${pusherFilter.reason}), bildirim/ses/sekme atlanacak`);
+  const pusherSup = await alertSuppressedFor(slug); // v2.5.98
+  if (pusherSup && pusherFilter.pass) KLog.info('PAU-10', `${slug} → bildirimler ${pusherSup === 'snooze' ? 'bu kanal için 1 saat susturulmuş' : 'duraklatılmış'}; bildirim/ses/sekme atlanacak, geçmişe yazılıyor`);
 
   // ── NOTIF-52: History ──
   Storage.addNotificationHistory({
@@ -709,6 +805,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     category: ch.categoryName || '-',
     timestamp: new Date().toISOString(),
     ...(pusherFilter.pass ? {} : { filtered: pusherFilter.reason }),
+    ...(pusherFilter.pass && pusherSup ? { paused: pusherSup } : {}),
   });
   KLog.debug('NOTIF-52', `${slug} history'ye eklendi`);
 
@@ -724,10 +821,13 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     // v2.5.74: varsayılan (açıkça seçilmemiş) 'Bildirim yok' sadece bildirim ve sesi susturur;
     // kullanıcının bu kanal için açtığı otomatik açma çalışmaya devam eder.
     const chMuteDefault = chSoundPref === 'muted' && !chModeInfo.explicit;
-    if (chMuteDefault && pusherFilter.pass) {
+    if (pusherSup) {
+      KLog.debug('NOTIF-54', `${slug} → duraklatma/susturma: sadece geçmiş`);
+    } else if (chMuteDefault && pusherFilter.pass) {
       if (!suspended && !dndMuteAutolaunch && await shouldAutoOpen(ch)) {
         const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: true });
         KLog.info('TAB-70', `${slug} → SEKME AÇILDI (varsayılan bildirim kapalı, otomatik açma açık, tabId=${tab.id})`);
+        registerAutoTab(tab.id, ch.channelSlug);
       } else {
         KLog.debug('NOTIF-54', `${slug} → bildirim yok (kanal varsayılanı), sadece geçmiş`);
       }
@@ -755,7 +855,8 @@ async function handlePusherLiveEvent(slug, livestreamData) {
         const shouldOpen = await shouldAutoOpen(ch);
         if (shouldOpen) {
           const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: true });
-          KLog.info('TAB-70', `${slug} → SEKME AÇILDI (tabId=${tab.id}) — toplam akış ${_t0.ms()}ms`);
+          KLog.info('TAB-70', `${slug} → SEKME AÇILDI (tabId=${tab.id}) - toplam akış ${_t0.ms()}ms`);
+        registerAutoTab(tab.id, ch.channelSlug);
         } else {
           KLog.debug('TAB-70', `${slug} → shouldAutoOpen=false (kanal/global ayar) → sekme açılmadı`);
         }
@@ -787,7 +888,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
 }
 
 /**
- * v2.3.1 Plan F: StopStreamBroadcast — yayın bitti.
+ * v2.3.1 Plan F: StopStreamBroadcast - yayın bitti.
  * Live listesinden çıkar ki yeniden yayın açınca tekrar bildirilsin.
  */
 async function handlePusherOfflineEvent(slug) {
@@ -819,9 +920,80 @@ async function handlePusherOfflineEvent(slug) {
   dbg(`[KickAlert] Pusher: ${slug} offline (live listesinden çıkarıldı)`);
 }
 
+// ─── v2.5.98: Bildirimleri duraklatma ve kanalı geçici susturma ───
+// _notifPause: { until, favs }  popup üstündeki "Duraklat" (1 saat / 08:00'e kadar).
+//   favs true ise favori kanallar yine bildirir. Bildirim, ses, otomatik açma,
+//   kanal olayı ve chat bildirimleri durur; canlı yayınlar geçmişe yazılır.
+// _chSnooze: { slug: until }  Chrome bildirimindeki "1 saat sustur" düğmesi.
+// İkisi de bu cihaza özel (_ önekli, buluta gitmez) ve süresi geçince kendiliğinden biter.
+const PAUSE_KEY = '_notifPause';
+const SNOOZE_KEY = '_chSnooze';
+const PAUSE_ALARM = 'kickalert-pause-end';
+
+// ─── v2.6.0: Özel gün simgeleri ───
+// Araç çubuğu ikonu birkaç kutlama gününde temalı rozetle, 10 Kasım'da
+// (Türkiye) siyah beyaz gösterilir. Bölge saat diliminden tahmin edilir,
+// hiçbir yere gönderilmez. Ayarlar'dan kapatılabilir.
+const SPECIAL_DAY_ALARM = 'kickalert-special-day';
+async function applySpecialDayIcon(force) {
+  try {
+    if (typeof KASpecialDay === 'undefined') return;
+    const ev = await KASpecialDay.resolve(); // ayar anahtarı + test paneli önizlemesi dahil
+    const d = new Date();
+    const key = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}|${ev ? ev.id : '-'}${ev && ev.preview ? '|pv' : ''}`;
+    let prev = null;
+    try { prev = (await chrome.storage.session.get('_specialDayKey'))._specialDayKey; } catch (e) {}
+    if (!force && prev === key) return;
+    await chrome.action.setIcon(await KASpecialDay.iconDetails(ev, p => chrome.runtime.getURL(p)));
+    try { await chrome.storage.session.set({ _specialDayKey: key }); } catch (e) {}
+    if (ev) KLog.info('SPD-01', `Özel gün simgesi: ${ev.id}`);
+  } catch (e) { KLog.warn('SPD-02', 'Özel gün simgesi uygulanamadı: ' + (e && e.message)); }
+}
+async function ensureSpecialDayAlarm() {
+  try { if (!(await chrome.alarms.get(SPECIAL_DAY_ALARM))) chrome.alarms.create(SPECIAL_DAY_ALARM, { periodInMinutes: 30 }); } catch (e) {}
+}
+ensureSpecialDayAlarm();
+applySpecialDayIcon();
+async function getNotifPause() {
+  try {
+    const p = (await chrome.storage.local.get(PAUSE_KEY))[PAUSE_KEY];
+    return p && p.until > Date.now() ? p : null;
+  } catch (e) { return null; }
+}
+// slug için bildirim susturulmuş mu: 'snooze' | 'pause' | null
+async function alertSuppressedFor(slug) {
+  const now = Date.now();
+  if (slug) {
+    try {
+      const sn = (await chrome.storage.local.get(SNOOZE_KEY))[SNOOZE_KEY] || {};
+      if (sn[slug] > now) return 'snooze';
+    } catch (e) {}
+  }
+  const p = await getNotifPause();
+  if (!p) return null;
+  if (p.favs && slug) {
+    try { if ((await Storage.getFavoriteChannels())[slug]) return null; } catch (e) {}
+  }
+  return 'pause';
+}
+async function snoozeChannel(slug, ms) {
+  const now = Date.now();
+  const sn = (await chrome.storage.local.get(SNOOZE_KEY))[SNOOZE_KEY] || {};
+  for (const k of Object.keys(sn)) if (!(sn[k] > now)) delete sn[k];
+  sn[slug] = now + ms;
+  await chrome.storage.local.set({ [SNOOZE_KEY]: sn });
+}
+async function schedulePauseAlarm() {
+  const p = await getNotifPause();
+  try {
+    if (p) chrome.alarms.create(PAUSE_ALARM, { when: p.until + 1000 });
+    else await chrome.alarms.clear(PAUSE_ALARM);
+  } catch (e) {}
+}
+
 async function updateBadgeColor() {
   const dndActive = await Storage.isDndActive();
-  if (dndActive) {
+  if (dndActive || await getNotifPause()) {
     await chrome.action.setBadgeBackgroundColor({ color: BADGE_DND });
     return;
   }
@@ -894,7 +1066,7 @@ async function cleanupNotifiedLives() {
 // ─── Alarm-based Check Loop ───
 
 // v2.3.1 (Plan B/M4): Şu anda alarm'ın hangi saniyede çalıştığını kayıtta tut.
-// scheduleAlarm her tetiklendiğinde gerek var mı/yok mu hızlıca anlayalım — fazladan
+// scheduleAlarm her tetiklendiğinde gerek var mı/yok mu hızlıca anlayalım - fazladan
 // chrome.alarms.create çağrısı yapmayalım (Chrome internal cooldown'ı vardır).
 let _currentEffectiveSecs = 0;
 let _slowModeActive = false; // M4: yavaşlatma modunda mıyız?
@@ -904,9 +1076,9 @@ const SLOWMODE_FAILURE_THRESHOLD = 2; // v2.3.1 fix B: 3 → 2 (son 10 dk'da 2+ 
                                         // Daha proaktif: ilk 2 hata'da yavaşlatma kararı verilir.
 const SLOWMODE_MULTIPLIER = 2;        // baz aralığı 2x'e çıkar (M4)
 
-// M5 — Peak saat yavaşlatması (kanıt: 8h konsol → 18-22 arası tüm 403'lerin %100'ü)
+// M5 - Peak saat yavaşlatması (kanıt: 8h konsol → 18-22 arası tüm 403'lerin %100'ü)
 // 18:00-22:00 lokal saat aralığında baz aralığı 1.5x yavaşlat. Cloudflare baskısı
-// başlamadan önce proaktif yavaşlatma. Tüm gün kapsayıcı yavaşlatma değil — sadece
+// başlamadan önce proaktif yavaşlatma. Tüm gün kapsayıcı yavaşlatma değil - sadece
 // risk penceresi.
 const PEAK_HOUR_START = 18; // dahil
 const PEAK_HOUR_END = 22;   // dahil değil (yani 18,19,20,21)
@@ -920,11 +1092,11 @@ function isPeakHour() {
 async function scheduleAlarm() {
   const baseSecs = Math.max(await Storage.getCheckInterval(), 30);
 
-  // M5: Saat bazlı yavaşlatma — 18-22 arası baz aralığı 1.5x
+  // M5: Saat bazlı yavaşlatma - 18-22 arası baz aralığı 1.5x
   const wantPeak = isPeakHour();
   const peakAdjustedSecs = wantPeak ? Math.round(baseSecs * PEAK_MULTIPLIER) : baseSecs;
 
-  // M4: Dinamik yavaşlatma — son 10 dk'da 3+ failure varsa 2x yavaşlat (peak üstüne uygulanır)
+  // M4: Dinamik yavaşlatma - son 10 dk'da 3+ failure varsa 2x yavaşlat (peak üstüne uygulanır)
   const failures = (typeof KickAPI !== 'undefined' && KickAPI.getRecentFailureCount)
     ? KickAPI.getRecentFailureCount()
     : 0;
@@ -953,17 +1125,17 @@ async function scheduleAlarm() {
   _slowModeActive = wantSlow;
   _peakModeActive = wantPeak;
 
-  // Mod geçişlerini logla — gereksiz tekrarlamayı önle
+  // Mod geçişlerini logla - gereksiz tekrarlamayı önle
   if (wantSlow && !wasSlow) {
-    console.warn(`[KickAlert] M4: Yavaşlatma aktif — baz ${baseSecs}s → ${effectiveSecs}s (${failures} hata/10dk)`);
+    console.warn(`[KickAlert] M4: Yavaşlatma aktif - baz ${baseSecs}s → ${effectiveSecs}s (${failures} hata/10dk)`);
   } else if (!wantSlow && wasSlow) {
-    dbg(`[KickAlert] M4: Yavaşlatma kalktı — ${effectiveSecs}s'ye döndü`);
+    dbg(`[KickAlert] M4: Yavaşlatma kalktı - ${effectiveSecs}s'ye döndü`);
   } else if (wantPeak && !wasPeak) {
-    console.warn(`[KickAlert] M5: Peak saat (${PEAK_HOUR_START}-${PEAK_HOUR_END}) yavaşlatması — ${baseSecs}s → ${effectiveSecs}s`);
+    console.warn(`[KickAlert] M5: Peak saat (${PEAK_HOUR_START}-${PEAK_HOUR_END}) yavaşlatması - ${baseSecs}s → ${effectiveSecs}s`);
   } else if (!wantPeak && wasPeak) {
-    dbg(`[KickAlert] M5: Peak saat sona erdi — ${effectiveSecs}s'ye döndü`);
+    dbg(`[KickAlert] M5: Peak saat sona erdi - ${effectiveSecs}s'ye döndü`);
   } else {
-    dbg(`[KickAlert] Alarm scheduled — every ${effectiveSecs}s (${periodMinutes.toFixed(2)} min)`);
+    dbg(`[KickAlert] Alarm scheduled - every ${effectiveSecs}s (${periodMinutes.toFixed(2)} min)`);
   }
 
   // v2.3.1 fix D: Peak/normal geçişinde session refresh alarm'ı da yeniden kursun
@@ -981,7 +1153,7 @@ async function scheduleAlarm() {
 // Normal saatlerde 25 dakikada bir, peak saatlerde 15 dakikada bir kick.com'a
 // proaktif GET atarak cookie'yi taze tut. Peak'te daha sık → CF baskısı altında
 // session daha uzun sağlam kalır.
-let _currentRefreshPeriod = 0; // dk cinsinden — gereksiz yeniden zamanlamayı önle
+let _currentRefreshPeriod = 0; // dk cinsinden - gereksiz yeniden zamanlamayı önle
 
 async function scheduleSessionRefreshAlarm() {
   // Peak saatlerinde daha sık tazele
@@ -994,12 +1166,12 @@ async function scheduleSessionRefreshAlarm() {
     periodInMinutes: desiredPeriod,
   });
   _currentRefreshPeriod = desiredPeriod;
-  dbg(`[KickAlert] Session refresh alarm scheduled — every ${desiredPeriod} min ${isPeakHour() ? '(peak)' : ''}`);
+  dbg(`[KickAlert] Session refresh alarm scheduled - every ${desiredPeriod} min ${isPeakHour() ? '(peak)' : ''}`);
 }
 
 chrome.alarms.onAlarm.addListener(async (alarm) => {
   if (alarm.name === ALARM_NAME) {
-    // M3 (jitter): 0-5 sn rastgele bekle — fingerprint riskini azalt.
+    // M3 (jitter): 0-5 sn rastgele bekle - fingerprint riskini azalt.
     // SW context'lerde tüm uzantı kullanıcılarının saat başında aynı anda istek atması
     // Cloudflare için bot davranışı sinyali; jitter bunu kırar.
     const jitterMs = Math.floor(Math.random() * 5000);
@@ -1022,6 +1194,13 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     } catch (e) {
       dbg('[KickAlert] M4 reschedule error (ignored):', e.message);
     }
+  } else if (alarm.name === PAUSE_ALARM) {
+    // v2.5.98: duraklatma süresi doldu
+    try { const p = (await chrome.storage.local.get(PAUSE_KEY))[PAUSE_KEY]; if (p && !(p.until > Date.now())) await chrome.storage.local.remove(PAUSE_KEY); } catch (e) {}
+    await updateBadgeColor();
+    KLog.info('PAU-02', 'Bildirim duraklatması sona erdi');
+  } else if (alarm.name === SPECIAL_DAY_ALARM || alarm.name === SPECIAL_DAY_ALARM + '-pv') {
+    await applySpecialDayIcon(alarm.name !== SPECIAL_DAY_ALARM); // v2.6.0
   } else if (alarm.name === SESSION_REFRESH_ALARM) {
     // v2.3.1: Proaktif Cloudflare cookie yenileme
     dbg(`[KickAlert] Session refresh alarm fired at ${new Date().toLocaleTimeString()}`);
@@ -1038,19 +1217,35 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
   if (changedKeys.every(k => internalKeys.includes(k))) return;
 
   if (changes[StorageKeys.CHECK_INTERVAL]) {
-    dbg(`[KickAlert] Check interval changed — rescheduling alarm`);
+    dbg(`[KickAlert] Check interval changed - rescheduling alarm`);
     await scheduleAlarm();
   }
   if (changes[StorageKeys.DND_ENABLED] || changes[StorageKeys.DND_START] ||
       changes[StorageKeys.DND_END] || changes[StorageKeys.SUSPEND_FROM_DATE]) {
     await updateBadgeColor();
   }
+  if (changes[StorageKeys.SPECIAL_DAY_ICONS]) applySpecialDayIcon(true); // v2.6.0
+  if (changes._specialDayPreview) { // v2.6.0: test paneli önizlemesi; süresi dolunca normale dön
+    applySpecialDayIcon(true);
+    const pv = changes._specialDayPreview.newValue;
+    try {
+      if (pv && pv.until > Date.now()) chrome.alarms.create(SPECIAL_DAY_ALARM + '-pv', { when: pv.until + 500 });
+      else await chrome.alarms.clear(SPECIAL_DAY_ALARM + '-pv');
+    } catch (e) {}
+  }
+  if (changes[PAUSE_KEY]) { // v2.5.98
+    await updateBadgeColor();
+    await schedulePauseAlarm();
+    const p = changes[PAUSE_KEY].newValue;
+    if (p && p.until > Date.now()) KLog.info('PAU-01', `Bildirimler ${new Date(p.until).toLocaleString()} saatine kadar duraklatıldı${p.favs ? ' (favoriler hariç)' : ''}`);
+    else KLog.info('PAU-02', 'Bildirim duraklatması kaldırıldı');
+  }
   if (changes[StorageKeys.USER_LANGUAGE] || changes[StorageKeys.USE_BROWSER_LANGUAGE]) {
     // Either manual language choice or "use browser language" toggle changed.
     // Re-detect and reload locale. detectLanguage() reads both flags.
     try {
       const newLang = await Utils.detectLanguage();
-      dbg(`[KickAlert] Language preference changed — reloading locale: ${newLang}`);
+      dbg(`[KickAlert] Language preference changed - reloading locale: ${newLang}`);
       await Utils.loadLocale(newLang);
     } catch (e) {
       console.warn('[KickAlert] Language reload failed:', e);
@@ -1064,7 +1259,7 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
 /**
  * v2.3.18: Reklam Engelleme (DENEYSEL) DNR ruleset'ini kullanıcı ayarına göre
  * açar/kapatır. content.js/adblock-worker-hook.js tarafı ayrı olarak kendi
- * localStorage bayraklarını okuyor — bu fonksiyon SADECE ağ seviyesi (DNR)
+ * localStorage bayraklarını okuyor - bu fonksiyon SADECE ağ seviyesi (DNR)
  * kısmından sorumlu (Google reklam domain'lerini bloklayan 10 kural).
  */
 async function syncAdBlockRuleset(enabled) {
@@ -1087,19 +1282,19 @@ async function checkSafe() {
   try {
     await checkChannels();
   } catch (e) {
-    // v2.1.0: AUTH_REQUIRED zaten kickapi.js'te warn'la loglandı — burada tekrar etme
+    // v2.1.0: AUTH_REQUIRED zaten kickapi.js'te warn'la loglandı - burada tekrar etme
     if (e && e.message && e.message.startsWith('AUTH_REQUIRED:')) {
       return; // sessizce devam, kullanıcı login olunca recover olur
     }
-    // Beklenmeyen hatalar — console.warn (error değil, eklenti çalışmaya devam ediyor)
+    // Beklenmeyen hatalar - console.warn (error değil, eklenti çalışmaya devam ediyor)
     console.warn('[KickAlert] Check failed:', e?.message || e);
   }
 }
 
 // ─── Viewer Anomaly Detection ───
 // ─── Viewer Anomaly Sabitleri ───
-// Artış eşikleri storage'dan okunur — sabit değerler kaldırıldı
-// NEW_STREAM_WINDOW kaldırıldı — STREAM_SETTLE_MS getViewerAnomaly içinde tek eşik olarak tanımlı
+// Artış eşikleri storage'dan okunur - sabit değerler kaldırıldı
+// NEW_STREAM_WINDOW kaldırıldı - STREAM_SETTLE_MS getViewerAnomaly içinde tek eşik olarak tanımlı
 // v2.1.0: PAST_AVG_MULTIPLIER_WARN/ALERT silindi (kullanılmayan dead code)
 const HISTORY_CURRENT_MAX = 60;  // 30 sn aralıklı × 60 = 30 dk pencere
 const HISTORY_PAST_MAX    = 10;
@@ -1107,13 +1302,13 @@ const ANOMALY_COOLDOWN_MS = 15 * 60 * 1000; // 15 dk cooldown
 const ANOMALY_RESET_MS    = 15 * 60 * 1000; // cooldown sonrası peak/valley sıfırla
 const ANOMALY_MIN_VIEWERS = 500;             // v2.2.0: 100→500, ciddi kanalları kapsa
 
-// v2.2.1: Plato detection (C imzası — bot tutulan yayında sabit izleyici)
+// v2.2.1: Plato detection (C imzası - bot tutulan yayında sabit izleyici)
 const PLATEAU_WINDOW_ENTRIES = 60;            // Son 60 entry (~30 dk)
 const PLATEAU_MIN_ENTRIES    = 50;            // En az 50 entry gerekli (~25 dk veri)
 const PLATEAU_THRESHOLD      = 0.02;          // (max-min)/avg < %2 = plato
 const PLATEAU_MIN_VIEWERS    = 1000;          // 1K altında dalgalanma doğal, yanlış pozitif
 
-// v2.2.1: Smoothness detection (B imzası — kademeli bot tırmanışı)
+// v2.2.1: Smoothness detection (B imzası - kademeli bot tırmanışı)
 const SMOOTHNESS_WINDOW_ENTRIES = 60;         // Son 60 entry (~30 dk)
 const SMOOTHNESS_MIN_ENTRIES    = 50;
 const SMOOTHNESS_MIN_GROWTH_PCT = 30;         // Toplam artış %30+ olmalı
@@ -1140,7 +1335,7 @@ async function updateViewerHistory(channels) {
           // Sadece pastAvgs'i koru, current + peak/valley sıfırla
           history[slug] = { current: [], pastAvgs, streamPeak: null, streamValley: null };
         } else if (rec) {
-          // Yeterli veri birikmeden yayın bitti — current'ı temizle
+          // Yeterli veri birikmeden yayın bitti - current'ı temizle
           history[slug] = { current: [], pastAvgs: rec.pastAvgs || [], streamPeak: null, streamValley: null };
         }
       }
@@ -1155,7 +1350,7 @@ async function updateViewerHistory(channels) {
       rec.current.push({ v: ch.viewerCount, t: now });
       if (rec.current.length > HISTORY_CURRENT_MAX) rec.current.shift();
 
-      // Cooldown sona erdikten sonra peak/valley sıfırla — her "bölüm" kendi referansıyla değerlendirilir
+      // Cooldown sona erdikten sonra peak/valley sıfırla - her "bölüm" kendi referansıyla değerlendirilir
       const lastRiseAlert = rec._lastRiseAlert || 0;
       const lastDropAlert = rec._lastDropAlert || 0;
       const lastAlertTime = Math.max(lastRiseAlert, lastDropAlert);
@@ -1175,7 +1370,7 @@ async function updateViewerHistory(channels) {
 
     await Storage.setViewerHistory(history);
 
-    // Her check sonrası anomali tespiti — popup kapalıyken de çalışır
+    // Her check sonrası anomali tespiti - popup kapalıyken de çalışır
     await checkViewerAnomalies(channels, history);
   } catch (e) {
     console.warn('[KickAlert] viewerHistory error:', e.message);
@@ -1192,7 +1387,7 @@ async function checkViewerAnomalies(channels, history) {
 
     for (const ch of channels) {
       if (!ch.isLive || !ch.viewerCount) continue;
-      if (ch.viewerCount < ANOMALY_MIN_VIEWERS) continue; // 500 altı — sus
+      if (ch.viewerCount < ANOMALY_MIN_VIEWERS) continue; // 500 altı - sus
 
       const chSoundPref = await Storage.getChannelSoundMode(ch.channelSlug);
       if (chSoundPref === 'muted') continue;
@@ -1200,7 +1395,7 @@ async function checkViewerAnomalies(channels, history) {
       const rec = history[ch.channelSlug];
       if (!rec) continue;
 
-      // v2.1.1: Diagnostic — her kanal için anomaly check özetini console.debug'a yaz
+      // v2.1.1: Diagnostic - her kanal için anomaly check özetini console.debug'a yaz
       // (Chrome DevTools'ta "Verbose" filtresi açılınca görünür, default gizli)
       try {
         const cur = rec.current || [];
@@ -1220,16 +1415,16 @@ async function checkViewerAnomalies(channels, history) {
       if (anomaly) {
         const lastRise = rec._lastRiseAlert || 0;
         if (now - lastRise >= ANOMALY_COOLDOWN_MS) {
-          dbg(`[KickAlert] Spike: ${ch.channelSlug} — ${anomaly.label}`);
+          dbg(`[KickAlert] Spike: ${ch.channelSlug} - ${anomaly.label}`);
           const mode = anomalySettings.notifyMode || 'both';
-          if (mode === 'notif' || mode === 'both') {
+          if ((mode === 'notif' || mode === 'both') && !(await alertSuppressedFor(ch.channelSlug))) { // v2.5.98: duraklatma
             const icon = await getAvatarDataUrl(ch);
             const spikeTitle = Utils.i18n('anomalySpikeTitle') || 'Viewer spike';
-            // v2.2.1: F format — title'a yüzde eklendi: "Spike (+67%)"
+            // v2.2.1: F format - title'a yüzde eklendi: "Spike (+67%)"
             const titleSuffix = ` (+${anomaly.pct}%)`;
             chrome.notifications.create('ka-anomaly-' + ch.channelSlug + '-' + now, {
               type: 'basic', iconUrl: icon,
-              title: ch.userUsername + ' — ' + spikeTitle + titleSuffix,
+              title: ch.userUsername + ' - ' + spikeTitle + titleSuffix,
               message: anomaly.label,
             });
           }
@@ -1244,16 +1439,16 @@ async function checkViewerAnomalies(channels, history) {
         if (drop) {
           const lastDrop = rec._lastDropAlert || 0;
           if (now - lastDrop >= ANOMALY_COOLDOWN_MS) {
-            dbg(`[KickAlert] Drop: ${ch.channelSlug} — ${drop.label}`);
+            dbg(`[KickAlert] Drop: ${ch.channelSlug} - ${drop.label}`);
             const mode = anomalySettings.notifyMode || 'both';
-            if (mode === 'notif' || mode === 'both') {
+            if ((mode === 'notif' || mode === 'both') && !(await alertSuppressedFor(ch.channelSlug))) { // v2.5.98: duraklatma
               const icon = await getAvatarDataUrl(ch);
               const dropTitle = Utils.i18n('anomalyDropTitle') || 'Viewer drop';
-              // v2.2.1: F format — title'a yüzde eklendi: "Drop (-21%)"
+              // v2.2.1: F format - title'a yüzde eklendi: "Drop (-21%)"
               const titleSuffix = ` (-${drop.pct}%)`;
               chrome.notifications.create('ka-drop-' + ch.channelSlug + '-' + now, {
                 type: 'basic', iconUrl: icon,
-                title: ch.userUsername + ' — ' + dropTitle + titleSuffix,
+                title: ch.userUsername + ' - ' + dropTitle + titleSuffix,
                 message: drop.label,
               });
             }
@@ -1263,21 +1458,21 @@ async function checkViewerAnomalies(channels, history) {
         }
       }
 
-      // ── v2.2.1: Smoothness detection (B imzası — kademeli bot tırmanışı) ──
+      // ── v2.2.1: Smoothness detection (B imzası - kademeli bot tırmanışı) ──
       // Plato'dan ÖNCE çalışıyor çünkü smoothness tetiklenirse plato 30 dk susturulur (cross-cooldown)
       if (_spikeEnabled) {
         const smooth = getViewerSmoothness(rec, ch.viewerCount, ch.startedAt, now);
         if (smooth) {
           const lastSmooth = rec._lastSmoothAlert || 0;
           if (now - lastSmooth >= ANOMALY_COOLDOWN_MS) {
-            dbg(`[KickAlert] Smoothness: ${ch.channelSlug} — ${smooth.label}`);
+            dbg(`[KickAlert] Smoothness: ${ch.channelSlug} - ${smooth.label}`);
             const mode = anomalySettings.notifyMode || 'both';
-            if (mode === 'notif' || mode === 'both') {
+            if ((mode === 'notif' || mode === 'both') && !(await alertSuppressedFor(ch.channelSlug))) { // v2.5.98: duraklatma
               const icon = await getAvatarDataUrl(ch);
               const smoothTitle = Utils.i18n('anomalySmoothTitle') || 'Suspicious Linear Growth';
               chrome.notifications.create('ka-smooth-' + ch.channelSlug + '-' + now, {
                 type: 'basic', iconUrl: icon,
-                title: ch.userUsername + ' — ' + smoothTitle,
+                title: ch.userUsername + ' - ' + smoothTitle,
                 message: smooth.label,
               });
             }
@@ -1289,20 +1484,20 @@ async function checkViewerAnomalies(channels, history) {
         }
       }
 
-      // ── v2.2.1: Plato detection (C imzası — bot tutulan sabit izleyici) ──
+      // ── v2.2.1: Plato detection (C imzası - bot tutulan sabit izleyici) ──
       if (_spikeEnabled) {
         const plateau = getViewerPlateauSync(rec, ch.viewerCount, ch.startedAt, now);
         if (plateau) {
           const lastPlateau = rec._lastPlateauAlert || 0;
           if (now - lastPlateau >= ANOMALY_COOLDOWN_MS) {
-            dbg(`[KickAlert] Plateau: ${ch.channelSlug} — ${plateau.label}`);
+            dbg(`[KickAlert] Plateau: ${ch.channelSlug} - ${plateau.label}`);
             const mode = anomalySettings.notifyMode || 'both';
-            if (mode === 'notif' || mode === 'both') {
+            if ((mode === 'notif' || mode === 'both') && !(await alertSuppressedFor(ch.channelSlug))) { // v2.5.98: duraklatma
               const icon = await getAvatarDataUrl(ch);
               const plateauTitle = Utils.i18n('anomalyPlateauTitle') || 'Suspicious Steady Viewers';
               chrome.notifications.create('ka-plateau-' + ch.channelSlug + '-' + now, {
                 type: 'basic', iconUrl: icon,
-                title: ch.userUsername + ' — ' + plateauTitle,
+                title: ch.userUsername + ' - ' + plateauTitle,
                 message: plateau.label,
               });
             }
@@ -1323,7 +1518,7 @@ const STREAM_SETTLE_MS = 10 * 60 * 1000; // v2.2.0: yayın başı 10dk anomali k
 const ROC_WINDOW = 4; // Rate of change: son 4 entry vs önceki 4 entry (her biri ~2 dk)
 const ROC_MIN_ENTRIES = 8; // En az 8 entry gerekli (~4 dk veri)
 
-// Ani sıçrama tespiti — sliding window rate of change
+// Ani sıçrama tespiti - sliding window rate of change
 // Son ROC_WINDOW entry ortalaması vs önceki ROC_WINDOW entry ortalaması
 // v2.2.0: Spike'ta 10 dk yayın başı grace, drop'ta grace yok. ROC sliding window
 // her iki yönde de tek tetikleme yolu (geniş pencere yolu yapısal hatasıyla kaldırıldı).
@@ -1364,28 +1559,28 @@ function buildAnomalyLabel(windowMin, fromVal, toVal) {
   return `${formatK(fromVal)} → ${formatK(toVal)} · ${windowLabel}`;
 }
 
-// Sync versiyon — checkViewerAnomalies'de history zaten yüklü
+// Sync versiyon - checkViewerAnomalies'de history zaten yüklü
 function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
   try {
     if (!rec) return null;
 
     const current = rec.current || [];
-    if (current.length < ROC_MIN_ENTRIES) return null; // yeterli veri yok — sus
+    if (current.length < ROC_MIN_ENTRIES) return null; // yeterli veri yok - sus
 
     const streamAge = streamStartedAt
       ? now - new Date(streamStartedAt).getTime()
       : now - current[0].t;
 
-    // v2.2.0: Yayın başı 10 dk grace — bu süre içinde organik patlama
+    // v2.2.0: Yayın başı 10 dk grace - bu süre içinde organik patlama
     // (notification push + discovery + raid kombinasyonu) gerçek spike'tan
     // ayırt edilemez. 10 dk sonrası ROC algoritması güvenilir çalışır.
     if (streamAge < STREAM_SETTLE_MS) return null;
 
     const { warn: warnThreshold, alert: alertThreshold } = SPIKE_THRESHOLDS[_spikeSensitivity] || SPIKE_THRESHOLDS.avg;
 
-    // ── Rate of change — ani sıçrama tespiti ──
+    // ── Rate of change - ani sıçrama tespiti ──
     // v2.2.0: Geniş pencere yolu (streamValley referans) kaldırıldı.
-    // Yapısal hatalıydı — yayın boyunca biriken sabit referans, dalgalanan
+    // Yapısal hatalıydı - yayın boyunca biriken sabit referans, dalgalanan
     // yayınlarda her aşağı-yukarıda yanlış pozitif üretiyordu (RoseHeus 98→1.0K
     // tipi vakalar). ROC sliding window yeterli kapsama sağlıyor.
     const roc = getRateOfChange(current);
@@ -1399,7 +1594,7 @@ function getViewerAnomalySync(rec, currentCount, streamStartedAt, now) {
   } catch { return null; }
 }
 
-// Async wrapper — popup mesaj handler için
+// Async wrapper - popup mesaj handler için
 async function getViewerAnomaly(slug, currentCount, streamStartedAt) {
   try {
     const history = await Storage.getViewerHistory();
@@ -1409,7 +1604,7 @@ async function getViewerAnomaly(slug, currentCount, streamStartedAt) {
 
 function formatK(n) {
   if (n >= 10000) return Math.round(n / 1000) + 'K';
-  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';  // 3.6K — hassas gösterim
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';  // 3.6K - hassas gösterim
   return String(n);
 }
 
@@ -1422,15 +1617,15 @@ function getViewerDropSync(rec, currentCount, streamStartedAt, now, anomalySetti
 
     const { warn: warnThreshold, alert: alertThreshold } = DROP_THRESHOLDS[_dropSensitivity] || DROP_THRESHOLDS.avg;
 
-    // ── Rate of change — ani düşüş tespiti ──
-    // v2.2.0: Grace period kaldırıldı (mantıken gereksizdi — yayın başında
+    // ── Rate of change - ani düşüş tespiti ──
+    // v2.2.0: Grace period kaldırıldı (mantıken gereksizdi - yayın başında
     // peak yokken düşüş hesaplanamaz, ROC için ROC_MIN_ENTRIES (~4 dk veri)
     // zaten yeterli koruma sağlıyor).
-    // v2.2.0: Geniş pencere yolu (streamPeak referans) kaldırıldı —
+    // v2.2.0: Geniş pencere yolu (streamPeak referans) kaldırıldı -
     // spike'taki streamValley'in simetriği aynı yapısal hatayı taşıyordu.
     const roc = getRateOfChange(current);
     if (roc && roc.pct <= -warnThreshold) {
-      // v2.3.0: Yayın kapanışı tespiti — kapanan yayında viewer count dramatik düşer.
+      // v2.3.0: Yayın kapanışı tespiti - kapanan yayında viewer count dramatik düşer.
       // Eğer mevcut count, son 30 dk'daki peak'in %20'sinden az ise "yayın bitiyor"
       // varsayıp drop bildirimini atla. Aksi halde her yayın kapanışında bildirim gider.
       const recentPeak = Math.max(...current.map(e => e.v));
@@ -1467,7 +1662,7 @@ function getViewerPlateauSync(rec, currentCount, streamStartedAt, now) {
     if (current.length < PLATEAU_MIN_ENTRIES) return null;
     if (currentCount < PLATEAU_MIN_VIEWERS) return null;
 
-    // Yayın başı 10 dk grace (spike ile aynı — yayın yeni başlamış olabilir)
+    // Yayın başı 10 dk grace (spike ile aynı - yayın yeni başlamış olabilir)
     const streamAge = streamStartedAt
       ? now - new Date(streamStartedAt).getTime()
       : now - current[0].t;
@@ -1589,7 +1784,7 @@ async function checkChannels() {
 }
 
 async function _checkChannelsInner() {
-  _autoLaunchTabOpened = false; // Her check başında sıfırla — ilk sekme öne gelsin
+  _autoLaunchTabOpened = false; // Her check başında sıfırla - ilk sekme öne gelsin
   const channels = await KickAPI.getAllFollowingChannels();
   const isStale = KickAPI._lastFetchWasStale; // Risk#2: bu veri taze mi fallback mi?
 
@@ -1606,7 +1801,7 @@ async function _checkChannelsInner() {
       if (!liveApiSlugs.has(pSlug)) {
         // Çok-yeni event koruması: Pusher bu kanalı GRACE süresi içinde canlı
         // bildirdiyse, API henüz güncellenememiş olabilir (backend gecikmesi).
-        // Bu durumda temizleme — gerçek offline ise bir sonraki check yakalar.
+        // Bu durumda temizleme - gerçek offline ise bir sonraki check yakalar.
         const liveSince = _pusherLiveSince.get(pSlug) || 0;
         if (now - liveSince < PUSHER_LIVE_GRACE_MS) {
           continue; // henüz taze, koru
@@ -1621,7 +1816,7 @@ async function _checkChannelsInner() {
   // #D FIX: API'den gelen channels Pusher'ın canlı bildiği kanalları
   // ezmemeli. API 403 + fallback cache (eski veri) durumunda kanal API'de
   // offline görünebilir ama Pusher'dan canlı event geldi. Pusher'ın live
-  // state'ini koruyalım — aksi halde badge/popup tutarsız olur.
+  // state'ini koruyalım - aksi halde badge/popup tutarsız olur.
   // (Risk#1 temizliğinden SONRA çalışır: hayaletler zaten ayıklandı.)
   if (_pusherLiveSlugs.size > 0) {
     for (const ch of channels) {
@@ -1656,13 +1851,13 @@ async function _checkChannelsInner() {
   const liveChannelSlugs = state.liveSlugs;
   let notifiedLives = state.notifiedLives;
 
-  // First run OR fresh startup with empty state — record current live, don't notify
+  // First run OR fresh startup with empty state - record current live, don't notify
   // Prevents duplicate notifications when browser starts with streams already live
   if (!state.lastCheckDone || state.liveSlugs.size === 0) {
     const currentLive = new Set(channels.filter(c => c.isLive).map(c => c.channelSlug));
     await setPersistedLiveSlugs(currentLive);
     if (!state.lastCheckDone) await setLastCheckDone();
-    dbg(`[KickAlert] Startup check — ${liveCount} live channels recorded, no notifications`);
+    dbg(`[KickAlert] Startup check - ${liveCount} live channels recorded, no notifications`);
     return;
   }
 
@@ -1675,11 +1870,11 @@ async function _checkChannelsInner() {
   const dndMuteAutolaunch = dndActive && await Storage.getDndMuteAutolaunch();
   const soundMode = await Storage.getSoundMode();
 
-  if (dndActive) dbg('[KickAlert] DND active — muting:', { notif: dndMuteNotif, sound: dndMuteSound, autolaunch: dndMuteAutolaunch });
+  if (dndActive) dbg('[KickAlert] DND active - muting:', { notif: dndMuteNotif, sound: dndMuteSound, autolaunch: dndMuteAutolaunch });
 
   let notified = false;
 
-  // Bildirim gecikmesi — loop dışında tek seferde oku
+  // Bildirim gecikmesi - loop dışında tek seferde oku
   const notifDelay = await Storage.getNotifDelay();
 
   // startedAt null olan kanallar için viewerHistory tek seferlik yüklenir
@@ -1690,13 +1885,13 @@ async function _checkChannelsInner() {
     if (liveChannelSlugs.has(ch.channelSlug) || !ch.isLive) continue;
     // #D/#E FIX: Pusher bu kanalı zaten canlı bildirdiyse polling tekrar
     // bildirmesin (dar yarış penceresinde getPersistedState snapshot'ı
-    // Pusher'ın persist'inden eski olabilir — bu RAM Set'i o boşluğu kapatır).
+    // Pusher'ın persist'inden eski olabilir - bu RAM Set'i o boşluğu kapatır).
     if (_pusherLiveSlugs.has(ch.channelSlug)) {
       liveChannelSlugs.add(ch.channelSlug);
       continue;
     }
     if (ch.startedAt) {
-      // startedAt varsa: yayın 10 dk+ önce başlamışsa atla — zaten yayındaydı
+      // startedAt varsa: yayın 10 dk+ önce başlamışsa atla - zaten yayındaydı
       const streamStart = new Date(ch.startedAt).getTime();
       const streamAgeMs = Date.now() - streamStart;
       if (streamAgeMs > 10 * 60 * 1000) {
@@ -1705,19 +1900,19 @@ async function _checkChannelsInner() {
         continue;
       }
     } else {
-      // startedAt null — yayın ne zaman başladı bilinmiyor.
-      // API'den yayın başlangıcını sorgula — viewerHistory eski oturumdan kalmış olabilir
+      // startedAt null - yayın ne zaman başladı bilinmiyor.
+      // API'den yayın başlangıcını sorgula - viewerHistory eski oturumdan kalmış olabilir
       const apiStartTime = await KickAPI.getChannelStartTime(ch.channelSlug);
       if (apiStartTime) {
         const streamStart = new Date(apiStartTime).getTime();
         const streamAgeMs = Date.now() - streamStart;
         if (streamAgeMs > 10 * 60 * 1000) {
-          // Yayın 10 dk+ önce başlamış — zaten yayındaydı, atla
+          // Yayın 10 dk+ önce başlamış - zaten yayındaydı, atla
           dbg(`[KickAlert] Skipping long-running live API (${Math.round(streamAgeMs/60000)} min): ${ch.channelSlug}`);
           liveChannelSlugs.add(ch.channelSlug);
           continue;
         }
-        // Yayın 10 dk içinde başlamış — yeni yayın, devam et
+        // Yayın 10 dk içinde başlamış - yeni yayın, devam et
         dbg(`[KickAlert] New live confirmed via API startTime (${Math.round(streamAgeMs/60000)} min): ${ch.channelSlug}`);
       } else {
         // v2.3.0: API'den de bilgi gelmedi (Cloudflare 403 olabilir).
@@ -1729,18 +1924,18 @@ async function _checkChannelsInner() {
 
         if (hasHistory) {
           // Geçmişi var demek = bu yayın bir süredir izleniyor → eski yayın, atla
-          dbg(`[KickAlert] No API time but has history — skipping (likely long-running): ${ch.channelSlug}`);
+          dbg(`[KickAlert] No API time but has history - skipping (likely long-running): ${ch.channelSlug}`);
           liveChannelSlugs.add(ch.channelSlug);
           continue;
         }
         if (lastViewerCount > 1000) {
           // Geçmiş yok ama 1000+ viewer = büyük olasılıkla zaten saatlerdir yayında, organik trafik birikmiş
-          dbg(`[KickAlert] No API time, no history, but ${lastViewerCount} viewers — likely long-running, skipping: ${ch.channelSlug}`);
+          dbg(`[KickAlert] No API time, no history, but ${lastViewerCount} viewers - likely long-running, skipping: ${ch.channelSlug}`);
           liveChannelSlugs.add(ch.channelSlug);
           continue;
         }
         // Geçmiş yok ve viewer sayısı düşük → büyük ihtimalle gerçekten yeni başlamış
-        dbg(`[KickAlert] No API time, no history, low viewers — treating as new live: ${ch.channelSlug}`);
+        dbg(`[KickAlert] No API time, no history, low viewers - treating as new live: ${ch.channelSlug}`);
       }
     }
 
@@ -1750,7 +1945,7 @@ async function _checkChannelsInner() {
       if (ch.startedAt) {
         streamAgeMin = (Date.now() - new Date(ch.startedAt).getTime()) / 60000;
       } else {
-        // startedAt null — API'den alınan startTime ile hesapla
+        // startedAt null - API'den alınan startTime ile hesapla
         const apiTime = await KickAPI.getChannelStartTime(ch.channelSlug);
         if (apiTime) streamAgeMin = (Date.now() - new Date(apiTime).getTime()) / 60000;
       }
@@ -1764,6 +1959,7 @@ async function _checkChannelsInner() {
 
     // v2.5.50: kanal filtresi (kategori / anahtar kelime)
     const pollFilter = matchChannelFilter(await Storage.getChannelAlertPref(ch.channelSlug), ch.categoryName, ch.sessionTitle);
+    const pollSup = pollFilter.pass ? await alertSuppressedFor(ch.channelSlug) : null; // v2.5.98
 
     // Always log to history
     Storage.addNotificationHistory({
@@ -1774,7 +1970,13 @@ async function _checkChannelsInner() {
       category: ch.categoryName || '-',
       timestamp: new Date().toISOString(),
       ...(pollFilter.pass ? {} : { filtered: pollFilter.reason }),
+      ...(pollSup ? { paused: pollSup } : {}),
     });
+
+    if (pollSup) {
+      KLog.info('PAU-11', `${ch.channelSlug} → bildirimler ${pollSup === 'snooze' ? 'bu kanal için susturulmuş' : 'duraklatılmış'}; sadece geçmiş`);
+      continue;
+    }
 
     if (!pollFilter.pass) {
       KLog.info('FLT-10', `${ch.channelSlug} → filtreye takıldı (${pollFilter.reason}), bildirim/ses/sekme atlandı`);
@@ -1791,6 +1993,7 @@ async function _checkChannelsInner() {
       if (!chModeInfo.explicit && !suspended && !dndMuteAutolaunch && await shouldAutoOpen(ch)) {
         const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: !_autoLaunchTabOpened });
         KLog.info('TAB-71', `${ch.channelSlug} → polling SEKME AÇILDI (varsayılan bildirim kapalı, otomatik açma açık, tabId=${tab.id})`);
+        registerAutoTab(tab.id, ch.channelSlug);
         _autoLaunchTabOpened = true;
       }
       continue;
@@ -1816,11 +2019,12 @@ async function _checkChannelsInner() {
 
     // POLL-42 / TAB-71: Auto-open tab (independent of sound)
     // NOT: Polling yolunda 3-9sn güvenlik gecikmesi YOK çünkü polling zaten
-    // 30sn cycle ile çalışır — yayın yakalandığında zaten birkaç saniye geçmiştir.
+    // 30sn cycle ile çalışır - yayın yakalandığında zaten birkaç saniye geçmiştir.
     if (!suspended && !dndMuteAutolaunch) {
       if (await shouldAutoOpen(ch)) {
         const tab = await chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}`, active: !_autoLaunchTabOpened });
         KLog.info('TAB-71', `${ch.channelSlug} → polling SEKME AÇILDI (tabId=${tab.id}, gecikme yok)`);
+        registerAutoTab(tab.id, ch.channelSlug);
         _autoLaunchTabOpened = true;
       } else {
         KLog.debug('TAB-71', `${ch.channelSlug} → polling shouldAutoOpen=false → sekme açılmadı`);
@@ -1854,7 +2058,7 @@ async function _checkChannelsInner() {
   }
 
   // #E FIX: Polling liveSlugs'u REPLACE ediyor (API snapshot'ına göre).
-  // AMA Pusher'ın canlı bildiği kanalları EZMEMELI — özellikle API 403 +
+  // AMA Pusher'ın canlı bildiği kanalları EZMEMELI - özellikle API 403 +
   // fallback cache (eski veri) durumunda polling kanalı offline sanabilir.
   // Çözüm: polling_live ∪ _pusherLiveSlugs. Pusher offline event'i gelince
   // _pusherLiveSlugs'tan zaten çıkar, o yüzden bu union güvenli.
@@ -1867,7 +2071,7 @@ async function _checkChannelsInner() {
   // Önceden güncellenirse startedAt=null olan yeni kanallar skip edilir
   await updateViewerHistory(channels);
 
-  // ─── v2.3.0: Bot Tracker — sync live channels to offscreen ───
+  // ─── v2.3.0: Bot Tracker - sync live channels to offscreen ───
   await syncBotTracker(channels);
 
   // ─── v2.3.1 Plan F: Pusher subscription sync ───
@@ -1877,9 +2081,9 @@ async function _checkChannelsInner() {
 
 // v2.3.0: Bot tracker lifecycle management
 // Live kanallar için chatroom_id alır, offscreen'e BOT_TRACK_SYNC gönderir.
-// Hiç canlı kanal yoksa offscreen'i durdurur (Strateji B — kanal varsa açık).
+// Hiç canlı kanal yoksa offscreen'i durdurur (Strateji B - kanal varsa açık).
 //
-// v2.3.0 Firefox desteği — Dual-mode:
+// v2.3.0 Firefox desteği - Dual-mode:
 //   Chrome:  BotTracker offscreen.html içinde çalışır → mesajlaşma ile
 //   Firefox: BotTracker bu script'le aynı bağlamda yüklenir → doğrudan çağrı
 // BotTrackerHost helper iki yolu transparent yapar.
@@ -1900,14 +2104,14 @@ const BotTrackerHost = {
     return this.isLocal || this.hasOffscreen;
   },
 
-  // Offscreen "var" mı kontrol et — Firefox'ta her zaman true (BotTracker yüklü)
+  // Offscreen "var" mı kontrol et - Firefox'ta her zaman true (BotTracker yüklü)
   async isAlive() {
     if (this.isLocal) return true; // Firefox: BotTracker zaten bu bağlamda yüklü
     if (!this.hasOffscreen) return false;
     try { return await chrome.offscreen.hasDocument(); } catch { return false; }
   },
 
-  // BOT_TRACK_SYNC — tracker'ı bu kanal listesi için sync et
+  // BOT_TRACK_SYNC - tracker'ı bu kanal listesi için sync et
   async sync(channels) {
     if (this.isLocal) {
       // Firefox: doğrudan çağrı
@@ -1924,7 +2128,17 @@ const BotTrackerHost = {
     });
   },
 
-  // BOT_TRACK_STOP — tracker'ı durdur
+  // v2.5.103: sohbet radarı ayarını tracker'a ver (null = kapalı)
+  async setRadar(radar) {
+    if (this.isLocal) {
+      try { BotTracker.setRadar(radar); return { success: true, on: !!BotTracker.radar }; } catch (e) { return { success: false, error: e.message }; }
+    }
+    if (!this.hasOffscreen) return { success: false };
+    try { if (!(await chrome.offscreen.hasDocument())) return { success: false, reason: 'no-offscreen' }; } catch (e) { return { success: false }; }
+    return chrome.runtime.sendMessage({ target: 'offscreen', type: 'BOT_SET_RADAR', radar }).catch(() => ({ success: false }));
+  },
+
+  // BOT_TRACK_STOP - tracker'ı durdur
   async stop() {
     if (this.isLocal) {
       try {
@@ -1940,7 +2154,7 @@ const BotTrackerHost = {
     } catch { return { success: false }; }
   },
 
-  // BOT_GET_STATS — istatistikleri al
+  // BOT_GET_STATS - istatistikleri al
   async getStats() {
     if (this.isLocal) {
       try { return { success: true, stats: BotTracker.getStats() }; }
@@ -1951,21 +2165,21 @@ const BotTrackerHost = {
     return chrome.runtime.sendMessage({ target: 'offscreen', type: 'BOT_GET_STATS' });
   },
 
-  // BOT_COMPUTE_SCORES — skorları hesapla
-  async computeScores(viewerMap) {
+  // BOT_COMPUTE_SCORES - skorları hesapla
+  async computeScores(viewerMap, kickChatters) {
     if (this.isLocal) {
-      try { return { success: true, scores: BotTracker.computeScores(viewerMap) }; }
+      try { return { success: true, scores: BotTracker.computeScores(viewerMap, kickChatters || {}) }; }
       catch (e) { return { success: false, error: e.message }; }
     }
     if (!this.hasOffscreen) return { success: false, error: 'unsupported' };
     return chrome.runtime.sendMessage({
-      target: 'offscreen', type: 'BOT_COMPUTE_SCORES', viewerMap,
+      target: 'offscreen', type: 'BOT_COMPUTE_SCORES', viewerMap, kickChatters: kickChatters || {},
     });
   },
 };
 
 async function syncBotTracker(channels) {
-  // Firefox veya Chrome — BotTrackerHost ikisini de hallediyor
+  // Firefox veya Chrome - BotTrackerHost ikisini de hallediyor
   if (!BotTrackerHost.isSupported) return;
 
   // Master toggle
@@ -1977,15 +2191,19 @@ async function syncBotTracker(channels) {
   // raid için çalışıyordu, bot skoru hiç yoktu). Firefox'ta BotTracker arka plan
   // sayfasında, Chrome'da offscreen'de; BotTrackerHost iki yolu da yönetiyor.
   const raidOnly = !enabled;
-  if (raidOnly && !channels.some(c => c.isLive && alertPrefs[c.channelSlug]?.raid)) {
-    // Disabled olsa da çalışıyor olabilir — durdur
+  // v2.5.103: sohbet radarındaki canlı kanallar bot tespiti kapalıyken de dinlenir
+  const radarCfg = await getChatRadarConfig();
+  const radarSet = new Set(radarCfg ? radarCfg.slugs : []);
+  const listenOnly = c => alertPrefs[c.channelSlug]?.raid || radarSet.has(String(c.channelSlug).toLowerCase());
+  if (raidOnly && !channels.some(c => c.isLive && listenOnly(c))) {
+    // Disabled olsa da çalışıyor olabilir - durdur
     await BotTrackerHost.stop();
     return;
   }
 
-  const liveChannels = channels.filter(c => c.isLive && (!raidOnly || alertPrefs[c.channelSlug]?.raid));
+  const liveChannels = channels.filter(c => c.isLive && (!raidOnly || listenOnly(c)));
   if (liveChannels.length === 0) {
-    // Canlı kanal yok — tracker'ı durdur
+    // Canlı kanal yok - tracker'ı durdur
     await BotTrackerHost.stop();
     return;
   }
@@ -2002,10 +2220,14 @@ async function syncBotTracker(channels) {
     try {
       const chatroomId = await KickAPI.getChatroomId(ch.channelSlug);
       if (chatroomId) {
+        // v2.5.82: skor hesabı açıksa sohbet modlarını başlangıçta oku (30 dk önbellek)
+        let modes = null;
+        if (!raidOnly) { try { modes = await KickAPI.getChatroomModes(ch.channelSlug); } catch (e) { modes = null; } }
         trackList.push({
           slug: ch.channelSlug,
           chatroomId,
           userId: 0, // Pusher chat subscribe için chatroomId yeterli
+          modes,
         });
       }
     } catch (e) {
@@ -2015,9 +2237,11 @@ async function syncBotTracker(channels) {
 
   if (trackList.length === 0) return;
 
-  // Sync et — chrome offscreen'e mesaj veya firefox direct call
+  // Sync et - chrome offscreen'e mesaj veya firefox direct call
   try {
     const response = await BotTrackerHost.sync(trackList);
+    // v2.5.103: radar ayarı her senkronda yeniden verilir (offscreen yeniden açılmış olabilir)
+    try { await BotTrackerHost.setRadar(radarCfg); } catch (e) {}
     if (response?.success) {
       KLog.debug('BSC-01', `BotTracker ${response.trackedCount} kanal takip ediyor`);
     }
@@ -2025,16 +2249,106 @@ async function syncBotTracker(channels) {
     console.warn('[KickAlert] BotTracker sync error:', e.message);
   }
 
-  // v2.3.0 Aşama 2: Skor hesabı (1 dakikada bir) — sadece bot tespiti açıksa
+  // v2.3.0 Aşama 2: Skor hesabı (1 dakikada bir) - sadece bot tespiti açıksa
   if (!raidOnly) await recomputeBotScores(liveChannels);
+
+  // v2.5.89 (b034): Pusher sessizlik bekçisi
+  try { await checkRealtimeSilence(liveChannels); } catch (e) { console.warn('[KickAlert] PSH-20 kontrol hatası:', e && e.message); }
 }
 
-// v2.3.0 Aşama 2: MoKick skor hesabı — her dakika tetiklenir
+// ─── v2.5.89 (b034): Pusher sessizlik bekçisi ───
+// Kick sitesi sohbeti Centrifugo'dan alıyor, Pusher'a aynı olayları paralel
+// yayınlıyor (16.10.2026 ölçüldü). Kick bir gün Pusher'a yayını keserse bağlantı
+// açık kalır (pong gelir) ama hiçbir olay gelmez; PSH-13 bunu yakalamaz.
+// Kalabalık ve takibi birkaç dakikadır süren canlı kanallarda hiç sohbet mesajı
+// gelmiyorsa bunu fark ederiz. Abone moduna geçmiş kanallar sayılmaz.
+const RT_SILENCE_MIN_VIEWERS = 500;
+const RT_SILENCE_MS = 5 * 60 * 1000;
+const RT_SILENCE_CHECK_MS = 60 * 1000;
+let _rtSilenceLastCheck = 0;
+async function checkRealtimeSilence(liveChannels, force = false) {
+  const now = Date.now();
+  if (!force && now - _rtSilenceLastCheck < RT_SILENCE_CHECK_MS) return null;
+  _rtSilenceLastCheck = now;
+  const res = await BotTrackerHost.getStats();
+  if (!res || !res.success || !res.stats) return null;
+  const viewers = {};
+  for (const ch of liveChannels || []) viewers[ch.channelSlug] = ch.viewerCount || 0;
+  const eligible = [], silent = [];
+  for (const [slug, st] of Object.entries(res.stats)) {
+    if (!st || !st.connected) continue;
+    if ((viewers[slug] || 0) < RT_SILENCE_MIN_VIEWERS) continue;
+    if (st.modes && (st.modes.subOnly || st.modes.emotesOnly)) continue;
+    const since = Math.max(st.addedAt || 0, st.connectedAt || 0);
+    if (!since || now - since < RT_SILENCE_MS) continue;
+    eligible.push(slug);
+    if (now - Math.max(st.lastMsgAt || 0, since) >= RT_SILENCE_MS) silent.push(slug);
+  }
+  const state = !eligible.length ? 'unknown' : silent.length === eligible.length ? 'silent' : silent.length ? 'partial' : 'ok';
+  let prev = {};
+  try { prev = (await chrome.storage.local.get('_rtHealth'))._rtHealth || {}; } catch (e) {}
+  const health = { state, checkedAt: now, eligible: eligible.length, silent, since: (state === prev.state && prev.since) ? prev.since : now };
+  try { await chrome.storage.local.set({ _rtHealth: health }); } catch (e) {}
+  // v2.5.90: Pusher 10 dakikadır sessizse (yeniden sorma sonrası da) Centrifugo'ya geç
+  if (state === 'silent' && KAPusherCfg.provider === 'pusher' && now - health.since >= 2 * RT_SILENCE_MS) {
+    try { await switchToCentrifugo('Pusher 10 dakikadır sessiz'); } catch (e) {}
+  }
+  // Pusher yeniden sağlıklıysa izin hatırlatmasını kaldır
+  if (state === 'ok' && KAPusherCfg.provider === 'pusher') {
+    try { const d = await chrome.storage.local.get('_rtFallbackNeeded'); if (d._rtFallbackNeeded) await chrome.storage.local.set({ _rtFallbackNeeded: false }); } catch (e) {}
+  }
+  const prov = KAPusherCfg.provider === 'centrifugo' ? 'Centrifugo' : 'Pusher';
+  if (state !== prev.state) {
+    if (state === 'silent') {
+      KLog.warn('PSH-20', `${prov} bağlı ama ${eligible.length} kalabalık canlı kanalda 5 dakikadır hiç sohbet olayı yok. Kick ${prov} yayınını kesmiş olabilir; bağlantı ayarı yeniden soruluyor.`);
+      try { await ensurePusherConfig({ force: true, reason: 'PSH-20 sessizlik' }); } catch (e) {}
+    } else if (state === 'partial') {
+      KLog.info('PSH-21', `${prov} sessiz kanal(lar): ${silent.join(', ')} (diğer ${eligible.length - silent.length} kanalda olay geliyor; kanal bazlı taşınma olabilir)`);
+    } else if (state === 'ok' && (prev.state === 'silent' || prev.state === 'partial')) {
+      KLog.info('PSH-22', `${prov} olayları yeniden geliyor`);
+    }
+  }
+  return health;
+}
+
+// v2.3.0 Aşama 2: MoKick skor hesabı - her dakika tetiklenir
 // 1. Offscreen'den her live kanal için skor al
 // 2. Storage'a yaz (popup açıldığında anında okunur)
 // 3. Canlıdan çıkan kanalların skorunu temizle
 const _BOT_SCORE_INTERVAL_MS = 60 * 1000; // 1 dakika
 let _lastBotScoreCompute = 0;
+
+// ─── v2.5.91 (b035): Kick'in kendi aktif sohbetçi sayısı ───
+// web.kick.com/api/v1/channels/{id}/chat/active-chatters (girişsiz, 60 sn
+// önbellek). WebSocket'e bağlı değil, ilk dakikadan itibaren skor verir.
+// Dakikada en fazla KICK_CHATTERS_PER_MIN kanal (sırayla), kanal başına 60 sn.
+const KICK_CHATTERS_PER_MIN = 12;
+const KICK_CHATTERS_MAX_AGE = 5 * 60 * 1000;
+const _kickChatters = new Map(); // slug -> { count, at }
+async function refreshKickActiveChatters(liveChannels) {
+  let idCache = {};
+  try { idCache = await Storage.getChannelIdCache(); } catch (e) { return; }
+  const now = Date.now();
+  const due = liveChannels
+    .filter(ch => ch.viewerCount > 0 && idCache[ch.channelSlug] > 0)
+    .map(ch => ({ slug: ch.channelSlug, id: idCache[ch.channelSlug], at: (_kickChatters.get(ch.channelSlug) || {}).at || 0 }))
+    .filter(x => now - x.at >= 60 * 1000)
+    .sort((a, b) => a.at - b.at)
+    .slice(0, KICK_CHATTERS_PER_MIN);
+  for (const x of due) {
+    const j = await KickAPI.fetchWebPublic(`https://web.kick.com/api/v1/channels/${x.id}/chat/active-chatters`);
+    if (!j) break; // uç kapalıysa (10 dk) diğerlerini deneme
+    const n = Number(j && j.data && j.data.total_count);
+    if (Number.isFinite(n) && n >= 0) _kickChatters.set(x.slug, { count: n, at: Date.now() });
+  }
+  const live = new Set(liveChannels.map(c => c.channelSlug));
+  for (const k of [..._kickChatters.keys()]) if (!live.has(k)) _kickChatters.delete(k);
+}
+function kickChattersPayload() {
+  const out = {}; const now = Date.now();
+  for (const [slug, v] of _kickChatters) if (now - v.at <= KICK_CHATTERS_MAX_AGE) out[slug] = v.count;
+  return out;
+}
 
 async function recomputeBotScores(liveChannels) {
   if (!BotTrackerHost.isSupported) {
@@ -2044,11 +2358,11 @@ async function recomputeBotScores(liveChannels) {
   const now = Date.now();
   const elapsed = now - _lastBotScoreCompute;
   if (elapsed < _BOT_SCORE_INTERVAL_MS) {
-    KLog.debug('BSC-02', `Throttle: ${Math.round(elapsed/1000)}s geçti, ${_BOT_SCORE_INTERVAL_MS/1000}s gerekiyor — atlanıyor`);
+    KLog.debug('BSC-02', `Throttle: ${Math.round(elapsed/1000)}s geçti, ${_BOT_SCORE_INTERVAL_MS/1000}s gerekiyor - atlanıyor`);
     return;
   }
   _lastBotScoreCompute = now;
-  KLog.debug('BSC-03', `recomputeBotScores başladı — ${liveChannels.length} canlı kanal (${BotTrackerHost.isLocal ? 'local/firefox' : 'offscreen/chrome'})`);
+  KLog.debug('BSC-03', `recomputeBotScores başladı - ${liveChannels.length} canlı kanal (${BotTrackerHost.isLocal ? 'local/firefox' : 'offscreen/chrome'})`);
 
   // viewerMap: { slug: viewerCount }
   const viewerMap = {};
@@ -2062,7 +2376,8 @@ async function recomputeBotScores(liveChannels) {
   // BotTracker'dan skorları iste (chrome → offscreen, firefox → local)
   let scores = null;
   try {
-    const res = await BotTrackerHost.computeScores(viewerMap);
+    try { await refreshKickActiveChatters(liveChannels); } catch (e) {}
+    const res = await BotTrackerHost.computeScores(viewerMap, kickChattersPayload());
     KLog.debug('BSC-05', `BotTracker yanıtı: success=${res?.success}, scoreCount=${Object.keys(res?.scores || {}).length}`);
     if (res?.success) scores = res.scores;
   } catch (e) {
@@ -2074,7 +2389,7 @@ async function recomputeBotScores(liveChannels) {
     return;
   }
 
-  // Storage'a yaz — sadece anlamlı (insufficient olmayan) skorları
+  // Storage'a yaz - sadece anlamlı (insufficient olmayan) skorları
   let written = 0, skipped = 0;
   for (const [slug, data] of Object.entries(scores)) {
     if (data.insufficient || data.score === null) {
@@ -2088,6 +2403,8 @@ async function recomputeBotScores(liveChannels) {
         msgPerMin: data.msgPerMin,
         activeChatters: data.activeChatters,
         expected: data.expected,
+        source: data.source || 'ws',
+        kickChatters: data.kickChatters ?? null,
         computedAt: now,
       });
       written++;
@@ -2116,29 +2433,38 @@ async function recomputeBotScores(liveChannels) {
 // ─── Dynamic Tooltip ───
 
 async function updateDynamicTooltip(channels) {
+  // v2.5.109: Chrome artık simgenin üzerine gelince kendi bilgi kartını gösteriyor
+  // (eklenti adı + bu metnin ilk birkaç satırı + site erişimi). Kartta ad zaten
+  // yazdığı için Chrome'da "KickAlert" öneki ve boş satır kaldırıldı; kanallar
+  // virgülle tek paragrafta, böylece kartın gösterdiği ilk satırlar kanal adlarıyla
+  // dolar. Tam liste, kartın metninin üzerine gelince açılan ipucunda görünür.
+  // Firefox kendi ipucunu tam gösterdiği için alt alta liste olarak kalır.
   const liveChannels = channels.filter(c => c.isLive);
-  let tooltip = 'KickAlert';
+  const noLive = (Utils.i18n('tooltipNoLive') || 'KickAlert - No live streams').replace(/\u2014/g, '-');
+  let tooltip;
   if (liveChannels.length === 0) {
-    tooltip = Utils.i18n('tooltipNoLive') || 'KickAlert — No live streams';
+    tooltip = IS_FIREFOX ? noLive : (noLive.replace(/^KickAlert\s*[-\u2013\u2014:]\s*/, '') || noLive);
   } else {
     const count = Utils.i18n('tooltipLiveCount', [String(liveChannels.length)])
       || `${liveChannels.length} live`;
-    const lines = liveChannels
-      .slice(0, 10)
-      .map(c => `• ${c.userUsername}`);
-    if (liveChannels.length > 10) {
-      const more = Utils.i18n('tooltipMore', [String(liveChannels.length - 10)])
-        || `+${liveChannels.length - 10} more`;
-      lines.push(more);
+    const names = liveChannels.slice(0, 10).map(c => c.userUsername || c.channelSlug);
+    const more = liveChannels.length > 10
+      ? (Utils.i18n('tooltipMore', [String(liveChannels.length - 10)]) || `+${liveChannels.length - 10} more`)
+      : '';
+    if (IS_FIREFOX) {
+      const lines = names.map(n => `\u2022 ${n}`);
+      if (more) lines.push(more);
+      tooltip = `KickAlert - ${count}\n\n${lines.join('\n')}`;
+    } else {
+      tooltip = `${count}: ${names.join(', ')}${more ? ' ' + more : ''}`;
     }
-    tooltip = `KickAlert — ${count}\n\n${lines.join('\n')}`;
   }
   try { await chrome.action.setTitle({ title: tooltip }); } catch {}
 }
 
 // ─── Notification ───
 // BUG 13 FIX: No longer writes to history (handled in checkChannels)
-// Windows notification sound fix: silent: true — our own sound plays via offscreen
+// Windows notification sound fix: silent: true - our own sound plays via offscreen
 
 async function sendNotification(ch, notifiedLives, isSilent) {
   await Utils.ensureI18n();
@@ -2158,7 +2484,7 @@ async function sendNotification(ch, notifiedLives, isSilent) {
   // Firefox doesn't support buttons or silent in notifications.create
   if (!isFirefox) {
     const btnOpen = Utils.i18n('notifButtonOpen') || 'Open';
-    const btnMute = Utils.i18n('notifButtonMute') || 'Mute';
+    const btnMute = Utils.i18n('notifButtonSnooze') || 'Mute for 1 hour'; // v2.5.98
     notifOptions.silent = isSilent;
     notifOptions.buttons = [
       { title: btnOpen },
@@ -2168,6 +2494,92 @@ async function sendNotification(ch, notifiedLives, isSilent) {
 
   chrome.notifications.create(id, notifOptions);
   notifiedLives[id] = { url: `https://kick.com/${ch.channelSlug}`, slug: ch.channelSlug };
+}
+
+// ─── v2.5.97: "Bildirim neden gelmedi?" teşhisi ───
+// Canlı bildirim akışındaki (handlePusherLiveEvent / checkChannels) her
+// engeli bu kanal için tek tek kontrol eder. level: 'block' bildirim gelmez,
+// 'warn' gelir ama eksik/gecikmeli, 'info' bilgi, 'ok' sorun yok.
+// Metinler popup'ta i18n anahtarıyla (key) ve parametrelerle (p) kurulur.
+async function diagChannelNotif(slug) {
+  if (!/^[A-Za-z0-9_-]{1,64}$/.test(slug)) return { success: false, error: 'slug' };
+  const items = [];
+  const add = (level, key, p) => items.push({ level, key, p: p || [] });
+  const ch = (cachedChannels || []).find(c => c.channelSlug === slug) || null;
+  // Genel bildirim anahtarı ve tarayıcı izni
+  const showNotif = await Storage.getShowNotification();
+  if (showNotif === false) add('block', 'diagNotifOff');
+  try {
+    if (chrome.notifications.getPermissionLevel) {
+      const lvl = await new Promise(r => chrome.notifications.getPermissionLevel(r));
+      if (lvl === 'denied') add('block', 'diagPermDenied');
+    }
+  } catch (e) {}
+  try { if (!(await chrome.permissions.contains({ origins: ['https://kick.com/*'] }))) add('block', 'diagNoKickPerm'); } catch (e) {}
+  // Kanal modu
+  const mi = await Storage.getChannelSoundModeInfo(slug);
+  if (mi.mode === 'muted') add('block', mi.explicit ? 'diagChMuted' : 'diagChMutedDefault');
+  else if (mi.mode === 'silent') add('warn', 'diagChSilent');
+  // v2.5.98: duraklatma ve kanal susturma
+  {
+    const sup = await alertSuppressedFor(slug);
+    const pz = await getNotifPause();
+    if (sup === 'snooze') {
+      const sn = (await chrome.storage.local.get(SNOOZE_KEY))[SNOOZE_KEY] || {};
+      add('block', 'diagSnoozed', [String(sn[slug] || 0)]);
+    } else if (sup === 'pause' && pz) add('block', 'diagPaused', [String(pz.until)]);
+    else if (pz && pz.favs) add('info', 'diagPausedFavExempt', [String(pz.until)]);
+  }
+  // Sessiz saatler
+  if (await Storage.getDndEnabled()) {
+    const st = await Storage.getDndStart(), en = await Storage.getDndEnd();
+    const muteN = await Storage.getDndMuteNotif();
+    if (await Storage.isDndActive()) { if (muteN) add('block', 'diagDndNow', [st, en]); else add('info', 'diagDndSchedule', [st, en]); }
+    else if (muteN) add('info', 'diagDndSchedule', [st, en]);
+  }
+  // Kanal filtresi
+  const pref = await Storage.getChannelAlertPref(slug);
+  const cats = pref.cats || [], words = pref.words || [];
+  if (cats.length || words.length) {
+    const desc = [cats.length ? cats.join(', ') : '', words.length ? words.map(w => '"' + w + '"').join(', ') : ''].filter(Boolean).join(' · ');
+    if (ch && ch.isLive) {
+      const f = matchChannelFilter(pref, ch.categoryName, ch.sessionTitle);
+      if (!f.pass) add('block', 'diagFilterBlocksNow', [desc]);
+      else add('info', 'diagFilterSet', [desc]);
+    } else add('info', 'diagFilterSet', [desc]);
+  }
+  // Anlık bağlantı: kanal kimliği biliniyor mu ve bağlantı açık mı
+  let rtOk = null;
+  try {
+    let st = null;
+    if (chrome.offscreen) {
+      if (await chrome.offscreen.hasDocument()) st = (await chrome.runtime.sendMessage({ target: 'offscreen', type: 'LIVE_GET_STATE' }))?.state || null;
+    } else if (typeof Pusher !== 'undefined' && Pusher.getState) st = Pusher.getState();
+    // Bağlı değil ama izlenecek kanal da yoksa (henüz kurulmamış) "kopuk" sayma
+    if (st) rtOk = st.connected ? true : ((st.trackedCount || st.subscribedCount || st.pendingCount) ? false : null);
+  } catch (e) {}
+  let idKnown = false;
+  try { idKnown = (await Storage.getChannelIdCache())[slug] > 0; } catch (e) {}
+  if (rtOk === false) add('warn', 'diagRealtimeOff');
+  else if (!idKnown) add('warn', 'diagNoRealtimeChannel');
+  // Kick istek yavaşlatması
+  try {
+    await KickAPI._loadBackoffFromStorage();
+    if (Date.now() < KickAPI._lastBackoffUntil) add('warn', 'diagBackoff', [String(Math.ceil((KickAPI._lastBackoffUntil - Date.now()) / 60000))]);
+  } catch (e) {}
+  // Son yayın kaydı (geçmiş)
+  try {
+    const hist = (await Storage.getNotificationHistory()) || [];
+    const last = hist.find(h => h && h.channelSlug === slug && !h.kind);
+    if (!last) add('info', 'diagLastNone');
+    else {
+      const at = new Date(last.timestamp).getTime();
+      if (last.filtered) add('info', 'diagLastFiltered', [String(at), last.filtered === 'category' ? 'category' : 'keyword']);
+      else add('info', 'diagLastSeen', [String(at)]);
+    }
+  } catch (e) {}
+  const blocked = items.some(i => i.level === 'block');
+  return { success: true, slug, blocked, live: !!(ch && ch.isLive), items };
 }
 
 // ─── v2.5.50: Kanal bazlı kategori / anahtar kelime filtresi ───
@@ -2297,7 +2709,7 @@ async function checkChannelMetaChanges(channels, notifiedLives, ctx) {
       ? (Utils.i18n('notifCategoryChanged', [ch.userUsername]) || `${ch.userUsername} switched category`)
       : (Utils.i18n('notifTitleChanged', [ch.userUsername]) || `${ch.userUsername} changed the stream title`);
     const message = catChanged ? `${cur.nc} → ${cur.c}` : cur.t;
-    await sendChannelEventNotification(ch, title, message, notifiedLives);
+    await sendChannelEventNotification(ch, title, message, notifiedLives, null, 'change');
     cur.n = now;
     // Bildirilen değerler kullanıcının artık bildiği değerler olur
     // (kategori bildirimi başlığı da kapsar; eskisi gibi ayrıca başlık bildirimi gitmez)
@@ -2393,14 +2805,14 @@ async function processStreamEndCandidates(channels, nowLive, notifiedLives, ctx)
       ? (Utils.i18n('notifStreamEndedLength', [lengthText]) || `Streamed for ${lengthText}`) + (c.title ? ` · ${c.title}` : '')
       : (c.title || c.category || 'Kick.com');
     await sendChannelEventNotification({ ...ch, channelSlug: slug, userUsername: name, profilePic: ch.profilePic || c.profilePic || '' },
-      title, message, notifiedLives);
+      title, message, notifiedLives, null, 'end');
     KLog.info('END-20', `${slug} → yayın bitti bildirimi gönderildi (${lengthText || 'süre bilinmiyor'})`);
   }
   if (changed) await chrome.storage.local.set({ [END_PENDING_KEY]: store });
 }
 
 // ─── v2.5.55: İzleme süresi ───
-// _watchTime = { days: { 'YYYY-MM-DD': { slug: saniye } } } — sadece bu cihaz.
+// _watchTime = { days: { 'YYYY-MM-DD': { slug: saniye } } } - sadece bu cihaz.
 // Aynı kanal iki sekmede oynuyorsa çift sayılmasın diye kanal başına 20 sn
 // içinde gelen ikinci tik yok sayılır. 35 günden eski günler silinir.
 const WATCH_KEY = '_watchTime';
@@ -2503,10 +2915,259 @@ async function processRaidEvent(d) {
   let message = Utils.i18n('notifRaidViewers', [viewers]) || `with ${viewers} viewers`;
   if (d.message) message += ` · ${String(d.message).slice(0, 120)}`;
   const state = await getPersistedState();
-  await sendChannelEventNotification(ch, title, message, state.notifiedLives);
+  await sendChannelEventNotification(ch, title, message, state.notifiedLives, null, 'raid');
   await setPersistedNotifiedLives(state.notifiedLives);
   KLog.info('RAID-10', `${slug} ← ${raider} raid (${viewers} izleyici) bildirimi gönderildi`);
 }
+
+// ─── v2.5.103: arka plan sohbet radarı ───
+// Seçilen en fazla 5 kanalın sohbeti (kanal canlıyken, Kick sekmesi kapalı olsa
+// da) BotTracker bağlantısından okunur. Kullanıcı adın (Etiket bildirimi alanı)
+// ya da radar kelimelerinden biri geçince bildirim gelir. O kanalın sekmesi
+// açıksa radar susar (sekmedeki sohbet entegrasyonu zaten bildiriyor).
+const RADAR_THROTTLE_MS = 60 * 1000;
+const _radarLast = new Map();
+async function getChatRadarConfig() {
+  try {
+    if (!(await Storage.getChatIntegrationEnabled())) return null;
+    const s = await Storage.getChatSettings();
+    if (!s.radarEnabled) return null;
+    const slugs = (s.radarChannels || []).map(x => String(x).trim().toLowerCase()).filter(x => /^[a-z0-9_-]{1,64}$/.test(x)).slice(0, 5);
+    const words = (s.radarWords || []).map(x => String(x).trim()).filter(Boolean).slice(0, 50);
+    const me = String(s.tagUsername || '').trim().replace(/^@/, '');
+    if (!slugs.length || (!me && !words.length)) return null;
+    return { slugs, words, me };
+  } catch (e) { return null; }
+}
+async function radarChannelTabOpen(slug) {
+  try {
+    const tabs = await chrome.tabs.query({ url: ['https://kick.com/*', 'https://www.kick.com/*'] });
+    return tabs.some(t => kaSlugFromUrl(t.url || t.pendingUrl || '') === slug);
+  } catch (e) { return false; }
+}
+async function handleRadarHit(d) {
+  const slug = String(d && d.slug || '').toLowerCase();
+  const kind = d && d.kind;
+  if (!slug || !['mention', 'reply', 'keyword'].includes(kind)) return;
+  const cfg = await getChatRadarConfig();
+  if (!cfg || !cfg.slugs.includes(slug)) { KLog.debug('RDR-02', `${slug} → radar kapalı ya da kanal listede değil`); return; }
+  if (await radarChannelTabOpen(slug)) { KLog.debug('RDR-03', `${slug} → kanal sekmesi açık, radar bildirimi atlandı`); return; }
+  const sup = await alertSuppressedFor(slug);
+  if (sup) { KLog.debug('PAU-14', `${slug} → radar bildirimi atlandı (${sup})`); return; }
+  const dndActive = await Storage.isDndActive();
+  const dndMuteNotif = dndActive && await Storage.getDndMuteNotif();
+  const dndMuteSound = dndActive && await Storage.getDndMuteSound();
+  if (dndMuteNotif && dndMuteSound) { KLog.debug('RDR-04', `${slug} → rahatsız etme, radar bildirimi atlandı`); return; }
+  const tkey = slug + ':' + (kind === 'keyword' ? 'kw' : 'me');
+  const now = Date.now();
+  if (now - (_radarLast.get(tkey) || 0) < RADAR_THROTTLE_MS) { KLog.debug('RDR-05', `${slug} → radar 1 dk sınırı (${kind})`); return; }
+  _radarLast.set(tkey, now);
+
+  await Utils.ensureI18n();
+  const ch = (cachedChannels || []).find(c => String(c.channelSlug).toLowerCase() === slug) || { channelSlug: slug, userUsername: slug };
+  const chName = ch.userUsername || slug;
+  const from = String(d.from || '').slice(0, 64) || 'Someone';
+  const msgText = String(d.message || '').slice(0, 200);
+  let title;
+  if (kind === 'reply') title = Utils.i18n('chatReplyNotifTitle', [from]) || `${from} replied to you`;
+  else if (kind === 'mention') title = Utils.i18n('chatTagNotifTitle', [from]) || `@${from} mentioned you`;
+  else title = Utils.i18n('radarKeywordNotifTitle', [String(d.word || '').slice(0, 40), chName]) || `"${d.word}" in ${chName}'s chat`;
+  const body = (kind === 'keyword' ? `${from}: ` : `[${chName}] `) + msgText;
+
+  const chatS = await Storage.getChatSettings();
+  const showPopup = chatS?.showPopupNotification !== false && !dndMuteNotif;
+  const soundEnabled = chatS?.mentionSoundEnabled !== false && !dndMuteSound;
+  const soundMode = await Storage.getSoundMode();
+  const id = `kickalert-radar-${now}`;
+  if (showPopup) {
+    const opts = { type: 'basic', iconUrl: chrome.runtime.getURL('icons/icon128.png'), title, message: body.substring(0, 200) };
+    if (!IS_FIREFOX) {
+      opts.silent = !soundEnabled || soundMode === 'extension';
+      opts.buttons = [{ title: Utils.i18n('notifButtonOpen') || 'Open' }];
+    }
+    chrome.notifications.create(id, opts);
+    const state = await getPersistedState();
+    state.notifiedLives[id] = { url: `https://kick.com/${slug}`, slug, isTag: true };
+    await setPersistedNotifiedLives(state.notifiedLives);
+  }
+  // Sekme kapalı olduğu için "akıllı mod"da da izlenmiyor sayılır: ses çalar
+  if (soundEnabled) playSound('CHAT_MENTION');
+  KLog.info('RDR-10', `${slug} → radar bildirimi (${kind}${kind === 'keyword' ? ': ' + d.word : ''}, ${from})`);
+}
+try { if (typeof BotTracker !== 'undefined' && BotTracker) BotTracker.onRadar = (d) => { handleRadarHit(d).catch(() => {}); }; } catch (e) {}
+// Radar ayarı değişince hemen uygula (bir sonraki kontrolü beklemeden)
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== 'local' || !(changes.chatSettings || changes.chatIntegrationEnabled)) return;
+  const o = changes.chatSettings && changes.chatSettings.oldValue || {}, n = changes.chatSettings && changes.chatSettings.newValue || {};
+  const radarKeys = ['radarEnabled', 'radarChannels', 'radarWords', 'tagUsername'];
+  if (changes.chatSettings && !changes.chatIntegrationEnabled && !radarKeys.some(k => JSON.stringify(o[k]) !== JSON.stringify(n[k]))) return;
+  clearTimeout(handleRadarHit._t);
+  handleRadarHit._t = setTimeout(() => {
+    if (cachedChannels && cachedChannels.length) syncBotTracker(cachedChannels).catch(() => {});
+    else getChatRadarConfig().then(c => BotTrackerHost.setRadar(c)).catch(() => {});
+  }, 800);
+});
+
+// ─── v2.5.100: raid / yayın taşıma yönlendirme koruması ───
+// KickAlert'in otomatik açtığı sekmeler takip edilir. Takip edilen kanal yayını
+// başka kanala taşıdığında (ChatMoveToSupportedChannelEvent, handleHostMoveEvent)
+// Kick sekmeyi hedef kanala götürür. Ayar açıksa sekme kapatılır. Sadece olayla
+// doğrulanan yönlendirmede kapatılır; kullanıcı sekmede başka kanala geçerse
+// sekmeye dokunulmaz ve takip bırakılır. Elle açılan sekmeler hiç takip edilmez.
+const AUTO_TABS_KEY = '_autoTabs';
+const RAID_MOVES_KEY = '_raidMoves';
+const RAID_GUARD_WINDOW_MS = 5 * 60 * 1000;
+const RAID_GUARD_RECHECK_MS = 20 * 1000;
+function kaSlugFromUrl(u) {
+  try {
+    const x = new URL(u);
+    if (x.hostname !== 'kick.com' && x.hostname !== 'www.kick.com') return '';
+    const seg = x.pathname.replace(/^\/+/, '').split('/')[0].toLowerCase();
+    return /^[a-z0-9_-]{1,64}$/.test(seg) ? seg : '';
+  } catch (e) { return ''; }
+}
+async function registerAutoTab(tabId, slug) {
+  if (typeof tabId !== 'number' || !slug) return;
+  try {
+    const now = Date.now();
+    const m = (await chrome.storage.local.get(AUTO_TABS_KEY))[AUTO_TABS_KEY] || {};
+    for (const k of Object.keys(m)) if (now - (m[k].at || 0) > 12 * 3600e3) delete m[k];
+    m[tabId] = { slug: String(slug).toLowerCase(), at: now };
+    await chrome.storage.local.set({ [AUTO_TABS_KEY]: m });
+    KLog.debug('RGD-01', `${slug} → otomatik sekme takibe alındı (tabId=${tabId})`);
+  } catch (e) {}
+}
+async function forgetAutoTab(tabId) {
+  try {
+    const m = (await chrome.storage.local.get(AUTO_TABS_KEY))[AUTO_TABS_KEY] || {};
+    if (!m[tabId]) return;
+    delete m[tabId];
+    await chrome.storage.local.set({ [AUTO_TABS_KEY]: m });
+  } catch (e) {}
+}
+async function recordRaidMove(slug, target) {
+  try {
+    const now = Date.now();
+    const m = (await chrome.storage.local.get(RAID_MOVES_KEY))[RAID_MOVES_KEY] || {};
+    for (const k of Object.keys(m)) if (now - (m[k].at || 0) > RAID_GUARD_WINDOW_MS) delete m[k];
+    m[String(slug).toLowerCase()] = { target: String(target).toLowerCase(), at: now };
+    await chrome.storage.local.set({ [RAID_MOVES_KEY]: m });
+  } catch (e) {}
+  // Olay sekmenin yönlenmesinden sonra geldiyse: zaten hedefte duran takipli sekmeleri kontrol et
+  try { await raidGuardSweep(); } catch (e) {}
+}
+// Takipli sekme, kaynağı yakın zamanda taşınan bir kanalın hedefinde mi?
+async function raidGuardDecide(tabId, url) {
+  const m = (await chrome.storage.local.get(AUTO_TABS_KEY))[AUTO_TABS_KEY] || {};
+  const rec = m[tabId];
+  if (!rec) return 'untracked';
+  const now = kaSlugFromUrl(url);
+  if (!now || now === rec.slug) return 'same';
+  const moves = (await chrome.storage.local.get(RAID_MOVES_KEY))[RAID_MOVES_KEY] || {};
+  const mv = moves[rec.slug];
+  if (mv && mv.target === now && Date.now() - mv.at <= RAID_GUARD_WINDOW_MS) return 'raid';
+  return 'other';
+}
+async function raidGuardClose(tabId, why) {
+  const m = (await chrome.storage.local.get(AUTO_TABS_KEY))[AUTO_TABS_KEY] || {};
+  const rec = m[tabId];
+  await forgetAutoTab(tabId);
+  try { await chrome.tabs.remove(tabId); KLog.info('RGD-10', `${rec ? rec.slug : '?'} → yayın taşındı, otomatik açılan sekme kapatıldı (${why}, tabId=${tabId})`); }
+  catch (e) { KLog.debug('RGD-11', `sekme kapatılamadı (tabId=${tabId}): ${e.message}`); }
+}
+async function raidGuardSweep() {
+  if (!(await Storage.getRaidGuardClose())) return;
+  const m = (await chrome.storage.local.get(AUTO_TABS_KEY))[AUTO_TABS_KEY] || {};
+  for (const id of Object.keys(m)) {
+    const tabId = Number(id);
+    let tab = null;
+    try { tab = await chrome.tabs.get(tabId); } catch (e) { await forgetAutoTab(tabId); continue; }
+    if (tab && tab.url && (await raidGuardDecide(tabId, tab.url)) === 'raid') await raidGuardClose(tabId, 'sweep');
+  }
+}
+const _raidGuardTimers = new Map();
+chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
+  if (!changeInfo || !changeInfo.url) return;
+  (async () => {
+    const verdict = await raidGuardDecide(tabId, changeInfo.url);
+    if (verdict === 'untracked' || verdict === 'same') return;
+    if (!(await Storage.getRaidGuardClose())) {
+      // Koruma kapalı: başka kanala geçen sekmeyi takipten çıkar (eski davranış aynen)
+      await forgetAutoTab(tabId);
+      return;
+    }
+    if (verdict === 'raid') { await raidGuardClose(tabId, 'url'); return; }
+    // Henüz olay gelmemiş olabilir: kısa süre sonra bir kez daha bak, olay yoksa sekme kullanıcının
+    clearTimeout(_raidGuardTimers.get(tabId));
+    _raidGuardTimers.set(tabId, setTimeout(async () => {
+      _raidGuardTimers.delete(tabId);
+      try {
+        const tab = await chrome.tabs.get(tabId);
+        const v2 = await raidGuardDecide(tabId, tab.url || changeInfo.url);
+        if (v2 === 'raid') await raidGuardClose(tabId, 'recheck');
+        else if (v2 === 'other') { await forgetAutoTab(tabId); KLog.debug('RGD-02', `tabId=${tabId} başka kanala geçti, taşıma olayı yok: sekmeye dokunulmadı`); }
+      } catch (e) { await forgetAutoTab(tabId); }
+    }, RAID_GUARD_RECHECK_MS));
+  })().catch(() => {});
+});
+chrome.tabs.onRemoved.addListener((tabId) => { clearTimeout(_raidGuardTimers.get(tabId)); _raidGuardTimers.delete(tabId); forgetAutoTab(tabId); });
+
+// ─── v2.5.92 (b038): yayın başka kanala taşındı ───
+// Kick "Join host": yayıncı izleyicilerini başka bir kanala yönlendirince
+// channel.{id} üzerinde ChatMoveToSupportedChannelEvent gelir. Kanal bazlı
+// "Yayın başka kanala taşınınca" tercihi (host) açıksa bildirilir.
+const HOST_SEEN_KEY = '_hostSeen';
+async function handleHostMoveEvent(d) {
+  const slug = d && d.slug;
+  const hosted = d && d.hosted;
+  const target = hosted && typeof hosted.slug === 'string' ? hosted.slug : '';
+  if (!slug || !target || target === slug || !/^[A-Za-z0-9_-]{1,64}$/.test(target)) return;
+  // v2.5.100: bildirim tercihinden bağımsız, yönlendirme koruması için kaydet
+  recordRaidMove(slug, target).catch(() => {});
+  const pref = await Storage.getChannelAlertPref(slug);
+  if (!pref.host) return;
+  const now = Date.now();
+  const seen = (await chrome.storage.local.get(HOST_SEEN_KEY))[HOST_SEEN_KEY] || {};
+  const key = slug + '>' + target;
+  if (now - (seen[key] || 0) < RAID_DEDUP_MS) { KLog.debug('HST-03', `${slug} → ${target} zaten bildirildi (10 dk)`); return; }
+  seen[key] = now;
+  for (const k of Object.keys(seen)) if (now - seen[k] > RAID_DEDUP_MS) delete seen[k];
+  await chrome.storage.local.set({ [HOST_SEEN_KEY]: seen });
+
+  const ch = (cachedChannels || []).find(c => c.channelSlug === slug) || { channelSlug: slug, userUsername: slug, profilePic: '' };
+  const name = ch.userUsername || slug;
+  const targetName = String(hosted.username || target).slice(0, 64);
+  Storage.addNotificationHistory({
+    kind: 'host',
+    username: name,
+    channelSlug: slug,
+    profilePic: ch.profilePic || '',
+    title: ch.sessionTitle || '-',
+    category: ch.categoryName || '-',
+    timestamp: new Date().toISOString(),
+    target, targetName,
+  });
+
+  const showNotif = await Storage.getShowNotification();
+  const dndActive = await Storage.isDndActive();
+  const dndMuteNotif = dndActive && await Storage.getDndMuteNotif();
+  const soundInfo = await Storage.getChannelSoundModeInfo(slug);
+  if (!showNotif || dndMuteNotif || (soundInfo.mode === 'muted' && soundInfo.explicit)) return;
+  await Utils.ensureI18n();
+  const title = Utils.i18n('notifHostTitle', [name, targetName]) || `${name} moved the stream to ${targetName}`;
+  const vc = Number(hosted.viewers_count);
+  const parts = [];
+  if (hosted.category && typeof hosted.category === 'object' && hosted.category.name) parts.push(String(hosted.category.name).slice(0, 60));
+  else if (typeof hosted.category === 'string' && hosted.category) parts.push(hosted.category.slice(0, 60));
+  if (Number.isFinite(vc) && vc >= 0) parts.push(Utils.i18n('notifRaidViewers', [String(vc)]) || `with ${vc} viewers`);
+  const state = await getPersistedState();
+  // Bildirime tıklayınca hedef kanal açılır
+  const targetCh = { channelSlug: target, userUsername: targetName, profilePic: (typeof hosted.profile_pic === 'string' && /^https:\/\/[a-z0-9.-]*kick\.com\//.test(hosted.profile_pic)) ? hosted.profile_pic : (ch.profilePic || '') };
+  await sendChannelEventNotification(targetCh, title, parts.join(' · '), state.notifiedLives, slug, 'host');
+  await setPersistedNotifiedLives(state.notifiedLives);
+  KLog.info('HST-10', `${slug} → ${target} yayın taşıma bildirimi gönderildi`);
+}
+try { if (typeof Pusher !== 'undefined' && Pusher) Pusher.onHostMove = (d) => { handleHostMoveEvent(d).catch(e => KLog.warn('HST-99', 'Yayın taşıma işleme hatası', e)); }; } catch (e) {}
 
 // Firefox: BotTracker bu bağlamda yüklü, raid callback'i doğrudan bağla
 try { if (typeof BotTracker !== 'undefined' && BotTracker) BotTracker.onRaid = (d) => { handleRaidEvent(d).catch(() => {}); }; } catch (e) {}
@@ -2514,11 +3175,14 @@ try { if (typeof BotTracker !== 'undefined' && BotTracker) BotTracker.onRaid = (
 // Canlı yayın bildirimi dışındaki kanal olayları (değişim, yayın bitti, raid)
 // için ortak bildirim: tek "Aç" butonu; tıklanınca kanal açılır.
 let _evSeq = 0;
-async function sendChannelEventNotification(ch, title, message, notifiedLives) {
+async function sendChannelEventNotification(ch, title, message, notifiedLives, soundSlug, evType) {
+  // v2.5.98: duraklatma / kanal susturma kanal olaylarını da kapsar
+  const sup = await alertSuppressedFor(soundSlug || ch.channelSlug);
+  if (sup) { KLog.info('PAU-12', `${soundSlug || ch.channelSlug} → kanal olayı bildirimi atlandı (${sup})`); return; }
   // son parça zaman damgası olmalı (cleanupNotifiedLives); aynı milisaniyede
   // iki olay çakışmasın diye küçük bir sayaç ekleniyor.
   const id = `kickalert-ev-${ch.channelSlug}-${Date.now() + (_evSeq++ % 1000)}`;
-  const snd = await resolveEventSound(ch.channelSlug);
+  const snd = await resolveEventSound(soundSlug || ch.channelSlug, evType);
   const notifOptions = {
     type: 'basic',
     iconUrl: await getAvatarDataUrl(ch),
@@ -2543,11 +3207,14 @@ async function sendChannelEventNotification(ch, title, message, notifiedLives) {
 // silent (hiç ses yok). Ana ses modundan (Eklenti/Windows) bağımsızdır.
 // Sessiz saatlerde "sesleri sustur" açıksa veya kanalın ses tercihi "sessiz"
 // ise hiçbir ses çalınmaz ve bildirim sessiz istenir.
-const EVENT_SOUND_TYPES = { soft: 'EVENT_SOFT', chime: 'EVENT_CHIME', tick: 'EVENT_TICK' };
-async function resolveEventSound(slug) {
+// v2.5.107: ses listesi storage.js'teki EVENT_SOUND_CHOICES'tan (dosya: sounds/event_<ad>.mp3)
+const EVENT_SOUND_TYPES = Object.fromEntries(EVENT_SOUND_CHOICES.map(c => [c, 'EVENT_' + c.toUpperCase()]));
+async function resolveEventSound(slug, evType) {
   const none = { system: false, type: null };
   try {
-    const choice = await Storage.getEventSound();
+    let choice = await Storage.getEventSound();
+    // v2.5.99: olay türüne özel ses seçildiyse o
+    if (evType) { const per = (await Storage.getEventSoundByType())[evType]; if (per && per !== 'default') choice = per; }
     if (choice === 'silent') return none;
     if (slug && (await Storage.getChannelSoundMode(slug)) === 'silent') return none;
     if ((await Storage.isDndActive()) && (await Storage.getDndMuteSound())) return none;
@@ -2569,7 +3236,8 @@ async function playEventSoundFile(choice, volumePct) {
   try {
     if (chrome.offscreen) {
       await startOffscreen();
-      await chrome.runtime.sendMessage({ messageType: 'PLAY_SOUND', options: { sound: type, volume, customSoundFile: null } }).catch(() => {});
+      // v2.5.107: dosya adresi doğrudan verilir (offscreen'in sabit listesine yeni ses eklemek gerekmez)
+      await chrome.runtime.sendMessage({ messageType: 'PLAY_SOUND', options: { sound: type, volume, customSoundFile: chrome.runtime.getURL(`sounds/event_${choice}.mp3`) } }).catch(() => {});
     } else {
       const audio = new Audio(chrome.runtime.getURL(`sounds/event_${choice}.mp3`));
       audio.volume = volume;
@@ -2601,7 +3269,7 @@ async function shouldAutoOpen(ch) {
 // ─── Sound via Offscreen ───
 
 async function startOffscreen() {
-  // Firefox doesn't support offscreen API — skip silently
+  // Firefox doesn't support offscreen API - skip silently
   if (!chrome.offscreen) return;
   try {
     // hasDocument may throw "No SW" if service worker isn't fully ready
@@ -2615,7 +3283,7 @@ async function startOffscreen() {
       justification: 'Notification sounds, service worker keep-alive, and chat tracking via Pusher WebSocket',
     });
   } catch (e) {
-    // "Only a single offscreen document may be created" is harmless — already exists
+    // "Only a single offscreen document may be created" is harmless - already exists
     if (!e.message?.includes('single offscreen')) {
       console.warn('[KickAlert] Offscreen create error:', e.message);
     }
@@ -2628,7 +3296,7 @@ async function playSound(type) {
 
   const volume = (await Storage.getSoundVolume()) / 100;
   // v2.5.22: CHAT_MENTION (Mo'Kick'ten ödünç alınan bahsedilme sesi) sabit
-  // bir dosya kullanıyor — main/sub'ın kullanıcı tarafından yüklenmiş özel
+  // bir dosya kullanıyor - main/sub'ın kullanıcı tarafından yüklenmiş özel
   // dosyasını YANLIŞLIKLA burada kullanmayalım diye customFile aramasını
   // sadece main/sub tipleri için yapıyoruz.
   const customFile = (type === 'CHAT_MENTION')
@@ -2666,6 +3334,12 @@ async function playSound(type) {
 
 // ─── Events ───
 
+// v2.5.111: Değerlendirme isteği için "olumlu an": kullanıcı bir bildirimden
+// yayını açtı. Popup bu zamanı okuyup bandı o an gösterebilir (sadece bu cihaz).
+function markRateGoodMoment() {
+  try { chrome.storage.local.set({ _rateGoodMoment: Date.now() }); } catch (e) {}
+}
+
 chrome.notifications.onClicked.addListener(async (id) => {
   if (!id.startsWith('kickalert-')) return;
   dbg(`[KickAlert] Notification body clicked: ${id}`);
@@ -2674,6 +3348,7 @@ chrome.notifications.onClicked.addListener(async (id) => {
   if (entry) {
     const url = typeof entry === 'string' ? entry : entry.url;
     await chrome.tabs.create({ url });
+    markRateGoodMoment(); // v2.5.111
     chrome.notifications.clear(id);
     delete state.notifiedLives[id];
     await setPersistedNotifiedLives(state.notifiedLives);
@@ -2687,7 +3362,7 @@ chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
   const entry = state.notifiedLives[id];
 
   if (!entry) {
-    console.warn(`[KickAlert] No entry found for ${id} — already cleared?`);
+    console.warn(`[KickAlert] No entry found for ${id} - already cleared?`);
     return;
   }
 
@@ -2696,15 +3371,19 @@ chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
     ? id.replace('kickalert-', '').replace(/-\d+$/, '')
     : entry.slug;
 
-  dbg(`[KickAlert] Button action — slug: "${slug}", index: ${buttonIndex}`);
+  dbg(`[KickAlert] Button action - slug: "${slug}", index: ${buttonIndex}`);
 
   if (buttonIndex === 0) {
     await chrome.tabs.create({ url });
+    markRateGoodMoment(); // v2.5.111
     dbg(`[KickAlert] Opened: ${slug}`);
   } else if (buttonIndex === 1) {
-    await Storage.setChannelSoundMode(slug, 'muted');
-    const verify = await Storage.getChannelSoundMode(slug);
-    dbg(`[KickAlert] Muted: ${slug} — verified mode: ${verify}`);
+    // v2.5.98: "1 saat sustur": sadece bu kanal, 1 saat (önceden kanalı kalıcı
+    // olarak "Bildirim yok" moduna alıyordu; kalıcı seçim kanal zilinde duruyor)
+    if (slug && /^[A-Za-z0-9_-]{1,64}$/.test(slug)) {
+      await snoozeChannel(slug, 60 * 60 * 1000);
+      KLog.info('PAU-20', `${slug} → bildirimden 1 saat susturuldu`);
+    }
   }
 
   chrome.notifications.clear(id);
@@ -2720,7 +3399,7 @@ chrome.notifications.onButtonClicked.addListener(async (id, buttonIndex) => {
 async function injectContentScriptToOpenKickTabs() {
   try {
     if (!chrome.scripting || !chrome.scripting.executeScript) {
-      dbg('[KickAlert] chrome.scripting yok — Plan C otomatik inject atlandı');
+      dbg('[KickAlert] chrome.scripting yok - Plan C otomatik inject atlandı');
       return;
     }
     const tabs = await chrome.tabs.query({ url: 'https://kick.com/*' });
@@ -2737,7 +3416,7 @@ async function injectContentScriptToOpenKickTabs() {
         });
         ok++;
       } catch (e) {
-        // Tab kapanmış, izin yok, veya zaten yüklü — sessiz fail
+        // Tab kapanmış, izin yok, veya zaten yüklü - sessiz fail
         fail++;
       }
     }
@@ -2747,8 +3426,28 @@ async function injectContentScriptToOpenKickTabs() {
   }
 }
 
+// v2.5.108: olay sesleri olaya göre başlasın (Patron onayı 30.10.2026). Yeni
+// kurulumda ve olay sesini hiç değiştirmemiş kullanıcıda (genel ses varsayılan
+// 'soft', türe özel sesler boş ya da hepsi 'Genel ses') bir kez uygulanır.
+// Sesi değiştirmiş kullanıcıya dokunulmaz. Bayrak: _evThemed108.
+const EVENT_SOUND_THEMED = { change: 'change_blip', end: 'end_goodnight', raid: 'raid_fanfare', host: 'host_whoosh' };
+async function applyThemedEventSounds(reason) {
+  try {
+    const cur = await chrome.storage.local.get(['_evThemed108', 'eventSound', 'eventSoundByType']);
+    if (cur._evThemed108) return;
+    const generalUntouched = cur.eventSound === undefined || cur.eventSound === 'soft';
+    const per = cur.eventSoundByType;
+    const perUntouched = !per || Object.values(per).every(v => !v || v === 'default');
+    const upd = { _evThemed108: true };
+    if (generalUntouched && perUntouched) upd.eventSoundByType = Object.assign({}, EVENT_SOUND_THEMED);
+    await chrome.storage.local.set(upd);
+    KLog.info('SND-40', upd.eventSoundByType ? `Olay sesleri olaya göre ayarlandı (${reason})` : `Olay sesleri değiştirilmiş, dokunulmadı (${reason})`);
+  } catch (e) { KLog.warn('SND-41', 'Olay sesi varsayılanı yazılamadı: ' + (e && e.message)); }
+}
+
 chrome.runtime.onInstalled.addListener(async (details) => {
   await chrome.storage.local.set({ _sessionStart: Date.now() });
+  if (details.reason === 'install' || details.reason === 'update') await applyThemedEventSounds(details.reason);
   // v2.5.74: varsayılan kanal bildirim modu. YENİ kurulumda kanallar
   // bildirim göndermez (kullanıcı istediğini açar). GÜNCELLEMEDE mevcut
   // davranış korunur ('sessiz bildirim'); daha önce ayarlanmışsa dokunulmaz.
@@ -2758,6 +3457,7 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       const upd = {};
       if (!cur.defaultChannelMode) upd.defaultChannelMode = 'muted';
       if (!cur._installDefaultMode) upd._installDefaultMode = 'muted';
+      upd._welcomePending = true; // v2.5.86: popup ilk açılışta karşılamayı gösterir
       if (Object.keys(upd).length) await chrome.storage.local.set(upd);
       KLog.info('INST-01', 'Yeni kurulum: kanal bildirimleri varsayılan kapalı');
     } else if (details.reason === 'update') {
@@ -2767,6 +3467,9 @@ chrome.runtime.onInstalled.addListener(async (details) => {
       if (Object.keys(upd).length) await chrome.storage.local.set(upd);
       // v2.5.81: güncellemeden sonra popup kapalı site izni varsa izin sihirbazını gösterir
       await chrome.storage.local.set({ _permWizardPending: true, _permWizardStarted: false });
+      // v2.5.88 (b042): bir kerelik "yerel kazanır" senkronu (bkz. initialize)
+      const lwd = await chrome.storage.local.get('_syncLocalWinsDone88');
+      if (!lwd._syncLocalWinsDone88) await chrome.storage.local.set({ _syncLocalWins: true });
     }
   } catch (e) { console.warn('[KickAlert] varsayılan kanal modu yazılamadı:', e && e.message); }
   // Reset state only on fresh install or extension update, not on every browser start
@@ -2779,12 +3482,12 @@ chrome.runtime.onInstalled.addListener(async (details) => {
 });
 
 chrome.runtime.onStartup.addListener(async () => {
-  // Tarayıcı yeniden açıldı — liveSlugs sıfırla
+  // Tarayıcı yeniden açıldı - liveSlugs sıfırla
   const now = Date.now();
   await chrome.storage.local.remove(['_liveSlugs', '_lastCheckDone', '_initLock']);
   await chrome.storage.local.set({ _sessionStart: now });
 
-  // viewerHistory current dizilerini temizle — anomali sistemi temiz başlasın
+  // viewerHistory current dizilerini temizle - anomali sistemi temiz başlasın
   // PC kapat/aç sonrası eski current verisi kalıyor → sahte anomali gösterimi
   try {
     const vhData = await chrome.storage.local.get('viewerHistory');
@@ -2811,7 +3514,7 @@ chrome.runtime.onStartup.addListener(async () => {
 
 // Fallback: SW woke from alarm. Only run if alarm already exists (was previously set up).
 // Delay 200ms so onInstalled/onStartup can run first if they are also firing.
-// v2.5.45: isFreshSession=false — bu rutin bir uyanış, gerçek bir oturum başlangıcı
+// v2.5.45: isFreshSession=false - bu rutin bir uyanış, gerçek bir oturum başlangıcı
 // değil. pullFromSync() burada ÇALIŞTIRILMAMALI (bkz. initialize() üstündeki not).
 chrome.alarms.get(ALARM_NAME).then(alarm => {
   if (alarm) {
@@ -2823,7 +3526,7 @@ chrome.alarms.get(ALARM_NAME).then(alarm => {
 
 chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   // v2.3.0: Offscreen-targeted mesajları görmezden gel (loop'u önle)
-  // chrome.runtime.sendMessage broadcast'tir — hem background hem offscreen alır.
+  // chrome.runtime.sendMessage broadcast'tir - hem background hem offscreen alır.
   // target: 'offscreen' field'ı bizim convention'ımız, offscreen tarafında filtreliyoruz.
   if (msg.target === 'offscreen') return false;
 
@@ -2866,11 +3569,23 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   }
 
   // ─── v2.3.20: offscreen.html (LiveTracker/BotTracker) log köprüsü ───
-  // offscreen.js/bot_tracker.js ayrı DevTools context'inde çalışıyor —
+  // offscreen.js/bot_tracker.js ayrı DevTools context'inde çalışıyor -
   // önemli olaylarını buraya (KLog'a) iletiyorlar, tek konsol için.
   // v2.5.55: içerik betiğinden izleme süresi tiki
   if (msg.type === 'WATCH_TICK') {
     addWatchTime(msg.slug, msg.sec);
+    return false;
+  }
+
+  // v2.5.92: offscreen LiveTracker'dan yayın taşıma olayı (Chrome)
+  if (msg.type === 'HOST_MOVE_EVENT') {
+    handleHostMoveEvent(msg).catch(e => KLog.warn('HST-99', 'Yayın taşıma işleme hatası', e));
+    return false;
+  }
+
+  // v2.5.103: offscreen BotTracker'dan gelen sohbet radarı eşleşmesi (Chrome)
+  if (msg.type === 'RADAR_HIT') {
+    handleRadarHit(msg).catch(e => KLog.warn('RDR-99', 'Radar işleme hatası', e));
     return false;
   }
 
@@ -2901,7 +3616,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   // ─── v2.3.1 Plan F (BUG#9): Content script'ten channel_id geldi ───
   // Kullanıcı bir kanal sayfası açtığında content script o kanalın channel_id'sini
   // SAYFA context'inde (cf_clearance korumalı, 403 riski YOK) çekip gönderir.
-  // SW olarak kalıcı cache'leyip Pusher'a subscribe ediyoruz — sıfır SW-API baskısı.
+  // SW olarak kalıcı cache'leyip Pusher'a subscribe ediyoruz - sıfır SW-API baskısı.
   if (msg.type === 'CHANNEL_ID_HARVESTED') {
     (async () => {
       try {
@@ -2945,14 +3660,14 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
 
   if (msg.type === 'GET_CHANNELS') {
     // v2.3.0 DEBUG: popup boş bug'ını teşhis için log
-    dbg(`[KickAlert] GET_CHANNELS received — RAM cache size: ${cachedChannels.length}`);
+    dbg(`[KickAlert] GET_CHANNELS received - RAM cache size: ${cachedChannels.length}`);
     if (cachedChannels.length > 0) {
       const liveInRam = cachedChannels.filter(c => c.isLive).length;
       dbg(`[KickAlert] Responding from RAM: ${cachedChannels.length} total, ${liveInRam} live`);
       respond({ success: true, channels: cachedChannels });
       return false;
     }
-    // RAM cache empty (SW slept) — try storage cache first, then fetch fresh
+    // RAM cache empty (SW slept) - try storage cache first, then fetch fresh
     chrome.storage.local.get(['_cachedChannels']).then(async (result) => {
       const stored = result._cachedChannels;
       dbg(`[KickAlert] RAM empty, storage cache: ${stored?.length || 0} channels`);
@@ -3013,7 +3728,13 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   // v2.3.1: Diagnostic Panel Message Handlers
   // ═══════════════════════════════════════════════════════════════════════════
 
-  // Backoff durumu — kalan süre, son backoff bilgisi
+  // Backoff durumu - kalan süre, son backoff bilgisi
+  // v2.5.97: "Bildirim neden gelmedi?" kanal teşhisi
+  if (msg.type === 'DIAG_CHANNEL_NOTIF') {
+    diagChannelNotif(String(msg.slug || '')).then(respond).catch(e => respond({ success: false, error: e.message }));
+    return true;
+  }
+
   if (msg.type === 'GET_BACKOFF_STATUS') {
     (async () => {
       try {
@@ -3036,13 +3757,13 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // Tek API çağrısı — anlık 200/403 testi
+  // Tek API çağrısı - anlık 200/403 testi
   if (msg.type === 'RUN_API_TEST') {
     (async () => {
       try {
         const cookies = await chrome.cookies.getAll({ domain: 'kick.com', name: 'session_token' });
         if (!cookies[0]) {
-          respond({ success: false, error: 'session_token cookie yok — Kick.com\'a giriş yap' });
+          respond({ success: false, error: 'session_token cookie yok - Kick.com\'a giriş yap' });
           return;
         }
         const token = decodeURIComponent(cookies[0].value);
@@ -3072,7 +3793,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // Rate test — N istek arka arkaya, gecikme ile
+  // Rate test - N istek arka arkaya, gecikme ile
   if (msg.type === 'RUN_RATE_TEST') {
     const count = Math.min(Math.max(parseInt(msg.count) || 5, 1), 10);
     const delayMs = Math.max(parseInt(msg.delayMs) || 5000, 1000);
@@ -3175,7 +3896,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // İstatistikler — alarm sayısı, son alarm, vb.
+  // İstatistikler - alarm sayısı, son alarm, vb.
   if (msg.type === 'GET_DIAG_STATS') {
     (async () => {
       try {
@@ -3203,7 +3924,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // Force re-fetch — backoff atla, hemen API çağır
+  // Force re-fetch - backoff atla, hemen API çağır
   if (msg.type === 'FORCE_RECHECK') {
     (async () => {
       try {
@@ -3217,7 +3938,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // v2.3.1 (Plan B/M4): Son 5 dk API istatistiği — test paneli "Son 5dk" panosu
+  // v2.3.1 (Plan B/M4): Son 5 dk API istatistiği - test paneli "Son 5dk" panosu
   if (msg.type === 'GET_RECENT_API_STATS') {
     (async () => {
       try {
@@ -3242,7 +3963,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // Plan C — sadece proxy durumu sorgusu (light-weight, frequent polling için)
+  // Plan C - sadece proxy durumu sorgusu (light-weight, frequent polling için)
   if (msg.type === 'GET_PROXY_STATUS') {
     (async () => {
       try {
@@ -3256,7 +3977,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // Anomaly listesi — popup'ın anomaly check'lerinin son halini ver
+  // Anomaly listesi - popup'ın anomaly check'lerinin son halini ver
   if (msg.type === 'GET_ANOMALY_TABLE') {
     (async () => {
       try {
@@ -3303,7 +4024,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // v2.3.0: Popup chat istatistiklerini ister — Chrome offscreen'e veya Firefox local'e
+  // v2.3.0: Popup chat istatistiklerini ister - Chrome offscreen'e veya Firefox local'e
   if (msg.type === 'GET_BOT_STATS') {
     if (!BotTrackerHost.isSupported) {
       respond({ success: false, error: 'BotTracker not supported on this platform' });
@@ -3325,7 +4046,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // v2.3.0: Diagnostic — bot tracker durumunu öğren
+  // v2.3.0: Diagnostic - bot tracker durumunu öğren
   if (msg.type === 'GET_BOT_TRACKER_STATUS') {
     if (!BotTrackerHost.isSupported) {
       respond({ success: false, available: false, reason: 'BotTracker not supported on this platform' });
@@ -3411,7 +4132,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   if (msg.type === 'GET_PUSHER_STATE') {
     (async () => {
       try {
-        // SW-tarafı Plan F durumu (offscreen/Firefox fark etmez) — test/teşhis için
+        // SW-tarafı Plan F durumu (offscreen/Firefox fark etmez) - test/teşhis için
         const swState = {
           pusherLiveSlugs: [..._pusherLiveSlugs],
           pusherLiveCount: _pusherLiveSlugs.size,
@@ -3482,6 +4203,9 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     (async () => {
       try {
         await Utils.ensureI18n();
+        // v2.5.98: duraklatma / kanal susturma chat bildirimlerini de kapsar
+        const supC = await alertSuppressedFor(msg.channel || null);
+        if (supC) { KLog.debug('PAU-13', `chat bildirimi atlandı (${supC})`); respond({ success: true, suppressed: supC }); return; }
         const isFirefox = IS_FIREFOX;
         const fromUser = msg.fromUser || 'Someone';
         const channel = msg.channel || '';
@@ -3489,7 +4213,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const isReply = msg.isReply === true;
 
         // v2.5.23: Birine yanıt olarak gelen mesajlar, düz @etiketlemeden
-        // ayrı bir başlıkla gösteriliyor — kullanıcı hangisi olduğunu
+        // ayrı bir başlıkla gösteriliyor - kullanıcı hangisi olduğunu
         // hemen anlasın (Mo'Kick'te de bu ayrım var).
         const title = isReply
           ? (Utils.i18n('chatReplyNotifTitle', [fromUser]) || `${fromUser} replied to you`)
@@ -3499,10 +4223,10 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const id = `kickalert-tag-${Date.now()}`;
         // v2.5.25: KRİTİK DÜZELTME. Ana "canlı yayın" bildirimleri
         // soundMode==='extension' iken silent:true kullanıyor (kendi sesimiz
-        // çalacağı için Windows'un kendi bildirim sesi susturuluyor) — ama bu
+        // çalacağı için Windows'un kendi bildirim sesi susturuluyor) - ama bu
         // TAG bildiriminde unutulmuş, hep silent:false kalmıştı.
         // v2.5.27: chatSettings'i (mentionSoundEnabled dahil) SİLENT
-        // hesaplamasından ÖNCE okuyoruz — kullanıcı "sadece popup" seçtiyse,
+        // hesaplamasından ÖNCE okuyoruz - kullanıcı "sadece popup" seçtiyse,
         // sistem bildirimi de sessiz olmalı (yoksa bizim sesimiz çalmasa
         // bile Windows'un kendi varsayılan sesi çalıp "sessiz" isteğini
         // ihlal ederdi).
@@ -3536,14 +4260,14 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           }
           chrome.notifications.create(id, notifOptions);
         }
-        // v2.5.22: Mo'Kick'ten ödünç alınan bahsedilme sesi — popup
+        // v2.5.22: Mo'Kick'ten ödünç alınan bahsedilme sesi - popup
         // gösterilsin ya da gösterilmesin, ses BAĞIMSIZ olarak çalabilir
         // (Mo'Kick'te de bu iki ayar birbirinden ayrı).
         if (soundEnabled && (!smartMode || notWatching)) {
           playSound('CHAT_MENTION');
         }
 
-        // Track for click handling — reuse notifiedLives structure
+        // Track for click handling - reuse notifiedLives structure
         if (channel) {
           const state = await getPersistedState();
           state.notifiedLives[id] = {
@@ -3567,6 +4291,9 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     (async () => {
       try {
         await Utils.ensureI18n();
+        // v2.5.98: duraklatma / kanal susturma chat bildirimlerini de kapsar
+        const supC = await alertSuppressedFor(msg.channel || null);
+        if (supC) { KLog.debug('PAU-13', `chat bildirimi atlandı (${supC})`); respond({ success: true, suppressed: supC }); return; }
         const isFirefox = IS_FIREFOX;
         const fromUser = msg.fromUser || '';
         const channel = msg.channel || '';
@@ -3631,11 +4358,11 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   }
 
   if (msg.type === 'TEST_NOTIFICATION') {
-    // Test notification with buttons — uses first live channel or a fake one
+    // Test notification with buttons - uses first live channel or a fake one
     const testCh = cachedChannels.find(c => c.isLive) || {
       channelSlug: 'test-channel',
       userUsername: 'TestChannel',
-      sessionTitle: 'Test notification — try Open & Mute buttons',
+      sessionTitle: 'Test notification - try Open & Mute buttons',
       profilePic: '',
     };
     const testNotifiedLives = {};
@@ -3650,7 +4377,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   }
 
   // ─── Plan F E2E Test: Sahte StreamerIsLive event ile bildirim akışını test et ───
-  // Gerçek bir kanalı yayın açmış gibi simüle eder — handlePusherLiveEvent'i
+  // Gerçek bir kanalı yayın açmış gibi simüle eder - handlePusherLiveEvent'i
   // doğrudan çağırır. Bildirimin gidip gitmediğini, state'in doğru güncellenip
   // güncellenmediğini adım adım raporlar. Offscreen WebSocket'e DOKUNMAZ; sadece
   // SW-tarafı event işleme mantığını (handlePusherLiveEvent) test eder.
@@ -3667,11 +4394,11 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const wasPusherLive = _pusherLiveSlugs.has(testSlug);
         log('Başlangıç', 'ok', `liveSlugs'ta: ${wasInLive}, _pusherLiveSlugs'ta: ${wasPusherLive}`);
 
-        // 2. baseline guard kontrolü — lastCheckDone yoksa bildirim gitmez
+        // 2. baseline guard kontrolü - lastCheckDone yoksa bildirim gitmez
         if (!before.lastCheckDone) {
-          log('Baseline', 'warn', 'lastCheckDone=false — gerçek bildirim için önce bir check çalışmalı (test yine de akışı dener)');
+          log('Baseline', 'warn', 'lastCheckDone=false - gerçek bildirim için önce bir check çalışmalı (test yine de akışı dener)');
         } else {
-          log('Baseline', 'ok', 'lastCheckDone=true — bildirim akışı aktif');
+          log('Baseline', 'ok', 'lastCheckDone=true - bildirim akışı aktif');
         }
 
         // 3. Sahte StreamerIsLive event'i kur (gerçek event formatı)
@@ -3688,7 +4415,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         log('Event Kur', 'ok', `Sahte StreamerIsLive: ${testSlug} (created_at=şimdi)`);
 
         // 4. handlePusherLiveEvent'i çağır (gerçek akış)
-        const notifyMode = msg.dryRun ? '(dryRun — gerçek bildirim gönderilmeyecek)' : '(gerçek bildirim gönderilecek)';
+        const notifyMode = msg.dryRun ? '(dryRun - gerçek bildirim gönderilmeyecek)' : '(gerçek bildirim gönderilecek)';
         log('Akış', 'ok', `handlePusherLiveEvent çağrılıyor ${notifyMode}`);
 
         if (msg.dryRun) {
@@ -3719,11 +4446,11 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
             log('Sonuç State', nowInLive ? 'ok' : 'error',
                 `liveSlugs'ta: ${nowInLive}, _pusherLiveSlugs'ta: ${nowPusherLive}`);
 
-            // 6. Temizlik — test kanalını state'ten çıkar (gerçek kanalları etkileme)
+            // 6. Temizlik - test kanalını state'ten çıkar (gerçek kanalları etkileme)
             await handlePusherOfflineEvent(testSlug);
             const cleaned = await getPersistedState();
             log('Temizlik', !cleaned.liveSlugs.has(testSlug) ? 'ok' : 'warn',
-                `Test kanalı temizlendi — offline event çalıştı: ${!cleaned.liveSlugs.has(testSlug)}`);
+                `Test kanalı temizlendi - offline event çalıştı: ${!cleaned.liveSlugs.has(testSlug)}`);
           } finally {
             // Geçici eklenen test kanalını cachedChannels'tan KESİNLİKLE çıkar
             if (_testChInjected) {
@@ -3736,7 +4463,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
 
         const allOk = results.every(r => r.status !== 'error');
         log('ÖZET', allOk ? 'ok' : 'error',
-            allOk ? 'Plan F bildirim akışı çalışıyor ✓' : 'Akışta sorun var — adımları incele');
+            allOk ? 'Plan F bildirim akışı çalışıyor ✓' : 'Akışta sorun var - adımları incele');
         respond({ success: allOk, results });
       } catch (e) {
         log('HATA', 'error', e.message);
@@ -3775,7 +4502,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           if (!targetCh) {
             log('Channel Lookup', 'error', `"${targetSlug}" not in followed list`);
           } else {
-            log('Channel Lookup', 'ok', `${targetCh.userUsername} — isLive: ${targetCh.isLive}, startedAt: ${targetCh.startedAt || 'null'}, viewers: ${targetCh.viewerCount}`);
+            log('Channel Lookup', 'ok', `${targetCh.userUsername} - isLive: ${targetCh.isLive}, startedAt: ${targetCh.startedAt || 'null'}, viewers: ${targetCh.viewerCount}`);
           }
         } else {
           log('Channel List', 'ok', liveChannels.map(c => `${c.userUsername}(${c.viewerCount})`).join(', ') || 'No live channels');
@@ -3803,7 +4530,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
               }
             } else {
               // API'den startTime sorgula
-              log('startedAt', 'warn', 'startedAt null — querying API...');
+              log('startedAt', 'warn', 'startedAt null - querying API...');
               const apiTime = await KickAPI.getChannelStartTime(targetCh.channelSlug);
               if (apiTime) {
                 const streamAgeMs = Date.now() - new Date(apiTime).getTime();
@@ -3811,7 +4538,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
                 log('API startTime', ageMin > 10 ? 'warn' : 'ok',
                   `API startTime: ${apiTime} (${ageMin} min) → ${ageMin > 10 ? 'SKIP' : 'NOTIFY'}`);
               } else {
-                log('API startTime', 'ok', 'API startTime null — counted as new stream → NOTIFY');
+                log('API startTime', 'ok', 'API startTime null - counted as new stream → NOTIFY');
               }
             }
 
@@ -3823,23 +4550,23 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
             const dndActive = await Storage.isDndActive();
             const dndMuteNotif = dndActive && await Storage.getDndMuteNotif();
             log('DND', dndActive ? 'warn' : 'ok',
-              dndActive ? `DND ACTIVE — mute notification: ${dndMuteNotif}` : 'DND off');
+              dndActive ? `DND ACTIVE - mute notification: ${dndMuteNotif}` : 'DND off');
 
             // Bildirim ayarı
             const showNotif = await Storage.getShowNotification();
             log('Notification Setting', showNotif ? 'ok' : 'warn',
-              showNotif ? 'Notifications enabled' : 'Notifications DISABLED — will not send');
+              showNotif ? 'Notifications enabled' : 'Notifications DISABLED - will not send');
 
             // Suspend kontrolü
             const suspended = !!(await Storage.getSuspendFromDate());
             log('Suspend', suspended ? 'warn' : 'ok',
-              suspended ? 'Extension suspended — will not notify' : 'Extension active');
+              suspended ? 'Extension suspended - will not notify' : 'Extension active');
 
             // i18n kontrolü
             await Utils.ensureI18n();
             const lang = Utils.getCurrentLang();
             const testTitle = Utils.i18n('notifStartedStreaming', [targetCh.userUsername]);
-            log('i18n', 'ok', `Lang: ${lang} — Notification text: "${testTitle}"`);
+            log('i18n', 'ok', `Lang: ${lang} - Notification text: "${testTitle}"`);
 
             // Auto-launch kontrolü
             const autoOpen = await Storage.getAutoOpenChannels();
@@ -3861,7 +4588,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
 
         respond({ success: true, results });
       } catch (e) {
-        log('General Error', 'error', e.message + ' — ' + e.stack?.split('\n')[1]?.trim());
+        log('General Error', 'error', e.message + ' - ' + e.stack?.split('\n')[1]?.trim());
         respond({ success: false, results });
       }
     })();
@@ -3869,11 +4596,99 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // v2.3.1 — 5 SENARYO HANDLER'I (Senaryo 3 = E2E_TEST yukarıda)
+  // v2.3.1 - 5 SENARYO HANDLER'I (Senaryo 3 = E2E_TEST yukarıda)
   // ═══════════════════════════════════════════════════════════════════════════
 
   // ─── SENARYO 1: SAĞLIK KONTROLÜ ───
   // Bağlantı, auth, hız ve cookie sağlığını ardışık ölçer.
+  // v2.5.93 (b039): Kick uyumluluk kontrolü. Eklentinin dayandığı Kick
+  // yapılarını tek tek yoklar: gerçek zamanlı sağlayıcı pazarlığı, etkin
+  // bağlantı ve olay akışı, web.kick.com herkese açık uçları, kanal yayın
+  // nesnesi (playback_url) ve açık bir kanal sekmesinde sohbet/reklam DOM'u.
+  if (msg.type === 'RUN_SCENARIO_KICK_COMPAT') {
+    (async () => {
+      const results = []; const start = Date.now();
+      const log = (step, status, detail) => results.push({ step, status, detail });
+      const negotiate = async (provs) => {
+        const r = await fetch(KICK_REALTIME_URL, { method: 'POST', headers: { 'content-type': 'application/json', accept: 'application/json' }, credentials: 'omit', cache: 'no-store',
+          body: JSON.stringify({ client: { id: crypto.randomUUID(), type: 'web' }, capabilities: { accepted_providers: provs.map(p => ({ provider: p })) } }) });
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json();
+        return (j && j.data && Array.isArray(j.data.connections)) ? j.data.connections : [];
+      };
+      try {
+        const c1 = await negotiate(['pusher']);
+        const p = c1.find(c => c.provider === 'pusher');
+        const key = p && p.credentials && (p.credentials.app_key || p.credentials.key);
+        log('Kick Pusher sunuyor mu', p ? 'ok' : 'error', p ? `Evet · anahtar ${key || '?'}${key && key !== KAPusherCfg.key ? ` (kullanılan ${KAPusherCfg.key}; bir sonraki yenilemede güncellenir)` : ''}` : `Hayır · sunulan: ${c1.map(c => c.provider).join(', ') || 'yok'}. Centrifugo yedeği gerekir`);
+      } catch (e) { log('Kick Pusher sunuyor mu', 'warn', 'Sorulamadı: ' + e.message); }
+      try {
+        const c2 = await negotiate(['pusher', 'centrifugo']);
+        const cf = c2.find(c => c.provider === 'centrifugo');
+        const url = cf && cf.credentials && cf.credentials.url;
+        log('Centrifugo adresi', url && KA_CF_URL_RE.test(url) ? 'ok' : 'warn', url ? (KA_CF_URL_RE.test(url) ? url : `Beklenmeyen biçim: ${url}`) : 'Kick Centrifugo adresi vermedi');
+      } catch (e) { log('Centrifugo adresi', 'warn', 'Sorulamadı: ' + e.message); }
+      const perm = await rtFallbackPermitted();
+      const st = await chrome.storage.local.get(['_rtHealth', '_rtFallbackNeeded']);
+      log('Etkin bağlantı', 'ok', KAPusherCfg.provider === 'centrifugo' ? `Centrifugo yedeği (${KAPusherCfg.cfUrl})` : `Pusher (${KAPusherCfg.key})`);
+      log('Yedek izni (*.kick.com)', perm ? 'ok' : (st._rtFallbackNeeded ? 'error' : 'ok'), perm ? 'Verilmiş: gerekirse yedeğe kendiliğinden geçilir' : (st._rtFallbackNeeded ? 'Yedek gerekiyor ama izin yok: popup izni istiyor' : 'Verilmemiş (şu an gerekmiyor)'));
+      const h = st._rtHealth;
+      if (h && h.checkedAt) {
+        const lbl = { ok: 'Olaylar geliyor', partial: 'Bazı kanallar sessiz', silent: 'Hiç olay gelmiyor', unknown: 'Ölçülecek kalabalık kanal yok' }[h.state] || h.state;
+        log('Olay akışı (sessizlik bekçisi)', h.state === 'silent' ? 'error' : h.state === 'partial' ? 'warn' : 'ok', `${lbl} · ${h.eligible} kanal ölçüldü${h.silent && h.silent.length ? ' · sessiz: ' + h.silent.join(', ') : ''} · ${Math.round((Date.now() - h.checkedAt) / 1000)} sn önce`);
+      } else log('Olay akışı (sessizlik bekçisi)', 'ok', 'Henüz ölçülmedi (canlı kanal yok ya da yeni başladı)');
+      // web.kick.com uçları ve yayın nesnesi: canlı bir takip edilen kanal üzerinden
+      const live = (cachedChannels || []).filter(c => c.isLive).sort((a, b) => (b.viewerCount || 0) - (a.viewerCount || 0));
+      let idCache = {}; try { idCache = await Storage.getChannelIdCache(); } catch (e) {}
+      const probe = live.find(c => idCache[c.channelSlug] > 0);
+      if (!probe) {
+        log('web.kick.com uçları', 'ok', 'Kimliği bilinen canlı kanal yok; atlandı');
+      } else {
+        const id = idCache[probe.channelSlug];
+        KickAPI._webPublicOffUntil = 0;
+        const s1 = await KickAPI.fetchWebPublic(`https://web.kick.com/api/v1/channels/${id}/chat/settings`);
+        const d1 = s1 && s1.data;
+        const need = ['slow_mode', 'subscribers_only_mode', 'followers_only_mode', 'emotes_only_mode'];
+        const miss = d1 ? need.filter(k => !(k in d1)) : need;
+        log('Sohbet ayarları ucu', d1 && !miss.length ? 'ok' : 'warn', d1 ? (miss.length ? `${probe.channelSlug}: eksik alan ${miss.join(', ')}` : `${probe.channelSlug}: tüm modlar okunuyor`) : `${probe.channelSlug}: yanıt yok`);
+        KickAPI._webPublicOffUntil = 0;
+        const s2 = await KickAPI.fetchWebPublic(`https://web.kick.com/api/v1/channels/${id}/chat/active-chatters`);
+        const n = s2 && s2.data && s2.data.total_count;
+        log('Aktif sohbetçi ucu', typeof n === 'number' ? 'ok' : 'warn', typeof n === 'number' ? `${probe.channelSlug}: ${n} aktif sohbetçi (${probe.viewerCount || 0} izleyici)` : `${probe.channelSlug}: total_count yok`);
+      }
+      if (live.length) {
+        try {
+          const r = await KickAPI.fetchKick(`https://kick.com/api/v2/channels/${live[0].channelSlug}`);
+          const j = await r.json();
+          log('Kanal nesnesi (playback_url, sohbet odası)', j && j.playback_url && j.chatroom && j.chatroom.id ? 'ok' : 'warn', `${live[0].channelSlug}: playback_url ${j && j.playback_url ? 'var' : 'YOK'}, chatroom ${j && j.chatroom && j.chatroom.id ? 'var' : 'YOK'}`);
+        } catch (e) { log('Kanal nesnesi (playback_url, sohbet odası)', 'warn', 'Okunamadı: ' + e.message); }
+      }
+      // Açık bir kanal sekmesinde DOM
+      let tab = null;
+      try { tab = (await chrome.tabs.query({ url: 'https://kick.com/*' })).find(t => t.url && /^https:\/\/kick\.com\/[A-Za-z0-9_-]+\/?(\?.*)?$/.test(t.url)); } catch (e) {}
+      if (!tab) {
+        log('Sohbet ve oynatıcı DOM', 'ok', 'Açık kanal sekmesi yok; bir kanal sayfası açıp tekrar çalıştırın');
+      } else {
+        try {
+          const [res] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, func: () => ({
+            root: !!document.querySelector('#chatroom-messages'),
+            msg: document.querySelectorAll('#chatroom-messages [data-index]').length,
+            user: !!document.querySelector('#chatroom-messages button.font-bold'),
+            chatAttr: !!document.querySelector('[data-chat]'),
+            video: !!document.querySelector('video'),
+          }) });
+          const v = res && res.result || {};
+          const ok = v.root && v.msg > 0 && v.user;
+          log('Sohbet ve oynatıcı DOM', ok ? 'ok' : (v.root ? 'warn' : 'error'), `${tab.url.replace('https://kick.com/', '')}: sohbet kökü ${v.root ? 'var' : 'YOK'}, mesaj ${v.msg || 0}, kullanıcı adı düğmesi ${v.user ? 'var' : 'YOK'}, data-chat ${v.chatAttr ? 'var' : 'yok'}, video ${v.video ? 'var' : 'yok'}`);
+        } catch (e) { log('Sohbet ve oynatıcı DOM', 'warn', 'Sekmede çalıştırılamadı: ' + e.message); }
+      }
+      const bad = results.filter(r => r.status === 'error').length;
+      if (bad) KLog.warn('CMP-01', `Kick uyumluluk kontrolü: ${bad} sorun · ${results.filter(r => r.status === 'error').map(r => r.step).join(', ')}`);
+      respond({ success: true, results, totalMs: Date.now() - start });
+    })().catch(e => respond({ success: false, error: e.message }));
+    return true;
+  }
+
   if (msg.type === 'RUN_SCENARIO_HEALTH') {
     (async () => {
       const results = [];
@@ -3884,13 +4699,13 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         // 1. DNR ruleset aktif mi?
         // v2.3.1 fix: Eskiden ruleset ID'si 'origin_override' veya 'rules' diye sabit
         // arayordu. Manifest'te ID 'ruleset_1' ama yarın değişebilir. En az 1 enabled
-        // ruleset varsa OK kabul et — gerçek dünya kanıtı bu yeterli.
+        // ruleset varsa OK kabul et - gerçek dünya kanıtı bu yeterli.
         try {
           const enabled = await chrome.declarativeNetRequest.getEnabledRulesets();
           if (enabled.length > 0) {
             log('DNR Origin Override', 'ok', `Aktif rulesets: ${enabled.join(', ')}`);
           } else {
-            log('DNR Origin Override', 'error', 'Hiçbir ruleset aktif değil — Cloudflare 403 yağmuru riski');
+            log('DNR Origin Override', 'error', 'Hiçbir ruleset aktif değil - Cloudflare 403 yağmuru riski');
           }
         } catch (e) {
           log('DNR Origin Override', 'warn', `Sorgulanamadı: ${e.message}`);
@@ -3899,7 +4714,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         // 2. Session token mevcut mu?
         const token = await KickAPI.getSessionToken();
         log('Session Token', token ? 'ok' : 'warn',
-          token ? `Token bulundu (${token.length} karakter)` : 'Token YOK — kick.com\'a giriş yapılmalı');
+          token ? `Token bulundu (${token.length} karakter)` : 'Token YOK - kick.com\'a giriş yapılmalı');
 
         // 3. Cookie durumu
         const cookies = await chrome.cookies.getAll({ domain: 'kick.com' });
@@ -3913,14 +4728,14 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         if (KickAPI._loadBackoffFromStorage) await KickAPI._loadBackoffFromStorage();
         const boRemain = Math.max(0, (KickAPI._lastBackoffUntil || 0) - Date.now());
         log('Backoff', boRemain > 0 ? 'warn' : 'ok',
-          boRemain > 0 ? `Aktif — ${Math.round(boRemain/1000)}sn kaldı` : 'Temiz');
+          boRemain > 0 ? `Aktif - ${Math.round(boRemain/1000)}sn kaldı` : 'Temiz');
 
         // 5. Tek API testi (gerçek istek, response time)
         const apiStart = Date.now();
         try {
           // Backoff aktifken normal fetchKick reddeder; geçici bypass için doğrudan fetch yapalım
           if (boRemain > 0) {
-            log('API Test', 'warn', 'Backoff aktif — gerçek istek atılmadı (recovery mekanizması bekleniyor)');
+            log('API Test', 'warn', 'Backoff aktif - gerçek istek atılmadı (recovery mekanizması bekleniyor)');
           } else {
             const resp = await KickAPI.fetchKick(KickAPI.API_URL);
             const data = await resp.json();
@@ -3949,20 +4764,20 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         log('Alarms', alarmOk ? 'ok' : 'error',
           alarm ? `Ana alarm: her ${(alarm.periodInMinutes * 60).toFixed(0)}sn · Refresh alarm: ${refreshAlarm ? 'OK' : 'YOK'}` : 'Ana alarm zamanlanmamış');
 
-        // 8. Plan C — Content Script Proxy hazır mı?
+        // 8. Plan C - Content Script Proxy hazır mı?
         try {
           const proxyAvail = await KickAPI.hasProxyTab();
           const proxyStats = KickAPI.getProxyStats();
           if (!proxyAvail) {
             log('Plan C Proxy', 'warn',
-              `Açık kick.com sekmesi yok — istekler SW üzerinden gidiyor (CF baskısına açık)`);
+              `Açık kick.com sekmesi yok - istekler SW üzerinden gidiyor (CF baskısına açık)`);
           } else {
             // Tab var ama fail oranı yüksek mi? (eski content script senaryosu)
             const totalAttempts = proxyStats.hits + proxyStats.fails;
             const failRate = totalAttempts > 0 ? Math.round((proxyStats.fails / totalAttempts) * 100) : 0;
             if (totalAttempts >= 5 && failRate >= 30) {
               log('Plan C Proxy', 'warn',
-                `Tab var ama %${failRate} fail (${proxyStats.fails}/${totalAttempts}) — kick.com sekmesini Ctrl+R ile yenile (eski content script)`);
+                `Tab var ama %${failRate} fail (${proxyStats.fails}/${totalAttempts}) - kick.com sekmesini Ctrl+R ile yenile (eski content script)`);
             } else {
               log('Plan C Proxy', 'ok',
                 `Aktif kick.com sekmesi · Hits: ${proxyStats.hits} · Misses: ${proxyStats.misses} · Fails: ${proxyStats.fails}` +
@@ -3973,7 +4788,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           log('Plan C Proxy', 'warn', `Sorgulanamadı: ${e.message}`);
         }
 
-        // 9. Plan B — Savunma katmanları (jitter + dinamik yavaşlatma + peak saat)
+        // 9. Plan B - Savunma katmanları (jitter + dinamik yavaşlatma + peak saat)
         try {
           const peak = isPeakHour();
           const effSecs = _currentEffectiveSecs || 0;
@@ -3988,7 +4803,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           log('Plan B (Savunma)', 'warn', `Sorgulanamadı: ${e.message}`);
         }
 
-        // 10. Plan D — Minimal header reversal (3 header modu doğrulama)
+        // 10. Plan D - Minimal header reversal (3 header modu doğrulama)
         try {
           const hdrs = await KickAPI.makeHeaders('sw');
           const keys = Object.keys(hdrs);
@@ -3997,12 +4812,12 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           const hasAuth = keys.some(k => k.toLowerCase() === 'authorization');
           const ok3 = hasAccept && hasPlatform; // Authorization token yoksa da olabilir
           log('Plan D (Min. Header)', ok3 ? 'ok' : 'warn',
-            `${keys.length} header · Accept:${hasAccept ? '✓' : '✗'} · X-App-Platform:${hasPlatform ? '✓' : '✗'} · Authorization:${hasAuth ? '✓' : '—'}`);
+            `${keys.length} header · Accept:${hasAccept ? '✓' : '✗'} · X-App-Platform:${hasPlatform ? '✓' : '✗'} · Authorization:${hasAuth ? '✓' : '-'}`);
         } catch (e) {
           log('Plan D (Min. Header)', 'warn', `Sorgulanamadı: ${e.message}`);
         }
 
-        // 11. Plan E — Pusher state yönetimi (#C/#D/#E fix) + log temizliği
+        // 11. Plan E - Pusher state yönetimi (#C/#D/#E fix) + log temizliği
         try {
           const pusherLiveCount = _pusherLiveSlugs.size;
           log('Plan E (State+Log)', 'ok',
@@ -4011,7 +4826,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           log('Plan E (State+Log)', 'warn', `Sorgulanamadı: ${e.message}`);
         }
 
-        // 12. Plan F — Pusher WebSocket durumu (offscreen LiveTracker)
+        // 12. Plan F - Pusher WebSocket durumu (offscreen LiveTracker)
         try {
           let pusherOk = false, pusherDetail = '';
           if (chrome.offscreen) {
@@ -4042,7 +4857,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // ─── v2.5.61: SENARYO — KANAL OLAYLARI (değişim, yayın bitti, raid, filtre, izleme süresi) ───
+  // ─── v2.5.61: SENARYO - KANAL OLAYLARI (değişim, yayın bitti, raid, filtre, izleme süresi) ───
   // Gerçek fonksiyonları ayrı bir test kanalıyla (__katest__) çalıştırır; gerçek
   // kanalların kayıtlarına dokunmamak için ilgili depolar önce yedeklenir, test
   // bitince geri yüklenir. Test bildirimleri gerçekten gösterilir.
@@ -4160,7 +4975,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
       } finally {
         // Temizlik: test kanalının tüm izleri
         try {
-          await Storage.updateChannelAlertPref(T, { change: false, end: false, raid: false, cats: [], words: [] });
+          await Storage.updateChannelAlertPref(T, { change: false, end: false, raid: false, host: false, cats: [], words: [] });
           const curMeta = (await chrome.storage.local.get(CHANGE_META_KEY))[CHANGE_META_KEY] || {};
           const restoredMeta = { ...curMeta, ...metaBackup }; delete restoredMeta[T];
           const curEnd = (await chrome.storage.local.get(END_PENDING_KEY))[END_PENDING_KEY] || {};
@@ -4185,7 +5000,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // v2.5.61: Test paneli — bir kanalın filtresini örnek kategori/başlıkla dene
+  // v2.5.61: Test paneli - bir kanalın filtresini örnek kategori/başlıkla dene
   // v2.5.63: Ayarlar'daki olay sesi "Test" butonu (seçili ses + seviye)
   if (msg.type === 'PLAY_EVENT_SOUND_TEST') {
     if (msg.sound === 'windows') {
@@ -4211,7 +5026,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // v2.5.61: Test paneli — gerçek bir kanalda bir sonraki kontrolde kategori
+  // v2.5.61: Test paneli - gerçek bir kanalda bir sonraki kontrolde kategori
   // değişim bildirimi tetikle (son görülen kategori geçici bir değerle değiştirilir).
   if (msg.type === 'SIMULATE_CATEGORY_CHANGE') {
     (async () => {
@@ -4274,7 +5089,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const dndMuteN = dndActive && await Storage.getDndMuteNotif();
         const dndMuteS = dndActive && await Storage.getDndMuteSound();
         log('DND', dndActive ? 'warn' : 'ok',
-          dndActive ? `AKTIF — bildirim mute: ${dndMuteN}, ses mute: ${dndMuteS}` : 'Pasif');
+          dndActive ? `AKTIF - bildirim mute: ${dndMuteN}, ses mute: ${dndMuteS}` : 'Pasif');
 
         // 6. Avatar cache
         const avatarCount = Object.keys(avatarCache || {}).length;
@@ -4311,7 +5126,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         if (KickAPI._loadBackoffFromStorage) await KickAPI._loadBackoffFromStorage();
         const boRemain = Math.max(0, (KickAPI._lastBackoffUntil || 0) - Date.now());
         log('Mevcut Backoff', boRemain > 0 ? 'warn' : 'ok',
-          boRemain > 0 ? `Aktif — ${Math.round(boRemain/1000)}sn kaldı` : 'Temiz (recovery testi başlatılabilir)');
+          boRemain > 0 ? `Aktif - ${Math.round(boRemain/1000)}sn kaldı` : 'Temiz (recovery testi başlatılabilir)');
 
         // 2. Refresh cooldown durumu
         const sinceLastRefresh = Date.now() - (KickAPI._lastSessionRefreshAt || 0);
@@ -4324,7 +5139,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const refreshed = await KickAPI.refreshKickSession('scenario_test');
         const refreshMs = Date.now() - refreshStart;
         log('Manuel Refresh', refreshed ? 'ok' : 'warn',
-          refreshed ? `Başarılı (${refreshMs}ms) — Cookie'ler tazelendi` : `Başarısız veya cooldown reddi (${refreshMs}ms)`);
+          refreshed ? `Başarılı (${refreshMs}ms) - Cookie'ler tazelendi` : `Başarısız veya cooldown reddi (${refreshMs}ms)`);
 
         // 4. Refresh sonrası backoff durumu
         const boAfter = Math.max(0, (KickAPI._lastBackoffUntil || 0) - Date.now());
@@ -4345,7 +5160,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           const apiStart = Date.now();
           const resp = await KickAPI.fetchKick(KickAPI.API_URL);
           await resp.json();
-          log('Test API Çağrısı', 'ok', `HTTP ${resp.status} (${Date.now() - apiStart}ms) — recovery sonrası başarılı`);
+          log('Test API Çağrısı', 'ok', `HTTP ${resp.status} (${Date.now() - apiStart}ms) - recovery sonrası başarılı`);
         } catch (e) {
           log('Test API Çağrısı', 'error', `Hâlâ başarısız: ${e.message}`);
         }
@@ -4375,7 +5190,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         // 2. Başlangıç stats snapshot
         const before = KickAPI.getRecentApiStats(5 * 60 * 1000);
         log('Başlangıç Snapshot', 'ok',
-          `Önceki 5dk: ${before.successes} başarı / ${before.failures} hata / oran: ${before.successRate ?? '—'}%`);
+          `Önceki 5dk: ${before.successes} başarı / ${before.failures} hata / oran: ${before.successRate ?? '-'}%`);
 
         // 3. 10 ardışık istek (5sn arayla = 50sn toplam)
         // v2.3.1 fix: Eski 'Baskı Testi: running' satırı sonuç gelince güncellenmiyordu,
@@ -4417,13 +5232,13 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         let m4Status, m4Detail;
         if (m4Active) {
           m4Status = 'ok';
-          m4Detail = `M4 AKTİF — alarm aralığı ${_currentEffectiveSecs}sn (${failures} hata/10dk)`;
+          m4Detail = `M4 AKTİF - alarm aralığı ${_currentEffectiveSecs}sn (${failures} hata/10dk)`;
         } else if (failures >= SLOWMODE_FAILURE_THRESHOLD) {
           m4Status = 'warn';
-          m4Detail = `Eşik aşıldı (${failures}/${SLOWMODE_FAILURE_THRESHOLD}) ama henüz alarm yeniden zamanlanmamış — bir sonraki tick aktive edecek`;
+          m4Detail = `Eşik aşıldı (${failures}/${SLOWMODE_FAILURE_THRESHOLD}) ama henüz alarm yeniden zamanlanmamış - bir sonraki tick aktive edecek`;
         } else {
           m4Status = 'ok';
-          m4Detail = `${failures} hata/10dk (eşik: ${SLOWMODE_FAILURE_THRESHOLD}) — yavaşlatma gerekmiyor`;
+          m4Detail = `${failures} hata/10dk (eşik: ${SLOWMODE_FAILURE_THRESHOLD}) - yavaşlatma gerekmiyor`;
         }
         log('M4 Yavaşlatma Durumu', m4Status, m4Detail);
 
@@ -4434,15 +5249,15 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           finalBackoff > 0 ? `${Math.round(finalBackoff/1000)}sn aktif` : 'Temiz');
 
         // 7. Plan B değerlendirmesi
-        // v2.3.21: Artık kesin biliyoruz — düşük başarı oranı Cloudflare baskısı
+        // v2.3.21: Artık kesin biliyoruz - düşük başarı oranı Cloudflare baskısı
         // DEĞİL, Kick'in kendi sunucu tarafındaki tutarsızlık (aynı geçerli token
         // bazen 200 bazen 401 dönüyor, kick.com'un kendi sitesinde bile kanıtlandı).
-        // Eski mesaj "CF baskısı yüksek, Plan C düşünülmeli" yanıltıcıydı — Plan C
+        // Eski mesaj "CF baskısı yüksek, Plan C düşünülmeli" yanıltıcıydı - Plan C
         // zaten aktif olsa da bu sorunu çözmüyor.
         let verdict;
         if (successRate >= 90) verdict = '✅ Sağlam: %90+ başarı, tutarsızlık yok';
         else if (successRate >= 70 && failures >= 3) verdict = '✅ Savunma çalışıyor: M4 yavaşlatma devreye girdi';
-        else if (successRate < 50) verdict = '⚠ Kick sunucu tutarsızlığı olası — "Auth Tutarlılık Testi (cf-ray)" ile örüntüyü incele';
+        else if (successRate < 50) verdict = '⚠ Kick sunucu tutarsızlığı olası - "Auth Tutarlılık Testi (cf-ray)" ile örüntüyü incele';
         else verdict = '🟡 Karışık sonuç: Daha uzun gözlem gerekli';
         log('Plan B Değerlendirmesi', successRate >= 70 ? 'ok' : 'warn', verdict);
 
@@ -4456,7 +5271,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
     return true;
   }
 
-  // v2.3.21: Auth Tutarlılık Teşhisi — backoff'u hiç tetiklemeden N ham istek
+  // v2.3.21: Auth Tutarlılık Teşhisi - backoff'u hiç tetiklemeden N ham istek
   // atar, her birinin durumunu + cf-ray başlığını kaydeder. Amaç: Kick'in
   // sunucu tarafı tutarsızlığının (aynı token bazen 200 bazen 401) belirli bir
   // Cloudflare veri merkezine/arka uç repliksına bağlı olup olmadığını görmek.
@@ -4470,9 +5285,9 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         const okCount = probe.filter(p => p.ok).length;
         const failCount = probe.length - okCount;
 
-        // Her isteği ayrı adım olarak göster — cf-ray dahil
+        // Her isteği ayrı adım olarak göster - cf-ray dahil
         probe.forEach(p => {
-          const rayShort = p.cfRay ? p.cfRay.split('-')[0] : '—';
+          const rayShort = p.cfRay ? p.cfRay.split('-')[0] : '-';
           log(
             `İstek ${p.i}/${probe.length}`,
             p.ok ? 'ok' : 'error',
@@ -4480,7 +5295,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           );
         });
 
-        // cf-ray öneklerine göre grupla — örüntü var mı diye
+        // cf-ray öneklerine göre grupla - örüntü var mı diye
         const rayGroups = {};
         probe.forEach(p => {
           const prefix = p.cfRay ? p.cfRay.split('-')[0] : 'bilinmiyor';
@@ -4495,9 +5310,9 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
         // Genel sonuç
         const successRate = Math.round((okCount / probe.length) * 100);
         let verdict;
-        if (successRate === 100) verdict = '✅ 10/10 başarı — bu oturumda tutarsızlık gözlenmedi (şu an sorun yok gibi)';
-        else if (successRate === 0) verdict = '❌ 0/10 başarı — kalıcı bir reddediliş, geçici tutarsızlık değil';
-        else verdict = `🟡 Karışık: ${okCount}/${probe.length} başarı — Kick sunucu tutarsızlığı örüntüsü kanıtlandı`;
+        if (successRate === 100) verdict = '✅ 10/10 başarı - bu oturumda tutarsızlık gözlenmedi (şu an sorun yok gibi)';
+        else if (successRate === 0) verdict = '❌ 0/10 başarı - kalıcı bir reddediliş, geçici tutarsızlık değil';
+        else verdict = `🟡 Karışık: ${okCount}/${probe.length} başarı - Kick sunucu tutarsızlığı örüntüsü kanıtlandı`;
         log('Genel Sonuç', successRate === 100 ? 'ok' : successRate === 0 ? 'error' : 'warn', verdict);
 
         respond({ success: true, results, totalMs: Date.now() - start });
@@ -4512,12 +5327,12 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
 
 self.onmessage = () => {};
 
-// Debug helper — call testNotification() from Service Worker console
+// Debug helper - call testNotification() from Service Worker console
 self.testNotification = async function() {
   const testCh = cachedChannels.find(c => c.isLive) || {
     channelSlug: 'test-channel',
     userUsername: 'TestChannel',
-    sessionTitle: 'Test notification — try Open & Mute buttons',
+    sessionTitle: 'Test notification - try Open & Mute buttons',
     profilePic: '',
   };
   const state = await getPersistedState();

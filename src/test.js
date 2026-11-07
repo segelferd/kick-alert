@@ -29,7 +29,7 @@ async function updateStatus() {
     const volume = await Storage.getSoundVolume();
     const dndActive = await Storage.isDndActive();
     // v2.3.1 redesign: Eski #status-row kaldırıldı (Health Header onun yerini aldı).
-    // Bu fonksiyon eski yapı için sessizce no-op olur — yine de bilgileri logla.
+    // Bu fonksiyon eski yapı için sessizce no-op olur - yine de bilgileri logla.
     const row = document.getElementById('status-row');
     if (row) {
       row.innerHTML =
@@ -72,7 +72,7 @@ async function updateDnd() {
     if (!el) return;
     if (!enabled) { el.innerHTML = '<span style="color:#555">DND kapalı</span>'; return; }
     el.innerHTML =
-      'Saat: <b>' + start + ' – ' + end + '</b> · Şu an: <b style="color:' + (active ? '#e74c3c' : '#53FC18') + '">' + (active ? 'Aktif' : 'Pasif') + '</b><br>' +
+      'Saat: <b>' + start + ' - ' + end + '</b> · Şu an: <b style="color:' + (active ? '#e74c3c' : '#53FC18') + '">' + (active ? 'Aktif' : 'Pasif') + '</b><br>' +
       'Bildirim sustur: <b>' + (muteN ? '✓' : '✗') + '</b> · Ses sustur: <b>' + (muteS ? '✓' : '✗') + '</b> · Auto-launch sustur: <b>' + (muteA ? '✓' : '✗') + '</b>';
   } catch(e) { log('DND error: ' + e.message, 'err'); }
 }
@@ -113,13 +113,13 @@ async function testNotification() {
 async function testSpikeNotif() {
   const user = document.getElementById('anom-user').value || 'TestYayıncı';
   const pct  = document.getElementById('anom-spike-pct').value || '120';
-  await sendNotif(user + ' — Şüpheli İzleyici Artışı', '↑ Test · 3.5K → 7.7K (+' + pct + '%)', false, false);
+  await sendNotif(user + ' - Şüpheli İzleyici Artışı', '↑ Test · 3.5K → 7.7K (+' + pct + '%)', false, false);
 }
 
 async function testDropNotif() {
   const user = document.getElementById('anom-user').value || 'TestYayıncı';
   const pct  = document.getElementById('anom-drop-pct').value || '45';
-  await sendNotif(user + ' — Şüpheli İzleyici Düşüşü', '↓ Test · 7.7K → 4.2K (-' + pct + '%)', false, false);
+  await sendNotif(user + ' - Şüpheli İzleyici Düşüşü', '↓ Test · 7.7K → 4.2K (-' + pct + '%)', false, false);
 }
 
 async function playTestSound(type) {
@@ -163,7 +163,7 @@ async function checkToken() {
   try {
     const cookies = await new Promise(r => chrome.cookies.getAll({ domain: 'kick.com' }, r));
     if (!cookies || cookies.length === 0) {
-      log('kick.com cookie yok — Kick\'e giriş yapılmamış', 'err');
+      log('kick.com cookie yok - Kick\'e giriş yapılmamış', 'err');
       return;
     }
     const session = cookies.find(c => c.name === 'session_token' || c.name === 'token');
@@ -182,7 +182,7 @@ async function simulateLaunch() {
     const d = await new Promise(r => chrome.storage.local.get('_liveSlugs', r));
     const slugs = (d._liveSlugs || []).filter(s => s !== slug);
     await new Promise(r => chrome.storage.local.set({ _liveSlugs: slugs }, r));
-    log('✓ ' + slug + ' liveSlugs\'tan çıkarıldı — bir sonraki check (60sn) yeni yayın olarak işler', 'warn');
+    log('✓ ' + slug + ' liveSlugs\'tan çıkarıldı - bir sonraki check (60sn) yeni yayın olarak işler', 'warn');
     log('Auto-launch açıksa sekme açılacak, bildirim gelecek', 'info');
   } catch(e) { log('Hata: ' + e.message, 'err'); }
 }
@@ -193,9 +193,9 @@ async function testTabGuard() {
     const tabs = await new Promise(r => chrome.tabs.query({}, r));
     const found = tabs.filter(t => (t.url || '').includes(slug));
     if (found.length > 0) {
-      log('Tab guard DEVREYİ GİRER — ' + slug + ' zaten ' + found.length + ' sekmede açık', 'warn');
+      log('Tab guard DEVREYİ GİRER - ' + slug + ' zaten ' + found.length + ' sekmede açık', 'warn');
     } else {
-      log('Tab guard devreye girmez — ' + slug + ' hiçbir sekmede açık değil', 'ok');
+      log('Tab guard devreye girmez - ' + slug + ' hiçbir sekmede açık değil', 'ok');
     }
   } catch(e) { log('Hata: ' + e.message, 'err'); }
 }
@@ -240,7 +240,7 @@ async function checkPusher() {
       log('Takip edilen kanal (subscribe): ' + (st.trackedCount ?? '?'), 'info');
       if (st.subscribedCount != null) log('Aktif subscription: ' + st.subscribedCount, 'info');
       if (st.stats) {
-        log('İstatistik — bağlantı: ' + (st.stats.connects ?? 0) +
+        log('İstatistik - bağlantı: ' + (st.stats.connects ?? 0) +
             ', canlı event: ' + (st.stats.liveEvents ?? 0) +
             ', offline event: ' + (st.stats.offlineEvents ?? 0) +
             ', toplam mesaj: ' + (st.stats.messages ?? 0), 'info');
@@ -252,7 +252,7 @@ async function checkPusher() {
     const cacheKeys = Object.keys(cache || {});
     log('channel_id cache: ' + cacheKeys.length + ' kanal', cacheKeys.length > 0 ? 'ok' : 'warn');
 
-    // 2b) SW-tarafı Plan F durumu (_pusherLiveSlugs — Pusher'ın canlı bildiği kanallar)
+    // 2b) SW-tarafı Plan F durumu (_pusherLiveSlugs - Pusher'ın canlı bildiği kanallar)
     if (resp?.swState) {
       const sw = resp.swState;
       log('Pusher-canlı işaretli kanal (_pusherLiveSlugs): ' + (sw.pusherLiveCount ?? 0),
@@ -278,12 +278,12 @@ async function checkPusher() {
 
     // 4) Genel sağlık yorumu
     if (resp?.success && resp.state?.connected && cacheKeys.length > 0) {
-      log('✓ Plan F sağlıklı — Pusher bağlı, channel_id cache dolu', 'ok');
+      log('✓ Plan F sağlıklı - Pusher bağlı, channel_id cache dolu', 'ok');
     } else if (resp?.success && !resp.state?.connected) {
-      log('⚠ Pusher bağlı değil — polling yedeğe düşülmüş olabilir (403 riski)', 'warn');
+      log('⚠ Pusher bağlı değil - polling yedeğe düşülmüş olabilir (403 riski)', 'warn');
     }
 
-    // 5) E2E fonksiyonel test — bildirim akışı çalışıyor mu? (dryRun: state kirletmez)
+    // 5) E2E fonksiyonel test - bildirim akışı çalışıyor mu? (dryRun: state kirletmez)
     log('── Plan F bildirim akışı testi (dryRun) ──', 'info');
     const e2e = await chrome.runtime.sendMessage({ type: 'PUSHER_E2E_TEST', dryRun: true });
     if (e2e?.results) {
@@ -293,7 +293,7 @@ async function checkPusher() {
     } else {
       log('  E2E testi yanıt vermedi', 'warn');
     }
-    log('İpucu: Gerçek bildirim testi için konsola: chrome.runtime.sendMessage({type:\'PUSHER_E2E_TEST\'}) — dryRun olmadan bildirim gönderir', 'info');
+    log('İpucu: Gerçek bildirim testi için konsola: chrome.runtime.sendMessage({type:\'PUSHER_E2E_TEST\'}) - dryRun olmadan bildirim gönderir', 'info');
   } catch(e) {
     log('Plan F kontrol hatası: ' + e.message, 'err');
   }
@@ -304,7 +304,7 @@ async function checkViewerHistory() {
     const d = await new Promise(r => chrome.storage.local.get('viewerHistory', r));
     const vh = d.viewerHistory || {};
     const keys = Object.keys(vh);
-    log('viewerHistory — ' + keys.length + ' kanal:', 'info');
+    log('viewerHistory - ' + keys.length + ' kanal:', 'info');
     keys.slice(0, 10).forEach(slug => {
       const rec = vh[slug];
       const cur = (rec.current || []).length;
@@ -331,7 +331,7 @@ async function clearViewerHistory() {
   } catch(e) { log('Hata: ' + e.message, 'err'); }
 }
 
-// ─── E2E Test — Gerçek Akış Simülasyonu ───
+// ─── E2E Test - Gerçek Akış Simülasyonu ───
 
 function renderE2EResults(results) {
   const box = document.getElementById('e2e-results');
@@ -340,17 +340,17 @@ function renderE2EResults(results) {
   const colors = { ok: '#53FC18', warn: '#f0a500', error: '#e74c3c', running: '#5ba4f5' };
   box.innerHTML = results.map(r =>
     `<div style="font-size:11px;padding:3px 0;border-bottom:1px solid #1a1a1a;color:${colors[r.status] || '#888'}">` +
-    `${icons[r.status] || '•'} <b>${r.step}</b> — ${r.detail}</div>`
+    `${icons[r.status] || '•'} <b>${r.step}</b> - ${r.detail}</div>`
   ).join('');
 }
 
 async function runE2E() {
-  // v2.3.1 redesign: Bu fonksiyon artık doğrudan çağrılmıyor — Senaryo 3 (📺 Yayın Algılama)
+  // v2.3.1 redesign: Bu fonksiyon artık doğrudan çağrılmıyor - Senaryo 3 (📺 Yayın Algılama)
   // SCENARIOS.detection üzerinden E2E_TEST mesajını atıyor. Eski kodu defansif tutuyoruz.
   const slug = document.getElementById('e2e-slug')?.value?.trim() || undefined;
   const box = document.getElementById('e2e-results');
   if (!box) { log('E2E: eski UI elementleri yok, runScenario("detection") kullan', 'err'); return; }
-  box.innerHTML = '<div style="color:#5ba4f5;font-size:11px;">⏳ Test çalışıyor — API sorgulanıyor...</div>';
+  box.innerHTML = '<div style="color:#5ba4f5;font-size:11px;">⏳ Test çalışıyor - API sorgulanıyor...</div>';
   log('E2E test başlatıldı' + (slug ? ': ' + slug : ' (tüm kanallar)'), 'info');
   try {
     const result = await chrome.runtime.sendMessage({ type: 'E2E_TEST', slug });
@@ -370,10 +370,10 @@ async function runE2E() {
 async function runE2EForce() {
   // v2.3.1 redesign: Aynı şekilde ölü kod, defansif tutuluyor.
   const slug = document.getElementById('e2e-slug')?.value?.trim();
-  if (!slug) { log('Slug gerekli — zorla bildirim testi için kanal adı girin', 'err'); return; }
+  if (!slug) { log('Slug gerekli - zorla bildirim testi için kanal adı girin', 'err'); return; }
   const box = document.getElementById('e2e-results');
   if (!box) { log('E2EForce: eski UI elementleri yok', 'err'); return; }
-  box.innerHTML = '<div style="color:#5ba4f5;font-size:11px;">⏳ Zorla bildirim testi — ' + slug + ' liveSlugs\'tan çıkarılıyor...</div>';
+  box.innerHTML = '<div style="color:#5ba4f5;font-size:11px;">⏳ Zorla bildirim testi - ' + slug + ' liveSlugs\'tan çıkarılıyor...</div>';
   log('Zorla bildirim testi: ' + slug, 'warn');
   try {
     // 1. liveSlugs'tan kanalı çıkar
@@ -448,7 +448,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   await updateDnd();
 
   // v2.3.1 redesign: TÜM eski button listener'ları opsiyonel zincirli (?.).
-  // Bazı butonlar yeni UI'da yok (btn-e2e, btn-e2e-force, btn-api-check, btn-api-token —
+  // Bazı butonlar yeni UI'da yok (btn-e2e, btn-e2e-force, btn-api-check, btn-api-token -
   // bunların yerine senaryo kartları geçti), eski varsayılı kod buralarda null hatası
   // verirse tüm init kırılıyordu. ?. ile sessiz no-op olur.
   document.getElementById('btn-e2e')?.addEventListener('click', runE2E);
@@ -475,7 +475,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   document.getElementById('btn-chat-dump')?.addEventListener('click', dumpChatSettings);
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // v2.3.1 Diagnostic Panel — Initialize
+  // v2.3.1 Diagnostic Panel - Initialize
   // ═══════════════════════════════════════════════════════════════════════════
   initDiagnosticPanel();
 });
@@ -515,7 +515,7 @@ const fmtBytes = (b) => {
 };
 
 const fmtTimestamp = (ts) => {
-  if (!ts) return '—';
+  if (!ts) return '-';
   return new Date(ts).toLocaleTimeString();
 };
 
@@ -586,7 +586,7 @@ async function diagBackoffStatus() {
   }
   const lines = [];
   if (result.active) {
-    lines.push(`<span style="color:#e74c3c;">🔴 BACKOFF AKTIF — ${fmtMs(result.remainingMs)} kaldı</span>`);
+    lines.push(`<span style="color:#e74c3c;">🔴 BACKOFF AKTIF - ${fmtMs(result.remainingMs)} kaldı</span>`);
   } else {
     lines.push(`<span style="color:#53FC18;">✅ Backoff temiz</span>`);
   }
@@ -677,7 +677,7 @@ async function diagCookies(silent = false) {
     </table>
     <div style="color:#666;font-size:10px;margin-top:6px;">${result.cookies.length} cookie</div>
   `;
-  // v2.3.1 fix: Periyodik çağrılarda (her 60sn) log yazmasın — sadece manuel butonda
+  // v2.3.1 fix: Periyodik çağrılarda (her 60sn) log yazmasın - sadece manuel butonda
   if (!silent) dlog(`${result.cookies.length} cookie listelendi`, 'info');
 }
 
@@ -697,11 +697,11 @@ async function diagChannels() {
     const rocColor = c.roc > 30 ? '#53FC18' : c.roc < -30 ? '#e74c3c' : '#aaa';
     return `<tr>
       <td>${c.user || c.slug}</td>
-      <td><strong style="color:#5ba4f5;">${c.viewers?.toLocaleString('tr-TR') || '—'}</strong></td>
-      <td style="color:${rocColor};">${c.roc != null ? c.roc + '%' : '—'}</td>
-      <td>${c.valley?.toLocaleString('tr-TR') || '—'}</td>
-      <td>${c.peak?.toLocaleString('tr-TR') || '—'}</td>
-      <td style="color:#666;">${c.ageMin != null ? c.ageMin + 'd' : '—'}</td>
+      <td><strong style="color:#5ba4f5;">${c.viewers?.toLocaleString('tr-TR') || '-'}</strong></td>
+      <td style="color:${rocColor};">${c.roc != null ? c.roc + '%' : '-'}</td>
+      <td>${c.valley?.toLocaleString('tr-TR') || '-'}</td>
+      <td>${c.peak?.toLocaleString('tr-TR') || '-'}</td>
+      <td style="color:#666;">${c.ageMin != null ? c.ageMin + 'd' : '-'}</td>
     </tr>`;
   }).join('');
   box.innerHTML = `
@@ -736,8 +736,8 @@ async function diagBotScores() {
     const color = score > 70 ? '#e74c3c' : score > 40 ? '#f0a500' : '#53FC18';
     return `<tr>
       <td>${slug}</td>
-      <td style="color:${color};font-weight:600;">${score != null ? score + '%' : '—'}</td>
-      <td style="color:#888;font-size:10px;">${s?.lastUpdate ? fmtTimestamp(s.lastUpdate) : '—'}</td>
+      <td style="color:${color};font-weight:600;">${score != null ? score + '%' : '-'}</td>
+      <td style="color:#888;font-size:10px;">${s?.lastUpdate ? fmtTimestamp(s.lastUpdate) : '-'}</td>
     </tr>`;
   }).join('');
   box.innerHTML = `
@@ -750,7 +750,7 @@ async function diagBotScores() {
   dlog(`${slugs.length} bot skoru listelendi`, 'info');
 }
 
-// ─── Hızlı ayar — interval değiştir ───
+// ─── Hızlı ayar - interval değiştir ───
 async function diagSetInterval() {
   const sec = parseInt(document.getElementById('diag-interval-select').value);
   await chrome.storage.local.set({ checkInterval: sec });
@@ -766,8 +766,8 @@ async function diagPreviewFirstUse() {
       previewFirstUseState: true,
       whatsnewDismissedVersion: '', // banner'ı da bu açılışta göster
     });
-    dlog('🎬 İlk kullanım önizlemesi hazırlandı (banner + boş durum) — gerçek takip verisi ETKİLENMEDİ', 'ok');
-    if (statusEl) statusEl.textContent = '✅ Hazır — şimdi eklenti popup\'ını (yeniden) aç, bir kerelik gösterilecek.';
+    dlog('🎬 İlk kullanım önizlemesi hazırlandı (banner + boş durum) - gerçek takip verisi ETKİLENMEDİ', 'ok');
+    if (statusEl) statusEl.textContent = '✅ Hazır - şimdi eklenti popup\'ını (yeniden) aç, bir kerelik gösterilecek.';
   } catch (e) {
     dlog('❌ Önizleme hazırlanamadı: ' + e.message, 'error');
     if (statusEl) statusEl.textContent = '❌ Hata: ' + e.message;
@@ -777,7 +777,7 @@ async function diagPreviewFirstUse() {
 async function diagResetOptGroups() {
   try {
     await chrome.storage.local.set({ optGroupCollapsedState: {} });
-    dlog('↺ Ayarlar grup açık/kapalı durumları sıfırlandı — tüm gruplar tekrar açık başlayacak', 'ok');
+    dlog('↺ Ayarlar grup açık/kapalı durumları sıfırlandı - tüm gruplar tekrar açık başlayacak', 'ok');
   } catch (e) {
     dlog('❌ Sıfırlanamadı: ' + e.message, 'error');
   }
@@ -805,19 +805,19 @@ function evaluateHealth(data) {
   // ─── Critical kurallar ───
   if (data.dnr && !data.dnr.staticRulesetActive) {
     issues.push({ tab: 'api', severity: 'crit',
-      message: 'Origin override (DNR) PASİF — 403 yağmuru gelebilir' });
+      message: 'Origin override (DNR) PASİF - 403 yağmuru gelebilir' });
   }
   if (data.stats && data.stats.requests >= 5 && data.stats.successRate !== null && data.stats.successRate < 50) {
     issues.push({ tab: 'tani', severity: 'crit',
-      message: `Başarı oranı kritik düşük (${data.stats.successRate}%) — son 5dk'da ${data.stats.failures} hata` });
+      message: `Başarı oranı kritik düşük (${data.stats.successRate}%) - son 5dk'da ${data.stats.failures} hata` });
   }
   if (data.diag && !data.diag.alarm) {
     issues.push({ tab: 'ayarlar', severity: 'crit',
-      message: 'Ana alarm zamanlanmamış — eklenti istek atmıyor' });
+      message: 'Ana alarm zamanlanmamış - eklenti istek atmıyor' });
   }
   if (data.stats && data.stats.failures >= 5) {
     issues.push({ tab: 'tani', severity: 'crit',
-      message: `Son 5dk'da ${data.stats.failures} hata — 401/403 yağmuru aktif` });
+      message: `Son 5dk'da ${data.stats.failures} hata - 401/403 yağmuru aktif` });
   }
 
   // ─── Warning kurallar ───
@@ -825,15 +825,15 @@ function evaluateHealth(data) {
     const mins = Math.round((data.backoff.remainingMs || 0) / 60000);
     if (mins >= 10) {
       issues.push({ tab: 'tani', severity: 'crit',
-        message: `Backoff zinciri yükseliyor (${mins} dk kaldı) — Cloudflare baskısı yüksek` });
+        message: `Backoff zinciri yükseliyor (${mins} dk kaldı) - Cloudflare baskısı yüksek` });
     } else {
       issues.push({ tab: 'tani', severity: 'warn',
-        message: `Backoff aktif (${mins} dk kaldı) — istekler geçici askıda` });
+        message: `Backoff aktif (${mins} dk kaldı) - istekler geçici askıda` });
     }
   }
   if (data.stats && data.stats.failures >= 2 && data.stats.failures < 5) {
     issues.push({ tab: 'tani', severity: 'warn',
-      message: `Son 5dk'da ${data.stats.failures} hata — M4 yavaşlatma tetikli` });
+      message: `Son 5dk'da ${data.stats.failures} hata - M4 yavaşlatma tetikli` });
   }
   if (data.stats && data.stats.slowModeActive) {
     issues.push({ tab: 'tani', severity: 'warn',
@@ -844,7 +844,7 @@ function evaluateHealth(data) {
     const cfBm = data.cookies.find(c => c.name === '__cf_bm');
     if (data.stats && data.stats.failures > 0 && !cfClear) {
       issues.push({ tab: 'api', severity: 'warn',
-        message: 'cf_clearance cookie eksik (hata varken) — Cloudflare challenge eksiği' });
+        message: 'cf_clearance cookie eksik (hata varken) - Cloudflare challenge eksiği' });
     }
     // Backend GET_COOKIES döndürürken expires alanını ms cinsinden veriyor
     if (cfBm && cfBm.expires) {
@@ -859,10 +859,10 @@ function evaluateHealth(data) {
   // M4 yavaşlatma sorun çıkınca zaten devreye giriyor. Sürekli 'DİKKAT' göstermesi
   // gerçek sorun sinyalini boğuyordu.
 
-  // Plan C — Hata varken proxy kapalıysa kullanıcıya çözüm yolu sun
+  // Plan C - Hata varken proxy kapalıysa kullanıcıya çözüm yolu sun
   if (data.stats && data.stats.failures >= 2 && data.stats.proxyAvailable === false) {
     issues.push({ tab: 'tani', severity: 'warn',
-      message: 'Plan C proxy kapalı — kick.com sekmesi açık tutarsan API çağrıları o sekmeden geçer (Cloudflare baskısı kırılır)' });
+      message: 'Plan C proxy kapalı - kick.com sekmesi açık tutarsan API çağrıları o sekmeden geçer (Cloudflare baskısı kırılır)' });
   }
 
   // ─── v2.3.1 Plan F (Pusher WebSocket) sağlık kuralları ───
@@ -874,16 +874,16 @@ function evaluateHealth(data) {
       const apiStruggling = data.stats && data.stats.failures >= 2;
       issues.push({ tab: 'tani', severity: apiStruggling ? 'crit' : 'warn',
         message: apiStruggling
-          ? 'Plan F (Pusher) bağlı DEĞİL + API 403 alıyor — yeni yayın bildirimi kaçabilir!'
-          : 'Plan F (Pusher) bağlı değil — şu an polling yedekte, ama 403 gelirse risk' });
+          ? 'Plan F (Pusher) bağlı DEĞİL + API 403 alıyor - yeni yayın bildirimi kaçabilir!'
+          : 'Plan F (Pusher) bağlı değil - şu an polling yedekte, ama 403 gelirse risk' });
     } else if (ps.trackedCount === 0) {
       issues.push({ tab: 'tani', severity: 'warn',
-        message: 'Plan F bağlı ama 0 kanal dinliyor — channel_id cache boş olabilir (kanal sayfalarını ziyaret et)' });
+        message: 'Plan F bağlı ama 0 kanal dinliyor - channel_id cache boş olabilir (kanal sayfalarını ziyaret et)' });
     }
   } else if (data.pusher === null) {
-    // GET_PUSHER_STATE yanıt vermedi — offscreen/SW Pusher erişilemiyor olabilir
+    // GET_PUSHER_STATE yanıt vermedi - offscreen/SW Pusher erişilemiyor olabilir
     issues.push({ tab: 'tani', severity: 'warn',
-      message: 'Plan F durumu okunamadı — Pusher modülü yanıt vermiyor olabilir' });
+      message: 'Plan F durumu okunamadı - Pusher modülü yanıt vermiyor olabilir' });
   }
 
   // ─── Karar ───
@@ -899,7 +899,7 @@ function evaluateHealth(data) {
     status = 'healthy'; statusText = 'SAĞLIKLI'; icon = '🟢';
   }
 
-  // Öneri motoru — en yüksek öncelikli sorun için somut aksiyon
+  // Öneri motoru - en yüksek öncelikli sorun için somut aksiyon
   if (issues.length > 0) {
     const top = issues.find(i => i.severity === 'crit') || issues[0];
     if (top.message.includes('DNR')) {
@@ -909,7 +909,7 @@ function evaluateHealth(data) {
     } else if (top.message.includes('Backoff aktif')) {
       suggestion = 'Backoff bitmesini bekle veya manuel olarak sıfırla (test amaçlı).';
     } else if (top.message.includes('alarm zamanlanmamış')) {
-      suggestion = 'Eklentiyi yeniden başlat — Ayarlar sekmesindeki "Eklentiyi Yeniden Başlat" butonu.';
+      suggestion = 'Eklentiyi yeniden başlat - Ayarlar sekmesindeki "Eklentiyi Yeniden Başlat" butonu.';
     } else if (top.message.includes('cf_clearance')) {
       suggestion = 'kick.com sekmesinde manuel olarak gezin (CF challenge\'ı çözmek için), sonra Manuel Refresh.';
     } else if (top.message.includes('cf_bm')) {
@@ -921,7 +921,7 @@ function evaluateHealth(data) {
     } else if (top.message.includes('Aralık')) {
       suggestion = 'Ayarlar → Check Aralığı → 60 sn\'ye yükselt.';
     } else if (top.message.includes('Plan C proxy')) {
-      suggestion = 'Cloudflare baskısı varsa kick.com sekmesini açık tut — API çağrıları o sekmeden geçer, 403 baskısı kırılır.';
+      suggestion = 'Cloudflare baskısı varsa kick.com sekmesini açık tut - API çağrıları o sekmeden geçer, 403 baskısı kırılır.';
     } else {
       suggestion = 'Yukarıdaki sorun(lar)ı incele. Sorunlu sekme(ler) sekme barında işaretli.';
     }
@@ -969,7 +969,7 @@ function renderHealthHeader(health, data) {
   if (data.stats) {
     const rate = data.stats.successRate;
     setMetric('m-success',
-      rate === null ? '—' : (rate + '%'),
+      rate === null ? '-' : (rate + '%'),
       rate === null ? null : (rate >= 90 ? 'ok' : rate >= 50 ? 'warn' : 'fail'));
     setMetric('m-failures',
       data.stats.failures + '',
@@ -977,11 +977,11 @@ function renderHealthHeader(health, data) {
     const mode = getModeLabel(data.stats);
     setMetric('m-mode', mode.short, mode.color === 'warn' ? 'warn' : 'ok');
     setMetric('m-interval', (data.stats.effectiveSecs || 0) + 'sn', null);
-    // Plan C — proxy durumu
+    // Plan C - proxy durumu
     if (data.stats.proxyAvailable) {
       setMetric('m-proxy', '🛡️ Aktif', 'ok');
     } else {
-      setMetric('m-proxy', '⚠ SW', null); // 'warn' değil — sadece bilgi rengi
+      setMetric('m-proxy', '⚠ SW', null); // 'warn' değil - sadece bilgi rengi
     }
   }
   if (data.backoff) {
@@ -990,7 +990,7 @@ function renderHealthHeader(health, data) {
       data.backoff.active ? 'fail' : 'ok');
   }
 
-  // v2.3.1 Plan F — Pusher WebSocket durumu
+  // v2.3.1 Plan F - Pusher WebSocket durumu
   if (data.pusher && data.pusher.state) {
     const ps = data.pusher.state;
     if (ps.connected) {
@@ -999,7 +999,7 @@ function renderHealthHeader(health, data) {
       setMetric('m-pusher', '🔴 kopuk', 'fail');
     }
   } else {
-    setMetric('m-pusher', '—', null);
+    setMetric('m-pusher', '-', null);
   }
 
   // Issue listesi
@@ -1039,7 +1039,7 @@ function renderHealthHeader(health, data) {
 // v2.3.1: Mod rozeti M4 (failure-based slow) + M5 (peak hour) iki kaynaktan beslenir.
 // Helper fonksiyonu tek noktadan etiket üretir.
 function getModeLabel(stats) {
-  if (!stats) return { text: '—', color: 'ok', short: '—' };
+  if (!stats) return { text: '-', color: 'ok', short: '-' };
   if (stats.slowModeActive) {
     return { text: '🐢 Yavaşlatma (M4)', color: 'warn', short: '🐢 Yavaş' };
   }
@@ -1064,7 +1064,7 @@ function renderBigStats(data) {
   if (data.stats) {
     const r = data.stats.successRate;
     setBig('bs-rate',
-      r === null ? '—' : (r + '%'),
+      r === null ? '-' : (r + '%'),
       undefined,
       r === null ? null : r >= 90 ? 'ok' : r >= 50 ? 'warn' : 'fail');
     setBig('bs-failures',
@@ -1121,9 +1121,9 @@ async function refreshDiagStatus() {
     setText('stat-req', data.stats.requests);
     setText('stat-ok', data.stats.successes);
     setText('stat-fail', data.stats.failures);
-    setText('stat-rate', data.stats.successRate === null ? '—' : (data.stats.successRate + '%'));
-    setText('stat-jitter-avg', data.stats.jitterSamples > 0 ? (data.stats.avgJitterMs + ' ms') : '—');
-    setText('stat-jitter-max', data.stats.jitterSamples > 0 ? (data.stats.maxJitterMs + ' ms') : '—');
+    setText('stat-rate', data.stats.successRate === null ? '-' : (data.stats.successRate + '%'));
+    setText('stat-jitter-avg', data.stats.jitterSamples > 0 ? (data.stats.avgJitterMs + ' ms') : '-');
+    setText('stat-jitter-max', data.stats.jitterSamples > 0 ? (data.stats.maxJitterMs + ' ms') : '-');
     setText('stat-effective-secs', (data.stats.effectiveSecs || 0) + ' sn');
 
     const modeEl = document.getElementById('diag-stats-mode');
@@ -1154,8 +1154,8 @@ async function refreshDiagStatus() {
         <div>Aralık: <span style="color:#ccc;">${data.diag.checkInterval} sn</span></div>
         <div>Cache: <span style="color:#ccc;">${data.diag.ramCacheSize} (${data.diag.ramLiveCount} canlı)</span></div>
         <div>Storage: <span style="color:#ccc;">${fmtBytes(data.diag.storageBytes)}</span></div>
-        <div>Alarm sıradaki: <span style="color:#ccc;">${data.diag.alarm ? fmtMs(Math.max(0, data.diag.alarm.scheduledTime - Date.now())) : '—'}</span></div>
-        <div>Session refresh: <span style="color:#ccc;">${data.diag.sessionRefreshAlarm ? 'her ' + Math.round(data.diag.sessionRefreshAlarm.periodInMinutes) + ' dk' : '—'}</span></div>
+        <div>Alarm sıradaki: <span style="color:#ccc;">${data.diag.alarm ? fmtMs(Math.max(0, data.diag.alarm.scheduledTime - Date.now())) : '-'}</span></div>
+        <div>Session refresh: <span style="color:#ccc;">${data.diag.sessionRefreshAlarm ? 'her ' + Math.round(data.diag.sessionRefreshAlarm.periodInMinutes) + ' dk' : '-'}</span></div>
       `;
     }
   }
@@ -1187,7 +1187,7 @@ async function refreshDiagStatus() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// v2.3.1 — SENARYO ORKESTRATÖRÜ
+// v2.3.1 - SENARYO ORKESTRATÖRÜ
 // ═══════════════════════════════════════════════════════════════════════════
 //
 // 5 senaryo karta bağlı. Her biri backend'e mesaj atar, dönen results dizisini
@@ -1225,13 +1225,13 @@ const SCENARIOS = {
   pressure: {
     title: 'Cloudflare baskı testi',
     msgType: 'RUN_SCENARIO_PRESSURE',
-    description: '10 ardışık istek atıyor (50sn) — Plan B değerlendirmesi.',
+    description: '10 ardışık istek atıyor (50sn) - Plan B değerlendirmesi.',
     payload: () => ({}),
   },
   authConsistency: {
     title: 'Auth tutarlılık (cf-ray)',
     msgType: 'RUN_SCENARIO_AUTH_CONSISTENCY',
-    description: 'Backoff\'u hiç tetiklemeden 10 ham istek atar, her birinin cf-ray\'ini kaydeder — Kick sunucu tutarsızlığının örüntüsünü arar.',
+    description: 'Backoff\'u hiç tetiklemeden 10 ham istek atar, her birinin cf-ray\'ini kaydeder - Kick sunucu tutarsızlığının örüntüsünü arar.',
     payload: () => ({}),
   },
 };
@@ -1273,7 +1273,7 @@ function renderFlowPanel(scenarioKey, results, isComplete, totalMs) {
   let summaryText;
   if (!isComplete) {
     summaryClass = 'warn';
-    summaryText = `⏳ Çalışıyor — ${results.length} adım`;
+    summaryText = `⏳ Çalışıyor - ${results.length} adım`;
   } else if (errCount > 0) {
     summaryClass = 'fail';
     summaryText = `❌ ${errCount} hata · ${okCount} OK${warnCount ? ' · ' + warnCount + ' uyarı' : ''}`;
@@ -1326,7 +1326,7 @@ function setCardResult(scenarioKey, summary) {
 
 async function runScenario(scenarioKey) {
   if (_scenarioRunning) {
-    dlog('⏳ Bir senaryo zaten çalışıyor — bekleyin', 'warn');
+    dlog('⏳ Bir senaryo zaten çalışıyor - bekleyin', 'warn');
     return null;
   }
   const sc = SCENARIOS[scenarioKey];
@@ -1347,12 +1347,12 @@ async function runScenario(scenarioKey) {
     activeCard.classList.add('running');
   }
 
-  // Boş checklist göster — backend yanıtı sırasında "çalışıyor" durumu
+  // Boş checklist göster - backend yanıtı sırasında "çalışıyor" durumu
   renderFlowPanel(scenarioKey, [{ step: sc.title, status: 'running', detail: 'Backend çağrısı yapılıyor...' }], false);
   dlog(`▶ Senaryo başlatıldı: ${sc.title}`, 'info');
 
   try {
-    // v2.5.61: istemci tarafı senaryolar (sc.run) — test-v2.js
+    // v2.5.61: istemci tarafı senaryolar (sc.run) - test-v2.js
     const response = sc.run
       ? await sc.run()
       : await chrome.runtime.sendMessage({ type: sc.msgType, ...sc.payload() });
@@ -1381,7 +1381,7 @@ async function runScenario(scenarioKey) {
       setCardResult(scenarioKey, `✅ ${okCount}/${results.length} OK`);
     }
 
-    dlog(`✓ Senaryo bitti: ${sc.title} — ${okCount} OK, ${warnCount} uyarı, ${errCount} hata`,
+    dlog(`✓ Senaryo bitti: ${sc.title} - ${okCount} OK, ${warnCount} uyarı, ${errCount} hata`,
          errCount > 0 ? 'err' : warnCount > 0 ? 'warn' : 'ok');
     outcome = { ok: okCount, warn: warnCount, err: errCount };
 
@@ -1449,12 +1449,12 @@ function initDiagnosticPanel() {
 
   // İlk yükleme
   refreshDiagStatus();
-  diagCookies(true); // silent — health motorunun cookie verisine ihtiyacı var, log gürültüsü yapmasın
+  diagCookies(true); // silent - health motorunun cookie verisine ihtiyacı var, log gürültüsü yapmasın
 
   // Otomatik yenileme: 5 saniyede bir health refresh
   setInterval(() => refreshDiagStatus(), 5000);
-  // Cookie tablosu daha az sık (her 60 sn) — chrome.cookies API daha pahalı, silent
+  // Cookie tablosu daha az sık (her 60 sn) - chrome.cookies API daha pahalı, silent
   setInterval(() => diagCookies(true), 60000);
 
-  dlog('🩺 Test paneli hazır — bir senaryo karta tıklayarak otomatik test başlat', 'ok');
+  dlog('🩺 Test paneli hazır - bir senaryo karta tıklayarak otomatik test başlat', 'ok');
 }

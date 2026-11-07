@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multi-Stream — KickAlert</title>
+  <title>Multi-Stream - KickAlert</title>
   <link rel="stylesheet" href="../css/multistream.css">
   <link rel="stylesheet" href="../css/fonts.css">
 </head>
@@ -20,37 +20,37 @@
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" class="input-icon">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="input-channel" placeholder="Channel name..." maxlength="64" autocomplete="off" spellcheck="false">
+        <input type="text" id="input-channel" placeholder="Channel name..." data-i18n-placeholder="msChannelPlaceholder" maxlength="64" autocomplete="off" spellcheck="false">
         <button type="submit" class="add-btn">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
             <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
           </svg>
-          <span>Add</span>
+          <span data-i18n="msAdd">Add</span>
         </button>
       </div>
     </form>
 
     <div class="topbar-right">
       <div class="layout-group" id="layout-btns">
-        <button class="layout-btn" data-layout="solo" title="Solo">
+        <button class="layout-btn" data-layout="solo" title="Solo" data-i18n-title="msLayoutSolo">
           <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
             <rect x="1" y="1" width="26" height="20" rx="2" fill="currentColor"/>
           </svg>
         </button>
-        <button class="layout-btn active" data-layout="side" title="Side by Side">
+        <button class="layout-btn active" data-layout="side" title="Side by Side" data-i18n-title="msLayoutSide">
           <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
             <rect x="1" y="1" width="12" height="20" rx="2" fill="currentColor"/>
             <rect x="15" y="1" width="12" height="20" rx="2" fill="currentColor"/>
           </svg>
         </button>
-        <button class="layout-btn" data-layout="triple" title="Triple">
+        <button class="layout-btn" data-layout="triple" title="Triple" data-i18n-title="msLayoutTriple">
           <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
             <rect x="1" y="1" width="7.3" height="20" rx="1.5" fill="currentColor"/>
             <rect x="10.3" y="1" width="7.3" height="20" rx="1.5" fill="currentColor"/>
             <rect x="19.7" y="1" width="7.3" height="20" rx="1.5" fill="currentColor"/>
           </svg>
         </button>
-        <button class="layout-btn" data-layout="quad" title="2×2 Grid">
+        <button class="layout-btn" data-layout="quad" title="2×2 Grid" data-i18n-title="msLayoutQuad">
           <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
             <rect x="1" y="1" width="12" height="9.5" rx="1.5" fill="currentColor"/>
             <rect x="15" y="1" width="12" height="9.5" rx="1.5" fill="currentColor"/>
@@ -58,7 +58,7 @@
             <rect x="15" y="11.5" width="12" height="9.5" rx="1.5" fill="currentColor"/>
           </svg>
         </button>
-        <button class="layout-btn" data-layout="focus" title="Focus">
+        <button class="layout-btn" data-layout="focus" title="Focus" data-i18n-title="msLayoutFocus">
           <svg width="28" height="22" viewBox="0 0 28 22" fill="none">
             <rect x="1" y="1" width="16" height="20" rx="2" fill="currentColor"/>
             <rect x="19" y="1" width="8" height="9.5" rx="1.5" fill="currentColor" opacity="0.6"/>
@@ -68,18 +68,40 @@
       </div>
 
       <div class="action-btns">
-        <button class="topbar-btn danger" id="btn-close-all" title="Remove all">
+        <button class="topbar-btn" id="btn-chat" title="Show chat" data-i18n-title="msChatShow" aria-pressed="false">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          <span data-i18n="msChat">Chat</span>
+        </button>
+        <button class="topbar-btn danger" id="btn-close-all" title="Remove all" data-i18n-title="msClearTitle">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="3 6 5 6 21 6"/>
             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>
           </svg>
-          <span>Clear</span>
+          <span data-i18n="msClear">Clear</span>
         </button>
       </div>
     </div>
   </header>
 
-  <main class="stream-grid" id="stream-grid" data-layout="side"></main>
+  <div class="ms-body">
+    <main class="stream-grid" id="stream-grid" data-layout="side"></main>
+    <aside class="chat-drawer" id="chat-drawer" hidden>
+      <div class="chat-drawer-head">
+        <select id="chat-channel" class="chat-channel" aria-label="Chat"></select>
+        <button class="chat-head-btn" id="chat-open-tab" title="Open chat in a new tab" data-i18n-title="msChatOpenTab">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </button>
+        <button class="chat-head-btn" id="chat-close" title="Close chat" data-i18n-title="msChatClose">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="chat-drawer-empty" id="chat-empty" data-i18n="msChatEmpty">Add a channel to see its chat.</div>
+      <iframe class="chat-frame" id="chat-frame" data-i18n-title="msChat" title="Chat" allow="keyboard-map; clipboard-write" sandbox="allow-scripts allow-same-origin allow-popups allow-popups-to-escape-sandbox allow-forms"></iframe>
+      <div class="chat-drawer-note" data-i18n="msChatNote">Can't send messages here? Open the chat in a new tab.</div>
+    </aside>
+  </div>
 
   <div class="empty-state" id="empty-state">
     <div class="empty-icon">
@@ -91,10 +113,14 @@
       </svg>
     </div>
     <h2>Multi-Stream</h2>
-    <p>Add channel names above to start watching multiple streams.</p>
-    <p class="hint">Drag and drop cards to reorder.</p>
+    <p data-i18n="msEmptyText">Add channel names above to start watching multiple streams.</p>
+    <p class="hint" data-i18n="msEmptyHint">Drag and drop cards to reorder.</p>
   </div>
 
+  <script src="../src/storage.js"></script>
+  <script src="../src/utils.js"></script>
+  <script src="../src/motion.js"></script>
+  <script src="../src/specialday.js"></script>
   <script src="../src/multistream.js"></script>
 </body>
 </html>

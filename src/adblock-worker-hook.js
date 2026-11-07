@@ -16,7 +16,7 @@
  *
  * GÜVENLİK: sadece amazon-ivs worker'ına dokunur; hata olursa orijinal akışa
  * düşer (oynatma bozulmaz). localStorage['__ka_ab_video']!=='1' ise devre dışı.
- * Bu özellik isteğe bağlıdır ve deneyseldir — Kick'in iç API yapısına bağımlı
+ * Bu özellik isteğe bağlıdır ve deneyseldir - Kick'in iç API yapısına bağımlı
  * olduğu için Kick tarafında değişiklik olursa bozulabilir.
  *
  * © 2026 Segelferd. All rights reserved.
@@ -38,7 +38,7 @@
   var pageVod = true; // geçmiş yayın (VOD) ayrı bayrak
   try { pageVod = localStorage.getItem('__ka_ab_vod') !== '0'; } catch (e) {}
 
-  // v2.5.14: TEŞHİS LOGU — koşulsuz çalışır, bu script'in gerçekten
+  // v2.5.14: TEŞHİS LOGU - koşulsuz çalışır, bu script'in gerçekten
   // çalıştığını ve localStorage'dan ne okuduğunu kesin olarak görmemiz için.
   try {
     var __diagRaw = null;
@@ -82,7 +82,7 @@
     return changed;
   }
 
-  var vodListCache = new Map(); // slug -> {ts, items} — v2.5.3: Mo'Kick v3.2.8'den esinlenildi
+  var vodListCache = new Map(); // slug -> {ts, items} - v2.5.3: Mo'Kick v3.2.8'den esinlenildi
   var vodListInFlight = new Map(); // slug -> promise
 
   // v2.5.3: Eskiden vodList/vodListInFlight TEK SLOTLUYDU (sadece bir slug'ı
@@ -139,7 +139,7 @@
         if (!slug || slug === lastPrimedSlug) return;
         lastPrimedSlug = slug;
         // v2.5.2: origPageFetch bu noktada henüz atanmamış olabilir (aşağıda
-        // tanımlanıyor) — ama 'var' hoisting + setTimeout ile bir sonraki
+        // tanımlanıyor) - ama 'var' hoisting + setTimeout ile bir sonraki
         // tick'e ertelendiği için, bu fonksiyon GERÇEKTEN çalıştığında script
         // tamamen yüklenmiş, origPageFetch atanmış olacak.
         if (typeof origPageFetch === 'function') primeVodCatalog(slug, origPageFetch);
@@ -156,7 +156,7 @@
   })();
 
   // v2.5.2: Mo'Kick v3.2.4'ten esinlenildi. Slug'ı sadece sayfa URL'sinden değil,
-  // ÖNCE yanıtın kendi payload'ından çıkarmayı dene — hangi VOD'un işlendiğine
+  // ÖNCE yanıtın kendi payload'ından çıkarmayı dene - hangi VOD'un işlendiğine
   // dair en güvenilir kaynak bu, URL ile senkronizasyon gecikmesi riski taşımıyor.
   function slugFromPayload(json) {
     try {
@@ -186,7 +186,7 @@
       var sameTitle = function (s) { return title && String(s.entry.session_title || '') === String(title); };
 
       // v2.5.2: Önce SIKI tolerans (1sn) dene. Bulunamazsa GEVŞEK tolerans
-      // (5sn) ile dene AMA sadece başlık da eşleşiyorsa — yanlış pozitif
+      // (5sn) ile dene AMA sadece başlık da eşleşiyorsa - yanlış pozitif
       // riskini artırmadan daha fazla eşleşme yakalıyoruz.
       var cands = scored.filter(function (s) { return s.diff <= 1; }).map(function (s) { return s.entry; });
       if (!cands.length) {
@@ -202,9 +202,9 @@
   }
 
   // v2.5.3: Mo'Kick v3.2.8'den esinlenildi. Kick'in thumbnail URL'si genelde
-  // aynı depolama alanının bir alt yolu — bu yoldan doğrudan reklamsız master'ı
+  // aynı depolama alanının bir alt yolu - bu yoldan doğrudan reklamsız master'ı
   // TAHMİN edebiliyoruz, katalog aramaya (getVodList, bir ağ isteği daha) hiç
-  // gerek kalmadan. Sadece hızlı bir DENEME — tutmazsa cleanVodSource'a (asıl
+  // gerek kalmadan. Sadece hızlı bir DENEME - tutmazsa cleanVodSource'a (asıl
   // katalog araması) düşülüyor, hiçbir davranış kaybı yok.
   function deriveSourceFromThumbnail(pu) {
     try {
@@ -449,7 +449,7 @@
   }
   try { window.__ka_ab_adMonStatus = adMonStatus; } catch (e) {}
 
-  var lastPlaybackReq = null; // { url, init } — Kick'in kendi /playback isteği
+  var lastPlaybackReq = null; // { url, init } - Kick'in kendi /playback isteği
   var adMon = { slug: '', master: '', media: '', timer: null, inAd: false, adStart: 0, reason: '', fails: 0, refreshFails: 0, lastRefresh: 0, busy: false };
   function stopAdMonitor(why) {
     if (adMon.timer) { clearInterval(adMon.timer); adMon.timer = null; }
@@ -496,6 +496,9 @@
   }
   function adMonTick() {
     if (adMon.busy || !adMon.slug) return;
+    // v2.5.82: sekme arka plandayken Kick'in reklamlı akışını yoklama
+    // (oynatıcı zaten reklamsız akışta; sadece teşhis için). Görünür olunca devam.
+    try { if (document.hidden) return; } catch (e) {}
     if (!pageEnabled || liveSlug() !== adMon.slug) { stopAdMonitor(!pageEnabled ? 'reklam engelleme kapatıldı' : 'kanal değişti'); return; }
     adMon.busy = true;
     var forSlug = adMon.slug;
@@ -601,10 +604,10 @@
         // v2.5.0: PureKick v10.15'in aynı sorununa karşı ekledikleri savunmadan
         // esinlenildi. Ham istek (p) ağ hatasıyla reddederse, bizim eklediğimiz
         // .then() zinciri bu reddi hiç yakalamadan çağırana (Kick'in kendi
-        // kodu) iletiyordu — Chrome bu durumda "Uncaught (in promise)" hatasını
+        // kodu) iletiyordu - Chrome bu durumda "Uncaught (in promise)" hatasını
         // BİZİM yığın izimizle raporlayabiliyor, gerçek sebep bizim kodumuz
         // olmasa bile. Sondaki .catch(rethrow) NİHAİ sonucu DEĞİŞTİRMİYOR
-        // (aynı hata çağırana yine gidiyor) — sadece ara adımları "tüketilmiş"
+        // (aynı hata çağırana yine gidiyor) - sadece ara adımları "tüketilmiş"
         // işaretleyip yanlış atıf riskini azaltıyor.
         return p.then(function (resp) {
           try {
@@ -616,7 +619,7 @@
               if (!pageVod) return resp; // sadece canlı açık, bu yanıt VOD: eski davranış (dokunma)
               var touched = neutralizeAds(j);
 
-              // v2.5.3: Mo'Kick'in kenar durumu — VOD sayfasındayız ama akış
+              // v2.5.3: Mo'Kick'in kenar durumu - VOD sayfasındayız ama akış
               // hâlâ CANLI (henüz VOD'a dönüşmemiş). Reklamsız kaynak aramanın
               // bir anlamı yok, sadece izleme oturumunu temizleyip dokunmadan geç.
               if (!isVod && pu && isVodUrlPage() && pu.vod_session) {
@@ -647,7 +650,7 @@
                       settled = true;
                       kaClog('ADB-04', 'VOD temiz kaynak arama zaman asimina ugradi (2.5sn), orijinal kullanildi');
                       resolve(null);
-                    }, 2500); // v2.5.2: Mo'Kick'in swapBudgetMs'inden esinlenildi — arama asla akışı süresiz bekletmesin
+                    }, 2500); // v2.5.2: Mo'Kick'in swapBudgetMs'inden esinlenildi - arama asla akışı süresiz bekletmesin
                     Promise.resolve(result).then(function (v) {
                       if (settled) return;
                       settled = true;
@@ -705,7 +708,7 @@
       var args = [].slice.call(arguments);
       try { console.log('%c KickAlert \u00b7 ADB-06 (worker) %c ' + args.join(' '), 'background:#5e35b1;color:#fff;border-radius:3px;padding:1px 2px', 'color:inherit'); } catch (e) {}
       // v2.3.20: Worker'ın kendi metin logları da sayfa katmanına (ve oradan
-      // background.js'e) iletilsin — 3 önceki event'in (ADB-01/02/03) yanı sıra,
+      // background.js'e) iletilsin - 3 önceki event'in (ADB-01/02/03) yanı sıra,
       // "master prefetch önbellekten", "worker kancası kuruldu" gibi metin
       // logları da artık tek konsolda görünür.
       try { post({ kaAbLog: args.join(' ') }); } catch (e) {}
@@ -737,18 +740,33 @@
       if (adFree.url && adFree.slug === KA_AB_SLUG && (now - adFree.ts) < 60000) return Promise.resolve(adFree.url);
       if (!KA_AB_SLUG) return Promise.resolve(null);
       var forSlug = KA_AB_SLUG;
-      return origFetch.call(self, 'https://kick.com/api/v2/channels/' + forSlug, { credentials: 'include' })
+      // v2.5.82: 2,5 sn zaman aşımı (sayfa tarafındakiyle aynı). Kanal bilgisi
+      // yavaş gelirse oynatıcının master isteği beklemesin, orijinal akışla devam.
+      var ctl = null, tmr = null;
+      try { ctl = (typeof AbortController === 'function') ? new AbortController() : null; } catch (e) { ctl = null; }
+      var opts = { credentials: 'include' };
+      if (ctl) { opts.signal = ctl.signal; tmr = setTimeout(function () { try { ctl.abort(); } catch (e) {} }, 2500); }
+      return origFetch.call(self, 'https://kick.com/api/v2/channels/' + forSlug, opts)
         .then(function (r) { return r.json(); })
         .then(function (j) {
-          if (j && j.playback_url) { adFree.url = j.playback_url; adFree.ts = now; adFree.slug = forSlug; return j.playback_url; }
+          if (tmr) clearTimeout(tmr);
+          var pu = j && j.playback_url;
+          var u = typeof pu === 'string' ? pu : (pu && typeof pu.live === 'string' ? pu.live : '');
+          if (u) { adFree.url = u; adFree.ts = now; adFree.slug = forSlug; return u; }
           return null;
-        }).catch(function () { return null; });
+        }).catch(function () { if (tmr) clearTimeout(tmr); return null; });
     }
 
     var masterCache = { text: null, slug: '', ts: 0, ct: '' };
+    // v2.5.82: Sayfa seviyesi değişim tuttuğunda (oynatıcı zaten reklamsız
+    // adresi istiyor) worker'ın reklamsız master'ı önceden indirmesi boşa
+    // gidiyordu. Ön yükleme artık sadece worker reklamlı bir master gördükten
+    // sonra (sayfa değişimi tutmadığında) yapılıyor.
+    var lastMasterOptOut = null;
     function prefetchMaster() {
       var forSlug = KA_AB_SLUG;
       if (!forSlug || !enabled) return;
+      if (lastMasterOptOut !== false) return;
       if (masterCache.text && masterCache.slug === forSlug && (Date.now() - masterCache.ts) < 30000) return;
       getAdFreeMaster().then(function (af) {
         if (!af || KA_AB_SLUG !== forSlug) return;
@@ -804,12 +822,12 @@
     }
 
     // v2.5.0: JWT-tabanlı slug ÇAPRAZ KONTROLÜ (Mo'Kick'in slug senkron
-    // düzeltmesinden esinlenildi). DAVRANIŞI DEĞİŞTİRMİYOR — hangi slug'ın
+    // düzeltmesinden esinlenildi). DAVRANIŞI DEĞİŞTİRMİYOR - hangi slug'ın
     // kullanılacağına hâlâ KA_AB_SLUG karar veriyor. Bu sadece bir KANARYA:
     // manifest URL'sindeki imzalı token'ın içine gömülü olabilecek yol
     // bilgisini çözüp KA_AB_SLUG ile karşılaştırıyor, uyuşmazlık olursa
     // logluyor. Kick'in token yapısını %100 doğrulayamadığımız için önce
-    // gerçek dünyada bu uyumsuzluk hiç oluyor mu diye VERİ topluyoruz —
+    // gerçek dünyada bu uyumsuzluk hiç oluyor mu diye VERİ topluyoruz -
     // veri olmadan mevcut (zaten senkron/anlık çalışan) mekanizmayı
     // riske atmıyoruz.
     function slugFromManifestUrl(u) {
@@ -846,17 +864,17 @@
         var p = origFetch.apply(self, arguments);
         if (!enabled) return p;
 
-        // v2.4.11: Segment-cerrahi (3. teknik) — master swap'tan BAĞIMSIZ çalışır.
+        // v2.4.11: Segment-cerrahi (3. teknik) - master swap'tan BAĞIMSIZ çalışır.
     // Medya playlist'inde (segment listesi) doğrudan gömülü SCTE-35 reklam
     // işaretçilerini (#EXT-X-CUE-OUT/-IN, DATERANGE'da stitched-ad-break)
-    // tanıyıp SADECE o segmentleri çıkarır — ayrı bir "temiz kaynak" aramaya
+    // tanıyıp SADECE o segmentleri çıkarır - ayrı bir "temiz kaynak" aramaya
     // gerek yok. Master swap zaten başarılıysa burası muhtemelen hiç
-    // tetiklenmez (temiz kaynakta zaten bu işaretçiler yoktur) — bu, ek bir
+    // tetiklenmez (temiz kaynakta zaten bu işaretçiler yoktur) - bu, ek bir
     // GÜVENLİK AĞI, ana yöntemin yerini almıyor.
     //
     // BİLİNÇLİ TEMKİNLİLİK: Diğer eklentilerde gördüğümüz daha agresif
     // sezgisel yöntemleri (segment başlığı UUID'ye benziyorsa reklam say vb.)
-    // kasıtlı olarak KULLANMIYORUZ — yanlış pozitif riski (gerçek içeriği
+    // kasıtlı olarak KULLANMIYORUZ - yanlış pozitif riski (gerçek içeriği
     // reklam sanıp atlamak), reklamı kaçırmaktan daha kötü bir kullanıcı
      // deneyimi. Sadece açık, belirsizlik taşımayan CUE-OUT/CUE-IN ve
     // DATERANGE class="...stitched-ad..." işaretçilerine güveniyoruz.
@@ -875,12 +893,12 @@
       // v2.5.4: KRİTİK GÜVENLİK DÜZELTMESİ. Bir CUE-OUT'un karşılığı olan
       // CUE-IN bu manifest içinde HİÇ gelmezse (örn. yayıncı tam bir reklam
       // arası SIRASINDA yayını kapatırsa), eski kod listenin SONUNA kadar her
-      // şeyi reklam sayıp siliyordu — bu da oynatıcının "akış bitti" sinyalini
+      // şeyi reklam sayıp siliyordu - bu da oynatıcının "akış bitti" sinyalini
       // hiç görmemesine, sonsuza kadar reklam bekliyormuş gibi DONMASINA yol
       // açabiliyordu (kullanıcı raporu: yayın kapanınca "offline" yerine
       // reklam ekranında donuk kalıyor). Artık kapanmamış bir arayı, kapanana
       // KADAR geçici bir tampona alıyoruz; liste kapanmadan biterse o
-      // segmentleri SİLMİYORUZ, olduğu gibi geri koyuyoruz — bir sonraki
+      // segmentleri SİLMİYORUZ, olduğu gibi geri koyuyoruz - bir sonraki
       // manifest yenilemesinde (eğer reklam gerçekten devam ediyorsa) zaten
       // yakalanacak. Riski dengelenmiş: en kötü ihtimalle birkaç saniyelik
       // reklam görünür, ama oynatıcı asla donmaz.
@@ -921,13 +939,13 @@
         outLines.push(line);
       }
 
-      // Liste, ara HÂLÂ AÇIKKEN bitti — kapanmamış kısmı silmeden geri koy.
+      // Liste, ara HÂLÂ AÇIKKEN bitti - kapanmamış kısmı silmeden geri koy.
       if (inAdBreak && pendingAdLines.length) {
         pendingAdLines.forEach(function (l) { outLines.push(l); });
       }
 
       // GÜVENLİK KONTROLÜ: hiç segment çıkarılmadıysa ya da TÜM segmentler
-      // çıkarılmış gibi görünüyorsa (parse hatası ihtimali), dokunma —
+      // çıkarılmış gibi görünüyorsa (parse hatası ihtimali), dokunma -
       // orijinali kullan. Yarım/bozuk bir playlist döndürmek, reklam
       // göstermekten çok daha kötü (akış tamamen durabilir).
       if (removedCount === 0) return null;
@@ -936,11 +954,11 @@
       return outLines.join('\n');
     }
 
-    // v2.5.3: Mo'Kick v3.2.8'den esinlenildi — İKİNCİL, DAR KAPSAMLI bir yedek.
+    // v2.5.3: Mo'Kick v3.2.8'den esinlenildi - İKİNCİL, DAR KAPSAMLI bir yedek.
     // stripAdSegments (yukarıda) açık SCTE-35 işaretçilerine bakıyor; bu bulunamazsa,
     // segment URI'sinin HOST'una bakıp kick.com'a ait olmayanları (yabancı/reklam
     // sunucusu) çıkarıyoruz. BİLİNÇLİ TEMKİNLİLİK: Bu kontrolü SADECE Mo'Kick'in
-    // belirlediği VOD-özel URL deseninde (VOD_STITCH_RE) çalıştırıyoruz — canlı
+    // belirlediği VOD-özel URL deseninde (VOD_STITCH_RE) çalıştırıyoruz - canlı
     // yayının genel .m3u8'lerinde DEĞİL. Sebep: Kick'in kendi CDN'i her zaman
     // *.kick.com olmayabilir; bunu genel olarak uygularsak meşru segmentleri
     // yanlışlıkla "yabancı" sayıp akışı bozma riski taşırdık. Dar kapsam, bu
@@ -959,7 +977,7 @@
 
       function flushPending() {
         // kept===0 ise (henüz hiç meşru segment eklenmediyse) sarkan
-        // #EXT-X-DISCONTINUITY etiketlerini de at — anlamsız kalırlardı
+        // #EXT-X-DISCONTINUITY etiketlerini de at - anlamsız kalırlardı
         var flushable = kept ? pending : pending.filter(function (p) { return p.trim() !== '#EXT-X-DISCONTINUITY'; });
         flushable.forEach(function (p) { outLines.push(p); });
         pending = [];
@@ -993,7 +1011,7 @@
       return outLines.join('\n');
     }
 
-    // v2.5.51: Kick Ad Blocker (AI Chat) v1.1.1'den uyarlandı — üçüncü yedek.
+    // v2.5.51: Kick Ad Blocker (AI Chat) v1.1.1'den uyarlandı - üçüncü yedek.
     // Amazon IVS medya listesinde her segmentin kaynağını etiketliyor:
     // gerçek yayın "#EXTINF:<süre>,live", reklam segmentleri farklı bir kaynak
     // adıyla; ayrıca "X-NET-LIVE-VIDEO-STREAM-SOURCE" DATERANGE özniteliği.
@@ -1052,7 +1070,8 @@
                 // v2.5.68: sayfa seviyesi değişim tuttuysa oynatıcı zaten
                 // reklamsız (ads-opt-out) adresi istiyor; tekrar değiştirip
                 // sayacı iki kez artırmaya gerek yok.
-                if (isOptOutUrl(url)) { log('master zaten reklamsiz adresten (sayfa seviyesi), dokunulmadi'); return resp; }
+                if (isOptOutUrl(url)) { lastMasterOptOut = true; log('master zaten reklamsiz adresten (sayfa seviyesi), dokunulmadi'); return resp; }
+                lastMasterOptOut = false;
                 if (masterCache.text && masterCache.slug === KA_AB_SLUG && (Date.now() - masterCache.ts) < 30000) {
                   post({ kaAbSwapped: 1 });
                   log('master prefetch onbellekten (aninda)');
@@ -1094,7 +1113,7 @@
                 }
               } catch (e) { /* parse hatasi - orijinal akisa dokunulmadan devam */ }
               if (!(txt.indexOf('#EXT-X-CUE-OUT') !== -1 || txt.indexOf('stitched-ad') !== -1) && VOD_STITCH_RE.test(url)) {
-                // v2.5.3: Açık CUE-OUT işaretçisi yoktu ama bu VOD-özel bir istek —
+                // v2.5.3: Açık CUE-OUT işaretçisi yoktu ama bu VOD-özel bir istek -
                 // host-bazlı yedek tekniği dene.
                 try {
                   var strippedHost = stripForeignHostSegments(txt, resp.url || url);
@@ -1130,7 +1149,7 @@
           var fw2 = fixWasm(String(url));
           if (fw2) { url = fw2; arguments[1] = fw2; }
         } catch (e) {}
-        // v2.4.11: /playback isteğinin bu XHR üzerinden gittiğini işaretle —
+        // v2.4.11: /playback isteğinin bu XHR üzerinden gittiğini işaretle -
         // send() içinde JSON temizliği yapabilmek için url'i saklıyoruz.
         try { this.__kaAbUrl = String(url); } catch (e) {}
         return origOpen.apply(this, arguments);
@@ -1139,7 +1158,7 @@
       // XHR üzerinden gelme ihtimaline karşı (Kick tarafında değişebilir)
       // aynı neutralizePlayback() temizliğini burada da uyguluyoruz. .m3u8
       // değişimi (asenkron, "temiz kaynak" arama gerektiriyor) burada
-      // uygulanmıyor — sadece senkron JSON temizliği, düşük risk.
+      // uygulanmıyor - sadece senkron JSON temizliği, düşük risk.
       XMLHttpRequest.prototype.send = function () {
         var xhr = this;
         if (enabled && xhr.__kaAbUrl && PLAYBACK_RE.test(xhr.__kaAbUrl)) {
@@ -1187,14 +1206,14 @@
       var isModule = options && options.type === 'module';
       if (videoOn && !isModule && /amazon-ivs|\/ivs\//i.test(url)) {
         // v2.5.7: v2.5.3'te importScripts() yaklaşımına geçmiştik (senkron
-        // indirmeyi ortadan kaldırmak için) — ama bu, worker'ın script URL'sinin
+        // indirmeyi ortadan kaldırmak için) - ama bu, worker'ın script URL'sinin
         // sarmalama anında HÂLÂ geçerli/erişilebilir olduğunu varsayıyordu.
         // Yayın bitip yeni bir worker denemesi olduğunda bu URL geçersiz kalırsa,
-        // importScripts() worker'ı SESSİZCE ÇÖKERTİYOR — Kick'in sayfası o
+        // importScripts() worker'ı SESSİZCE ÇÖKERTİYOR - Kick'in sayfası o
         // worker'dan beklediği mesajları hiç alamayıp donuk kalabiliyor
         // (kullanıcı raporu: yayın bitince "Ad" ekranında/boş ekranda dakikalarca
         // takılı kalma). Eski, daha sağlam yönteme (script'i senkron indirip
-        // shim'in içine GÖMME) geri dönüyoruz — indirme başarısız olursa
+        // shim'in içine GÖMME) geri dönüyoruz - indirme başarısız olursa
         // sarmalamayı hiç denemeyip orijinal worker'a düşüyoruz.
         var src = readSync(url);
         if (src) {

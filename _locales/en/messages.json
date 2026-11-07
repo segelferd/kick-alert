@@ -64,10 +64,14 @@
     "message": "Warn"
   },
   "appDescription": {
-    "message": "Be the first to know when Kick.com goes live — instant alerts, ad-free streams, spam-free chat, zero ninja escapes ;)"
+    "message": "Get notified the moment your Kick streamers go live. Auto-launch streams, block ads, filter chat, watch 4 streams at once. Free."
   },
   "appName": {
-    "message": "KickAlert — Kick.com Live Alerts"
+    "message": "KickAlert - Kick Live Alerts, Auto-Launch & Ad Blocker"
+  },
+  "appNameShort": {
+    "message": "KickAlert - Kick Live Alerts & Auto-Launch",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
     "message": "Auto Launch"
@@ -142,10 +146,14 @@
     "message": "Filter mode"
   },
   "chatFilterModeDesc": {
-    "message": "Hide removes the message. Blur fades it — hover to see."
+    "message": "Hide removes the message. Blur fades it - hover to see."
   },
   "chatIntegrationDesc": {
     "message": "When on, Chat tab appears above. After first install, refresh any open Kick tabs."
+  },
+  "chatNotifJump": {
+    "message": "Go to chat notification settings",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "Chat Integration"
@@ -305,7 +313,7 @@
     "message": "Using browser language: $1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "Browser language not supported — using English"
+    "message": "Browser language not supported - using English"
   },
   "langSectionTitle": {
     "message": "Language"
@@ -370,6 +378,98 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Reset auto-launch settings to On when browser restarts"
   },
+  "raidGuardCheckbox": {
+    "message": "Close auto-opened tabs when the stream moves to another channel",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "Only tabs KickAlert opened itself. Tabs you opened, or moved to another channel yourself, are left alone.",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "Channel name...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "Add",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "Clear",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "Remove all streams",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "Single stream",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "Side by side",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "Three columns",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "2×2 grid",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "Focus",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "Add channel names above to start watching multiple streams.",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "Drag and drop cards to reorder.",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "Fullscreen",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "Remove",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "Listen to this stream only",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "Mute this stream",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "Chat",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "Show chat",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "Close chat",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "Open chat in a new tab",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "Add a channel to see its chat.",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "Can't send messages here? Open the chat in a new tab.",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
+  },
   "searchChannels": {
     "message": "Search channels..."
   },
@@ -395,13 +495,13 @@
     "message": "Extension sounds"
   },
   "soundModeExtensionTooltip": {
-    "message": "Eye-catching custom alerts — hard to miss"
+    "message": "Eye-catching custom alerts - hard to miss"
   },
   "soundModeWindows": {
     "message": "Windows sounds"
   },
   "soundModeWindowsTooltip": {
-    "message": "Standard system sound — may blend into background"
+    "message": "Standard system sound - may blend into background"
   },
   "testSoundVolume": {
     "message": "[Test]"
@@ -422,34 +522,70 @@
     "message": "+$1 more"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — No live streams"
+    "message": "KickAlert - No live streams"
   },
   "viewerTrendTitle": {
     "message": "Viewer Trend"
   },
   "chatBroadcasterNotif": {
     "message": "Streamer message notification",
-    "description": "Chat integration — chatBroadcasterNotif"
+    "description": "Chat integration - chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
     "message": "Get notified when the streamer writes in chat. Max 1 notification per minute.",
-    "description": "Chat integration — chatBroadcasterDesc"
+    "description": "Chat integration - chatBroadcasterDesc"
+  },
+  "radarTitle": {
+    "message": "Background chat radar",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "Watches the chat of up to 5 followed channels while they are live, even with no Kick tab open. You get a notification when your username or one of the words below is written.",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "Add channel...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "Messages that mention $1 are caught too (username from Tag notification).",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "To catch mentions too, enter your username under Tag notification.",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "Enter a channel name.",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 is not one of your followed channels.",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "You can add up to $1 channels.",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "“$1” in $2's chat",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
   },
   "chatBroadcasterNotifTitle": {
     "message": "$1 wrote in chat",
-    "description": "Chat integration — chatBroadcasterNotifTitle"
+    "description": "Chat integration - chatBroadcasterNotifTitle"
   },
   "chatWordFilterDesc": {
     "message": "Messages containing these words are hidden or blurred.",
-    "description": "Chat integration — chatWordFilterDesc"
+    "description": "Chat integration - chatWordFilterDesc"
   },
   "chatUserFilterDesc": {
     "message": "Messages from listed users are hidden or blurred.",
-    "description": "Chat integration — chatUserFilterDesc"
+    "description": "Chat integration - chatUserFilterDesc"
   },
   "chatEmojiSpamDesc": {
     "message": "Dims messages with excessive emojis (hover to reveal).",
-    "description": "Chat integration — chatEmojiSpamDesc"
+    "description": "Chat integration - chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
     "message": "live for $1 min",
@@ -461,7 +597,7 @@
   },
   "anomalyWindowLabel": {
     "message": "last $1 min",
-    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+    "description": "Anomaly notification - window over which the change happened. $1 = minutes."
   },
   "botScoreTooltip": {
     "message": "Bot suspicion score: $1%",
@@ -473,7 +609,7 @@
   },
   "botScoreAlwaysVisibleLabel": {
     "message": "Show bot score on all live channels",
-    "description": "Toggle label — show bot score badge on all live channels."
+    "description": "Toggle label - show bot score badge on all live channels."
   },
   "botScoreAlwaysVisibleHint": {
     "message": "When off, the score appears only during a spike.",
@@ -489,19 +625,19 @@
   },
   "timeAgoDay": {
     "message": "$1d ago",
-    "description": "Relative time — timeAgoDay"
+    "description": "Relative time - timeAgoDay"
   },
   "timeAgoHour": {
     "message": "$1h ago",
-    "description": "Relative time — timeAgoHour"
+    "description": "Relative time - timeAgoHour"
   },
   "timeAgoMin": {
     "message": "$1m ago",
-    "description": "Relative time — timeAgoMin"
+    "description": "Relative time - timeAgoMin"
   },
   "timeAgoJustNow": {
     "message": "Just now",
-    "description": "Relative time — timeAgoJustNow"
+    "description": "Relative time - timeAgoJustNow"
   },
   "viewerHistoryNoData": {
     "message": "Not enough data yet",
@@ -584,7 +720,7 @@
     "message": "You appear to be offline. Check your internet connection and try again."
   },
   "fetchErrorRateLimited": {
-    "message": "Kick is temporarily limiting requests. This resolves automatically — please wait a moment."
+    "message": "Kick is temporarily limiting requests. This resolves automatically - please wait a moment."
   },
   "fetchErrorServerError": {
     "message": "Kick's servers are having an issue right now. Please try again in a few minutes."
@@ -593,7 +729,7 @@
     "message": "Something went wrong loading your channels. Please try again."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick isn't recognizing your session right now, even though you're logged in. This usually happens when signed in via Google, Apple, or another social account, due to an inconsistency on Kick's own servers — it's not a bug in this extension. Fix: log out of kick.com and log back in with your email and password. If you don't have a password (because you signed up via Google/Apple), use \"Forgot password?\" on the login screen to set one. If that doesn't help, this usually resolves on its own within a few minutes."
+    "message": "Kick isn't recognizing your session right now, even though you're logged in. This usually happens when signed in via Google, Apple, or another social account, due to an inconsistency on Kick's own servers - it's not a bug in this extension. Fix: log out of kick.com and log back in with your email and password. If you don't have a password (because you signed up via Google/Apple), use \"Forgot password?\" on the login screen to set one. If that doesn't help, this usually resolves on its own within a few minutes."
   },
   "emailLoginNotice": {
     "message": "For KickAlert to work reliably, we recommend logging into Kick with email and password. Signing in with \"Google,\" \"Apple,\" or another social account can sometimes prevent the extension from loading your data, due to an inconsistency on Kick's own servers."
@@ -602,7 +738,7 @@
     "message": "Ad Blocking"
   },
   "adBlockWarning": {
-    "message": "Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected. Open Kick tabs must be refreshed for this to take effect."
+    "message": "Experimental and unofficial - depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected. Open Kick tabs must be refreshed for this to take effect."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Relevant right now:"
@@ -626,7 +762,7 @@
     "message": "Enable Ad Blocking?"
   },
   "adBlockConfirmBody": {
-    "message": "This is experimental and unofficial — it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks."
+    "message": "This is experimental and unofficial - it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks."
   },
   "adBlockConfirmAccept": {
     "message": "I understand, enable it"
@@ -647,7 +783,7 @@
     "message": "You're not following anyone yet. Follow a channel on Kick and it'll show up here automatically."
   },
   "whatsNewBannerText": {
-    "message": "New: bot score on Firefox, and a short guide for site permissions that are off after an update."
+    "message": "This version brings a smoother interface, special-day icons and Undo, along with pause, the background chat radar and the Multi-Stream improvements."
   },
   "optGroupGeneral": {
     "message": "General"
@@ -673,23 +809,47 @@
   "close": {
     "message": "Close"
   },
+  "cardOpenChannel": {
+    "message": "Open channel",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "Add to Multi-Stream",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "Add to favorites",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "Remove from favorites",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "Open Multi-Stream",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "Open Kick.com",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — Bot score on Firefox, permission guide"
+    "message": "v2.6.0 - Smoother interface, special-day icons, Undo"
   },
   "releaseHistoryV0Body": {
-    "message": "• Bot score now works on Firefox too, just like on Chrome\n• After an update, a short guide lists any site permission that is off, explains why it is needed and lets you turn it on\n• Firefox: requests through an open Kick tab work again"
+    "message": "• Smoother interface: cards glide into place when a channel goes live, newly live channels get a short green ring, the bell rings when you turn it on and tabs slide\n• Pause and \"Mute for 1 hour\" show the time left as a ring around the icon\n• Cleaner cards: the bell and the star are always visible, the other buttons appear when you point at a card\n• Undo: removing a favorite, clearing the notification history, deleting a group or removing a chat word can be undone from the bar at the bottom\n• Empty lists now tell you what to do next\n• Special-day icons: on a few holidays in your region the toolbar icon gets a themed look (you can turn this off in Settings)\n• Multi-Stream: the stream with sound shows a small equalizer, and tiles slide when you change the layout\n• One icon style everywhere, and the sort bar stays on top while you scroll\n• New website: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — Instant alerts and raids work again"
+    "message": "v2.5.111 - Pause, chat radar, event sounds, Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• Instant live alerts, raid alerts and the bot score work again: Kick replaced the key of its real-time service, and KickAlert now gets the current key from Kick automatically\n• If Kick changes it again, the extension picks up the new key on its own instead of repeating errors\n• The popup no longer shows a second scrollbar or empty space at the bottom of Settings"
+    "message": "• Pause notifications for 1 hour or until morning from the top bar; the second button on a Chrome notification mutes that channel for 1 hour\n• A \"Will this channel notify you?\" check in each channel's settings lists everything that can stop an alert\n• Background chat radar: get notified when your username or chosen words are written in up to 5 channels, even with no Kick tab open\n• 10 new sounds made for raids, stream end, stream moved and category changes, with a separate sound for each event\n• Multi-Stream: streams start muted, listen to one stream with a single click, chat drawer on the side\n• Optional alert when a streamer moves their stream to another channel, and an option to close auto-opened tabs when that happens\n• Compact card layout; chat alert settings stay hidden while Chat integration is off\n• Chat filters also catch disguised spelling (look-alike letters, invisible characters, spaced-out letters)\n• Bot score uses Kick's own chatter count from the first minute and accounts for all chat modes\n• Backup realtime connection if Kick's main service goes quiet\n• Tooltips that stayed in English now follow your language, and the wording was polished in several languages\n• Fixes: settings changed in the popup no longer revert with Cloud Sync on; Multi-Stream players work with the extra kick.com permission; the toolbar card lists live channels on Chrome"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — More accurate channel alerts"
+    "message": "v2.5.87 - Bot score on Firefox, permissions, ad blocking fix"
   },
   "releaseHistoryV2Body": {
-    "message": "• More accurate category and title alerts: a brief wrong reading from Kick no longer triggers an alert, and a change made during the 5-minute wait is sent once it ends\n• Changes made while alerts were paused (Do Not Disturb, a muted channel) no longer arrive later as old news"
+    "message": "• Bot score now works on Firefox too, just like on Chrome\n• After an update, a short guide lists any site permission that is off, explains why it is needed and lets you turn it on\n• Firefox: requests through an open Kick tab work again\n• Ad blocking: blocking of ad servers now really works (KickAlert asks for access to ad domains when you turn it on)\n• No more black screen at the end of a stream when ad blocking is on\n• Bot score accounts for slow mode and subscriber-only chat from the start\n• The new \"Extension permissions\" section in Options shows which permissions are on and turns on any that are off with a single click; if one is off, a notice appears above the channel list"
   },
   "settingsBackupTitle": {
     "message": "Backup & Restore"
@@ -716,7 +876,7 @@
     "message": "Imported! Reloading..."
   },
   "importSettingsFail": {
-    "message": "Import failed — file may be corrupted"
+    "message": "Import failed - file may be corrupted"
   },
   "importConfirmTitle": {
     "message": "Import Settings?"
@@ -770,7 +930,7 @@
     "message": "$1 replied to you"
   },
   "chatMentionSoundSmart": {
-    "message": "Only when you're not actively watching (tab in background, chat scrolled up, or Kick's own chat panel hidden) — applies to tags, replies, and streamer messages."
+    "message": "Only when you're not actively watching (tab in background, chat scrolled up, or Kick's own chat panel hidden) - applies to tags, replies, and streamer messages."
   },
   "chatMentionSoundEnabled": {
     "message": "Also play a sound"
@@ -789,6 +949,18 @@
   },
   "themeSystem": {
     "message": "System"
+  },
+  "cardDensityLabel": {
+    "message": "Card layout",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "Comfortable",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "Compact",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "Filters"
@@ -812,6 +984,62 @@
   "chipGuardLabel": {
     "message": "Guard",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "Pause",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "Paused · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "Pause notifications for a while",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "Notifications are paused until $1. Click for options.",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "Pause notifications",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "For 1 hour",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "Until morning ($1)",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "Favourites still notify",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "Resume notifications now",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "Notifications, sounds and auto-launch stop. Channels that go live are still saved in Notification History.",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "Mute for 1 hour",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "Notifications are paused until $1.",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "This channel was muted for 1 hour from a notification; it notifies again at $1.",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "Notifications are paused until $1, but this channel is a favourite, so it still notifies.",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "KickAlert Options",
@@ -844,6 +1072,90 @@
   "chAlertSubtitle": {
     "message": "Extra alerts for this channel. All are off by default.",
     "description": "Subtitle in the per-channel alerts window"
+  },
+  "diagTitle": {
+    "message": "Will this channel notify you?",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "Yes: you'll get a notification when this channel goes live.",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "No notification will come from this channel:",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "Notifications are turned off in Options.",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "Your browser or operating system is blocking KickAlert notifications.",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "Access to kick.com is turned off.",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "This channel is set to \"No notification\" (the bell on its card).",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "No mode was chosen for this channel and the default is \"No notification\". Pick one with the bell on its card.",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "This channel is set to \"Silent notification\": the notification comes without sound.",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "Do Not Disturb is on now ($1 to $2): notifications are muted.",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "Do Not Disturb mutes notifications between $1 and $2.",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "Filter: you're only notified when the stream matches $1.",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "The current stream doesn't match this channel's filter ($1).",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "The instant connection is down right now: notifications come with the follow-list check, 1 to 1.5 minutes late.",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "Instant tracking isn't set up for this channel yet: its notification comes with the follow-list check, 1 to 1.5 minutes late.",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "Kick is slowing down requests: the follow list will be checked again in about $1 min.",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "Last stream recorded: $1.",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "Last stream ($1) was skipped by the filter: $2.",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "No recent stream of this channel in the history. Streams that were already running when KickAlert started are not notified.",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "the category didn't match",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "the title didn't contain the word",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
   },
   "chAlertChange": {
     "message": "Category or title changes",
@@ -917,6 +1229,10 @@
     "message": "Raid from $1 · $2 viewers",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "Sent viewers to $1",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "Stream ended",
     "description": "Per-channel alert option label"
@@ -933,6 +1249,10 @@
     "message": "with $1 viewers",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "$1 moved the stream to $2",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "Incoming raid",
     "description": "Per-channel alert option label"
@@ -940,6 +1260,14 @@
   "chAlertRaidDesc": {
     "message": "Notify when another streamer raids this channel, with who raided and how many viewers came.",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "Stream moved to another channel",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "Notify when this streamer sends their viewers to another channel. Clicking the alert opens that channel.",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "Watch time",
@@ -970,8 +1298,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "For category/title change, stream ended and raid alerts. Choose a quieter extension sound, the Windows notification sound, or silence.",
+    "message": "For category/title change, stream ended, raid and stream moved alerts. Choose a quieter extension sound, the Windows notification sound, or silence.",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "Different sound per event",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "Leave it on \"General sound\" to use the sound above.",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "General sound",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "General",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "Raid",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "Stream ended",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "Stream moved",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "Category / title change",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "Pop",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "Marimba",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "Fanfare",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "Drum roll",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "Closing bell",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "Power down",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "Whoosh",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "Hop",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "Page flip",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "Update blip",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "Sound",
@@ -1148,5 +1548,184 @@
   },
   "permRemindButton": {
     "message": "Turn on"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "Next, your browser will ask for access to Google's ad domains. KickAlert uses it only to block ad requests on kick.com."
+  },
+  "permWizAdsTitle": {
+    "message": "Ad domain blocking"
+  },
+  "permWizAdsWhy": {
+    "message": "Lets ad blocking stop requests to Google's ad servers on kick.com. It does not read any other site."
+  },
+  "permWizAdsOff": {
+    "message": "Ad blocking still works through the player, but ad requests are not stopped at the network level."
+  },
+  "permWizAdsLabel": {
+    "message": "Access to ad domains"
+  },
+  "permWizRtTitle": {
+    "message": "Backup alert connection"
+  },
+  "permWizRtWhy": {
+    "message": "Lets KickAlert connect to Kick's new real-time server (*.kick.com). If the Pusher service stops responding, instant alerts keep arriving through this backup connection."
+  },
+  "permWizRtOff": {
+    "message": "When Pusher stops responding, alerts arrive 1 to 1.5 minutes late, and raid alerts do not work."
+  },
+  "permWizRtLabel": {
+    "message": "Access to Kick subdomains"
+  },
+  "permWinTitle": {
+    "message": "Last step: Firefox approval",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "Only Firefox can grant permissions. Click the button and approve them in the Firefox window that opens.",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "Open Firefox permission prompt",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "Permission was not granted. You can try again or close this window for now.",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "Welcome to KickAlert",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "Be the first to know when the streamers you follow go live. To do that, KickAlert uses this access:",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "Reads your follow list and whether channels are live. Uses your Kick session and never sees your password.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "Instant connection",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "Hears the moment a stream starts. When off, alerts arrive 1 to 1.5 minutes late and raid alerts do not work.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "Notifications and tabs",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "Shows desktop notifications and, if you want, opens the stream in a new tab.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "Ad blocking",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "You can turn it on in Options if you want. Turning it on asks for a separate permission for ad domains.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "Optional",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "It does not look at other sites, read your browsing history or see your password.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "Your browser opens its approval prompt",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "Firefox approval opens in a small window",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "You're all set!",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "KickAlert lets you know when the channels you follow go live. Choose which channels send alerts with the bell button on their cards.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "Go to my channels",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "Use this list to turn on permissions that are off. Your browser asks you to approve.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "On",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "Off",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "Turn on",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "The ad domain permission is off, so ad requests are not stopped at the network level.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "Muted until $1",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "Special-day icons",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "On a few holidays in your region, the toolbar icon gets a themed look for the day.",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "No one is live right now",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "We'll let you know the moment a channel you follow goes live.",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "Show offline channels",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "You're not following anyone yet",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "Follow channels on Kick and KickAlert picks up the list by itself.",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "Undo",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "$1 removed from favorites",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "Notification history cleared",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "Group \"$1\" deleted",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "\"$1\" removed",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }

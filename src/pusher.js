@@ -4,7 +4,7 @@
  * Connects to Kick's underlying Pusher WebSocket to receive real-time
  * `StreamerIsLive` events. This bypasses Cloudflare API rate limits because:
  *   1. WebSocket is on pusher.com (different infrastructure)
- *   2. Anonymous subscribe — no auth challenge
+ *   2. Anonymous subscribe - no auth challenge
  *   3. Single long-lived connection vs periodic polling
  *
  * Architecture:
@@ -21,10 +21,10 @@
  *   - If WS persistently fails → background.js falls back to API polling
  *
  * Browser compatibility:
- *   - chrome.runtime.connect / WebSocket native — both Chrome MV3 and Firefox MV2
+ *   - chrome.runtime.connect / WebSocket native - both Chrome MV3 and Firefox MV2
  *   - In MV3 service worker, WebSocket connection keeps SW alive (anti-sleep)
  *
- * ⚠️ BUG#10 NOTU — İKİZ IMPLEMENTASYON SENKRONİZASYONU:
+ * ⚠️ BUG#10 NOTU - İKİZ IMPLEMENTASYON SENKRONİZASYONU:
  *   Bu modül (pusher.js) FIREFOX yolunda kullanılır (SW içinde WebSocket).
  *   CHROME yolunda offscreen.js içindeki `LiveTracker` objesi kullanılır
  *   (offscreen document hiç uyumadığı için WebSocket kopmaz).
@@ -38,7 +38,7 @@
  */
 
 const Pusher = {
-  // Pusher Channels app ID — reverse-engineered from Kick.com sayfa
+  // Pusher Channels app ID - reverse-engineered from Kick.com sayfa
   // (this is the same app every Kick browser tab connects to)
   // v2.5.78: Kick eski uygulamayı (32cbd69e4b950bf97679) kapattı. Anahtar artık
   // pusher-config.js'teki KAPusherCfg'den gelir (background.js Kick'ten alır).
@@ -49,7 +49,7 @@ const Pusher = {
   _ws: null,                          // Current WebSocket instance
   _subscribedChannels: new Set(),     // 'channel.123', 'channel.456'
   _pendingSubscribes: new Set(),      // queue while connecting
-  _channelIdToSlug: {},               // v2.3.1 Plan F: { 229932: 'jahrein' } — live event channel_id → slug map
+  _channelIdToSlug: {},               // v2.3.1 Plan F: { 229932: 'jahrein' } - live event channel_id → slug map
   _reconnectAttempt: 0,
   _reconnectTimer: null,
   _pingTimer: null,
@@ -57,7 +57,7 @@ const Pusher = {
   _connected: false,
   _socketId: null,                    // pusher socket_id (for diagnostic)
   _onLiveCallback: null,              // (slug, livestreamData) => {}
-  _onOfflineCallback: null,           // (slug, data) => {} — StopStreamBroadcast
+  _onOfflineCallback: null,           // (slug, data) => {} - StopStreamBroadcast
   _stats: {
     connects: 0,
     disconnects: 0,
@@ -79,7 +79,7 @@ const Pusher = {
 
   /**
    * Subscribe to a channel by its numeric channel ID.
-   * v2.3.1 Plan F: slug parametresi de alıyoruz — live event channel_id veriyor,
+   * v2.3.1 Plan F: slug parametresi de alıyoruz - live event channel_id veriyor,
    * slug vermiyor. channel_id → slug mapping'i burada kuruyoruz.
    * @param {number} channelId
    * @param {string} slug - kanal slug'ı (live event'te slug gelmiyor, map için gerekli)
@@ -189,7 +189,7 @@ const Pusher = {
     }
     try {
       console.debug('[KickAlert] Pusher: bağlanıyor...');
-      const ws = new WebSocket(this.WS_URL);
+      const ws = kaOpenRealtimeSocket(); // v2.5.90: Pusher ya da Centrifugo
       this._ws = ws;
       this._stats.connects++;
 
@@ -219,7 +219,7 @@ const Pusher = {
 
       ws.addEventListener('error', (e) => {
         this._stats.errors++;
-        // Don't log noisy 'error' — close handler will manage reconnect
+        // Don't log noisy 'error' - close handler will manage reconnect
       });
     } catch (e) {
       console.warn('[KickAlert] Pusher: WebSocket oluşturulamadı:', e.message);
@@ -274,7 +274,7 @@ const Pusher = {
     }
 
     if (event === 'pusher:ping') {
-      // Server-initiated ping — respond with pong
+      // Server-initiated ping - respond with pong
       this._sendRaw({ event: 'pusher:pong', data: {} });
       return;
     }
@@ -293,20 +293,20 @@ const Pusher = {
           console.warn(`[KickAlert] Pusher kalıcı hata (${code}): ${message}`);
         }
       } else {
-        console.debug(`[KickAlert] Pusher geçici hata (${code ?? '?'}): ${message} — reconnect devrede`);
+        console.debug(`[KickAlert] Pusher geçici hata (${code ?? '?'}): ${message} - reconnect devrede`);
       }
       return;
     }
 
     if (event === 'pusher_internal:subscription_succeeded') {
-      // Channel subscribe confirmed — no action needed
+      // Channel subscribe confirmed - no action needed
       return;
     }
 
     // App events (Kick's Laravel backend forwards these via Pusher)
     // Event isimleri 'App\Events\' ile başlar.
     // StreamerIsLive data: { livestream: { id, channel_id, session_title, created_at } }
-    // NOT: Event 'slug' VERMİYOR — channel_id veriyor. Slug'a map etmemiz lazım.
+    // NOT: Event 'slug' VERMİYOR - channel_id veriyor. Slug'a map etmemiz lazım.
     if (event === 'App\\Events\\StreamerIsLive') {
       this._stats.liveEvents++;
       try {
@@ -325,7 +325,7 @@ const Pusher = {
       return;
     }
 
-    // StopStreamBroadcast: yayın bitti — live state'i güncelle (bildirim yok)
+    // StopStreamBroadcast: yayın bitti - live state'i güncelle (bildirim yok)
     // data: { livestream: { id, channel: { id, is_banned } } }
     if (event === 'App\\Events\\StopStreamBroadcast') {
       try {
@@ -340,7 +340,20 @@ const Pusher = {
       return;
     }
 
-    // Other events (ChatMessage etc) — ignore for now
+    // v2.5.92 (b038): yayıncı izleyicilerini başka kanala taşıdı (Kick'in
+    // "Join host" penceresi). data: { hosted: { slug, username, viewers_count, ... } }
+    // Olay channel.{id} üzerinde gelir; kanal kimliği kanal adından okunur.
+    if (event === 'App\\Events\\ChatMoveToSupportedChannelEvent') {
+      try {
+        const data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
+        const m = /^channel\.(\d+)$/.exec(msg.channel || '');
+        const slug = m ? this._channelIdToSlug[m[1]] : null;
+        if (slug && data && data.hosted && typeof this.onHostMove === 'function') this.onHostMove({ slug, hosted: data.hosted });
+      } catch (err) { /* sessiz */ }
+      return;
+    }
+
+    // Other events (ChatMessage etc) - ignore for now
   },
 
   _sendSubscribe(channelName) {
@@ -372,6 +385,18 @@ const Pusher = {
 
   _scheduleReconnect(fixedDelay) {
     if (this._reconnectTimer) return; // Already scheduled
+
+    // v2.5.94: internet yokken deneme yapma; geri gelince hemen bağlan
+    if (!fixedDelay && !kaRtOnline()) {
+      this._onlineFn = this._onlineFn || (() => {
+        if (this._reconnectTimer) { clearTimeout(this._reconnectTimer); this._reconnectTimer = null; }
+        this._reconnectAttempt = 0;
+        if (this._onLiveCallback && !this._connected) this._connect();
+      });
+      kaOnOnlineOnce(this._onlineFn);
+      fixedDelay = KA_RT_OFFLINE_FALLBACK_MS;
+      console.debug('[KickAlert] Pusher: internet yok, bağlantı bekleniyor');
+    }
 
     // Exponential backoff: 1s, 2s, 4s, 8s, 16s, max 30s
     const delay = Math.min(1000 * Math.pow(2, this._reconnectAttempt), 30000);

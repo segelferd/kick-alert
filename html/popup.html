@@ -19,11 +19,25 @@
         <span class="chip-label" id="dup-guard-label" data-i18n="chipGuardLabel">Guard</span>
         <span class="chip-status" id="dup-guard-status"></span>
       </button>
+      <div class="pause-wrap" id="pause-wrap">
+        <button class="menu-chip" id="pause-chip" type="button" aria-haspopup="menu" aria-expanded="false">
+          <span class="material-icons-outlined" id="pause-icon">notifications_paused</span>
+          <span class="chip-label" id="pause-label" data-i18n="chipPauseLabel">Pause</span>
+        </button>
+        <div class="pause-menu" id="pause-menu" role="menu" hidden>
+          <div class="pause-menu-title" id="pause-menu-title" data-i18n="pauseMenuTitle">Pause notifications</div>
+          <button type="button" class="pause-menu-item" id="pause-1h" role="menuitem"><span class="material-icons-outlined">schedule</span><span data-i18n="pause1h">For 1 hour</span></button>
+          <button type="button" class="pause-menu-item" id="pause-morning" role="menuitem"><span class="material-icons-outlined">bedtime</span><span id="pause-morning-label" data-i18n="pauseMorning">Until 08:00</span></button>
+          <label class="pause-menu-check"><input type="checkbox" id="pause-favs" /><span data-i18n="pauseFavsAllowed">Favourites still notify</span></label>
+          <button type="button" class="pause-menu-item pause-resume" id="pause-resume" role="menuitem" hidden><span class="material-icons-outlined">notifications_active</span><span data-i18n="pauseResume">Resume notifications</span></button>
+          <div class="pause-menu-note" data-i18n="pauseNote">Notifications, sounds and auto-launch stop. Streams that go live are still saved in History.</div>
+        </div>
+      </div>
       <button class="menu-chip" id="refresh-chip" title="">
         <span class="material-icons">refresh</span>
         <span class="chip-label">Refresh</span>
       </button>
-      <button class="menu-chip" id="multi-chip" title="Open Multi-Stream viewer">
+      <button class="menu-chip" id="multi-chip" data-i18n-title="multiStreamOpen" title="Open Multi-Stream">
         <span class="material-icons">grid_view</span>
         <span class="chip-label">Multi</span>
       </button>
@@ -32,7 +46,7 @@
         <span class="chip-label">Options</span>
       </button>
     </div>
-    <a class="menu-kick-link" href="https://kick.com" target="_blank" title="Open Kick.com">
+    <a class="menu-kick-link" href="https://kick.com" target="_blank" data-i18n-title="openKickSite" title="Open Kick.com">
       <span class="material-icons">open_in_new</span> Kick
     </a>
   </div>
@@ -59,7 +73,7 @@
     <span class="material-icons-outlined">shield</span>
     <span class="whatsnew-banner-text" data-i18n="permRemindText">Some permissions are off, so instant alerts may not work fully.</span>
     <button type="button" id="perm-reminder-open" class="perm-reminder-btn" data-i18n="permRemindButton">Turn on</button>
-    <button type="button" id="perm-reminder-close" class="whatsnew-banner-close" aria-label="Close">
+    <button type="button" id="perm-reminder-close" class="whatsnew-banner-close" data-i18n-aria="close" aria-label="Close">
       <span class="material-icons-outlined">close</span>
     </button>
   </div>
@@ -164,7 +178,7 @@
           </label>
           <input type="checkbox" id="chat-filter-blur" style="display:none;" />
         </div>
-        <div class="chat-section-desc" data-i18n="chatFilterModeDesc">Hide removes the message. Blur fades it — hover to see.</div>
+        <div class="chat-section-desc" data-i18n="chatFilterModeDesc">Hide removes the message. Blur fades it - hover to see.</div>
       </div>
       <div class="chat-group-label" data-i18n="chatGroupFilters">Filters</div>
       <!-- Bot Filter -->
@@ -304,7 +318,7 @@
             <input type="text" id="chat-tag-username" class="chat-input" placeholder="Your Kick username..." data-i18n-placeholder="chatTagPlaceholder" />
           </div>
           <!-- v2.5.28: Ses ayarları Ayarlar > Bildirimler ve İzleme'ye taşındı
-               ("Chat Bildirim Sesi" bölümü) — bu sekmede sadece bildirimi
+               ("Chat Bildirim Sesi" bölümü) - bu sekmede sadece bildirimi
                açma/kapama kalıyor. -->
         </div>
       </div>
@@ -319,6 +333,33 @@
           </label>
         </div>
         <div class="chat-section-desc" data-i18n="chatBroadcasterDesc">Get notified when the streamer writes in chat. Max 1 notification per minute.</div>
+      </div>
+      <!-- v2.5.103: Background chat radar -->
+      <div class="chat-section" data-collapsible="true" data-enabled="false" data-flag="radarEnabled" id="chat-radar-section">
+        <div class="chat-section-header">
+          <span class="material-icons-outlined" style="font-size:14px;">track_changes</span>
+          <span data-i18n="radarTitle">Background chat radar</span>
+          <label class="toggle-switch toggle-switch-sm">
+            <input type="checkbox" id="chat-radar-enabled" />
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="chat-section-desc" data-i18n="radarDesc">Watches the chat of up to 5 followed channels while they are live, even with no Kick tab open. You get a notification when your username or one of the words below is written.</div>
+        <div class="chat-section-body">
+          <div class="chat-input-row">
+            <input type="text" id="chat-radar-ch-input" class="chat-input" list="chat-radar-ch-list" autocomplete="off" placeholder="Add channel..." data-i18n-placeholder="radarChannelPlaceholder" />
+            <button id="chat-radar-ch-add" class="chat-add-btn">+</button>
+          </div>
+          <datalist id="chat-radar-ch-list"></datalist>
+          <div id="chat-radar-ch-chips" class="chat-chips"></div>
+          <div id="chat-radar-ch-note" class="chat-radar-note" style="display:none;"></div>
+          <div class="chat-input-row" style="margin-top:8px;">
+            <input type="text" id="chat-radar-word-input" class="chat-input" placeholder="Add word..." data-i18n-placeholder="chatKeywordPlaceholder" />
+            <button id="chat-radar-word-add" class="chat-add-btn">+</button>
+          </div>
+          <div id="chat-radar-word-chips" class="chat-chips"></div>
+          <div id="chat-radar-me-note" class="chat-radar-note"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -343,7 +384,7 @@
           <span id="opt-email-login-notice-urgent" class="opt-email-login-notice-urgent" style="display:none;" data-i18n="emailLoginNoticeUrgentTag">Relevant right now:</span>
           <span data-i18n="emailLoginNotice">For KickAlert to work reliably, please make sure you're logged into Kick using email and password (not "Continue with Google").</span>
         </span>
-        <button id="opt-email-login-notice-close" class="opt-email-login-notice-close" aria-label="Close">
+        <button id="opt-email-login-notice-close" class="opt-email-login-notice-close" data-i18n-aria="close" aria-label="Close">
           <span class="material-icons-outlined" style="font-size:16px;">close</span>
         </button>
       </div>
@@ -383,6 +424,11 @@
           <input type="checkbox" id="opt-reset-suspend" />
           <span data-i18n="resetSuspendOnRestartCheckbox">Reset auto-launch settings to On when browser restarts</span>
         </label>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-raid-guard" />
+          <span data-i18n="raidGuardCheckbox">Close auto-opened tabs when the stream moves to another channel</span>
+        </label>
+        <div style="font-size:11px;color:var(--text-muted);padding:0 0 4px 22px;line-height:1.5;" data-i18n="raidGuardHint">Only tabs KickAlert opened itself. Tabs you opened, or moved to another channel yourself, are left alone.</div>
       </div>
       <div class="opt-section">
         <div class="opt-section-title">
@@ -403,6 +449,18 @@
             <button class="opt-theme-btn" id="opt-theme-system" data-theme="system" data-i18n="themeSystem">System</button>
           </div>
         </div>
+        <div class="opt-row" style="justify-content:space-between;margin-top:6px">
+          <span style="font-size:12px;color:var(--text-secondary)" data-i18n="cardDensityLabel">Card layout</span>
+          <div class="opt-theme-btns">
+            <button class="opt-density-btn" id="opt-density-comfortable" data-density="comfortable" data-i18n="cardDensityComfortable">Comfortable</button>
+            <button class="opt-density-btn" id="opt-density-compact" data-density="compact" data-i18n="cardDensityCompact">Compact</button>
+          </div>
+        </div>
+        <label class="opt-row" style="margin-top:6px">
+          <input type="checkbox" id="opt-special-day-icons" />
+          <span data-i18n="specialDayIconsLabel">Special-day icons</span>
+        </label>
+        <div style="font-size:11px;color:var(--text-muted);padding:2px 0 0 22px;line-height:1.5;" data-i18n="specialDayIconsDesc">The toolbar icon changes on a few holidays in your region.</div>
         <div class="opt-divider"></div>
         <div class="opt-groups-section">
           <div class="opt-groups-header">
@@ -541,12 +599,12 @@
           <span data-i18n="autoRefreshPopup">Auto-refresh Following tab</span>
         </label>
       </div>
-      <!-- v2.5.30: Chat Bildirimleri — Mo'Kick'in "Push Bildirimleri" (popup) /
+      <!-- v2.5.30: Chat Bildirimleri - Mo'Kick'in "Push Bildirimleri" (popup) /
            "Bildirim Sesi" (ses) ayrımından esinlenerek, artık İKİ BAĞIMSIZ
            eş-değer seçenek var (header'da TEK bir "master" toggle yok).
            Chat sekmesinde Tag/Yayıncı Mesajı bildirimlerinden EN AZ BİRİ açık
            değilse, section'ın TAMAMI .fully-disabled ile pasifleşiyor. -->
-      <div class="opt-section">
+      <div class="opt-section" id="opt-chat-notif-outer">
         <div class="opt-dnd-section" id="opt-chat-notif-sound-section">
           <div class="opt-dnd-header">
             <span class="material-icons-outlined" style="font-size:16px;">notifications_active</span>
@@ -567,12 +625,12 @@
           <div class="opt-dnd-body" id="opt-chat-notif-sound-body" style="margin-left:22px;">
             <label class="opt-row">
               <input type="checkbox" id="opt-chat-mention-sound-smart" />
-              <span data-i18n="chatMentionSoundSmart">Only when you're not actively watching (tab in background, chat scrolled up, or Kick's own chat panel hidden) — applies to tags, replies, and streamer messages.</span>
+              <span data-i18n="chatMentionSoundSmart">Only when you're not actively watching (tab in background, chat scrolled up, or Kick's own chat panel hidden) - applies to tags, replies, and streamer messages.</span>
             </label>
           </div>
         </div>
       </div>
-      <!-- v2.5.63: Kanal olayı sesi — değişim / yayın bitti / raid bildirimleri için
+      <!-- v2.5.63: Kanal olayı sesi - değişim / yayın bitti / raid bildirimleri için
            ayrı, daha kısık ses (veya sessiz). Ana ses modundan bağımsız. -->
       <div class="opt-section">
         <div class="opt-dnd-section" id="opt-event-sound-section">
@@ -586,9 +644,29 @@
           <div class="opt-slider-row opt-slider-row-compact">
             <span class="opt-slider-label" data-i18n="eventSoundLabel">Sound</span>
             <select id="opt-event-sound" class="opt-dnd-select opt-event-select">
-              <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
-              <option value="chime" data-i18n="eventSoundChime">Light chime</option>
-              <option value="tick" data-i18n="eventSoundTick">Tick</option>
+              <optgroup data-i18n-label="eventSoundGroupGeneral" label="General">
+                <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
+                <option value="chime" data-i18n="eventSoundChime">Light chime</option>
+                <option value="tick" data-i18n="eventSoundTick">Tick</option>
+                <option value="pop" data-i18n="eventSoundPop">Pop</option>
+                <option value="marimba" data-i18n="eventSoundMarimba">Marimba</option>
+              </optgroup>
+              <optgroup data-i18n-label="eventSoundGroupRaid" label="Raid">
+                <option value="raid_fanfare" data-i18n="eventSoundRaidFanfare">Fanfare</option>
+                <option value="raid_drums" data-i18n="eventSoundRaidDrums">Drum roll</option>
+              </optgroup>
+              <optgroup data-i18n-label="eventSoundGroupEnd" label="Stream ended">
+                <option value="end_goodnight" data-i18n="eventSoundEndGoodnight">Closing bell</option>
+                <option value="end_powerdown" data-i18n="eventSoundEndPowerdown">Power down</option>
+              </optgroup>
+              <optgroup data-i18n-label="eventSoundGroupHost" label="Stream moved">
+                <option value="host_whoosh" data-i18n="eventSoundHostWhoosh">Whoosh</option>
+                <option value="host_hop" data-i18n="eventSoundHostHop">Hop</option>
+              </optgroup>
+              <optgroup data-i18n-label="eventSoundGroupChange" label="Category / title change">
+                <option value="change_flip" data-i18n="eventSoundChangeFlip">Page flip</option>
+                <option value="change_blip" data-i18n="eventSoundChangeBlip">Update blip</option>
+              </optgroup>
               <option value="windows" data-i18n="eventSoundWindows">Windows notification sound</option>
               <option value="silent" data-i18n="eventSoundSilent">Silent</option>
             </select>
@@ -604,10 +682,146 @@
             <span class="opt-slider-label" data-i18n="eventSoundWindowsHint">Only the system sound plays, the extension sound does not.</span>
             <button id="opt-event-winsound-test" class="opt-text-btn" data-i18n="testSoundVolume">[Test]</button>
           </div>
+          <details class="opt-evtype" id="opt-evtype">
+            <summary><span class="material-icons-outlined">expand_more</span><span data-i18n="eventSoundPerType">Different sound per event</span></summary>
+            <div class="opt-evtype-hint" data-i18n="eventSoundPerTypeHint">Leave as "General sound" to use the sound above.</div>
+            <div class="opt-evtype-row" data-evtype="change">
+              <span class="material-icons-outlined opt-evtype-ico">swap_horiz</span>
+              <span class="opt-evtype-label" data-i18n="chAlertChange"></span>
+              <select class="opt-dnd-select opt-evtype-select" data-evtype="change">
+                <option value="default" data-i18n="eventSoundUseGeneral">General sound</option>
+                <optgroup data-i18n-label="eventSoundGroupGeneral" label="General">
+                  <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
+                  <option value="chime" data-i18n="eventSoundChime">Light chime</option>
+                  <option value="tick" data-i18n="eventSoundTick">Tick</option>
+                  <option value="pop" data-i18n="eventSoundPop">Pop</option>
+                  <option value="marimba" data-i18n="eventSoundMarimba">Marimba</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupRaid" label="Raid">
+                  <option value="raid_fanfare" data-i18n="eventSoundRaidFanfare">Fanfare</option>
+                  <option value="raid_drums" data-i18n="eventSoundRaidDrums">Drum roll</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupEnd" label="Stream ended">
+                  <option value="end_goodnight" data-i18n="eventSoundEndGoodnight">Closing bell</option>
+                  <option value="end_powerdown" data-i18n="eventSoundEndPowerdown">Power down</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupHost" label="Stream moved">
+                  <option value="host_whoosh" data-i18n="eventSoundHostWhoosh">Whoosh</option>
+                  <option value="host_hop" data-i18n="eventSoundHostHop">Hop</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupChange" label="Category / title change">
+                  <option value="change_flip" data-i18n="eventSoundChangeFlip">Page flip</option>
+                  <option value="change_blip" data-i18n="eventSoundChangeBlip">Update blip</option>
+                </optgroup>
+                <option value="windows" data-i18n="eventSoundWindows">Windows notification sound</option>
+                <option value="silent" data-i18n="eventSoundSilent">Silent</option>
+              </select>
+              <button type="button" class="opt-evtype-test" data-evtype="change"><span class="material-icons-outlined">play_arrow</span></button>
+            </div>
+            <div class="opt-evtype-row" data-evtype="end">
+              <span class="material-icons-outlined opt-evtype-ico">stop_circle</span>
+              <span class="opt-evtype-label" data-i18n="chAlertEnd"></span>
+              <select class="opt-dnd-select opt-evtype-select" data-evtype="end">
+                <option value="default" data-i18n="eventSoundUseGeneral">General sound</option>
+                <optgroup data-i18n-label="eventSoundGroupGeneral" label="General">
+                  <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
+                  <option value="chime" data-i18n="eventSoundChime">Light chime</option>
+                  <option value="tick" data-i18n="eventSoundTick">Tick</option>
+                  <option value="pop" data-i18n="eventSoundPop">Pop</option>
+                  <option value="marimba" data-i18n="eventSoundMarimba">Marimba</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupRaid" label="Raid">
+                  <option value="raid_fanfare" data-i18n="eventSoundRaidFanfare">Fanfare</option>
+                  <option value="raid_drums" data-i18n="eventSoundRaidDrums">Drum roll</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupEnd" label="Stream ended">
+                  <option value="end_goodnight" data-i18n="eventSoundEndGoodnight">Closing bell</option>
+                  <option value="end_powerdown" data-i18n="eventSoundEndPowerdown">Power down</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupHost" label="Stream moved">
+                  <option value="host_whoosh" data-i18n="eventSoundHostWhoosh">Whoosh</option>
+                  <option value="host_hop" data-i18n="eventSoundHostHop">Hop</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupChange" label="Category / title change">
+                  <option value="change_flip" data-i18n="eventSoundChangeFlip">Page flip</option>
+                  <option value="change_blip" data-i18n="eventSoundChangeBlip">Update blip</option>
+                </optgroup>
+                <option value="windows" data-i18n="eventSoundWindows">Windows notification sound</option>
+                <option value="silent" data-i18n="eventSoundSilent">Silent</option>
+              </select>
+              <button type="button" class="opt-evtype-test" data-evtype="end"><span class="material-icons-outlined">play_arrow</span></button>
+            </div>
+            <div class="opt-evtype-row" data-evtype="raid">
+              <span class="material-icons-outlined opt-evtype-ico">groups</span>
+              <span class="opt-evtype-label" data-i18n="chAlertRaid"></span>
+              <select class="opt-dnd-select opt-evtype-select" data-evtype="raid">
+                <option value="default" data-i18n="eventSoundUseGeneral">General sound</option>
+                <optgroup data-i18n-label="eventSoundGroupGeneral" label="General">
+                  <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
+                  <option value="chime" data-i18n="eventSoundChime">Light chime</option>
+                  <option value="tick" data-i18n="eventSoundTick">Tick</option>
+                  <option value="pop" data-i18n="eventSoundPop">Pop</option>
+                  <option value="marimba" data-i18n="eventSoundMarimba">Marimba</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupRaid" label="Raid">
+                  <option value="raid_fanfare" data-i18n="eventSoundRaidFanfare">Fanfare</option>
+                  <option value="raid_drums" data-i18n="eventSoundRaidDrums">Drum roll</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupEnd" label="Stream ended">
+                  <option value="end_goodnight" data-i18n="eventSoundEndGoodnight">Closing bell</option>
+                  <option value="end_powerdown" data-i18n="eventSoundEndPowerdown">Power down</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupHost" label="Stream moved">
+                  <option value="host_whoosh" data-i18n="eventSoundHostWhoosh">Whoosh</option>
+                  <option value="host_hop" data-i18n="eventSoundHostHop">Hop</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupChange" label="Category / title change">
+                  <option value="change_flip" data-i18n="eventSoundChangeFlip">Page flip</option>
+                  <option value="change_blip" data-i18n="eventSoundChangeBlip">Update blip</option>
+                </optgroup>
+                <option value="windows" data-i18n="eventSoundWindows">Windows notification sound</option>
+                <option value="silent" data-i18n="eventSoundSilent">Silent</option>
+              </select>
+              <button type="button" class="opt-evtype-test" data-evtype="raid"><span class="material-icons-outlined">play_arrow</span></button>
+            </div>
+            <div class="opt-evtype-row" data-evtype="host">
+              <span class="material-icons-outlined opt-evtype-ico">move_up</span>
+              <span class="opt-evtype-label" data-i18n="chAlertHost"></span>
+              <select class="opt-dnd-select opt-evtype-select" data-evtype="host">
+                <option value="default" data-i18n="eventSoundUseGeneral">General sound</option>
+                <optgroup data-i18n-label="eventSoundGroupGeneral" label="General">
+                  <option value="soft" data-i18n="eventSoundSoft">Soft drop</option>
+                  <option value="chime" data-i18n="eventSoundChime">Light chime</option>
+                  <option value="tick" data-i18n="eventSoundTick">Tick</option>
+                  <option value="pop" data-i18n="eventSoundPop">Pop</option>
+                  <option value="marimba" data-i18n="eventSoundMarimba">Marimba</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupRaid" label="Raid">
+                  <option value="raid_fanfare" data-i18n="eventSoundRaidFanfare">Fanfare</option>
+                  <option value="raid_drums" data-i18n="eventSoundRaidDrums">Drum roll</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupEnd" label="Stream ended">
+                  <option value="end_goodnight" data-i18n="eventSoundEndGoodnight">Closing bell</option>
+                  <option value="end_powerdown" data-i18n="eventSoundEndPowerdown">Power down</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupHost" label="Stream moved">
+                  <option value="host_whoosh" data-i18n="eventSoundHostWhoosh">Whoosh</option>
+                  <option value="host_hop" data-i18n="eventSoundHostHop">Hop</option>
+                </optgroup>
+                <optgroup data-i18n-label="eventSoundGroupChange" label="Category / title change">
+                  <option value="change_flip" data-i18n="eventSoundChangeFlip">Page flip</option>
+                  <option value="change_blip" data-i18n="eventSoundChangeBlip">Update blip</option>
+                </optgroup>
+                <option value="windows" data-i18n="eventSoundWindows">Windows notification sound</option>
+                <option value="silent" data-i18n="eventSoundSilent">Silent</option>
+              </select>
+              <button type="button" class="opt-evtype-test" data-evtype="host"><span class="material-icons-outlined">play_arrow</span></button>
+            </div>
+          </details>
           <p class="opt-sound-note" id="opt-event-sound-note" style="display:none;" data-i18n="eventSoundWinNote">If Windows still plays its own sound with an extension sound or Silent, turn off "Play a sound when a notification arrives" for your browser in Windows Settings → System → Notifications.</p>
         </div>
       </div>
-      <!-- DND Section — OUTSIDE extension-sound-settings, works with both sound modes -->
+      <!-- DND Section - OUTSIDE extension-sound-settings, works with both sound modes -->
       <div class="opt-section">
         <div class="opt-dnd-section" id="opt-dnd-section">
           <div class="opt-dnd-header">
@@ -726,6 +940,9 @@
           </label>
         </div>
         <div id="chat-integration-desc" class="opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:4px 0 0 22px;line-height:1.5;" data-i18n="chatIntegrationDesc">When on, Chat tab appears above. After first install, refresh any open Kick tabs.</div>
+        <div id="chat-notif-jump-row" class="opt-jump-row" style="display:none">
+          <button type="button" id="chat-notif-jump" class="opt-jump-link"><span class="material-icons-outlined">notifications_active</span><span data-i18n="chatNotifJump">Chat notification settings</span></button>
+        </div>
       </div>
       <!-- Ad Block Section (v2.3.18, DENEYSEL) -->
       <div class="opt-section">
@@ -741,7 +958,7 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div id="ad-block-desc" class="opt-adblock-warning opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial — depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
+        <div id="ad-block-desc" class="opt-adblock-warning opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial - depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
         <!-- v2.5.74: isteğe bağlı reklam teşhisi paylaşımı (varsayılan kapalı, sadece reklam engeli açıkken görünür) -->
         <div id="opt-ad-diag-box" style="display:none;padding:8px 0 0 22px;">
           <div class="opt-row" style="justify-content:space-between;padding:0;">
@@ -816,7 +1033,7 @@
           <span class="material-icons-outlined" style="font-size:16px;">import_export</span>
           <span data-i18n="settingsBackupTitle">Backup &amp; Restore</span>
         </div>
-        <div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 22px;line-height:1.5;" data-i18n="settingsBackupDesc">Download all your preferences as a file, or restore them from a previous backup — useful if you're not using Cloud Sync.</div>
+        <div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 22px;line-height:1.5;" data-i18n="settingsBackupDesc">Download all your preferences as a file, or restore them from a previous backup - useful if you're not using Cloud Sync.</div>
         <!-- v2.5.19: Son dışa aktarma zamanı göstergesi -->
         <div id="opt-last-export-info" style="font-size:10px;color:var(--text-muted);padding:0 0 6px 22px;"></div>
         <div style="padding:0 0 4px 22px;display:flex;gap:8px;flex-wrap:wrap;">
@@ -854,6 +1071,20 @@
       </div>
         </div>
       </div>
+      <!-- v2.5.86: Eklenti izinleri (durum + aç) -->
+      <div class="opt-group" id="opt-group-permissions">
+        <button type="button" class="opt-group-header" data-group="permissions">
+          <span class="material-icons-outlined">shield</span>
+          <span data-i18n="permWizHeader">Extension permissions</span>
+          <span class="opt-group-count"></span><span class="material-icons-outlined opt-group-chevron">expand_more</span>
+        </button>
+        <div class="opt-group-body">
+      <div class="opt-section">
+        <div class="opt-perm-hint" data-i18n="permSetHint">Permissions that are off can be turned on here. Your browser asks for approval.</div>
+        <div id="opt-perm-list" class="opt-perm-list"></div>
+      </div>
+        </div>
+      </div>
       <!-- Support & Info -->
       <div class="opt-section opt-support-section">
         <a href="https://buymeacoffee.com/segelferd" target="_blank" class="opt-bmc-link">
@@ -879,6 +1110,8 @@
 
   <script src="../src/storage.js"></script>
   <script src="../src/utils.js"></script>
+  <script src="../src/motion.js"></script>
+  <script src="../src/specialday.js"></script>
   <script src="../src/popup.js"></script>
   <!-- Viewer History Modal -->
   <div id="viewer-history-modal" class="vh-modal" style="display:none">
@@ -904,7 +1137,8 @@
         <span class="material-icons-outlined">warning_amber</span>
       </div>
       <div class="confirm-modal-title" data-i18n="adBlockConfirmTitle">Enable Ad Blocking?</div>
-      <div class="confirm-modal-body" data-i18n="adBlockConfirmBody">This is experimental and unofficial — it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks.</div>
+      <div class="confirm-modal-body" data-i18n="adBlockConfirmBody">This is experimental and unofficial - it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks.</div>
+      <div class="confirm-modal-body confirm-modal-note" id="adblock-confirm-note" data-i18n="adBlockConfirmPermNote" style="display:none">Next, your browser will ask for access to Google's ad domains. KickAlert uses it only to block ad requests on kick.com.</div>
       <div class="confirm-modal-actions">
         <button id="adblock-confirm-cancel" class="confirm-modal-btn confirm-modal-btn-cancel" data-i18n="cancel">Cancel</button>
         <button id="adblock-confirm-accept" class="confirm-modal-btn confirm-modal-btn-accept" data-i18n="adBlockConfirmAccept">I understand, enable it</button>
@@ -912,7 +1146,7 @@
     </div>
   </div>
 
-  <!-- v2.5.16: Sürüm Geçmişi — merak eden kullanıcılar için, geçmiş
+  <!-- v2.5.16: Sürüm Geçmişi - merak eden kullanıcılar için, geçmiş
        sürümlerin kısa bir özeti. adblock-confirm-modal ile aynı desen. -->
   <div id="release-history-modal" class="confirm-modal" style="display:none">
     <div class="confirm-modal-backdrop"></div>
@@ -969,6 +1203,7 @@
         </div>
         <button class="ch-alert-close" id="ch-alert-close" type="button"><span class="material-icons">close</span></button>
       </div>
+      <div class="ch-alert-diag" id="ch-alert-diag" aria-live="polite"></div>
       <div class="ch-alert-list" id="ch-alert-list">
         <label class="ch-alert-row" data-pref="change">
           <span class="material-icons-outlined ch-alert-ico">swap_horiz</span>
@@ -984,6 +1219,11 @@
           <span class="material-icons-outlined ch-alert-ico">groups</span>
           <span class="ch-alert-text"><span class="ch-alert-label" data-i18n="chAlertRaid">Incoming raid</span><span class="ch-alert-desc" data-i18n="chAlertRaidDesc">Notify when another streamer raids this channel, with who raided and how many viewers came.</span></span>
           <input type="checkbox" class="ch-alert-switch" data-pref="raid" />
+        </label>
+        <label class="ch-alert-row" data-pref="host">
+          <span class="material-icons-outlined ch-alert-ico">move_up</span>
+          <span class="ch-alert-text"><span class="ch-alert-label" data-i18n="chAlertHost">Stream moved to another channel</span><span class="ch-alert-desc" data-i18n="chAlertHostDesc">Notify when this streamer sends their viewers to another channel. Clicking the alert opens that channel.</span></span>
+          <input type="checkbox" class="ch-alert-switch" data-pref="host" />
         </label>
         <div class="ch-alert-block" data-block="filter">
           <div class="ch-alert-blockhead">
@@ -1012,6 +1252,34 @@
     </div>
   </div>
   <!-- v2.5.81: Güncelleme sonrası izin sihirbazı (sadece kapalı site izinleri) -->
+  <!-- v2.5.86: ilk kurulum karşılaması (sadece onInstalled reason=install sonrası ilk açılış) -->
+  <div id="ka-welcome" class="permwiz ka-welcome" style="display:none;">
+    <div class="permwiz-backdrop"></div>
+    <div class="permwiz-box welcome-box" id="welcome-main" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+      <div class="welcome-head">
+        <img src="../icons/icon48.png" alt="" class="welcome-logo" width="40" height="40">
+        <div class="welcome-headtext">
+          <h2 id="welcome-title" data-i18n="welTitle">Welcome to KickAlert</h2>
+          <p data-i18n="welSub">Be the first to know when your streamers go live. KickAlert uses this access:</p>
+        </div>
+      </div>
+      <div class="welcome-list" id="welcome-list"></div>
+      <div class="welcome-trust"><span class="material-icons-outlined">verified_user</span><span data-i18n="welTrust">It does not look at other sites, read your browsing history or see your password.</span></div>
+      <div class="welcome-actions">
+        <button type="button" id="welcome-skip" class="permwiz-skip" data-i18n="permWizSkip">Not now</button>
+        <div class="welcome-go">
+          <button type="button" id="welcome-continue" class="permwiz-next" data-i18n="permWizNext">Next</button>
+          <span id="welcome-hint" class="welcome-hint"></span>
+        </div>
+      </div>
+    </div>
+    <div class="permwiz-box permwiz-done" id="welcome-done" role="status" style="display:none;">
+      <div class="permwiz-done-icon"><span class="material-icons-outlined">check</span></div>
+      <h2 data-i18n="welDoneTitle">You're all set!</h2>
+      <p data-i18n="welDoneBody">I'll let you know when the channels you follow go live. Choose which channels send alerts with the bell button on their cards.</p>
+      <button type="button" id="welcome-done-btn" class="permwiz-next" data-i18n="welDoneBtn">Go to my channels</button>
+    </div>
+  </div>
   <div id="perm-wizard" class="permwiz" style="display:none;">
     <div class="permwiz-backdrop"></div>
     <div class="permwiz-box" id="permwiz-step" role="dialog" aria-modal="true" aria-labelledby="permwiz-title">
@@ -1037,6 +1305,23 @@
       <div class="permwiz-actions">
         <button type="button" id="permwiz-skip" class="permwiz-skip" data-i18n="permWizSkip">Not now</button>
         <button type="button" id="permwiz-next" class="permwiz-next">Next</button>
+      </div>
+    </div>
+    <!-- v2.5.85: Firefox izin penceresi (popup.html?permtab=...): tek düğme, tek istek -->
+    <div class="permwiz-box" id="permwiz-win" role="dialog" aria-modal="true" aria-labelledby="permwiz-win-title" style="display:none;">
+      <div class="permwiz-top"><span class="permwiz-hdr" data-i18n="permWizHeader">Extension permissions</span></div>
+      <div class="permwiz-head">
+        <div class="permwiz-icon"><span class="material-icons-outlined">verified_user</span></div>
+        <div class="permwiz-headtext">
+          <div class="permwiz-titlerow"><h2 id="permwiz-win-title" data-i18n="permWinTitle">Last step: Firefox approval</h2></div>
+          <p data-i18n="permWinBody">Only Firefox can grant permissions. Press the button and approve them in the Firefox window that opens.</p>
+        </div>
+      </div>
+      <div class="permwiz-win-hosts" id="permwiz-win-hosts" dir="ltr"></div>
+      <div class="permwiz-win-denied" id="permwiz-win-denied" data-i18n="permWinDenied" style="display:none;">Permission was not granted. You can try again or close this for now.</div>
+      <button type="button" id="permwiz-win-go" class="permwiz-next permwiz-win-go" data-i18n="permWinButton">Open Firefox permission prompt</button>
+      <div class="permwiz-actions permwiz-win-actions">
+        <button type="button" id="permwiz-win-skip" class="permwiz-skip" data-i18n="permWizSkip">Not now</button>
       </div>
     </div>
     <div class="permwiz-box permwiz-done" id="permwiz-done" role="status" style="display:none;">

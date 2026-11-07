@@ -1,4 +1,4 @@
-/* KickAlert - Locally bundled fonts © 2025–2026 Segelferd
+/* KickAlert - Locally bundled fonts © 2025-2026 Segelferd
    v2.5.46: Fonts used to be loaded from fonts.googleapis.com on every popup
    open. That meant (1) icons rendered as plain words ("play_arrow") when the
    network was slow or offline, and (2) a request to Google on every open,
@@ -95,7 +95,10 @@
   src: url(../fonts/material-icons-outlined.woff2) format('woff2');
 }
 .material-icons {
-  font-family: 'Material Icons';
+  /* v2.6.0: tek ikon stili. Eskiden dolu (filled) ve çizgili (outlined) ikonlar
+     karışıktı; tüm .material-icons artık çizgili aileyle çiziliyor. İsimler iki
+     fontta da aynı; "star" çizgili fontta da dolu yıldız (favori durumu korunur). */
+  font-family: 'Material Icons Outlined';
   font-weight: normal;
   font-style: normal;
   font-size: 24px;

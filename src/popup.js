@@ -27,7 +27,11 @@ const BELL_TITLES = { main: 'bellMain', sub: 'bellSub', silent: 'bellSilent', mu
 
 document.addEventListener('DOMContentLoaded', async () => {
   await applyTheme();
+  await applyCardDensity(); // v2.5.95
   await Utils.initI18n();
+  // v2.5.86: <html lang> seçili dile göre; büyük harfe çevrilen başlıklar
+  // Türkçede doğru yazılsın (EKLENTİ İZİNLERİ, IZINLERI değil)
+  try { const lg = Utils.getCurrentLang ? Utils.getCurrentLang() : ''; if (lg) document.documentElement.lang = String(lg).replace('_', '-'); } catch (e) {}
   setupI18n();
   setupConfirmButtonFit(); // v2.5.76: erken bağla (sonraki adımlar hata verse de onay pencereleri ölçülsün)
   applyOptionsI18n();   // Translate #options-panel + #chat-panel + tab buttons on first load (v2.0.1)
@@ -46,6 +50,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadChannels();
   await loadHistory();
   await updateMenuState();
+  setupPauseMenu(); // v2.5.98
   await startAutoRefresh();
   await updateEmailLoginNoticeDot();
   setupWhatsNewBannerButtons(); // v2.5.11: Banner butonlarını bir kez bağla
@@ -56,8 +61,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupRateBanner();            // v2.5.52: Değerlendirme isteği
   await checkWhatsNewBanner();   // v2.5.9: "Yenilikler" banner'ı
   setupPermWizard();             // v2.5.81: güncelleme sonrası izin sihirbazı
+  setupWelcome();                // v2.5.86: ilk kurulum karşılaması
+  decorateSpecialDayLogos();     // v2.6.0
+  setupPermLive();               // v2.5.86: Ayarlar > Eklenti izinleri + canlı bant
   try { await maybeShowPermWizard(); } catch (e) {}
-  try { await trackPopupOpenForRating(); await maybeShowRateBanner(); } catch (e) {} // v2.5.52
+  if (!KA_PERM_TAB) { try { await trackPopupOpenForRating(); await maybeShowRateBanner(); } catch (e) {} } // v2.5.52 (izin sekmesi sayılmaz)
   // v2.5.46: fonts are bundled now; once they are ready, re-measure the open
   // Settings groups so a late font swap can never clip their content.
   try { document.fonts?.ready?.then(() => refreshAllOptGroupHeights()); } catch (e) {}
@@ -65,7 +73,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // v2.3.23: Popup açıkken arka planda "session reddedildi" durumu değişirse
 // (örn. periyodik kontrol sırasında hata başlarsa/biterse), Options ikonunu
-// canlı güncelle — popup'ı kapatıp açmaya gerek kalmadan.
+// canlı güncelle - popup'ı kapatıp açmaya gerek kalmadan.
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === 'local' && changes[StorageKeys.AUTH_SESSION_REJECTED]) {
     updateEmailLoginNoticeDot();
@@ -77,13 +85,13 @@ chrome.storage.onChanged.addListener((changes, area) => {
 });
 
 // v2.3.15: Ayarlar sekmesinde bir kez gösterilen "email ile giriş yap" bildirimi.
-// v2.3.23: Artık iki ek durum var —
+// v2.3.23: Artık iki ek durum var -
 //   1. Kalıcı, alarm vermeyen bir bilgi satırı (setupEmailLoginNotice içinde,
-//      HER ZAMAN görünür, kapatma düğmesi yok) — kullanıcı ilk bildirimi
+//      HER ZAMAN görünür, kapatma düğmesi yok) - kullanıcı ilk bildirimi
 //      kapattıktan sonra bile bunu Ayarlar'da referans olarak bulabilsin.
 //   2. "Session var ama Kick reddetti" hatası (fetchErrorSessionRejected) aktif
 //      olduğunda, kullanıcı daha önce kapatmış olsa bile uyarı YENİDEN
-//      vurgulanır — çünkü artık gerçekten ilgili/aksiyona geçirilebilir hale
+//      vurgulanır - çünkü artık gerçekten ilgili/aksiyona geçirilebilir hale
 //      geldi. Hata çözülünce (bir sonraki başarılı çekimde) otomatik söner.
 async function updateEmailLoginNoticeDot() {
   const dismissed = await Storage.get(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED);
@@ -99,7 +107,7 @@ async function setupEmailLoginNotice() {
   const noticeUrgentTag = document.getElementById('opt-email-login-notice-urgent');
   const infoLine = document.getElementById('opt-email-login-info');
 
-  // v2.3.24: İkisi birbirini dışlar — uyarı (kapatılabilir, kırmızı çerçeveli)
+  // v2.3.24: İkisi birbirini dışlar - uyarı (kapatılabilir, kırmızı çerçeveli)
   // görünürken sabit bilgi satırı GİZLİ olmalı, ve tam tersi. İkisi aynı anda
   // asla görünmemeli.
   const showAlert = !dismissed || !!sessionRejected;
@@ -115,7 +123,7 @@ async function setupEmailLoginNotice() {
     closeBtn.addEventListener('click', async () => {
       await Storage.set(StorageKeys.EMAIL_LOGIN_NOTICE_DISMISSED, true);
       if (notice) notice.style.display = 'none';
-      // Uyarı kapatıldı — session-rejected aktif değilse sabit satır devreye girsin
+      // Uyarı kapatıldı - session-rejected aktif değilse sabit satır devreye girsin
       if (infoLine && !sessionRejected) infoLine.style.display = 'flex';
       await updateEmailLoginNoticeDot();
     });
@@ -141,6 +149,12 @@ function resolveTheme(theme) {
   return theme === 'light' ? 'light' : 'dark';
 }
 let _themeMediaListenerAttached = false;
+// v2.5.95: kart yoğunluğu (Rahat / Sıkı). Sıkı görünümün CSS'i popup.css
+// sonunda [data-density="compact"] altında.
+async function applyCardDensity() {
+  try { document.documentElement.setAttribute('data-density', await Storage.getCardDensity()); } catch (e) {}
+}
+
 async function applyTheme() {
   const theme = await Storage.getTheme();
   document.documentElement.setAttribute('data-theme', resolveTheme(theme));
@@ -176,6 +190,17 @@ function setupI18n() {
     if (el.closest('#options-panel, #chat-panel') || el.children.length) return;
     const t = Utils.i18n(el.getAttribute('data-i18n'));
     if (t && t.indexOf('<') === -1) el.textContent = t;
+  });
+  // v2.5.111: Panel dışındaki data-i18n-title / data-i18n-aria etiketleri de
+  // çevrilsin (sıralama çipleri, üst bar, kapatma düğmeleri İngilizce kalıyordu).
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    if (el.closest('#options-panel, #chat-panel')) return;
+    const t = Utils.i18n(el.getAttribute('data-i18n-title'));
+    if (t) el.title = t;
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const t = Utils.i18n(el.getAttribute('data-i18n-aria'));
+    if (t) el.setAttribute('aria-label', t);
   });
 }
 
@@ -214,6 +239,17 @@ async function markHistorySeen() {
 }
 
 function setupTabs() {
+  // v2.6.0: etkin sekmenin vurgusu sekmeler arasında kayar
+  KAMotion.initTabIndicator(document.querySelector('.tabs-container'), '.tab-button');
+  // v2.6.0: liste kaydırılınca sıralama/arama çubuğu üstte kalır, sekmelerin
+  // altında ince bir gölge belirir (içeriğin altına kaydığı anlaşılsın).
+  const cc = document.querySelector('.content-container');
+  if (cc && !cc._kaScroll) {
+    cc._kaScroll = true;
+    const upd = () => document.body.classList.toggle('ka-scrolled', cc.scrollTop > 2);
+    cc.addEventListener('scroll', upd, { passive: true });
+    upd();
+  }
   document.querySelectorAll('.tab-button').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
@@ -263,12 +299,23 @@ async function detectActiveChannel() {
 // ─── Menu ───
 
 function setupMenu() {
-  document.getElementById('refresh-chip')?.addEventListener('click', async () => {
-    // v2.2.1: Manuel refresh → backoff'u sıfırla, anında fresh fetch
-    // VPN açıp düzelttikten sonra kullanıcı yeniden çalıştırabilir
-    try { await chrome.runtime.sendMessage({ type: 'RESET_BACKOFF' }); } catch {}
-    await loadChannels();
-    await loadHistory();
+  document.getElementById('refresh-chip')?.addEventListener('click', async (ev) => {
+    // v2.6.0: yenileme sürerken ikon döner, bitince turunu tamamlayıp durur
+    const ico = ev.currentTarget.querySelector('.material-icons');
+    ico?.classList.add('ka-spin');
+    try {
+      // v2.2.1: Manuel refresh → backoff'u sıfırla, anında fresh fetch
+      // VPN açıp düzelttikten sonra kullanıcı yeniden çalıştırabilir
+      try { await chrome.runtime.sendMessage({ type: 'RESET_BACKOFF' }); } catch {}
+      await loadChannels();
+      await loadHistory();
+    } finally {
+      if (ico) {
+        const stop = () => ico.classList.remove('ka-spin');
+        ico.addEventListener('animationiteration', stop, { once: true });
+        setTimeout(stop, 1200);
+      }
+    }
   });
   document.getElementById('multi-chip')?.addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('html/multistream.html') });
@@ -291,6 +338,116 @@ function setupMenu() {
   });
 }
 
+// ─── v2.5.98: Bildirimleri duraklat ───
+// _notifPause = { until, favs } (bu cihaza özel). Arka plan süre dolunca
+// kendiliğinden kaldırır; ikon rozeti duraklatma boyunca kırmızı.
+function kaClock(ts) {
+  try { return new Date(ts).toLocaleTimeString(Utils.getCurrentLang ? String(Utils.getCurrentLang()).replace('_', '-') : undefined, { hour: '2-digit', minute: '2-digit' }); }
+  catch (e) { const d = new Date(ts); return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0'); }
+}
+function kaNextMorning(h = 8) {
+  const d = new Date(); const t = new Date(d); t.setHours(h, 0, 0, 0);
+  if (t.getTime() <= d.getTime() + 60000) t.setDate(t.getDate() + 1);
+  return t.getTime();
+}
+async function getPauseState() {
+  try { const p = (await chrome.storage.local.get('_notifPause'))._notifPause; return p && p.until > Date.now() ? p : null; } catch (e) { return null; }
+}
+async function updatePauseChip() {
+  const p = await getPauseState();
+  const chip = document.getElementById('pause-chip');
+  const lbl = document.getElementById('pause-label');
+  if (!chip || !lbl) return;
+  chip.classList.toggle('paused', !!p);
+  // v2.6.0: kalan süre ikonun etrafında azalan bir halka olarak görünür
+  KAMotion.setRing(document.getElementById('pause-icon'), p ? p.until : 0, p ? Math.max(60000, p.until - (p.at || Date.now())) : 1);
+  lbl.textContent = p ? (Utils.i18n('chipPausedUntil', [kaClock(p.until)]) || ('⏸ ' + kaClock(p.until))) : (Utils.i18n('chipPauseLabel') || 'Pause');
+  chip.title = p ? (Utils.i18n('pauseChipTooltipOn', [kaClock(p.until)]) || '') : (Utils.i18n('pauseChipTooltip') || '');
+  const resume = document.getElementById('pause-resume');
+  if (resume) resume.hidden = !p;
+  const favs = document.getElementById('pause-favs');
+  if (favs && p) favs.checked = !!p.favs;
+  const ml = document.getElementById('pause-morning-label');
+  if (ml) ml.textContent = Utils.i18n('pauseMorning', [kaClock(kaNextMorning())]) || ('Until ' + kaClock(kaNextMorning()));
+}
+// v2.6.0: Popup son açıldığından (ya da açıkken son yenilemeden) bu yana
+// yayına giren kanalların avatarında bir kez yeşil halka dalgası.
+let _kaPrevLive = null;
+async function markNewLive() {
+  const live = (allChannels || []).filter(c => c.isLive).map(c => c.channelSlug);
+  let prev = _kaPrevLive;
+  if (!prev) {
+    try { const s = (await chrome.storage.local.get('_popupSeenLive'))._popupSeenLive; prev = Array.isArray(s) ? new Set(s) : null; } catch (e) { prev = null; }
+  }
+  _kaPrevLive = new Set(live);
+  try { await chrome.storage.local.set({ _popupSeenLive: live }); } catch (e) {}
+  if (!prev) return; // ilk açılışta karşılaştıracak bir şey yok
+  for (const slug of live) {
+    if (prev.has(slug)) continue;
+    document.querySelectorAll(`[data-flip="${CSS.escape(slug)}"] .channel-avatar`).forEach(a => KAMotion.pulseClass(a, 'ka-new-live'));
+  }
+}
+
+// v2.6.0: "1 saat sustur" ile susturulan kanalın zil düğmesinde kalan süre halkası.
+async function applySnoozeRings() {
+  let sn = {};
+  try { sn = (await chrome.storage.local.get('_chSnooze'))._chSnooze || {}; } catch (e) {}
+  const now = Date.now();
+  document.querySelectorAll('.bell-btn[data-slug]').forEach(btn => {
+    const until = sn[btn.dataset.slug] || 0;
+    KAMotion.setRing(btn, until, 60 * 60 * 1000);
+    if (until > now) {
+      btn.dataset.snoozed = '1';
+      btn.title = Utils.i18n('bellSnoozedUntil', [kaClock(until)]) || ('Muted until ' + kaClock(until));
+    } else if (btn.dataset.snoozed) {
+      delete btn.dataset.snoozed;
+      btn.title = Utils.i18n(BELL_TITLES[btn.dataset.mode]);
+    }
+  });
+}
+
+// v2.6.0: özel gün logosu (karşılama ekranındaki logo)
+async function decorateSpecialDayLogos() {
+  try {
+    if (typeof KASpecialDay === 'undefined') return;
+    const ev = await KASpecialDay.resolve();
+    if (!ev) return;
+    document.querySelectorAll('img.welcome-logo').forEach(img => KASpecialDay.decorateImg(img, ev, p => chrome.runtime.getURL(p)));
+  } catch (e) {}
+}
+
+function setupPauseMenu() {
+  const chip = document.getElementById('pause-chip');
+  const menu = document.getElementById('pause-menu');
+  if (!chip || !menu || chip._ka) return;
+  chip._ka = true;
+  const close = () => { menu.hidden = true; chip.setAttribute('aria-expanded', 'false'); };
+  const open = async () => { await updatePauseChip(); menu.hidden = false; chip.setAttribute('aria-expanded', 'true'); menu.querySelector('.pause-menu-item')?.focus(); };
+  chip.addEventListener('click', (e) => { e.stopPropagation(); menu.hidden ? open() : close(); });
+  document.addEventListener('click', (e) => { if (!menu.hidden && !menu.contains(e.target) && e.target !== chip) close(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !menu.hidden) { close(); chip.focus(); } });
+  const setPause = async (until) => {
+    const favs = !!document.getElementById('pause-favs')?.checked;
+    await chrome.storage.local.set({ _notifPause: { until, favs, at: Date.now() } });
+    close(); await updatePauseChip(); await updateMenuState();
+  };
+  document.getElementById('pause-1h')?.addEventListener('click', () => setPause(Date.now() + 60 * 60 * 1000));
+  document.getElementById('pause-morning')?.addEventListener('click', () => setPause(kaNextMorning()));
+  document.getElementById('pause-favs')?.addEventListener('change', async (e) => {
+    const p = await getPauseState();
+    if (p) await chrome.storage.local.set({ _notifPause: { ...p, favs: !!e.target.checked } });
+  });
+  document.getElementById('pause-resume')?.addEventListener('click', async () => {
+    await chrome.storage.local.remove('_notifPause');
+    close(); await updatePauseChip(); await updateMenuState();
+  });
+  try { chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && ch._notifPause) updatePauseChip(); }); } catch (e) {}
+  updatePauseChip();
+  // Süre dolunca popup açıkken de etiket geri dönsün
+  setInterval(() => { if (document.getElementById('pause-chip')?.classList.contains('paused')) updatePauseChip(); applySnoozeRings(); }, 30000);
+  try { chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && ch._chSnooze) applySnoozeRings(); }); } catch (e) {}
+}
+
 async function updateMenuState() {
   const suspended = !!(await Storage.getSuspendFromDate());
   const dupGuard = await Storage.isDuplicateTabGuard();
@@ -310,7 +467,7 @@ async function updateMenuState() {
   if (dStatus) dStatus.textContent = dupGuard ? 'ON' : 'OFF';
 
   await chrome.action.setBadgeBackgroundColor({
-    color: await Storage.isDndActive() ? '#eb0400' : suspended ? '#606060' : '#53FC18'
+    color: (await Storage.isDndActive() || await getPauseState()) ? '#eb0400' : suspended ? '#606060' : '#53FC18'
   });
 }
 
@@ -319,20 +476,20 @@ async function updateMenuState() {
 // v2.3.8: Tüm bilinen hata türlerini doğru mesaja eşleştir. Önceden sadece
 // 401/403 özel işleniyordu, geri kalan HER ŞEY (offline, rate-limit, backoff,
 // 5xx sunucu hatası, JSON parse hatası) yanlışlıkla "Kick'e giriş yap" mesajına
-// düşüyordu — bu da kullanıcıyı yanıltıyordu (bkz. Chrome Web Store yorumu, 13 Ağu 2026).
+// düşüyordu - bu da kullanıcıyı yanıltıyordu (bkz. Chrome Web Store yorumu, 13 Ağu 2026).
 function _pickFetchErrorKey(errorMsg) {
   if (typeof errorMsg !== 'string') return 'fetchErrorUnknown';
 
-  // 403 — Cloudflare/IP engeli (VPN önerisi mantıklı)
+  // 403 - Cloudflare/IP engeli (VPN önerisi mantıklı)
   if (/AUTH_REQUIRED:\s*API\s*403/i.test(errorMsg)) {
     return 'fetchErrorBlocked';
   }
-  // 401 — iki farklı gerçek durum var, ayırt etmemiz lazım:
+  // 401 - iki farklı gerçek durum var, ayırt etmemiz lazım:
   if (/AUTH_REQUIRED:\s*API\s*401/i.test(errorMsg)) {
     // token:yes → oturum çerezi GERÇEKTEN vardı ama Kick yine de reddetti.
     // Aylarca süren araştırmayla kanıtlandı: bu, Kick'in kendi sunucu
     // tarafında geçici bir tutarsızlık (aynı token bazen 200 bazen 401
-    // dönüyor) — kullanıcının GERÇEKTEN giriş yapmış olmasına rağmen
+    // dönüyor) - kullanıcının GERÇEKTEN giriş yapmış olmasına rağmen
     // "giriş yap" demek yanlış ve yanıltıcı olurdu.
     if (/token:yes/i.test(errorMsg)) {
       return 'fetchErrorSessionRejected';
@@ -340,21 +497,21 @@ function _pickFetchErrorKey(errorMsg) {
     // token:no → gerçekten hiç oturum çerezi yoktu, klasik "giriş yap" durumu
     return 'fetchError';
   }
-  // Cihaz tamamen offline — "giriş yap" değil, "internetini kontrol et"
+  // Cihaz tamamen offline - "giriş yap" değil, "internetini kontrol et"
   if (/^OFFLINE:/i.test(errorMsg)) {
     return 'fetchErrorOffline';
   }
-  // Rate limit / adaptif backoff / recovery cooldown — hepsi aynı aile:
+  // Rate limit / adaptif backoff / recovery cooldown - hepsi aynı aile:
   // "çok istek oldu, otomatik bekleniyor", kullanıcının yapması gereken bir şey yok
   if (/rate limited|api backoff|recovery cooldown/i.test(errorMsg)) {
     return 'fetchErrorRateLimited';
   }
-  // Kick sunucu hatası (5xx) — "giriş yap" değil, "Kick'in sunucusu şu an sorunlu"
+  // Kick sunucu hatası (5xx) - "giriş yap" değil, "Kick'in sunucusu şu an sorunlu"
   const serverErrMatch = errorMsg.match(/API error:\s*(\d{3})/i);
   if (serverErrMatch && parseInt(serverErrMatch[1], 10) >= 500) {
     return 'fetchErrorServerError';
   }
-  // Geri kalan her şey (beklenmeyen 4xx, JSON parse hatası vb.) — genel/nötr mesaj
+  // Geri kalan her şey (beklenmeyen 4xx, JSON parse hatası vb.) - genel/nötr mesaj
   return 'fetchErrorUnknown';
 }
 
@@ -375,6 +532,7 @@ async function loadChannels() {
       await renderFollowing();
       await renderAutoLaunch();
       showLoading(false);
+      markNewLive(); applySnoozeRings(); // v2.6.0
 
       // If we got stale cache, fetch fresh data in background
       if (res.fromCache) {
@@ -384,6 +542,7 @@ async function loadChannels() {
             allChannels = freshRes.channels;
             await renderFollowing();
             await renderAutoLaunch();
+            markNewLive(); applySnoozeRings(); // v2.6.0
           }
         } catch {}
       }
@@ -404,6 +563,62 @@ function showLoading(v) {
   if (el) el.style.display = v ? 'flex' : 'none';
 }
 
+// v2.6.0: boş liste ekranları (simge, başlık, tek cümle, tek düğme)
+function emptyStateEl(kind) {
+  const wrap = document.createElement('div');
+  wrap.className = 'ka-empty';
+  const live = kind === 'live';
+  wrap.innerHTML = `<div class="ka-empty-ico" aria-hidden="true"><span class="material-icons-outlined">${live ? 'live_tv' : 'person_add'}</span></div>
+    <h3>${esc(Utils.i18n(live ? 'emptyLiveTitle' : 'emptyFollowTitle'))}</h3>
+    <p>${esc(Utils.i18n(live ? 'emptyLiveDesc' : 'emptyFollowDesc'))}</p>`;
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.innerHTML = `<span class="material-icons-outlined" aria-hidden="true">${live ? 'visibility' : 'open_in_new'}</span><span>${esc(Utils.i18n(live ? 'emptyShowOffline' : 'openKickSite'))}</span>`;
+  btn.addEventListener('click', async () => {
+    if (live) {
+      await Storage.setShowOfflineChannels(true);
+      const cb = document.getElementById('opt-show-offline'); if (cb) cb.checked = true;
+      await renderFollowing();
+    } else {
+      chrome.tabs.create({ url: 'https://kick.com/' });
+    }
+  });
+  wrap.appendChild(btn);
+  return wrap;
+}
+
+// v2.6.0: alttan çıkan kısa mesaj; geri alınabilen işlemlerde "Geri al" düğmesi
+let _kaToastTimer = null;
+function kaToast(text, onUndo) {
+  let bar = document.getElementById('ka-toast');
+  if (!bar) {
+    bar = document.createElement('div');
+    bar.id = 'ka-toast';
+    bar.className = 'ka-toast';
+    bar.setAttribute('role', 'status');
+    bar.setAttribute('aria-live', 'polite');
+    document.body.appendChild(bar);
+  }
+  clearTimeout(_kaToastTimer);
+  bar.replaceChildren();
+  const msg = document.createElement('span');
+  msg.className = 'ka-toast-text';
+  msg.textContent = text;
+  bar.appendChild(msg);
+  const hide = () => { bar.classList.remove('show'); };
+  if (onUndo) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ka-toast-undo';
+    b.textContent = Utils.i18n('undo') || 'Undo';
+    b.addEventListener('click', async () => { hide(); try { await onUndo(); } catch (e) {} }, { once: true });
+    bar.appendChild(b);
+  }
+  void bar.offsetWidth;
+  bar.classList.add('show');
+  _kaToastTimer = setTimeout(hide, 5000);
+}
+
 function showMsg(id, msg) {
   const el = document.getElementById(id);
   if (el) el.innerHTML = `<div class="empty-state">${esc(msg)}</div>`;
@@ -416,12 +631,12 @@ async function renderFollowing(categoryFilter) {
   if (!el) return;
   setTabCount('following-btn', (allChannels || []).filter(c => c.isLive).length); // v2.5.46
 
-  // v2.5.9: Test panelinden tetiklenen tek-seferlik "ilk kullanım önizlemesi" —
+  // v2.5.9: Test panelinden tetiklenen tek-seferlik "ilk kullanım önizlemesi" -
   // gerçek takip verisine hiç dokunmadan, boş durum ekranını simüle eder.
   // Okunduğu anda tüketilir (bir sonraki açılışta normale döner).
   if (await Storage.get(StorageKeys.PREVIEW_FIRST_USE_STATE)) {
     await Storage.set(StorageKeys.PREVIEW_FIRST_USE_STATE, false);
-    el.innerHTML = `<div class="empty-state">${Utils.i18n('noChannelsFollowedYet')}</div>`;
+    el.replaceChildren(emptyStateEl('follow'));
     return;
   }
 
@@ -449,11 +664,13 @@ async function renderFollowing(categoryFilter) {
 
   if (list.length === 0) {
     // v2.5.9: Hiç takip edilen kanal yoksa (yeni kullanıcı), "canlı yayın yok"
-    // mesajı yanıltıcı/çıkmaz sokak oluyordu — ne yapması gerektiğini
+    // mesajı yanıltıcı/çıkmaz sokak oluyordu - ne yapması gerektiğini
     // söylemiyordu. Bu iki durumu ayırıyoruz.
     const msgKey = allChannels.length === 0 ? 'noChannelsFollowedYet' : 'noLiveStreams';
-    dbg(`[KickAlert] List EMPTY — showing ${msgKey} message`);
-    el.innerHTML = `<div class="empty-state">${Utils.i18n(msgKey)}</div>`;
+    dbg(`[KickAlert] List EMPTY - showing ${msgKey} message`);
+    // v2.6.0: "çevrimdışıları göster" düğmesi sadece işe yarayacaksa (ayar kapalıyken) görünür
+    if (msgKey === 'noLiveStreams' && showOffline) el.innerHTML = `<div class="empty-state">${Utils.i18n(msgKey)}</div>`;
+    else el.replaceChildren(emptyStateEl(msgKey === 'noLiveStreams' ? 'live' : 'follow'));
     return;
   }
 
@@ -493,17 +710,16 @@ async function renderFollowing(categoryFilter) {
     }
   });
 
-  el.innerHTML = '';
   const cardMode = 'detail'; // Compact mod kaldırıldı
 
-  // Batch yükle — her kart için ayrı storage.get yerine tek seferde
+  // Batch yükle - her kart için ayrı storage.get yerine tek seferde
   const [favMap, groupMap2, bellMap, groupList, botScoresRes, botScoreAlways, alertPrefs, defaultMode] = await Promise.all([
     Storage.getFavoriteChannels(),
     Storage.getChannelGroupMap(),
     Storage.getAllChannelSoundModes(),
     Storage.getChannelGroups(),
     // v2.3.0 Aşama 3: Bot skorlarını background'tan al (Chrome only).
-    // Hata olursa ({}) — popup düzeni etkilenmez.
+    // Hata olursa ({}) - popup düzeni etkilenmez.
     chrome.runtime.sendMessage({ type: 'GET_BOT_SCORES' }).catch(() => null),
     // v2.3.0: "Her zaman göster" toggle'ı (default false)
     Storage.getBotScoreAlwaysVisible(),
@@ -515,7 +731,7 @@ async function renderFollowing(categoryFilter) {
 
   // v2.3.26: Kanal Önizlemeleri (Thumbnail).
   // v2.4.5 DÜZELTME: Önceden burada TÜM canlı kanalların thumbnail'i bitene
-  // kadar (await Promise.all) liste HİÇ render edilmiyordu — yavaşlık
+  // kadar (await Promise.all) liste HİÇ render edilmiyordu - yavaşlık
   // şikayetinin asıl sebebi buydu. Artık thumbnailsEnabled sadece batchData'ya
   // konup kartlar İSKELET halinde (rozetler hazır, resim "loading") ANINDA
   // render ediliyor; asıl resim istekleri render'dan SONRA, arka planda
@@ -523,7 +739,16 @@ async function renderFollowing(categoryFilter) {
   const thumbnailsEnabled = await Storage.get(StorageKeys.CHANNEL_THUMBNAILS_ENABLED);
   batchData.thumbnailsEnabled = thumbnailsEnabled;
 
-  for (const ch of list) el.appendChild(await channelCard(ch, cardMode, batchData));
+  // v2.6.0: kartlar önce bellekte kurulur, liste tek seferde değişir (boş liste
+  // anı ve kaydırma zıplaması olmaz); var olan kartlar yeni yerlerine kayar.
+  const frag = document.createDocumentFragment();
+  for (const ch of list) frag.appendChild(await channelCard(ch, cardMode, batchData));
+  const flipBefore = KAMotion.snapshot(el);
+  const viewersBefore = KAMotion.snapshotText(el, '.viewer-count, .channel-thumbnail-viewers');
+  el.innerHTML = '';
+  el.appendChild(frag);
+  KAMotion.flip(el, flipBefore);
+  KAMotion.rollChanged(el, '.viewer-count, .channel-thumbnail-viewers', viewersBefore);
 
   if (thumbnailsEnabled) {
     const liveChannels = list.filter(ch => ch.isLive);
@@ -533,10 +758,10 @@ async function renderFollowing(categoryFilter) {
         if (res?.success && res.details?.thumbnailUrl) {
           injectThumbnailImage(ch.channelSlug, res.details.thumbnailUrl);
         } else {
-          removeThumbnailSkeleton(ch.channelSlug); // veri gelmedi — iskeleti kaldır
+          removeThumbnailSkeleton(ch.channelSlug); // veri gelmedi - iskeleti kaldır
         }
       } catch (e) {
-        removeThumbnailSkeleton(ch.channelSlug); // sessiz — bu kanal thumbnailsiz kalır
+        removeThumbnailSkeleton(ch.channelSlug); // sessiz - bu kanal thumbnailsiz kalır
       }
     });
   }
@@ -582,7 +807,7 @@ async function buildGroupFilterBar() {
 
   if (groups.length === 0 && liveCategories.length === 0) {
     // v2.4.4: Filtrelenecek hiçbir şey yoksa, hem çubuğu hem de açma
-    // butonunu tamamen gizle — boş bir panel için toggle göstermenin anlamı yok.
+    // butonunu tamamen gizle - boş bir panel için toggle göstermenin anlamı yok.
     bar.style.display = 'none';
     if (toggleBtn) toggleBtn.style.display = 'none';
     if (sep) sep.style.display = 'none';
@@ -611,7 +836,7 @@ async function buildGroupFilterBar() {
     bar.appendChild(chip);
   }
 
-  // Kategori chip'leri — ayırıcı + canlı kategoriler
+  // Kategori chip'leri - ayırıcı + canlı kategoriler
   if (liveCategories.length > 0) {
     if (groups.length > 0) {
       const sepChip = document.createElement('span');
@@ -635,7 +860,7 @@ async function buildGroupFilterBar() {
 
 // v2.4.4: Kaydedilmiş açık/kapalı tercihini bar'a uygular, aktif filtre
 // "Tümü" değilse (yani gerçekten bir filtre uygulanıyorsa) küçük bir nokta
-// rozeti gösterir — çubuk kapalıyken bile kullanıcı filtre uygulandığını fark etsin.
+// rozeti gösterir - çubuk kapalıyken bile kullanıcı filtre uygulandığını fark etsin.
 async function applyGroupFilterBarState(activeGroup) {
   const bar = document.getElementById('group-filter-bar');
   const toggleBtn = document.getElementById('group-filter-toggle');
@@ -650,7 +875,7 @@ async function applyGroupFilterBarState(activeGroup) {
   if (badge) badge.style.display = hasActiveFilter ? '' : 'none';
 }
 
-// v2.4.4: Toggle butonuna tıklanınca çağrılır — açık/kapalı durumu değiştirip kaydeder.
+// v2.4.4: Toggle butonuna tıklanınca çağrılır - açık/kapalı durumu değiştirip kaydeder.
 async function toggleGroupFilterBar() {
   const current = await Storage.get(StorageKeys.GROUP_FILTER_EXPANDED);
   const next = current !== true;
@@ -677,7 +902,7 @@ async function renderAutoLaunch() {
   if (!el) return;
 
   if (allChannels.length === 0) {
-    el.innerHTML = `<div class="empty-state">${Utils.i18n('noChannelsFollowedYet')}</div>`;
+    el.replaceChildren(emptyStateEl('follow')); // v2.6.0
     return;
   }
 
@@ -686,7 +911,6 @@ async function renderAutoLaunch() {
     return 0;
   });
 
-  el.innerHTML = '';
   const alCardMode = 'detail';
   const [alFavMap, alGroupMap, alBellMap, alGroupList, alDefaultMode] = await Promise.all([
     Storage.getFavoriteChannels(),
@@ -699,6 +923,7 @@ async function renderAutoLaunch() {
   // v2.5.46: "Live · N" / "Offline · N" section labels between the two blocks.
   // setupSearch() hides a label when none of its cards match the search.
   const liveCount = sorted.filter(c => c.isLive).length;
+  const frag = document.createDocumentFragment(); // v2.6.0
   let lastLive = null;
   for (const ch of sorted) {
     if (ch.isLive !== lastLive) {
@@ -706,16 +931,21 @@ async function renderAutoLaunch() {
       const lbl = document.createElement('div');
       lbl.className = 'al-section-label';
       lbl.dataset.section = ch.isLive ? 'live' : 'offline';
+      lbl.dataset.flip = ch.isLive ? '§live' : '§offline';
       const text = Utils.i18n(ch.isLive ? 'alSectionLive' : 'alSectionOffline') || (ch.isLive ? 'Live' : 'Offline');
       lbl.textContent = text;
       const cnt = document.createElement('span');
       cnt.className = 'al-count';
       cnt.textContent = String(ch.isLive ? liveCount : sorted.length - liveCount);
       lbl.appendChild(cnt);
-      el.appendChild(lbl);
+      frag.appendChild(lbl);
     }
-    el.appendChild(await autoLaunchCard(ch, alCardMode, alBatch));
+    frag.appendChild(await autoLaunchCard(ch, alCardMode, alBatch));
   }
+  const flipBefore = KAMotion.snapshot(el);
+  el.innerHTML = '';
+  el.appendChild(frag);
+  KAMotion.flip(el, flipBefore);
 }
 
 // ─── Bell Button Helper ───
@@ -738,9 +968,12 @@ function createBellButton(slug, currentMode) {
     const icon = btn.querySelector('.material-icons');
     icon.textContent = BELL_ICONS[nextMode];
     icon.style.color = BELL_COLORS[nextMode];
+    // v2.6.0: sesli modlarda zil sallanır, sessiz/kapalı modlarda kısa bir küçülme
+    KAMotion.pulseClass(icon, (nextMode === 'main' || nextMode === 'sub') ? 'ka-bell-ring' : 'ka-bell-dip');
     await Storage.setChannelSoundMode(slug, nextMode);
     // Sync bell buttons in both tabs
     syncBellButtons(slug, nextMode);
+    applySnoozeRings();
   });
 
   return btn;
@@ -763,6 +996,7 @@ async function channelCard(ch, cardMode, batch) {
   const card = document.createElement('div');
   card.className = `channel-card ${ch.isLive ? 'live' : 'offline'} ${cardMode}-card`;
   card.dataset.slug = ch.channelSlug; // v2.4.5: async thumbnail enjeksiyonu için
+  card.dataset.flip = ch.channelSlug; // v2.6.0: kayma animasyonu anahtarı
   const isFav = batch ? !!(batch.favMap?.[ch.channelSlug]) : await Storage.isFavoriteChannel(ch.channelSlug);
   const chGroup = batch ? (batch.groupMap?.[ch.channelSlug] || null) : await Storage.getChannelGroup(ch.channelSlug);
   const groupBadge = chGroup ? `<span class="channel-group-badge">${esc(chGroup)}</span>` : '';
@@ -780,22 +1014,22 @@ async function channelCard(ch, cardMode, batch) {
     } catch {}
   }
 
-  // Sparkline — isLive bloğu dışında tanımla, offline kartlarda da scope'da olsun
+  // Sparkline - isLive bloğu dışında tanımla, offline kartlarda da scope'da olsun
   const sparkline = ch.isLive ? await buildSparkline(ch.channelSlug) : '';
-  // v2.3.0: Bot skor (sparkline yanına) — isLive bloğunda set edilir, action row'da kullanılır
+  // v2.3.0: Bot skor (sparkline yanına) - isLive bloğunda set edilir, action row'da kullanılır
   let botScoreInSparkRow = '';
-  // v2.3.0: Sparkline çerçeve durumu — spike (yeşil), drop (kırmızı), yoksa nötr
+  // v2.3.0: Sparkline çerçeve durumu - spike (yeşil), drop (kırmızı), yoksa nötr
   let sparklineFrame = ''; // '', 'spike', 'spike-alert', 'drop', 'drop-alert'
   // v2.3.30: thumbnail overlay'inde de kullanılıyor, if(ch.isLive) dışında da lazım
   let viewers = '';
   // v2.3.31: thumbnail overlay'inde kullanılıyor, card.innerHTML if(ch.isLive)
-  // bloğunun DIŞINDA olduğu için burada (dış kapsamda) tanımlanmalı — içeride
+  // bloğunun DIŞINDA olduğu için burada (dış kapsamda) tanımlanmalı - içeride
   // tanımlanınca hem offline hem live kanallarda "is not defined" hatası veriyordu.
   let botScoreOnThumbnail = '';
   // v2.3.33: actions bloğu (if(ch.isLive) dışında) bunu kullanacak, dış kapsamda olmalı
-  // v2.4.5: Önceden "URL zaten çekilmiş mi" diye bakıyorduk — bu, tüm resimler
+  // v2.4.5: Önceden "URL zaten çekilmiş mi" diye bakıyorduk - bu, tüm resimler
   // gelene kadar render'ı bekletiyordu (yavaşlık şikayetinin asıl sebebi).
-  // Artık sadece "özellik açık mı" diye bakıyoruz — İSKELET (LIVE/izleyici/bot
+  // Artık sadece "özellik açık mı" diye bakıyoruz - İSKELET (LIVE/izleyici/bot
   // rozetleri + dikey buton sütunu) ANINDA çiziliyor, resmin kendisi (img src)
   // hazır olduğunda ayrıca enjekte ediliyor (bkz. loadChannels).
   const hasThumbnail = ch.isLive && !!batch?.thumbnailsEnabled;
@@ -823,19 +1057,19 @@ async function channelCard(ch, cardMode, batch) {
     else if (drop) sparklineFrame = `drop-${drop.level}`;
 
     // v2.3.0 Aşama 3: Bot skoru rozeti
-    // Yetersiz veri (insufficient/null) → görünmez (Karar A — yetersiz veri).
+    // Yetersiz veri (insufficient/null) → görünmez (Karar A - yetersiz veri).
     // 3 renk: 0-30 kırmızı, 30-70 sarı, 70-100 yeşil.
-    // Format: "smart_toy 28%" (Karar B — yüzde işaretli).
+    // Format: "smart_toy 28%" (Karar B - yüzde işaretli).
     //
     // v2.3.0 Yerleşim mantığı (Patron'un seçtiği):
     //   alwaysVisible AÇIK   → Sparkline'ın yanında, butonların solunda (her zaman aynı yer)
     //   alwaysVisible KAPALI → Sadece anomaly varsa, anomaly satırının sonunda
     // v2.3.30: Thumbnail modu AÇIKSA (ayar açık + kanal live) → rozet thumbnail'in
     // üzerine taşınıyor (mockup'a tam uyum), yukarıdaki iki konumun ikisi de
-    // devre dışı — çünkü artık görsel üzerinde zaten gösteriliyor.
+    // devre dışı - çünkü artık görsel üzerinde zaten gösteriliyor.
     let botScoreBadge = '';        // anomaly satırı için
-    // botScoreOnThumbnail zaten dış scope'ta tanımlı — burada sadece atama
-    // botScoreInSparkRow zaten dış scope'ta tanımlı — burada sadece atama
+    // botScoreOnThumbnail zaten dış scope'ta tanımlı - burada sadece atama
+    // botScoreInSparkRow zaten dış scope'ta tanımlı - burada sadece atama
     const botData = batch?.botScores?.[ch.channelSlug];
     const alwaysVisible = !!batch?.botScoreAlways;
 
@@ -848,7 +1082,9 @@ async function channelCard(ch, cardMode, batch) {
         : score < 80 ? 'high'
         : 'very-high';
       const tooltip = (Utils.i18n('botScoreTooltip', [String(score)]) || `Bot suspicion score: ${score}%`)
-        + (typeof botData.msgPerMin === 'number'
+        + (botData.source === 'kick' && typeof botData.kickChatters === 'number'
+            ? ` (Kick: ${botData.kickChatters} active chatters)`
+            : typeof botData.msgPerMin === 'number'
             ? ` (${botData.msgPerMin}/min, ${botData.activeChatters} chatters)`
             : '');
       const badgeHTML = `<span class="bot-score bot-score-${tier}" title="${esc(tooltip)}">`
@@ -857,7 +1093,7 @@ async function channelCard(ch, cardMode, batch) {
         + `</span>`;
 
       if (hasThumbnail) {
-        // Thumbnail varken rozet her zaman görsel üzerinde — konum tercihinden bağımsız
+        // Thumbnail varken rozet her zaman görsel üzerinde - konum tercihinden bağımsız
         botScoreOnThumbnail = badgeHTML;
       } else if (alwaysVisible) {
         // Switch açık → sparkline satırı, butonların solunda (her kanalda)
@@ -880,7 +1116,7 @@ async function channelCard(ch, cardMode, batch) {
       : '';
 
     // v2.3.30: Thumbnail varken izleyici sayısı görsel üzerinde zaten
-    // gösteriliyor — üst satırda tekrar etmesin. Süre ve kategori kalır
+    // gösteriliyor - üst satırda tekrar etmesin. Süre ve kategori kalır
     // (thumbnail üzerinde onlar için yer yok, tekrar da etmiyorlar).
     meta = `<div class="channel-meta">
       <span class="rec-indicator"><span class="rec-dot"></span></span>
@@ -916,7 +1152,7 @@ async function channelCard(ch, cardMode, batch) {
       avatarImg.src = '../images/default-profile-pictures/default.jpeg';
     }, { once: true });
   }
-  // v2.4.5: reusable — hem ilk render'da (nadiren, URL zaten hazırsa) hem de
+  // v2.4.5: reusable - hem ilk render'da (nadiren, URL zaten hazırsa) hem de
   // loadChannels()'ta sonradan enjekte edilen <img>'de kullanılıyor.
   function handleThumbnailLoadFailure() {
     const row = card.querySelector('.channel-thumbnail-row');
@@ -943,14 +1179,14 @@ async function channelCard(ch, cardMode, batch) {
   }
 
 
-  // Thumbnail overlay lazy fetch sonrası kurulacak — aşağıda
-  // Actions row — always show (live and offline both get star)
+  // Thumbnail overlay lazy fetch sonrası kurulacak - aşağıda
+  // Actions row - always show (live and offline both get star)
   // v2.3.33: Thumbnail modunda class farklı ('card-actions-col', dikey) ve
   // card'a değil, thumbnail satırındaki .card-actions-col placeholder'ına ekleniyor.
   const actions = document.createElement('div');
   actions.className = hasThumbnail ? 'card-actions-col' : 'card-actions-row';
 
-  // Sparkline — butonların yanında, sadece live + detail
+  // Sparkline - butonların yanında, sadece live + detail
   if (ch.isLive && cardMode !== 'compact' && sparkline) {
     const sparkWrap = document.createElement('span');
     // v2.3.0: Çerçeve rengi spike/drop durumuna göre
@@ -969,9 +1205,9 @@ async function channelCard(ch, cardMode, batch) {
     actions.appendChild(sparkWrap);
   }
 
-  // v2.3.0: Bot skor badge — sparkline'dan sonra, butonlardan önce.
+  // v2.3.0: Bot skor badge - sparkline'dan sonra, butonlardan önce.
   // Switch açık olduğunda her live kanalda, switch kapalıyken sadece anomaly satırında.
-  // Renkler iki veriyi (sparkline çizgisi + badge zemini) zaten ayırıyor — seperatör yok.
+  // Renkler iki veriyi (sparkline çizgisi + badge zemini) zaten ayırıyor - seperatör yok.
   if (ch.isLive && cardMode !== 'compact' && botScoreInSparkRow) {
     const botWrap = document.createElement('span');
     botWrap.className = 'bot-score-action-wrap';
@@ -984,19 +1220,19 @@ async function channelCard(ch, cardMode, batch) {
   const btnGroup = document.createElement('div');
   btnGroup.className = 'card-action-btns';
 
-  // Open button — her zaman (live ve offline)
+  // Open button - her zaman (live ve offline)
   const openBtn = document.createElement('button');
   openBtn.className = 'card-action-btn open-btn';
-  openBtn.title = 'Open channel';
+  openBtn.title = Utils.i18n('cardOpenChannel') || 'Open channel';
   openBtn.innerHTML = '<span class="material-icons">open_in_new</span>';
   openBtn.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${ch.channelSlug}` }));
   btnGroup.appendChild(openBtn);
 
   if (ch.isLive) {
-    // Multi button — sadece live
+    // Multi button - sadece live
     const multiBtn = document.createElement('button');
     multiBtn.className = 'card-action-btn multi-btn';
-    multiBtn.title = 'Add to Multi-Stream';
+    multiBtn.title = Utils.i18n('cardAddToMulti') || 'Add to Multi-Stream';
     multiBtn.innerHTML = '<span class="material-icons">grid_view</span>';
     multiBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1007,7 +1243,7 @@ async function channelCard(ch, cardMode, batch) {
     btnGroup.appendChild(multiBtn);
   }
 
-  // Bell button — her zaman (live ve offline)
+  // Bell button - her zaman (live ve offline)
   const bellMode = batch ? (batch.bellMap?.[ch.channelSlug] || batch.defaultMode || 'silent') : await Storage.getChannelSoundMode(ch.channelSlug);
   const bellBtn = createBellButton(ch.channelSlug, bellMode);
   btnGroup.appendChild(bellBtn);
@@ -1016,7 +1252,7 @@ async function channelCard(ch, cardMode, batch) {
   const alertPref = batch ? (batch.alertPrefs?.[ch.channelSlug] || {}) : await Storage.getChannelAlertPref(ch.channelSlug);
   btnGroup.appendChild(createChannelAlertsButton(ch, alertPref));
 
-  // Group assign button — always visible (only if groups exist)
+  // Group assign button - always visible (only if groups exist)
   const groups = batch ? (batch.groupList || []) : await Storage.getChannelGroups();
   if (groups.length > 0) {
     const groupBtn = document.createElement('button');
@@ -1047,19 +1283,23 @@ async function channelCard(ch, cardMode, batch) {
     btnGroup.appendChild(groupBtn);
   }
 
-  // Star/favorite button — always visible
+  // Star/favorite button - always visible
   const starBtn = document.createElement('button');
   starBtn.className = 'card-action-btn star-btn';
-  starBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+  starBtn.title = isFav ? (Utils.i18n('favRemove') || 'Remove from favorites') : (Utils.i18n('favAdd') || 'Add to favorites');
   starBtn.innerHTML = `<span class="material-icons">${isFav ? 'star' : 'star_border'}</span>`;
   starBtn.querySelector('.material-icons').style.color = isFav ? '#f0c040' : '';
   starBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
     const nowFav = await Storage.toggleFavoriteChannel(ch.channelSlug);
+    if (!nowFav) kaToast(Utils.i18n('toastFavRemoved', [ch.userUsername]) || (ch.userUsername + ' removed from favorites'), async () => { // v2.6.0
+      const b = document.querySelector(`.star-btn[data-slug="${CSS.escape(ch.channelSlug)}"]`);
+      if (b) b.click(); else { await Storage.toggleFavoriteChannel(ch.channelSlug); await renderFollowing(); }
+    });
     const icon = starBtn.querySelector('.material-icons');
     icon.textContent = nowFav ? 'star' : 'star_border';
     icon.style.color = nowFav ? '#f0c040' : '';
-    starBtn.title = nowFav ? 'Remove from favorites' : 'Add to favorites';
+    starBtn.title = nowFav ? (Utils.i18n('favRemove') || 'Remove from favorites') : (Utils.i18n('favAdd') || 'Add to favorites');
     // Sync star buttons across tabs
     document.querySelectorAll(`.star-btn[data-slug="${ch.channelSlug}"]`).forEach(b => {
       const ic = b.querySelector('.material-icons');
@@ -1078,7 +1318,7 @@ async function channelCard(ch, cardMode, batch) {
   if (hasThumbnail) {
     const placeholder = card.querySelector('.channel-thumbnail-row .card-actions-col');
     if (placeholder) placeholder.replaceWith(actions);
-    else card.appendChild(actions); // güvenlik ağı — beklenmeyen durum
+    else card.appendChild(actions); // güvenlik ağı - beklenmeyen durum
   } else {
     card.appendChild(actions);
   }
@@ -1096,7 +1336,7 @@ async function channelCard(ch, cardMode, batch) {
     });
 
     // v2.4.4: Thumbnail'e tıklayınca kanalı yeni sekmede aç (Open butonuyla
-    // aynı davranış) — viewer trend AÇILMASIN, sadece kanal.
+    // aynı davranış) - viewer trend AÇILMASIN, sadece kanal.
     const thumbWrapForClick = card.querySelector('.channel-thumbnail-wrap');
     if (thumbWrapForClick) attachThumbPreview(thumbWrapForClick, ch); // v2.5.56
     if (thumbWrapForClick) {
@@ -1108,7 +1348,7 @@ async function channelCard(ch, cardMode, batch) {
     }
   }
 
-  // Lazy fetch — startTime
+  // Lazy fetch - startTime
   if (ch.isLive && !ch.startedAt) {
     chrome.runtime.sendMessage({ type: 'GET_CHANNEL_START_TIME', slug: ch.channelSlug }, (res) => {
       if (chrome.runtime.lastError) return;
@@ -1146,6 +1386,7 @@ async function channelCard(ch, cardMode, batch) {
 async function autoLaunchCard(ch, cardMode, batch) {
   const card = document.createElement('div');
   card.className = `channel-card autolaunch-card ${ch.isLive ? 'live' : 'offline'} ${cardMode || 'detail'}-card`;
+  card.dataset.flip = ch.channelSlug; // v2.6.0
   const pic = ch.profilePic || '../images/default-profile-pictures/default.jpeg';
   const isAuto = await Storage.isAutoOpenChannel(ch.channelSlug);
 
@@ -1172,24 +1413,28 @@ async function autoLaunchCard(ch, cardMode, batch) {
   }
 
 
-  // v2.3.4: Yıldız (favori) butonu — "Takip Edilenler" sekmesiyle tutarlılık.
+  // v2.3.4: Yıldız (favori) butonu - "Takip Edilenler" sekmesiyle tutarlılık.
   // Aynı .star-btn class + data-slug → iki sekme otomatik senkronize olur.
   const isFav = batch ? !!batch.favMap?.[ch.channelSlug] : await Storage.isFavoriteChannel(ch.channelSlug);
   const starBtn = document.createElement('button');
   starBtn.className = 'card-action-btn star-btn';
-  starBtn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+  starBtn.title = isFav ? (Utils.i18n('favRemove') || 'Remove from favorites') : (Utils.i18n('favAdd') || 'Add to favorites');
   starBtn.innerHTML = `<span class="material-icons">${isFav ? 'star' : 'star_border'}</span>`;
   starBtn.querySelector('.material-icons').style.color = isFav ? '#f0c040' : '';
   starBtn.dataset.slug = ch.channelSlug;
   starBtn.addEventListener('click', async (e) => {
     e.stopPropagation();
     const nowFav = await Storage.toggleFavoriteChannel(ch.channelSlug);
+    if (!nowFav) kaToast(Utils.i18n('toastFavRemoved', [ch.userUsername]) || (ch.userUsername + ' removed from favorites'), async () => { // v2.6.0
+      const b = document.querySelector(`.star-btn[data-slug="${CSS.escape(ch.channelSlug)}"]`);
+      if (b) b.click(); else { await Storage.toggleFavoriteChannel(ch.channelSlug); await renderFollowing(); }
+    });
     // Tüm sekmelerdeki aynı slug'lı yıldızları senkronla
     document.querySelectorAll(`.star-btn[data-slug="${ch.channelSlug}"]`).forEach(b => {
       const ic = b.querySelector('.material-icons');
       ic.textContent = nowFav ? 'star' : 'star_border';
       ic.style.color = nowFav ? '#f0c040' : '';
-      b.title = nowFav ? 'Remove from favorites' : 'Add to favorites';
+      b.title = nowFav ? (Utils.i18n('favRemove') || 'Remove from favorites') : (Utils.i18n('favAdd') || 'Add to favorites');
     });
   });
   card.appendChild(starBtn);
@@ -1230,6 +1475,7 @@ async function autoLaunchCard(ch, cardMode, batch) {
 
 // ─── History Tab ───
 
+let _kaHistKeys = null; // v2.6.0: son çizilen geçmiş kayıtları (yeni olanı ayırt etmek için)
 async function loadHistory() {
   const el = document.getElementById('history-list');
   if (!el) return;
@@ -1246,9 +1492,13 @@ async function loadHistory() {
     else setTabCount('history-btn', unread);
     if (!history?.length) {
       el.innerHTML = `<div class="empty-state">${Utils.i18n('noHistoryYet')}</div>`;
+      _kaHistKeys = new Set();
       return;
     }
     el.innerHTML = '';
+    // v2.6.0: popup açıkken gelen yeni kayıt listeye kayarak girer
+    const prevHistKeys = _kaHistKeys;
+    _kaHistKeys = new Set();
 
     // Tarih gruplaması
     const now = new Date();
@@ -1322,6 +1572,9 @@ async function loadHistory() {
         }, { once: true });
       }
       item.addEventListener('click', () => chrome.tabs.create({ url: `https://kick.com/${entry.channelSlug}` }));
+      const hk = `${entry.channelSlug}|${entry.timestamp}|${entry.kind || ''}`;
+      _kaHistKeys.add(hk);
+      if (prevHistKeys && !prevHistKeys.has(hk) && !KAMotion.reduced()) item.classList.add('ka-hist-in');
       el.appendChild(item);
       prevEntry = entry; prevItem = item;
     });
@@ -1389,10 +1642,10 @@ function setupSearch() {
   });
 }
 
-// v2.5.9: "Yenilikler" banner'ı — ilk kurulum ya da güncelleme sonrası bir kez
+// v2.5.9: "Yenilikler" banner'ı - ilk kurulum ya da güncelleme sonrası bir kez
 // gösterilir. Aynı sürüm için tekrar gösterilmez (kapatınca sürüm numarası
 // kaydediliyor). #options-panel dışında olduğu için genel i18n tarayıcısı
-// buraya bakmıyor — viewer-history-modal/onay modalındaki gibi doğrudan
+// buraya bakmıyor - viewer-history-modal/onay modalındaki gibi doğrudan
 // Utils.i18n() ile dolduruyoruz.
 function showWhatsNewBanner() {
   const banner = document.getElementById('whatsnew-banner');
@@ -1403,7 +1656,7 @@ function showWhatsNewBanner() {
 }
 
 // v2.5.11: Banner'ın buton dinleyicileri artık SADECE BİR KEZ (init sırasında)
-// bağlanıyor — showWhatsNewBanner() tekrar tekrar çağrılabildiği için (kalıcı
+// bağlanıyor - showWhatsNewBanner() tekrar tekrar çağrılabildiği için (kalıcı
 // "What's New" linkinden), dinleyicileri her seferinde yeniden eklemek
 // birikip çift tetiklenmeye yol açardı.
 function setupWhatsNewBannerButtons() {
@@ -1411,10 +1664,10 @@ function setupWhatsNewBannerButtons() {
   if (!banner) return;
   // v2.5.16: KRİTİK DÜZELTME. "Ayarlar" linki (#whatsnew-settings-link),
   // banner metninin İÇİNDE (i18n metninden innerHTML ile) DİNAMİK olarak
-  // oluşturuluyor — showWhatsNewBanner() çağrılana kadar DOM'da HİÇ YOK.
+  // oluşturuluyor - showWhatsNewBanner() çağrılana kadar DOM'da HİÇ YOK.
   // Buraya doğrudan addEventListener bağlamak, setup anında elementi
   // bulamayıp SESSİZCE hiçbir şey yapmıyordu (linke tıklayınca hiçbir tepki
-  // vermiyordu). Artık olay temsili (event delegation) kullanıyoruz — banner
+  // vermiyordu). Artık olay temsili (event delegation) kullanıyoruz - banner
   // kapsayıcısı (her zaman DOM'da var) dinliyor, tıklanan elementin linke
   // ait olup olmadığını o an kontrol ediyor. İçerik ne zaman oluşursa
   // oluşsun çalışır.
@@ -1442,13 +1695,13 @@ async function checkWhatsNewBanner() {
   } catch (e) {}
 }
 
-// v2.5.11: Support & Info'daki kalıcı "What's New" linki — banner'ı daha
+// v2.5.11: Support & Info'daki kalıcı "What's New" linki - banner'ı daha
 // önce kapatmış olsa bile, merak eden kullanıcı istediği zaman tekrar
 // görebilsin. Ayarlar'dan ana ekrana dönüp orada gösteriyoruz (banner'ın
 // doğal yeri orası).
-// v2.5.16: Sürüm Geçmişi modalı — merak eden kullanıcılar için, sadece son
+// v2.5.16: Sürüm Geçmişi modalı - merak eden kullanıcılar için, sadece son
 // sürümün değil, birkaç önceki kilometre taşının kısa özeti. #options-panel
-// dışında olduğu için genel i18n tarayıcısı buraya bakmıyor — açılış anında
+// dışında olduğu için genel i18n tarayıcısı buraya bakmıyor - açılış anında
 // doğrudan Utils.i18n() ile dolduruyoruz (viewer-history-modal deseniyle aynı).
 function openReleaseHistoryModal() {
   const modal = document.getElementById('release-history-modal');
@@ -1492,11 +1745,11 @@ function setupWhatsNewRelink() {
 }
 
 // v2.5.9: Ayarlar kategori gruplarının açma/kapama mantığı. Varsayılan hepsi
-// AÇIK (hiçbir ayar "kayıp" hissi vermesin) — kullanıcı kapattığını
+// AÇIK (hiçbir ayar "kayıp" hissi vermesin) - kullanıcı kapattığını
 // chrome.storage'da hatırlıyoruz, bir sonraki açılışta korunuyor.
 // v2.5.10: Tüm grupların (collapsed olmayanların) max-height'ını GERÇEK,
 // o anki scrollHeight'a göre yeniden hesaplar. Options paneli display:none'dan
-// display:block'a geçtiği her an çağrılmalı — aksi halde panel gizliyken
+// display:block'a geçtiği her an çağrılmalı - aksi halde panel gizliyken
 // yapılan ilk ölçüm (scrollHeight=0) kalıcı olarak yanlış kalır.
 // v2.5.48: KÖK ÇÖZÜM. Açık bir grubun yüksekliği artık piksel olarak
 // sabitlenmiyor. Piksel değer SADECE açma/kapama animasyonu sırasında
@@ -1524,7 +1777,7 @@ function setupOptGroups() {
   if (!groups.length) return;
 
   // v2.5.11: Her grubun içindeki .opt-section sayısını, kapalıyken
-  // gösterilen küçük sayaca yaz — kullanıcı kapalı bir grupta ne kadar
+  // gösterilen küçük sayaca yaz - kullanıcı kapalı bir grupta ne kadar
   // ayar olduğunu tahmin etmek zorunda kalmasın.
   groups.forEach(group => {
     const countEl = group.querySelector('.opt-group-count');
@@ -1532,7 +1785,7 @@ function setupOptGroups() {
   });
 
   // v2.5.10: Grubun gerçek içerik yüksekliğini (scrollHeight) ölçüp
-  // max-height'a atar — CSS grid tekniğinin aksine, içinde kaç .opt-section
+  // max-height'a atar - CSS grid tekniğinin aksine, içinde kaç .opt-section
   // olursa olsun doğru çalışır.
   // v2.5.48: animate=false ilk yüklemede kullanılır (panel gizliyken
   // ölçüm yapılamaz, animasyona da gerek yok).
@@ -1567,7 +1820,7 @@ function setupOptGroups() {
 
   // v2.5.10: Bir grup AÇIKKEN, içindeki bir alt-toggle (örn. Reklam
   // Engelleme açıklaması) yükseklik değiştirirse, üst grubun sabitlenmiş
-  // max-height'ı bayat kalıp yeni içeriği kırpabilirdi — bu yüzden grup
+  // max-height'ı bayat kalıp yeni içeriği kırpabilirdi - bu yüzden grup
   // içindeki her tıklama/değişiklikten sonra yüksekliği tazeliyoruz.
   function refreshIfExpanded(group) {
     if (!group || group.classList.contains('collapsed')) return;
@@ -1605,10 +1858,10 @@ function setupOptGroups() {
   });
 }
 
-// v2.5.9: Ayarlar içi arama — 11+ bölüm arasında hızlı bulma için. Eşleşmeyen
+// v2.5.9: Ayarlar içi arama - 11+ bölüm arasında hızlı bulma için. Eşleşmeyen
 // opt-section'ları (ve içinde hiç eşleşme kalmayan grupları) gizler.
 // v2.5.11: Önceki aramadan kalan vurgulamaları temizler (metni orijinal
-// haline döndürür) — TreeWalker ile sadece <mark> etiketlerini "unwrap"
+// haline döndürür) - TreeWalker ile sadece <mark> etiketlerini "unwrap"
 // ediyoruz, input/checkbox gibi form elementlerine HİÇ dokunmuyoruz.
 function clearOptSearchHighlights(root) {
   root.querySelectorAll('mark.opt-search-highlight').forEach(mark => {
@@ -1621,7 +1874,7 @@ function clearOptSearchHighlights(root) {
 // v2.5.11: Bir bölüm içindeki SADECE metin düğümlerini (TreeWalker ile)
 // tarayıp eşleşen kelimeyi <mark> ile sarar. input/button/select gibi form
 // elementlerinin İÇİNDEKİ metne (örn. buton etiketleri) dokunmuyoruz ki
-// tıklama/etkileşim mantığı hiç bozulmasın — sadece düz metin (label,
+// tıklama/etkileşim mantığı hiç bozulmasın - sadece düz metin (label,
 // açıklama) düğümlerini işliyoruz.
 function highlightOptSearchMatches(section, query) {
   if (!query) return;
@@ -1675,7 +1928,7 @@ function setupOptSearch() {
       // Arama sırasında eşleşen gruplar otomatik açılsın, sonuç gizli kalmasın
       if (q && anyVisible) group.classList.remove('collapsed');
       // v2.5.10: Filtreleme, görünür bölüm sayısını değiştirdiği için grup
-      // yüksekliğini (max-height) YENİDEN hesaplamamız lazım — yoksa
+      // yüksekliğini (max-height) YENİDEN hesaplamamız lazım - yoksa
       // gizlenen/gösterilen bölümler eski (bayat) yükseklikte kırpılır/boşluk
       // bırakır. Sadece açık (collapsed olmayan) gruplar için gerekli.
       if (!group.classList.contains('collapsed')) {
@@ -1746,8 +1999,13 @@ function setupHistoryClear() {
   const btn = document.getElementById('history-clear-btn');
   if (!btn) return;
   btn.addEventListener('click', async () => {
+    const before = await Storage.getNotificationHistory(); // v2.6.0: geri alınabilsin
     await Storage.set(StorageKeys.NOTIFICATION_HISTORY, []);
     await loadHistory();
+    if (Array.isArray(before) && before.length) kaToast(Utils.i18n('toastHistoryCleared') || 'Notification history cleared', async () => {
+      await Storage.set(StorageKeys.NOTIFICATION_HISTORY, before);
+      await loadHistory();
+    });
   });
 }
 
@@ -1853,6 +2111,9 @@ function historyEventLine(entry) {
   if (entry.kind === 'raid') {
     return Utils.i18n('historyRaid', [entry.raider || '?', String(entry.viewers ?? '?')]) || `Raid from ${entry.raider} · ${entry.viewers} viewers`;
   }
+  if (entry.kind === 'host') {
+    return Utils.i18n('historyHost', [entry.targetName || entry.target || '?']) || `Sent viewers to ${entry.targetName || entry.target}`;
+  }
   return '';
 }
 
@@ -1862,14 +2123,19 @@ function historyEventLine(entry) {
 //    bildirim geçmişi kaydından hesaplanır),
 //  - en az bir kanal tercihi yapmış (favori, ses modu, otomatik açma, grup
 //    veya kanal bildirimi),
-//  - Ayarlar'da en az bir ayarı değiştirmiş,
+//  - (v2.5.111'den beri "Ayarlar'da bir ayar değiştirmiş" şartı yok)
 //  - popup'ı en az RATE_MIN_OPENS kez açmış,
 //  - en az RATE_MIN_ALERTS yayın bildirimi almış.
 // "Daha sonra" RATE_SNOOZE_DAYS gün erteler; toplam en fazla RATE_MAX_SHOWS
 // kez gösterilir. "Değerlendir" veya kapatma (×) bir daha göstermez.
 // Durum sadece bu cihazda tutulur (_ ile başlayan anahtar senkronlanmaz).
 const RATE_KEY = '_ratePrompt';
-const RATE_MIN_DAYS = 7, RATE_MIN_OPENS = 10, RATE_MIN_ALERTS = 3, RATE_SNOOZE_DAYS = 21, RATE_MAX_SHOWS = 2;
+// v2.5.111: Eşikler gevşetildi (7 gün / 10 açılış / ayar değişikliği şartı 243
+// kullanıcıda 3 değerlendirme getirdi). Band artık "olumlu an"da gösterilir:
+// kullanıcı son RATE_GOOD_WINDOW_H saat içinde bir bildirimden yayın açtıysa.
+// Hiç bildirimden açmayan kullanıcıya RATE_FALLBACK_DAYS günden sonra gösterilir.
+const RATE_MIN_DAYS = 3, RATE_MIN_OPENS = 5, RATE_MIN_ALERTS = 3, RATE_SNOOZE_DAYS = 14, RATE_MAX_SHOWS = 2;
+const RATE_GOOD_WINDOW_H = 48, RATE_FALLBACK_DAYS = 14;
 const DAY_MS = 86400000;
 const RATE_INFER_SETTINGS_KEYS = ['theme', 'userLanguage', 'soundMode', 'dndEnabled', 'anomalySettings', 'chatSettings',
   'checkInterval', 'showOfflineChannels', 'channelThumbnailsEnabled', 'adBlockEnabled', 'cloudSyncEnabled', 'botScoreAlwaysVisible'];
@@ -1933,10 +2199,12 @@ async function isRatePromptDue(st) {
   if ((st.shows || 0) >= RATE_MAX_SHOWS) return false;
   if (now - (st.firstSeen || now) < RATE_MIN_DAYS * DAY_MS) return false;
   if ((st.opens || 0) < RATE_MIN_OPENS) return false;
-  if (!st.settingsChanged) return false;
   if (!(await hasChannelPreferences())) return false;
-  const hist = (await chrome.storage.local.get('notificationHistory')).notificationHistory;
+  const d = await chrome.storage.local.get(['notificationHistory', '_rateGoodMoment']);
+  const hist = d.notificationHistory;
   if (!Array.isArray(hist) || hist.filter(e => !e.filtered && !e.kind).length < RATE_MIN_ALERTS) return false;
+  const good = typeof d._rateGoodMoment === 'number' && now - d._rateGoodMoment < RATE_GOOD_WINDOW_H * 3600000;
+  if (!good && now - (st.firstSeen || now) < RATE_FALLBACK_DAYS * DAY_MS) return false;
   return true;
 }
 
@@ -2033,7 +2301,7 @@ function showOptionsPanel() {
   renderLangSelector();
   applyOptionsI18n();
   loadOptionsSettings();
-  // v2.5.10: KRİTİK — setupOptGroups() sayfa yüklenirken (DOMContentLoaded'da)
+  // v2.5.10: KRİTİK - setupOptGroups() sayfa yüklenirken (DOMContentLoaded'da)
   // çalışıyor, ama o an #options-panel hâlâ display:none. Gizli bir
   // elementin scrollHeight'ı HER ZAMAN 0 döner, bu yüzden tüm gruplar
   // yanlışlıkla max-height:0 ile başlıyordu. Panel görünür olduktan SONRA
@@ -2112,6 +2380,46 @@ function createChannelAlertsButton(ch, pref) {
 }
 
 let _chAlertSlug = null;
+
+// ─── v2.5.97: "Bildirim neden gelmedi?" ───
+// Kanal ayarları penceresinin üstünde: bu kanaldan bildirim gelip gelmeyeceği
+// ve engel varsa sebebi. Kontroller arka planda (DIAG_CHANNEL_NOTIF).
+const DIAG_ICONS = { block: 'block', warn: 'error_outline', info: 'info', ok: 'check_circle' };
+let _diagSeq = 0;
+async function renderChannelDiag(slug) {
+  const box = document.getElementById('ch-alert-diag');
+  if (!box || !slug) return;
+  const seq = ++_diagSeq;
+  let res = null;
+  try { res = await chrome.runtime.sendMessage({ type: 'DIAG_CHANNEL_NOTIF', slug }); } catch (e) {}
+  if (seq !== _diagSeq || slug !== _chAlertSlug) return;
+  if (!res || !res.success) { box.replaceChildren(); box.hidden = true; return; }
+  const t = (k, p) => Utils.i18n(k, p) || k;
+  const param = (it) => {
+    if (it.key === 'diagLastSeen') return [Utils.formatTimestamp(new Date(+it.p[0]).toISOString())];
+    if (it.key === 'diagPaused' || it.key === 'diagSnoozed' || it.key === 'diagPausedFavExempt') return [kaClock(+it.p[0])];
+    if (it.key === 'diagLastFiltered') return [Utils.formatTimestamp(new Date(+it.p[0]).toISOString()), t(it.p[1] === 'category' ? 'diagReasonCategory' : 'diagReasonKeyword')];
+    return it.p;
+  };
+  const order = { block: 0, warn: 1, info: 2, ok: 3 };
+  const items = res.items.slice().sort((a, b) => order[a.level] - order[b.level]);
+  const head = document.createElement('div');
+  head.className = 'ch-diag-head ' + (res.blocked ? 'blocked' : 'ok');
+  const hi = document.createElement('span'); hi.className = 'material-icons-outlined'; hi.textContent = res.blocked ? 'notifications_off' : 'notifications_active';
+  const ht = document.createElement('span'); ht.textContent = t(res.blocked ? 'diagBlocked' : 'diagAllOk');
+  head.append(hi, ht);
+  const list = document.createElement('ul');
+  list.className = 'ch-diag-list';
+  for (const it of items) {
+    const li = document.createElement('li'); li.className = 'ch-diag-item ' + it.level;
+    const ic = document.createElement('span'); ic.className = 'material-icons-outlined'; ic.textContent = DIAG_ICONS[it.level] || 'info';
+    const tx = document.createElement('span'); tx.textContent = t(it.key, param(it));
+    li.append(ic, tx); list.append(li);
+  }
+  const title = document.createElement('div'); title.className = 'ch-diag-title'; title.textContent = t('diagTitle');
+  box.replaceChildren(title, head, list);
+  box.hidden = false;
+}
 async function openChannelAlertModal(ch) {
   const modal = document.getElementById('ch-alert-modal');
   if (!modal) return;
@@ -2124,6 +2432,7 @@ async function openChannelAlertModal(ch) {
   modal.querySelectorAll('.ch-alert-switch').forEach(sw => { sw.checked = !!pref[sw.dataset.pref]; });
   if (typeof renderChannelFilterUI === 'function') renderChannelFilterUI(pref);
   renderChangeTrackingState(ch.channelSlug); // v2.5.58
+  renderChannelDiag(ch.channelSlug); // v2.5.97
   modal.style.display = 'flex';
   document.getElementById('ch-alert-close')?.focus();
 }
@@ -2235,6 +2544,7 @@ function setupChannelAlertModal() {
       const slug = _chAlertSlug;
       const next = await Storage.updateChannelAlertPref(slug, { [sw.dataset.pref]: sw.checked });
       refreshChannelAlertButtons(slug, next);
+      renderChannelDiag(slug);
     });
   });
 }
@@ -2286,13 +2596,18 @@ function applyOptionsI18n() {
   document.querySelectorAll('#options-panel [data-i18n-placeholder], #chat-panel [data-i18n-placeholder]').forEach(el => {
     const key = el.getAttribute('data-i18n-placeholder');
     el.placeholder = Utils.i18n(key);
+  });  // v2.5.107: ses listelerindeki grup başlıkları
+  document.querySelectorAll('#options-panel optgroup[data-i18n-label]').forEach(el => {
+    el.label = Utils.i18n(el.getAttribute('data-i18n-label'));
   });
 }
 
 async function loadOptionsSettings() {
   optEl('opt-auto-unmute').checked = await Storage.getAutoUnmute();
   optEl('opt-reset-suspend').checked = await Storage.getResetSuspendOnRestart();
+  if (optEl('opt-raid-guard')) optEl('opt-raid-guard').checked = await Storage.getRaidGuardClose();
   optEl('opt-show-offline').checked = await Storage.getShowOfflineChannels();
+  optEl('opt-special-day-icons').checked = (await Storage.get(StorageKeys.SPECIAL_DAY_ICONS)) !== false; // v2.6.0
   if (optEl('opt-watch-time')) optEl('opt-watch-time').checked = await Storage.getWatchTimeEnabled(); // v2.5.55
   optEl('opt-show-notification').checked = await Storage.getShowNotification();
   optEl('opt-auto-refresh').checked = await Storage.getAutoRefreshPopup();
@@ -2306,6 +2621,12 @@ async function loadOptionsSettings() {
   optUpdateSliderFill(optEl('opt-volume-slider'));
 
   // v2.5.63: kanal olayı sesi
+  // v2.5.99
+  try {
+    const per = await Storage.getEventSoundByType();
+    document.querySelectorAll('.opt-evtype-select').forEach(sel => { sel.value = per[sel.dataset.evtype] || 'default'; });
+    optUpdateEvTypeSummary();
+  } catch (e) {}
   if (optEl('opt-event-sound')) {
     optEl('opt-event-sound').value = await Storage.getEventSound();
     const evVol = await Storage.getEventSoundVolume();
@@ -2395,11 +2716,12 @@ async function loadOptionsSettings() {
   // Chat Integration
   const chatEnabled = await Storage.getChatIntegrationEnabled();
   optEl('opt-chat-integration').checked = chatEnabled;
+  optUpdateChatNotifPresence(chatEnabled); // v2.5.96
   document.getElementById('chat-btn').style.display = chatEnabled ? '' : 'none';
   await loadChatSettings();
 
   // v2.4.6: Sadece bilgi metni olan (kontrol içermeyen) 4 bölümün açıklamasını
-  // toggle kapalıyken gizle — Chat sekmesindeki filtre paterniyle aynı mantık.
+  // toggle kapalıyken gizle - Chat sekmesindeki filtre paterniyle aynı mantık.
   syncCollapsibleDesc('opt-chat-integration', 'chat-integration-desc');
   syncCollapsibleDesc('opt-ad-block', 'ad-block-desc');
   syncCollapsibleDesc('opt-channel-thumbnails', 'thumbnails-desc');
@@ -2411,8 +2733,12 @@ async function loadOptionsSettings() {
   document.querySelectorAll('.opt-theme-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.theme === theme);
   });
+  const density = await Storage.getCardDensity(); // v2.5.95
+  document.querySelectorAll('.opt-density-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.density === density);
+  });
 
-  // v2.5.30: Chat Bildirimleri — chatSettings'i Ayarlar panelinde ayrıca
+  // v2.5.30: Chat Bildirimleri - chatSettings'i Ayarlar panelinde ayrıca
   // okuyoruz (Chat sekmesinden bağımsız bir görünüm burası).
   const chatSettingsForOpt = await Storage.getChatSettings();
   const optShowPopupOn = chatSettingsForOpt?.showPopupNotification !== false;
@@ -2426,7 +2752,7 @@ async function loadOptionsSettings() {
   await updateBackupRestoreUI(); // v2.5.19: son yedek zamanı + geri alma butonu durumu
 }
 
-// v2.5.19: Options paneli her açıldığında çağrılır — "son yedek" göstergesini
+// v2.5.19: Options paneli her açıldığında çağrılır - "son yedek" göstergesini
 // ve "Son Değişikliği Geri Al" butonunun görünürlüğünü günceller.
 async function updateBackupRestoreUI() {
   const infoEl = document.getElementById('opt-last-export-info');
@@ -2472,9 +2798,9 @@ function optUpdateDndVisibility() {
 
 // v2.4.7: Bot Tespiti bölümündeki formül+renk lejantını, "her zaman göster"
 // toggle'ının durumuna göre soluklaştırır (DND/Anomaly ile aynı .disabled
-// deseni). NOT: Bu, özelliğin kendisini kapatmıyor — bot tespiti her zaman
+// deseni). NOT: Bu, özelliğin kendisini kapatmıyor - bot tespiti her zaman
 // çalışır, bu sadece rozetin popup'ta ne zaman göründüğünü değiştirir. Bu
-// yüzden GİZLEME değil SOLUKLAŞTIRMA kullanıyoruz — bilgi hâlâ okunabilir
+// yüzden GİZLEME değil SOLUKLAŞTIRMA kullanıyoruz - bilgi hâlâ okunabilir
 // kalmalı, sadece daha az öne çıkmalı.
 function optUpdateBotScoreInfoVisibility() {
   const on = optEl('opt-bot-score-always-visible')?.checked;
@@ -2657,25 +2983,32 @@ function setupAdBlockToggle() {
 
   function openModal() {
     // v2.4.9: Bu modal #options-panel dışında olduğu için genel data-i18n
-    // tarayıcısı (applyOptionsI18n) buraya hiç bakmıyor — vh-modal'daki gibi
+    // tarayıcısı (applyOptionsI18n) buraya hiç bakmıyor - vh-modal'daki gibi
     // doğrudan Utils.i18n() ile açılış anında çeviriyoruz.
     const titleEl = modal.querySelector('.confirm-modal-title');
     const bodyEl = modal.querySelector('.confirm-modal-body');
     if (titleEl) titleEl.textContent = Utils.i18n('adBlockConfirmTitle') || 'Enable Ad Blocking?';
-    if (bodyEl) bodyEl.textContent = Utils.i18n('adBlockConfirmBody') || "This is experimental and unofficial — it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks.";
+    if (bodyEl) bodyEl.textContent = Utils.i18n('adBlockConfirmBody') || "This is experimental and unofficial - it depends on Kick's internal API structure and may break without notice, and Kick could flag the behavior. By enabling it, you accept responsibility for these risks.";
     if (cancelBtn) cancelBtn.textContent = Utils.i18n('cancel') || 'Cancel';
     if (acceptBtn) acceptBtn.textContent = Utils.i18n('adBlockConfirmAccept') || 'I understand, enable it';
+    // v2.5.82: reklam alan adı izni yoksa tarayıcının soracağını önceden söyle
+    const note = document.getElementById('adblock-confirm-note');
+    if (note) {
+      note.textContent = Utils.i18n('adBlockConfirmPermNote') || note.textContent;
+      note.style.display = 'none';
+      permHas(KA_AD_ORIGINS).then((ok) => { note.style.display = ok ? 'none' : ''; }).catch(() => {});
+    }
     modal.style.display = 'flex';
   }
 
   checkbox.addEventListener('change', async (e) => {
     if (e.target.checked) {
-      // Kapalıdan açığa geçiş — anında uygulamadan ÖNCE onay iste.
+      // Kapalıdan açığa geçiş - anında uygulamadan ÖNCE onay iste.
       // Checkbox'ı görsel olarak geri al, sadece onaylanırsa gerçekten aç.
       checkbox.checked = false;
       openModal();
     } else {
-      // Açıktan kapalıya geçiş — onay gerekmiyor, hemen uygula.
+      // Açıktan kapalıya geçiş - onay gerekmiyor, hemen uygula.
       await applyEnabled(false);
     }
   });
@@ -2686,10 +3019,28 @@ function setupAdBlockToggle() {
   backdrop?.addEventListener('click', () => {
     closeModal();
   });
-  acceptBtn?.addEventListener('click', async () => {
+  acceptBtn?.addEventListener('click', () => {
+    // v2.5.82: Reklam alan adı engeli (DNR) bu alan adlarında site izni olmadan
+    // hiçbir isteğe uygulanmıyordu. İzin bu tıklamanın içinde, ilk işlem
+    // olarak istenir (permissions.request kullanıcı hareketi ister). Zaten
+    // verilmişse tarayıcı sormadan true döner. Reddedilse de reklam engeli
+    // oynatıcı katmanlarıyla çalışmaya devam eder.
+    if (KA_PERM_VIA_TAB()) {
+      // Firefox: önce engeli aç (sihirbaz reklam adımını buna göre gösterir),
+      // izin eksikse sihirbazı kapanmayan bir sekmede aç.
+      checkbox.checked = true;
+      closeModal();
+      Promise.resolve(applyEnabled(true)).catch(() => {})
+        .then(() => permHas(KA_AD_ORIGINS))
+        .then((has) => { if (!has) openPermTab('ads'); });
+      return;
+    }
+    let req = null;
+    try { req = chrome.permissions.request({ origins: KA_AD_ORIGINS }); } catch (e) { req = null; }
     checkbox.checked = true;
-    await applyEnabled(true);
+    applyEnabled(true);
     closeModal();
+    if (req) Promise.resolve(req).catch(() => {});
   });
 }
 
@@ -2702,11 +3053,11 @@ function syncCollapsibleDesc(checkboxId, descId) {
   if (!checkbox || !desc) return;
   desc.classList.toggle('collapsed', !checkbox.checked);
   // v2.5.13: KRİTİK DÜZELTME. Bu fonksiyon bazen (örn. Reklam Engelleme onay
-  // modalının "Anladım, aç" butonundan) DOĞRUDAN çağrılıyor — normal bir
+  // modalının "Anladım, aç" butonundan) DOĞRUDAN çağrılıyor - normal bir
   // checkbox 'change' event'i tetiklenmeden. Grup yüksekliğini SADECE
   // 'change' event'ine bağlı dinleyiciyle yeniliyorduk, bu yüzden bu yoldan
   // açılan açıklamalar üst grubun (bayat kalan) max-height'ı tarafından
-  // KIRPILIYORDU — açıklama görünür oluyordu ama grup içindeki SONRAKİ
+  // KIRPILIYORDU - açıklama görünür oluyordu ama grup içindeki SONRAKİ
   // bölümler (örn. Kanal Önizleme Resimleri) görünmez oluyordu. Artık her
   // çağrıda doğrudan tazeliyoruz, çağıran yol ne olursa olsun.
   setTimeout(refreshAllOptGroupHeights, 220);
@@ -2726,7 +3077,9 @@ function setupOptionsListeners() {
 
   optBind('opt-auto-unmute', v => Storage.setAutoUnmute(v));
   optBind('opt-reset-suspend', v => Storage.setResetSuspendOnRestart(v));
+  optBind('opt-raid-guard', v => Storage.setRaidGuardClose(v));
   optBind('opt-show-offline', v => Storage.setShowOfflineChannels(v));
+  optBind('opt-special-day-icons', v => Storage.set(StorageKeys.SPECIAL_DAY_ICONS, !!v)); // v2.6.0
   if (optEl('opt-watch-time')) optBind('opt-watch-time', async v => { await Storage.setWatchTimeEnabled(v); renderWatchSummary(); }); // v2.5.55
   optBind('opt-show-notification', v => Storage.setShowNotification(v));
   setupDefaultChannelModeControls(); // v2.5.74
@@ -2757,7 +3110,7 @@ function setupOptionsListeners() {
   optBind('opt-dnd-mute-sound', v => Storage.setDndMuteSound(v));
   optBind('opt-dnd-mute-autolaunch', v => Storage.setDndMuteAutolaunch(v));
 
-  // v2.5.30: Chat Bildirimleri — optBind KULLANILMIYOR çünkü chatSettings
+  // v2.5.30: Chat Bildirimleri - optBind KULLANILMIYOR çünkü chatSettings
   // tek bir obje (ayrı bir StorageKey değil), Storage.updateChatSetting()
   // ile yazılıyor (chat.js/popup.js'in geri kalanıyla aynı desen).
   optEl('opt-chat-show-popup')?.addEventListener('change', async e => {
@@ -2852,7 +3205,7 @@ function setupOptionsListeners() {
     optRenderSyncIssues();
   });
 
-  // v2.3.7: Manuel "Şimdi Senkronize Et" butonu — açma/kapama switch'inden
+  // v2.3.7: Manuel "Şimdi Senkronize Et" butonu - açma/kapama switch'inden
   // bağımsız, kullanıcı istediği an tetikleyebilir. pull+push birleştirme yapar.
   const syncNowBtn = document.getElementById('opt-cloud-sync-now');
   const syncNowStatus = document.getElementById('opt-cloud-sync-now-status');
@@ -2875,14 +3228,14 @@ function setupOptionsListeners() {
   }
 
   // v2.5.17: Ayarları Dışa/İçe Aktar.
-  // v2.5.38: Bu artık popup İÇİNDE yapılmıyor — Firefox, bir extension
+  // v2.5.38: Bu artık popup İÇİNDE yapılmıyor - Firefox, bir extension
   // popup'ı içinde <input type="file"> veya indirme diyaloğu açıldığında
   // popup'ı otomatik kapatıyor (Mozilla Bugzilla #1658694, #1292701).
   // Bunun sonucu: kullanıcı "İçe Aktar"a tıklayıp dosya seçse bile popup
   // zaten kapandığı için 'change' olayı hiç tetiklenmiyor, ayarlar
   // sessizce hiç yüklenmiyordu. Çözüm: bu iki butonu, kendi sekmesinde
   // açılan bağımsız bir sayfaya (html/backup.html, src/backup.js)
-  // yönlendiriyoruz — sekmeler bu şekilde kapanmaz.
+  // yönlendiriyoruz - sekmeler bu şekilde kapanmaz.
   const exportBtn = document.getElementById('opt-export-settings');
   const importBtn = document.getElementById('opt-import-settings');
   const importExportStatus = document.getElementById('opt-import-export-status');
@@ -2896,7 +3249,7 @@ function setupOptionsListeners() {
     // v2.5.41: Sekme (tabs.create) YERİNE, tarayıcı çerçevesi (adres çubuğu,
     // sekme şeridi) OLMAYAN bağımsız bir PENCERE açıyoruz. Firefox'un
     // popup'ı kapatma davranışı (bkz. üstteki not) SADECE browserAction
-    // popup'ına özgü — chrome.windows.create ile açılan bir pencere bu
+    // popup'ına özgü - chrome.windows.create ile açılan bir pencere bu
     // sorunu YAŞAMAZ, VE kullanıcıya "yeni bir web sekmesine gittim" hissi
     // vermez, eklentinin kendi küçük bir penceresi gibi görünür.
     chrome.windows.create({
@@ -2909,7 +3262,7 @@ function setupOptionsListeners() {
   exportBtn?.addEventListener('click', openBackupPage);
   importBtn?.addEventListener('click', openBackupPage);
 
-  // v2.5.19: "Son Değişikliği Geri Al" — import ya da reset öncesindeki
+  // v2.5.19: "Son Değişikliği Geri Al" - import ya da reset öncesindeki
   // duruma tek tıkla döner. Kullanıldıktan sonra yedek temizlenir (tek seferlik).
   document.getElementById('opt-restore-snapshot')?.addEventListener('click', async () => {
     const result = await restorePreChangeSnapshot();
@@ -2921,7 +3274,7 @@ function setupOptionsListeners() {
     }
   });
 
-  // v2.5.19: Varsayılanlara Sıfırla — mevcut yıkıcı-onay desenini (import-confirm)
+  // v2.5.19: Varsayılanlara Sıfırla - mevcut yıkıcı-onay desenini (import-confirm)
   // aynen tekrar kullanıyor, ayrı bir modal ile.
   document.getElementById('opt-reset-defaults')?.addEventListener('click', () => {
     document.getElementById('reset-confirm-modal').style.display = 'flex';
@@ -2939,14 +3292,14 @@ function setupOptionsListeners() {
     setTimeout(() => location.reload(), 1200);
   });
 
-  // Ad Block (v2.3.18, DENEYSEL) — sadece storage'a yazıyoruz, DNR ruleset
+  // Ad Block (v2.3.18, DENEYSEL) - sadece storage'a yazıyoruz, DNR ruleset
   // toggle'ı background.js'teki storage.onChanged dinleyicisinde yapılıyor.
   // content.js/adblock-worker-hook.js tarafı da aynı dinleyiciyle canlı güncellenir.
   // v2.4.8: AÇARKEN onay modalı gösteriliyor (Mo'Kick'in "consent" ekranından
-  // esinlenildi) — KAPATIRKEN onay istenmiyor, anında uygulanıyor.
+  // esinlenildi) - KAPATIRKEN onay istenmiyor, anında uygulanıyor.
   setupAdBlockToggle();
 
-  // Channel Thumbnails (v2.3.26, DENEYSEL) — açılınca/kapanınca listeyi
+  // Channel Thumbnails (v2.3.26, DENEYSEL) - açılınca/kapanınca listeyi
   // hemen yeniden çiz, kullanıcı popup'ı kapatıp açmak zorunda kalmasın.
   optBind('opt-channel-thumbnails', async v => {
     await Storage.set(StorageKeys.CHANNEL_THUMBNAILS_ENABLED, v);
@@ -2958,6 +3311,7 @@ function setupOptionsListeners() {
   optBind('opt-chat-integration', async v => {
     await Storage.setChatIntegrationEnabled(v);
     document.getElementById('chat-btn').style.display = v ? '' : 'none';
+    optUpdateChatNotifPresence(v); // v2.5.96
     syncCollapsibleDesc('opt-chat-integration', 'chat-integration-desc');
     if (!v && document.querySelector('.tab-button[data-tab="chat-panel"].active')) {
       // If chat tab was active, switch back to following
@@ -2967,13 +3321,27 @@ function setupOptionsListeners() {
 
   // Chat sub-settings
   setupChatHandlers();
+  setupChatNotifJump(); // v2.5.96
+
+  // v2.5.95: kart yoğunluğu
+  document.querySelectorAll('.opt-density-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const d = btn.dataset.density === 'compact' ? 'compact' : 'comfortable';
+      await Storage.setCardDensity(d);
+      document.documentElement.setAttribute('data-density', d);
+      document.querySelectorAll('.opt-density-btn').forEach(b => b.classList.toggle('active', b === btn));
+      markSettingsChangedForRating();
+    });
+  });
 
   // Theme buttons
   document.querySelectorAll('.opt-theme-btn').forEach(btn => {
     btn.addEventListener('click', async () => {
       const theme = btn.dataset.theme;
       await Storage.setTheme(theme);
-      document.documentElement.setAttribute('data-theme', resolveTheme(theme));
+      // v2.6.0: tema değişimi yumuşak geçişle (tarayıcı destekliyorsa)
+      const swap = () => document.documentElement.setAttribute('data-theme', resolveTheme(theme));
+      if (document.startViewTransition && !KAMotion.reduced()) document.startViewTransition(swap); else swap();
       document.querySelectorAll('.opt-theme-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     });
@@ -3013,6 +3381,20 @@ function setupOptionsListeners() {
     optPlayEventSoundTest();
   });
   optEl('opt-event-sound-test')?.addEventListener('click', optPlayEventSoundTest);
+  // v2.5.99: olay türüne göre ses
+  document.querySelectorAll('.opt-evtype-select').forEach(sel => {
+    sel.addEventListener('change', async () => { await Storage.setEventSoundForType(sel.dataset.evtype, sel.value); optUpdateEvTypeSummary(); });
+  });
+  document.querySelectorAll('.opt-evtype-test').forEach(btn => {
+    btn.setAttribute('aria-label', Utils.i18n('testSoundVolume') || 'Test');
+    btn.addEventListener('click', () => {
+      const v = document.querySelector(`.opt-evtype-select[data-evtype="${btn.dataset.evtype}"]`)?.value;
+      const sound = v && v !== 'default' ? v : optEl('opt-event-sound')?.value;
+      if (!sound || sound === 'silent') return;
+      chrome.runtime.sendMessage({ type: 'PLAY_EVENT_SOUND_TEST', sound, volume: +optEl('opt-event-volume-slider').value }).catch(() => {});
+    });
+  });
+  optEl('opt-evtype')?.addEventListener('toggle', () => { try { refreshAllOptGroupHeights(); } catch (e) {} });
   optEl('opt-event-winsound-test')?.addEventListener('click', optPlayEventSoundTest);
 
   optSetupSound('main');
@@ -3042,11 +3424,20 @@ async function optRenderGroups() {
   for (const g of groups) {
     const tag = document.createElement('span');
     tag.className = 'opt-group-tag';
-    tag.innerHTML = `${esc(g)}<button class="remove-group" title="Remove">&times;</button>`;
+    tag.innerHTML = `${esc(g)}<button class="remove-group" title="${esc(Utils.i18n('msRemove') || 'Remove')}">&times;</button>`;
     tag.querySelector('.remove-group').addEventListener('click', async () => {
+      const oldGroups = await Storage.getChannelGroups(); // v2.6.0: geri alınabilsin
+      const oldMap = await Storage.getChannelGroupMap();
       await Storage.removeChannelGroup(g);
       await optRenderGroups();
       await buildGroupFilterBar();
+      kaToast(Utils.i18n('toastGroupRemoved', [g]) || ('Group "' + g + '" deleted'), async () => {
+        await Storage.setChannelGroups(oldGroups);
+        await Storage.set(StorageKeys.CHANNEL_GROUP_MAP, oldMap);
+        await optRenderGroups();
+        await buildGroupFilterBar();
+        await renderFollowing();
+      });
     });
     list.appendChild(tag);
   }
@@ -3086,13 +3477,13 @@ function optSetupSound(type) {
   });
 }
 
-// Popup context'inde ses çal — Chrome ve Firefox uyumlu
+// Popup context'inde ses çal - Chrome ve Firefox uyumlu
 // Chrome'da background offscreen'e ilet, Firefox'ta doğrudan Audio() kullan
 async function popupPlaySound(soundType) {
   try {
     const soundMode = await Storage.getSoundMode();
     if (soundMode === 'windows') {
-      // Windows sesi — background'a bırak
+      // Windows sesi - background'a bırak
       chrome.runtime.sendMessage({ type: 'PLAY_TEST_SOUND', soundType });
       return;
     }
@@ -3104,7 +3495,7 @@ async function popupPlaySound(soundType) {
       // Chrome: offscreen üzerinden çal
       chrome.runtime.sendMessage({ type: 'PLAY_TEST_SOUND', soundType });
     } else {
-      // Firefox: popup context'inde doğrudan Audio() — çalışır
+      // Firefox: popup context'inde doğrudan Audio() - çalışır
       const SoundPaths = {
         NEW_LIVE_MAIN: chrome.runtime.getURL('sounds/new_live_main.mp3'),
         NEW_LIVE_SUB:  chrome.runtime.getURL('sounds/new_live_sub.mp3'),
@@ -3119,7 +3510,7 @@ async function popupPlaySound(soundType) {
   }
 }
 
-// v2.5.66: Bulut senkronu — 8 KB sınırını aşan ayarlar için uyarı
+// v2.5.66: Bulut senkronu - 8 KB sınırını aşan ayarlar için uyarı
 const SYNC_ISSUE_NAMES = {
   channelAlertPrefs: 'chAlertButtonTooltip', channelGroups: 'groupsTitle', channelGroupMap: 'groupsTitle',
   favoriteChannels: 'syncNameFavorites', autoOpenChannels: 'syncNameAutoOpen', channelSoundMode: 'syncNameSoundModes',
@@ -3137,7 +3528,16 @@ async function optRenderSyncIssues() {
   box.style.display = '';
 }
 
-// v2.5.63: olay sesi satırı — "Sessiz" seçiliyken seviye/test pasif
+// v2.5.99: en az bir türe özel ses seçiliyse bölüm açık başlasın
+function optUpdateEvTypeSummary() {
+  const d = optEl('opt-evtype');
+  if (!d) return;
+  const custom = [...document.querySelectorAll('.opt-evtype-select')].some(s => s.value !== 'default');
+  d.classList.toggle('has-custom', custom);
+  if (custom && !d._kaOpened) { d.open = true; d._kaOpened = true; }
+}
+
+// v2.5.63: olay sesi satırı - "Sessiz" seçiliyken seviye/test pasif
 function optUpdateEventSoundRow() {
   const v = optEl('opt-event-sound')?.value;
   // v2.5.64: Windows sesi seçiliyse seviye satırı yerine açıklama + test
@@ -3205,7 +3605,7 @@ function setSensitivityDisabled(bodyId, disabled) {
 
 function updateSensitivityFill(slider, labels) {
   if (!slider) return;
-  // min=0 max=2 step=1 — sabit 3 pozisyon, fill hesabı doğrudan
+  // min=0 max=2 step=1 - sabit 3 pozisyon, fill hesabı doğrudan
   const pct = (+slider.value / 2) * 100;
   slider.style.background = `linear-gradient(to right, var(--accent) 0%, var(--accent) ${pct}%, var(--border-strong) ${pct}%, var(--border-strong) 100%)`;
   const valEl = optEl(slider.id.replace('-slider', '-val'));
@@ -3232,7 +3632,7 @@ function setupSensitivitySlider(sliderId, storageKey) {
 function setupSensitivityGroup(groupId, storageKey) {}
 function setupSegGroup(groupId, storageKey) {}
 
-// Viewer anomaly — background'a sorar
+// Viewer anomaly - background'a sorar
 async function getViewerAnomaly(slug, viewerCount, startedAt) {
   try {
     const res = await chrome.runtime.sendMessage({
@@ -3245,7 +3645,7 @@ async function getViewerAnomaly(slug, viewerCount, startedAt) {
   } catch { return null; }
 }
 
-// Viewer drop — background'a sorar
+// Viewer drop - background'a sorar
 async function getViewerDrop(slug, viewerCount, startedAt) {
   try {
     const res = await chrome.runtime.sendMessage({
@@ -3264,12 +3664,12 @@ function optUpdateAnomalyVisibility(enabled) {
 }
 
 function optUpdateAnomalyForCardMode() {
-  // Compact mod kaldırıldı — anomaly section her zaman aktif
+  // Compact mod kaldırıldı - anomaly section her zaman aktif
   const section = document.getElementById('opt-anomaly-section');
   if (section) section.classList.remove('disabled');
 }
 
-// Sparkline — smooth curve + son nokta, yukarı=yeşil aşağı=kırmızı
+// Sparkline - smooth curve + son nokta, yukarı=yeşil aşağı=kırmızı
 async function buildSparkline(slug) {
   try {
     const res = await chrome.runtime.sendMessage({ type: 'GET_VIEWER_HISTORY', slug });
@@ -3289,7 +3689,7 @@ async function buildSparkline(slug) {
     const secondHalfAvg = vals.slice(mid).reduce((s, v) => s + v, 0) / (vals.length - mid);
     const color = secondHalfAvg >= firstHalfAvg ? '#53FC18' : '#E24B4A';
 
-    // %5'ten az değişimde yapay dalga önle — görsel aralığı genişlet
+    // %5'ten az değişimde yapay dalga önle - görsel aralığı genişlet
     const changeRatio = (max - min) / (max || 1);
     const pad = changeRatio < 0.05 ? (max - min) * 2 : 0;
     const visMin = min - pad;
@@ -3332,9 +3732,9 @@ async function showViewerHistoryModal(ch) {
 
   if (!modal) return;
 
-  title.textContent = ch.userUsername + ' — ' + (Utils.i18n('viewerTrendTitle') || 'Viewer Trend');
+  title.textContent = ch.userUsername + ' - ' + (Utils.i18n('viewerTrendTitle') || 'Viewer Trend');
 
-  // Navigasyon — canlı kanallar arasında geçiş
+  // Navigasyon - canlı kanallar arasında geçiş
   const liveChannels = allChannels.filter(c => c.isLive);
   const currentIdx = liveChannels.findIndex(c => c.channelSlug === ch.channelSlug);
 
@@ -3401,7 +3801,7 @@ async function showViewerHistoryModal(ch) {
 
 // v2.3.3: Bir yüzde değerini eklentinin RESMİ spike/drop renk standardına çevirir.
 // Hem genel trend hem "son 6 interval" ivmesi bu helper'ı kullanır (tek kaynak).
-// Döndürür: { level, color } — level CSS class eki, color SVG çizgi rengi.
+// Döndürür: { level, color } - level CSS class eki, color SVG çizgi rengi.
 // v2.3.3: Bir yüzde değerini KART SPARKLINE standardına çevirir (birebir aynı):
 //   yukarı → #53FC18 (Kick yeşili), aşağı → #E24B4A (kırmızı),
 //   neredeyse sabit (<%3) → #8a8a8a (gri).
@@ -3421,7 +3821,7 @@ function drawViewerChart(svg, labels, entries, ch) {
   const maxV = Math.max(...vals);
   const range = maxV - minV || 1;
 
-  // Trend rengi — _trendStyle helper'ı (3 katman: standart / soluk / gri)
+  // Trend rengi - _trendStyle helper'ı (3 katman: standart / soluk / gri)
   const mid = Math.floor(vals.length / 2);
   const firstAvg = vals.slice(0, mid).reduce((s, v) => s + v, 0) / mid;
   const secondAvg = vals.slice(mid).reduce((s, v) => s + v, 0) / (vals.length - mid);
@@ -3461,7 +3861,7 @@ function drawViewerChart(svg, labels, entries, ch) {
       : `<circle cx="${pt.x.toFixed(1)}" cy="${pt.y.toFixed(1)}" r="3" fill="${color}" opacity="0.8"/>`
   ).join('');
 
-  // SVG — min/max label'ları dışarıda, chart temiz
+  // SVG - min/max label'ları dışarıda, chart temiz
   svg.innerHTML = `
     <defs>
       <linearGradient id="vh-grad" x1="0" y1="0" x2="0" y2="1">
@@ -3473,15 +3873,15 @@ function drawViewerChart(svg, labels, entries, ch) {
     <path d="${lineD}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round"/>
     ${dotsHtml}`;
 
-  // ── v2.3.7 (B): Metrikleri hesapla — hepsi mevcut entries verisinden ──
+  // ── v2.3.7 (B): Metrikleri hesapla - hepsi mevcut entries verisinden ──
   const chartWrap = svg.closest('.vh-chart-wrap');
   // Yayın (tüm izleme) ortalaması
   const avgAll = Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
-  // Son 6 interval ortalaması (yaklaşık son 3 dk — 30sn aralıkla)
+  // Son 6 interval ortalaması (yaklaşık son 3 dk - 30sn aralıkla)
   const lastN = vals.slice(-6);
   const avgRecent = Math.round(lastN.reduce((s, v) => s + v, 0) / lastN.length);
   const maxIdx = vals.indexOf(maxV);                      // zirve hangi entry
-  // İzlenen süre (ilk-son entry arası — yayın başı değil, izleme süresi)
+  // İzlenen süre (ilk-son entry arası - yayın başı değil, izleme süresi)
   const watchedMs = times[times.length - 1] - times[0];
   const watchedMin = Math.max(1, Math.round(watchedMs / 60000));
   // v2.5.46: was hard-coded Turkish ("1s 20dk") in every language; now uses the
@@ -3495,7 +3895,7 @@ function drawViewerChart(svg, labels, entries, ch) {
     return d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
   };
 
-  // ── Son 6 interval ivmesi (anlık momentum — son ~3 dk) ──
+  // ── Son 6 interval ivmesi (anlık momentum - son ~3 dk) ──
   // Son 6 intervalin ilk değeri vs son değeri arası yüzde değişim.
   let recentPct = 0;
   if (lastN.length >= 2) {
@@ -3573,7 +3973,7 @@ function drawViewerChart(svg, labels, entries, ch) {
     `<div class="vh-metric"><div class="vh-m-label">${L.avgAll}</div><div class="vh-m-value">${Utils.formatViewers(avgAll)}</div></div>` +
     `<div class="vh-metric"><div class="vh-m-label">${L.avgRecent}</div><div class="vh-m-value">${Utils.formatViewers(avgRecent)}</div></div>`;
 
-  // ── X ekseni — başlangıç (+izleme süresi) · zirve zamanı · şu an ──
+  // ── X ekseni - başlangıç (+izleme süresi) · zirve zamanı · şu an ──
   labels.innerHTML =
     `<span>${fmt(times[0])} <span class="vh-peak-time">(${durLabel})</span></span>` +
     `<span class="vh-peak-time">${Utils.i18n('vhPeakAt') || 'zirve'}: ${fmt(times[maxIdx])}</span>` +
@@ -3597,8 +3997,37 @@ function syncChatSectionStates(s) {
 }
 
 // v2.5.29: Ana ses toggle'ı kapalıyken, alt seçenek (akıllı mod) kapsayıcısını
-// pasifleştir — optUpdateDndVisibility() ile BİREBİR AYNI desen
+// pasifleştir - optUpdateDndVisibility() ile BİREBİR AYNI desen
 // (.opt-dnd-body.disabled), tüm Options sayfası tutarlı olsun diye.
+// v2.5.96: Chat entegrasyonu kapalıyken Bildirimler grubundaki "Chat
+// bildirimleri" bölümü hiç gösterilmez (önceden pasif görünüyordu). Açılınca
+// bölüm yerinde belirir; Chat entegrasyonu anahtarının altına da oraya götüren
+// bir bağlantı çıkar (Bildirimler grubu yukarıda kaldığı için).
+function optUpdateChatNotifPresence(enabled) {
+  const outer = document.getElementById('opt-chat-notif-outer');
+  if (outer) outer.style.display = enabled ? '' : 'none';
+  const jump = document.getElementById('chat-notif-jump-row');
+  if (jump) jump.style.display = enabled ? '' : 'none';
+  try { refreshAllOptGroupHeights(); } catch (e) {}
+}
+function setupChatNotifJump() {
+  const btn = document.getElementById('chat-notif-jump');
+  if (!btn || btn._ka) return;
+  btn._ka = true;
+  btn.addEventListener('click', () => {
+    const g = document.getElementById('opt-group-notifications');
+    const wasCollapsed = !!(g && g.classList.contains('collapsed'));
+    if (wasCollapsed) g.querySelector('.opt-group-header')?.click();
+    const sec = document.getElementById('opt-chat-notif-sound-section');
+    if (!sec) return;
+    // Grup açılırken yükseklik animasyonu bitsin, sonra kaydır
+    setTimeout(() => {
+      sec.scrollIntoView({ behavior: 'auto', block: 'center' });
+      sec.classList.remove('opt-flash'); void sec.offsetWidth; sec.classList.add('opt-flash');
+    }, wasCollapsed ? 400 : 30);
+  });
+}
+
 function optUpdateChatNotifSoundBodyVisibility() {
   const on = optEl('opt-chat-mention-sound-enabled')?.checked;
   const body = optEl('opt-chat-notif-sound-body');
@@ -3611,7 +4040,7 @@ function updateChatNotifSoundSectionState(chatSettings) {
   const section = document.getElementById('opt-chat-notif-sound-section');
   const disabledNote = document.getElementById('opt-chat-notif-sound-disabled-note');
   if (!section) return;
-  const anyEnabled = !!(chatSettings?.tagEnabled || chatSettings?.broadcasterNotif);
+  const anyEnabled = !!(chatSettings?.tagEnabled || chatSettings?.broadcasterNotif || chatSettings?.radarEnabled);
   section.classList.toggle('fully-disabled', !anyEnabled);
   if (disabledNote) disabledNote.style.display = anyEnabled ? 'none' : 'inline';
 }
@@ -3641,6 +4070,7 @@ async function loadChatSettings() {
   set('chat-fav-enabled', 'checked', !!s.favEnabled);
   set('chat-tag-enabled', 'checked', !!s.tagEnabled);
   set('chat-broadcaster-notif', 'checked', !!s.broadcasterNotif);
+  set('chat-radar-enabled', 'checked', !!s.radarEnabled);
   // v2.5.28: Ses ayarları artık Ayarlar > Bildirimler ve İzleme'de
   // ("Chat Bildirim Sesi" bölümü) - render'ı orada, loadOptionsSettings'te.
 
@@ -3653,6 +4083,9 @@ async function loadChatSettings() {
   renderChips('chat-user-chips', s.userList || [], 'userList');
   renderChips('chat-keyword-chips', s.keywordList || [], 'keywordList');
   renderChips('chat-fav-chips', s.favList || [], 'favList');
+  renderChips('chat-radar-ch-chips', s.radarChannels || [], 'radarChannels');
+  renderChips('chat-radar-word-chips', s.radarWords || [], 'radarWords');
+  updateRadarNotes(s);
 
   // Collapsible state
   syncChatSectionStates(s);
@@ -3661,17 +4094,32 @@ async function loadChatSettings() {
 function renderChips(containerId, items, settingKey) {
   const el = document.getElementById(containerId);
   if (!el) return;
+  // v2.6.0: yeni eklenen etiket küçük bir zıplamayla belirir, silinen küçülerek kaybolur
+  const prevChips = el.dataset.kaChips ? new Set([...el.querySelectorAll('.chat-chip')].map(c => c.textContent)) : null;
+  el.dataset.kaChips = '1';
   el.innerHTML = '';
   items.forEach(item => {
     const chip = document.createElement('span');
     chip.className = 'chat-chip';
     chip.textContent = item;
     chip.title = Utils.i18n('chatChipRemoveTooltip') || 'Click to remove';
+    if (prevChips && !prevChips.has(item)) KAMotion.pulseClass(chip, 'ka-chip-in');
     chip.addEventListener('click', async () => {
+      if (!KAMotion.reduced() && chip.animate) {
+        chip.style.pointerEvents = 'none';
+        try { await chip.animate([{ transform: 'scale(1)', opacity: 1 }, { transform: 'scale(.4)', opacity: 0 }], { duration: 150, easing: 'ease-in', fill: 'forwards' }).finished; } catch (e) {}
+      }
       const s = await Storage.getChatSettings();
+      const oldList = (s[settingKey] || []).slice(); // v2.6.0: geri alınabilsin
       s[settingKey] = (s[settingKey] || []).filter(x => x !== item);
       await Storage.setChatSettings(s);
       renderChips(containerId, s[settingKey], settingKey);
+      kaToast(Utils.i18n('toastChipRemoved', [item]) || ('"' + item + '" removed'), async () => {
+        const s2 = await Storage.getChatSettings();
+        s2[settingKey] = oldList;
+        await Storage.setChatSettings(s2);
+        renderChips(containerId, oldList, settingKey);
+      });
     });
     el.appendChild(chip);
   });
@@ -3694,7 +4142,7 @@ function setupChatHandlers() {
     });
   };
 
-  // Filter mode — radio buttons (v2.0.1, Options-style)
+  // Filter mode - radio buttons (v2.0.1, Options-style)
   // Hidden checkbox `chat-filter-blur` is still the storage source of truth.
   const modeHide = document.getElementById('chat-mode-hide');
   const modeBlur = document.getElementById('chat-mode-blur');
@@ -3718,6 +4166,7 @@ function setupChatHandlers() {
   bindFlag('chat-fav-enabled', 'favEnabled');
   bindFlag('chat-tag-enabled', 'tagEnabled');
   bindFlag('chat-broadcaster-notif', 'broadcasterNotif');
+  bindFlag('chat-radar-enabled', 'radarEnabled');
   // v2.5.28: Ses ayarlarının event listener'ları artık Ayarlar panelinde
   // (setupOptionsListeners) - Chat sekmesinde sadece açma/kapama kalıyor.
 
@@ -3754,6 +4203,69 @@ function setupChatHandlers() {
   setupListHandler('chat-user-input', 'chat-user-add', 'chat-user-chips', 'userList');
   setupListHandler('chat-keyword-input', 'chat-keyword-add', 'chat-keyword-chips', 'keywordList');
   setupListHandler('chat-fav-input', 'chat-fav-add', 'chat-fav-chips', 'favList');
+  setupListHandler('chat-radar-word-input', 'chat-radar-word-add', 'chat-radar-word-chips', 'radarWords');
+  setupRadarChannelInput();
+  tagInputEl?.addEventListener('input', e => updateRadarNotes({ tagUsername: e.target.value }));
+}
+
+// ─── v2.5.103: Sohbet radarı (Chat sekmesi) ───
+const RADAR_MAX_CHANNELS = 5;
+function radarFollowedSlugs() {
+  return (allChannels || []).map(c => String(c.channelSlug || '').toLowerCase()).filter(Boolean);
+}
+function fillRadarDatalist() {
+  const dl = document.getElementById('chat-radar-ch-list');
+  if (!dl) return;
+  dl.innerHTML = '';
+  const seen = new Set();
+  for (const c of (allChannels || [])) {
+    const slug = String(c.channelSlug || '').toLowerCase();
+    if (!slug || seen.has(slug)) continue;
+    seen.add(slug);
+    const o = document.createElement('option');
+    o.value = slug;
+    if (c.userUsername && c.userUsername.toLowerCase() !== slug) o.label = c.userUsername;
+    dl.appendChild(o);
+  }
+}
+function radarNote(text) {
+  const n = document.getElementById('chat-radar-ch-note');
+  if (!n) return;
+  n.textContent = text || '';
+  n.style.display = text ? '' : 'none';
+}
+function updateRadarNotes(s) {
+  const me = document.getElementById('chat-radar-me-note');
+  if (!me) return;
+  const name = String(s?.tagUsername || '').trim();
+  me.textContent = name
+    ? (Utils.i18n('radarMeNoteSet', [name]) || `Mentions of ${name} are also caught (username from Tag notification).`)
+    : (Utils.i18n('radarMeNoteEmpty') || 'To catch mentions too, enter your username under Tag notification.');
+}
+function setupRadarChannelInput() {
+  const input = document.getElementById('chat-radar-ch-input');
+  const btn = document.getElementById('chat-radar-ch-add');
+  if (!input || !btn || btn._ka) return;
+  btn._ka = true;
+  input.addEventListener('focus', fillRadarDatalist);
+  const add = async () => {
+    const raw = input.value.trim().replace(/^@/, '').replace(/^https?:\/\/(www\.)?kick\.com\//i, '').split(/[/?#]/)[0].toLowerCase();
+    if (!raw) return;
+    if (!/^[a-z0-9_-]{1,64}$/.test(raw)) { radarNote(Utils.i18n('radarNoteInvalid') || 'Enter a channel name.'); return; }
+    const followed = radarFollowedSlugs();
+    if (followed.length && !followed.includes(raw)) { radarNote(Utils.i18n('radarNoteNotFollowed', [raw]) || `${raw} is not in your followed channels.`); return; }
+    const s = await Storage.getChatSettings();
+    const list = (s.radarChannels || []).map(x => String(x).toLowerCase());
+    if (list.includes(raw)) { input.value = ''; radarNote(''); return; }
+    if (list.length >= RADAR_MAX_CHANNELS) { radarNote(Utils.i18n('radarNoteMax', [String(RADAR_MAX_CHANNELS)]) || `Up to ${RADAR_MAX_CHANNELS} channels.`); return; }
+    list.push(raw);
+    await Storage.updateChatSetting('radarChannels', list);
+    renderChips('chat-radar-ch-chips', list, 'radarChannels');
+    input.value = '';
+    radarNote('');
+  };
+  btn.addEventListener('click', add);
+  input.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); add(); } });
 }
 
 function setupListHandler(inputId, btnId, chipsId, settingKey) {
@@ -3819,21 +4331,65 @@ document.addEventListener('DOMContentLoaded', () => {
 // izinleri tek tek, nedeniyle birlikte gösterilir; switch tarayıcının kendi onay
 // penceresini açar (permissions.request sadece tıklama içinde çağrılabilir).
 // Sihirbaz sadece kapalı izinleri gösterir; hepsi açıksa hiç görünmez.
+// v2.5.82: reklam alan adları (manifest optional_host_permissions ile aynı liste)
+const KA_AD_ORIGINS = [
+  '*://*.doubleclick.net/*', '*://*.googlesyndication.com/*', '*://*.googleadservices.com/*',
+  '*://imasdk.googleapis.com/*', '*://kickproduction.api.useinsider.com/*', '*://adservice.google.com/*',
+  '*://*.2mdn.net/*', '*://*.googletagservices.com/*',
+];
 const PERM_STEPS = [
-  { id: 'kick', key: 'Kick', origin: 'https://kick.com/*', host: 'https://kick.com', short: 'kick.com', req: true, icon: 'group' },
-  { id: 'web', key: 'Web', origin: 'https://web.kick.com/*', host: 'https://web.kick.com', short: 'web.kick.com', req: false, icon: 'vpn_key' },
-  { id: 'pusher', key: 'Pusher', origin: 'wss://ws-us2.pusher.com/*', host: 'wss://ws-us2.pusher.com', short: 'ws-us2.pusher.com', req: false, icon: 'bolt' },
+  { id: 'kick', key: 'Kick', origins: ['https://kick.com/*'], host: 'https://kick.com', short: 'kick.com', req: true, icon: 'group' },
+  { id: 'web', key: 'Web', origins: ['https://web.kick.com/*'], host: 'https://web.kick.com', short: 'web.kick.com', req: false, icon: 'vpn_key' },
+  { id: 'pusher', key: 'Pusher', origins: ['wss://ws-us2.pusher.com/*'], host: 'wss://ws-us2.pusher.com', short: 'ws-us2.pusher.com', req: false, icon: 'bolt' },
+  // Sadece reklam engeli açıkken gösterilir
+  { id: 'ads', key: 'Ads', origins: KA_AD_ORIGINS, host: 'doubleclick.net, googlesyndication.com +6', short: 'doubleclick.net +7', req: false, icon: 'block', onlyIfAdBlock: true },
+  // v2.5.90 (b034/b040): Centrifugo yedeği. Sadece arka plan yedeğe ihtiyaç
+  // duyduğunda (_rtFallbackNeeded) eksik sayılır; Ayarlar'da her zaman görünür.
+  { id: 'rt', key: 'Rt', origins: ['*://*.kick.com/*', 'wss://*.kick.com/*'], host: '*.kick.com', short: '*.kick.com', req: false, icon: 'sync_alt', onlyIfRtNeeded: true },
 ];
 let _permWiz = null; // { steps, idx, on: {id: bool} }
 let _permDoneTimer = null;
 
-async function permHas(origin) {
+// v2.5.83: Firefox'ta permissions.request popup'tan çağrılınca onay penceresi
+// açılırken popup kapanıyor; isteği yapan sayfa yok olduğu için "İzin ver"
+// hiçbir şey yapmıyor (Patron testi, 14.10). Firefox'ta izin isteği bu yüzden
+// aynı sihirbazı gösteren eklentinin kendi küçük penceresinde (v2.5.84,
+// popup.html?permtab=adım) yapılır; pencere kapanmadığı için onay penceresi çalışır. Chrome'da onay penceresi
+// popup'ı kapatmaz, orada popup içinden istemeye devam edilir.
+const KA_PERM_TAB = (() => { try { return new URLSearchParams(location.search).get('permtab'); } catch (e) { return null; } })();
+const KA_PERM_VIA_TAB = () => typeof browser !== 'undefined' && !!browser.runtime && typeof browser.runtime.getBrowserInfo === 'function' && !KA_PERM_TAB;
+async function openPermTab(stepId) {
+  // Sekme yerine eklentinin kendi küçük penceresi (yedekleme penceresiyle aynı
+  // yöntem, v2.5.41): tarayıcı penceresinin ortasında, sadece sihirbaz.
+  const url = chrome.runtime.getURL('html/popup.html?permtab=' + encodeURIComponent(stepId || 'all'));
+  const W = 440, H = 620;
+  let pos = {};
+  try {
+    const cur = await chrome.windows.getCurrent();
+    if (cur && cur.width && cur.height) pos = { left: Math.max(0, Math.round(cur.left + (cur.width - W) / 2)), top: Math.max(0, Math.round(cur.top + (cur.height - H) / 3)) };
+  } catch (e) {}
+  try { await chrome.windows.create({ url, type: 'popup', width: W, height: H, ...pos }); }
+  catch (e) { try { await chrome.tabs.create({ url }); } catch (e2) {} }
+  try { window.close(); } catch (e) {}
+}
+function closePermTab() {
+  if (!KA_PERM_TAB) return;
+  try { chrome.tabs.getCurrent((tab) => { if (tab && tab.id != null) chrome.tabs.remove(tab.id); else window.close(); }); } catch (e) { try { window.close(); } catch (e2) {} }
+}
+
+async function permHas(origins) {
   // Desteklenmeyen bir desen hata verirse izin var sayılır (adım gösterilmez)
-  try { return await chrome.permissions.contains({ origins: [origin] }); } catch (e) { return true; }
+  try { return await chrome.permissions.contains({ origins: Array.isArray(origins) ? origins : [origins] }); } catch (e) { return true; }
 }
 async function permMissingSteps() {
+  let adOn = false, rtNeed = false;
+  try { const d = await chrome.storage.local.get(['adBlockEnabled', '_rtFallbackNeeded']); adOn = d.adBlockEnabled === true; rtNeed = d._rtFallbackNeeded === true; } catch (e) {}
   const out = [];
-  for (const s of PERM_STEPS) { if (!(await permHas(s.origin))) out.push(s); }
+  for (const s of PERM_STEPS) {
+    if (s.onlyIfAdBlock && !adOn) continue;
+    if (s.onlyIfRtNeeded && !rtNeed && KA_PERM_TAB !== 'rt') continue;
+    if (!(await permHas(s.origins))) out.push(s);
+  }
   return out;
 }
 
@@ -3841,6 +4397,18 @@ async function maybeShowPermWizard() {
   let st = {};
   try { st = await chrome.storage.local.get(['_permWizardPending', '_permWizardStarted', '_permReminder']); } catch (e) { return false; }
   const missing = await permMissingSteps();
+  if (KA_PERM_TAB) {
+    document.documentElement.classList.add('ka-permtab');
+    // v2.5.85: rehber popup'ta zaten anlatıldı; pencerede sadece tek düğme.
+    // Reklam onayından gelindiyse sadece reklam izni, rehberden gelindiyse
+    // kapalı olan bütün izinler tek istekte sorulur.
+    // v2.5.86: 'all' = rehberden (kapalı olanların hepsi), diğerleri tek izin
+    // (reklam onayı, Ayarlar > Eklenti izinleri satırı)
+    const steps = KA_PERM_TAB === 'all' ? missing : missing.filter(s => s.id === KA_PERM_TAB);
+    if (!steps.length) { showPermWizardDone([]); return true; }
+    openPermWindowView(steps);
+    return true;
+  }
   if (st._permWizardPending) {
     if (!missing.length) {
       // Firefox onay penceresi popup'ı kapattıysa izin verilmiş olarak dönülür:
@@ -3852,11 +4420,202 @@ async function maybeShowPermWizard() {
     openPermWizard(missing);
     return true;
   }
-  if (st._permReminder) {
-    if (missing.length) showPermReminder(true);
-    else { showPermReminder(false); try { await chrome.storage.local.set({ _permReminder: false }); } catch (e) {} }
-  }
+  // v2.5.86: ilk kurulum karşılaması
+  try {
+    const w = await chrome.storage.local.get('_welcomePending');
+    if (w._welcomePending) { openWelcome(missing); return true; }
+  } catch (e) {}
+  // v2.5.86: eksik izin varsa bant her açılışta görünür (kapatılırsa sadece o oturum)
+  await refreshPermBand(missing);
   return false;
+}
+
+// ─── v2.5.86: izin bandı her açılışta, kapatma oturumluk ───
+let _permBandHiddenMem = false;
+async function permBandHidden() {
+  if (_permBandHiddenMem) return true;
+  try { if (chrome.storage.session) return (await chrome.storage.session.get('_permBandHidden'))._permBandHidden === true; } catch (e) {}
+  return false;
+}
+async function hidePermBandForSession() {
+  _permBandHiddenMem = true;
+  try { if (chrome.storage.session) await chrome.storage.session.set({ _permBandHidden: true }); } catch (e) {}
+}
+async function refreshPermBand(missing) {
+  if (KA_PERM_TAB) return;
+  if (!Array.isArray(missing)) missing = await permMissingSteps();
+  const wel = document.getElementById('ka-welcome');
+  const busy = (wel && wel.style.display !== 'none') || !!_permWiz;
+  const show = missing.length > 0 && !busy && !(await permBandHidden());
+  const txt = document.querySelector('#perm-reminder .whatsnew-banner-text');
+  if (txt) {
+    // Sadece reklam izni eksikse bildirimler etkilenmez: ayrı metin
+    const adsOnly = missing.length > 0 && missing.every(m => m.id === 'ads');
+    txt.textContent = Utils.i18n(adsOnly ? 'permRemindAdsText' : 'permRemindText') || txt.textContent;
+  }
+  showPermReminder(show);
+}
+
+// ─── v2.5.86: Ayarlar > Eklenti izinleri ───
+async function renderPermSettings() {
+  const list = document.getElementById('opt-perm-list');
+  if (!list) return;
+  let adOn = false;
+  try { adOn = (await chrome.storage.local.get('adBlockEnabled')).adBlockEnabled === true; } catch (e) {}
+  const t = (k, f) => Utils.i18n(k) || f;
+  const rows = [];
+  for (const s of PERM_STEPS) {
+    if (s.onlyIfAdBlock && !adOn) continue;
+    const has = await permHas(s.origins);
+    const row = document.createElement('div');
+    row.className = 'opt-perm-row';
+    row.dataset.perm = s.id;
+    const ic = document.createElement('span'); ic.className = 'material-icons-outlined'; ic.textContent = s.icon;
+    const tx = document.createElement('span'); tx.className = 'opt-perm-text';
+    const nm = document.createElement('span'); nm.className = 'opt-perm-name'; nm.textContent = t(`permWiz${s.key}Label`, s.short);
+    const hs = document.createElement('span'); hs.className = 'opt-perm-host'; hs.dir = 'ltr'; hs.textContent = s.host;
+    tx.append(nm, hs);
+    const st = document.createElement('span'); st.className = 'opt-perm-state ' + (has ? 'on' : 'off'); st.textContent = has ? t('permStateOn', 'On') : t('permStateOff', 'Off');
+    row.append(ic, tx, st);
+    if (!has) {
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'opt-perm-on-btn'; b.textContent = t('permTurnOn', 'Turn on');
+      b.addEventListener('click', () => {
+        if (KA_PERM_VIA_TAB()) { openPermTab(s.id); return; }
+        // Chrome: istek tıklamanın içinde, ilk işlem olarak
+        let req;
+        try { req = chrome.permissions.request({ origins: s.origins }); } catch (e) { return; }
+        Promise.resolve(req).then(() => { renderPermSettings(); refreshPermBand(); }).catch(() => {});
+      });
+      row.append(b);
+    }
+    rows.push(row);
+  }
+  list.replaceChildren(...rows);
+  try { refreshAllOptGroupHeights?.(); } catch (e) {}
+}
+function setupPermLive() {
+  const again = () => { renderPermSettings(); refreshPermBand(); };
+  try { chrome.permissions.onAdded?.addListener(again); } catch (e) {}
+  try { chrome.permissions.onRemoved?.addListener(again); } catch (e) {}
+  try { chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && (ch.adBlockEnabled || ch._rtFallbackNeeded)) again(); }); } catch (e) {}
+  renderPermSettings();
+}
+
+// ─── v2.5.86: ilk kurulum karşılaması ───
+let _welcomeMissing = [];
+const WELCOME_ROWS = [
+  { id: 'kick', icon: 'group', title: 'kick.com', chip: 'req', why: 'welKickWhy', host: 'kick.com', steps: ['kick'] },
+  { id: 'live', icon: 'bolt', titleKey: 'welLiveTitle', chip: 'rec', why: 'welLiveWhy', host: 'web.kick.com · ws-us2.pusher.com', steps: ['web', 'pusher'] },
+  { id: 'notif', icon: 'notifications', titleKey: 'welNotifTitle', chip: 'req', why: 'welNotifWhy', host: '', steps: [] },
+  { id: 'ads', icon: 'block', titleKey: 'welAdsTitle', chip: 'opt', why: 'welAdsWhy', host: '', steps: null },
+];
+function openWelcome(missing) {
+  const wel = document.getElementById('ka-welcome');
+  if (!wel) return;
+  _welcomeMissing = (missing || []).filter(s => s.id !== 'ads' && s.id !== 'rt');
+  const t = (k, f) => Utils.i18n(k) || f;
+  const rows = WELCOME_ROWS.map(r => {
+    const row = document.createElement('div');
+    row.className = 'welcome-row' + (r.chip === 'opt' ? ' optional' : '');
+    const ic = document.createElement('span'); ic.className = 'welcome-row-icon';
+    const ii = document.createElement('span'); ii.className = 'material-icons-outlined'; ii.textContent = r.icon; ic.append(ii);
+    const tx = document.createElement('span'); tx.className = 'welcome-row-text';
+    const ti = document.createElement('span'); ti.className = 'welcome-row-title';
+    const tn = document.createElement('span'); tn.textContent = r.titleKey ? t(r.titleKey, r.id) : r.title;
+    if (!r.titleKey) tn.dir = 'ltr';
+    const ch = document.createElement('span'); ch.className = 'welcome-chip ' + r.chip;
+    ch.textContent = r.chip === 'req' ? t('permWizRequired', 'Required') : r.chip === 'rec' ? t('permWizRecommended', 'Recommended') : t('welOptional', 'Optional');
+    ti.append(tn, ch);
+    const wy = document.createElement('span'); wy.className = 'welcome-row-why'; wy.textContent = t(r.why, '');
+    tx.append(ti, wy);
+    if (r.host) { const h = document.createElement('span'); h.className = 'welcome-row-host'; h.dir = 'ltr'; h.textContent = r.host; tx.append(h); }
+    row.append(ic, tx);
+    // İzni zaten açık olan satıra onay işareti
+    if (Array.isArray(r.steps) && r.steps.length && !r.steps.some(id => _welcomeMissing.some(m => m.id === id))) {
+      const ok = document.createElement('span'); ok.className = 'material-icons-outlined welcome-row-ok'; ok.textContent = 'check_circle';
+      row.append(ok);
+    }
+    return row;
+  });
+  document.getElementById('welcome-list').replaceChildren(...rows);
+  const hint = document.getElementById('welcome-hint');
+  hint.textContent = !_welcomeMissing.length ? '' : KA_PERM_VIA_TAB() ? t('welHintFirefox', '') : t('welHintChrome', '');
+  wel.setAttribute('dir', permWizIsRtl() ? 'rtl' : 'ltr');
+  document.getElementById('welcome-main').style.display = '';
+  document.getElementById('welcome-done').style.display = 'none';
+  document.documentElement.classList.add('ka-welcome-open');
+  wel.style.display = 'flex';
+  showPermReminder(false);
+}
+function closeWelcome() {
+  const wel = document.getElementById('ka-welcome');
+  if (wel) wel.style.display = 'none';
+  document.documentElement.classList.remove('ka-welcome-open');
+  refreshPermBand();
+}
+function welcomeClearFlag() { try { chrome.storage.local.set({ _welcomePending: false }); } catch (e) {} }
+function showWelcomeDone() {
+  document.getElementById('welcome-main').style.display = 'none';
+  document.getElementById('welcome-done').style.display = '';
+}
+function setupWelcome() {
+  const go = document.getElementById('welcome-continue');
+  if (!go) return;
+  go.addEventListener('click', () => {
+    const missing = _welcomeMissing;
+    if (!missing.length) { welcomeClearFlag(); showWelcomeDone(); return; }
+    if (KA_PERM_VIA_TAB()) { welcomeClearFlag(); openPermTab('all'); return; }
+    // Chrome: istek tıklamanın içinde, ilk işlem olarak (öncesinde await yok)
+    let req;
+    try { req = chrome.permissions.request({ origins: [...new Set(missing.flatMap(s => s.origins))] }); } catch (e) { req = Promise.resolve(false); }
+    welcomeClearFlag();
+    Promise.resolve(req).then((granted) => { if (granted) showWelcomeDone(); else closeWelcome(); }).catch(() => closeWelcome());
+  });
+  document.getElementById('welcome-skip')?.addEventListener('click', () => { welcomeClearFlag(); closeWelcome(); });
+  document.getElementById('welcome-done-btn')?.addEventListener('click', () => closeWelcome());
+}
+
+let _permWinSteps = null;
+function openPermWindowView(steps) {
+  const wiz = document.getElementById('perm-wizard');
+  if (!wiz) return;
+  _permWinSteps = steps;
+  permWizSetDir(wiz);
+  document.getElementById('permwiz-step').style.display = 'none';
+  document.getElementById('permwiz-done').style.display = 'none';
+  document.getElementById('permwiz-win').style.display = '';
+  document.getElementById('permwiz-win-denied').style.display = 'none';
+  const hosts = document.getElementById('permwiz-win-hosts');
+  const names = [];
+  for (const s of steps) {
+    if (s.id === 'ads') KA_AD_ORIGINS.forEach(o => names.push(o.replace(/^\*:\/\/(\*\.)?/, '').replace(/\/\*$/, '')));
+    else names.push(s.short);
+  }
+  hosts.replaceChildren(...names.map(n => { const sp = document.createElement('span'); sp.textContent = n; return sp; }));
+  wiz.style.display = 'flex';
+}
+async function finishPermWindow(closeNow) {
+  const missing = await permMissingSteps();
+  try { await chrome.storage.local.set({ _permWizardPending: false, _permWizardStarted: false, _permReminder: missing.length > 0 }); } catch (e) {}
+  if (closeNow) { closePermTab(); return; }
+  const left = _permWinSteps ? missing.filter(m => _permWinSteps.some(s => s.id === m.id)) : missing;
+  showPermWizardDone(left);
+}
+function setupPermWindow() {
+  const go = document.getElementById('permwiz-win-go');
+  if (!go) return;
+  go.addEventListener('click', () => {
+    if (!_permWinSteps) return;
+    // İstek tıklamanın içinde, ilk işlem olarak (öncesinde await yok)
+    const origins = [...new Set(_permWinSteps.flatMap(s => s.origins))];
+    let req;
+    try { req = chrome.permissions.request({ origins }); } catch (e) { return; }
+    Promise.resolve(req).then((granted) => {
+      if (granted) { finishPermWindow(false); return; }
+      document.getElementById('permwiz-win-denied').style.display = '';
+    }).catch(() => { document.getElementById('permwiz-win-denied').style.display = ''; });
+  });
+  document.getElementById('permwiz-win-skip')?.addEventListener('click', () => finishPermWindow(true));
 }
 
 function showPermReminder(show) {
@@ -3864,10 +4623,11 @@ function showPermReminder(show) {
   if (band) band.style.display = show ? 'flex' : 'none';
 }
 
-function openPermWizard(steps) {
+function openPermWizard(steps, startId) {
   const wiz = document.getElementById('perm-wizard');
   if (!wiz || !steps.length) return;
-  _permWiz = { steps, idx: 0, on: {} };
+  const start = Math.max(0, steps.findIndex(s => s.id === startId));
+  _permWiz = { steps, idx: start, on: {} };
   try { chrome.storage.local.set({ _permWizardStarted: true }); } catch (e) {}
   permWizSetDir(wiz);
   document.getElementById('permwiz-step').style.display = '';
@@ -3927,6 +4687,8 @@ function showPermWizardDone(missing) {
   const partial = missing.length > 0;
   permWizSetDir(wiz);
   document.getElementById('permwiz-step').style.display = 'none';
+  const winBox = document.getElementById('permwiz-win');
+  if (winBox) winBox.style.display = 'none';
   const done = document.getElementById('permwiz-done');
   done.style.display = '';
   document.getElementById('permwiz-done-icon').classList.toggle('partial', partial);
@@ -3959,11 +4721,13 @@ function showPermWizardDone(missing) {
     wiz.style.display = 'none';
     done.classList.remove('running');
     _permWiz = null;
-    showPermReminder(partial);
+    refreshPermBand();
+    closePermTab();
   }, 3000);
 }
 
 function setupPermWizard() {
+  setupPermWindow(); // v2.5.85
   const sw = document.getElementById('permwiz-switch');
   if (!sw) return;
   sw.addEventListener('click', () => {
@@ -3971,14 +4735,16 @@ function setupPermWizard() {
     const s = _permWiz.steps[_permWiz.idx];
     if (_permWiz.on[s.id]) {
       // Geri kapatma: Chrome zorunlu izni kaldırmayı reddedebilir; o zaman açık kalır
-      Promise.resolve(chrome.permissions.remove({ origins: [s.origin] }))
+      Promise.resolve(chrome.permissions.remove({ origins: s.origins }))
         .then((ok) => { if (ok) { _permWiz.on[s.id] = false; renderPermSwitch(); } })
         .catch(() => {});
       return;
     }
+    // Firefox popup'ı: isteği kapanmayan bir sekmede yap (bkz. KA_PERM_TAB notu)
+    if (KA_PERM_VIA_TAB()) { openPermTab('all'); return; }
     // İstek tıklamanın içinde, ilk işlem olarak yapılmalı (öncesinde await yok)
     let req;
-    try { req = chrome.permissions.request({ origins: [s.origin] }); } catch (e) { return; }
+    try { req = chrome.permissions.request({ origins: s.origins }); } catch (e) { return; }
     Promise.resolve(req).then((granted) => {
       if (!_permWiz) return;
       _permWiz.on[s.id] = !!granted;
@@ -3989,7 +4755,7 @@ function setupPermWizard() {
   document.getElementById('permwiz-skip')?.addEventListener('click', () => advancePermWizard());
   document.getElementById('perm-reminder-open')?.addEventListener('click', async () => {
     const missing = await permMissingSteps();
-    if (!missing.length) { showPermReminder(false); try { await chrome.storage.local.set({ _permReminder: false }); } catch (e) {} return; }
+    if (!missing.length) { showPermReminder(false); return; }
     showPermReminder(false);
     openPermWizard(missing);
   });
@@ -3998,7 +4764,7 @@ function setupPermWizard() {
     close.setAttribute('aria-label', Utils.i18n('close') || 'Close');
     close.addEventListener('click', async () => {
       showPermReminder(false);
-      try { await chrome.storage.local.set({ _permReminder: false }); } catch (e) {}
+      await hidePermBandForSession(); // v2.5.86: sadece bu tarayıcı oturumu
     });
   }
 }

@@ -1,16 +1,16 @@
-# KickAlert — Privacy Policy
+# KickAlert - Privacy Policy
 
 **Last updated:** October 2026
 
 ## Overview
 
-KickAlert is a browser extension that notifies you in real time when your followed Kick.com streamers go live, offers optional chat filtering, and provides viewer analytics. Your privacy matters — this extension works entirely within your browser. The only data that can ever leave your device is the optional, off-by-default ad diagnostics summary described below, and only if you turn it on.
+KickAlert is a browser extension that notifies you in real time when your followed Kick.com streamers go live, offers optional chat filtering, and provides viewer analytics. Your privacy matters - this extension works entirely within your browser. The only data that can ever leave your device is the optional, off-by-default ad diagnostics summary described below, and only if you turn it on.
 
 ## Data Collection
 
 **KickAlert does NOT collect, transmit, or store any personal data externally.** The single exception to transmission is the optional technical ad diagnostics summary (see *Optional Ad Diagnostics*), which contains no personal data and is sent only if you enable it.
 
-All data is stored locally in your browser using `chrome.storage.local` and is never sent to any external server. When Cloud Sync is enabled, settings are synced via `chrome.storage.sync` through your Google account — Segelferd never sees this data.
+All data is stored locally in your browser using `chrome.storage.local` and is never sent to any external server. When Cloud Sync is enabled, settings are synced via `chrome.storage.sync` through your Google account - Segelferd never sees this data.
 
 ### What is stored locally
 
@@ -18,16 +18,16 @@ All data is stored locally in your browser using `chrome.storage.local` and is n
 - Per-channel sound preferences (main / sub / silent / muted bell state)
 - Favorite channels and channel group assignments
 - Auto-launch channel selections
-- Notification history (streamer name, title, category, timestamp — last 100 entries)
+- Notification history (streamer name, title, category, timestamp - last 100 entries)
 - Custom notification sound files (if uploaded, max 2 MB each)
 - Do Not Disturb schedule and preferences
 - Theme preference (dark / light)
 - Multi-stream session data (cleared when tab is closed)
 - Selected UI language preference
-- Viewer history data (viewer counts per live channel, used for anomaly detection — local only)
+- Viewer history data (viewer counts per live channel, used for anomaly detection - local only)
 - Anomaly detection settings (sensitivity level, spike/drop thresholds, enabled state)
 - Default channel alert mode (used by channels without their own bell setting)
-- Ad diagnostics log, when ad blocking is on (stream marker names, counts, times, average ad break length and cleaned playlist tag lines — no channel names, addresses or tokens; last 100 entries)
+- Ad diagnostics log, when ad blocking is on (stream marker names, counts, times, average ad break length and cleaned playlist tag lines - no channel names, addresses or tokens; last 100 entries)
 
 ### What is synced (when Cloud Sync is enabled)
 
@@ -49,28 +49,33 @@ All settings listed above **except**: custom sound files, notification history, 
 | `tabs` | Open stream tabs, detect duplicates, manage multi-stream viewer |
 | `cookies` | Read Kick.com session cookie to access followed channels API (never sent elsewhere) |
 | `offscreen` | Play custom notification sounds in background (Chrome only) |
-| `alarms` | Reliably schedule periodic channel checks every 30–300 seconds |
+| `alarms` | Reliably schedule periodic channel checks every 30-300 seconds |
 | `declarativeNetRequestWithHostAccess` | Set Referer header for Kick.com API requests |
 | `scripting` | Inject the content script into open kick.com tabs as a reliability fallback (reads only public channel status) |
 | `host: kick.com` | Fetch followed channels and live status; read session cookie for auth |
 | `host: web.kick.com` | Ask Kick which real-time (Pusher) app to connect to, the same request Kick's own website makes; no cookies or personal data are sent |
+| `optional host: Google ad domains` (doubleclick.net, googlesyndication.com, googleadservices.com, imasdk.googleapis.com, adservice.google.com, 2mdn.net, googletagservices.com, kickproduction.api.useinsider.com) | Requested only when you turn on Ad Blocking, so its block rules can stop ad requests made by kick.com pages. Nothing is read from these sites; you can revoke it any time in the browser's extension settings |
+| `optional host: *.kick.com` (and `wss://*.kick.com`) | Requested only when Kick's main real-time service stops working and you allow the backup connection: lets KickAlert connect to Kick's own Centrifugo server (platform.kick.com) for the same public live-stream events. Not asked on install or update; you can revoke it any time in the browser's extension settings |
 | `host: ws-us2.pusher.com` | Connect to Kick's real-time WebSocket service for instant live-stream events |
 
 ## Third-Party Services
 
 KickAlert communicates only with:
 
-- **kick.com** — To fetch followed channels and their live status via the official API
-- **web.kick.com** — To get the current connection details (app key and region) for Kick's real-time service. The request contains only a random one-time identifier and the word "web", is sent without cookies, and is repeated at most every 12 hours or when the connection is rejected
-- **ws-us2.pusher.com** — Kick's own real-time WebSocket service, used to receive instant live-stream events for channels you follow (only public stream-start events are read)
-- **player.kick.com** — To embed live streams in the multi-stream viewer (via iframe)
-- **script.google.com** — Only if you turn on *Share ad diagnostics*: receives the technical ad diagnostics summary (no personal data)
+- **kick.com** - To fetch followed channels and their live status via the official API
+- **web.kick.com** - To get the current connection details (app key and region) for Kick's real-time service. The request contains only a random one-time identifier and the word "web", is sent without cookies, and is repeated at most every 12 hours or when the connection is rejected
+- **ws-us2.pusher.com** - Kick's own real-time WebSocket service, used to receive instant live-stream events for channels you follow (only public stream-start events are read)
+- **platform.kick.com** - Kick's own Centrifugo real-time server, used only as a backup when the Pusher service goes quiet and only if you granted the optional *.kick.com permission (same public events, nothing about you is sent)
+- **player.kick.com** - To embed live streams in the multi-stream viewer (via iframe); the Multi-Stream chat drawer embeds Kick's own pop-out chat page (kick.com/popout/&lt;channel&gt;/chat)
+- **script.google.com** - Only if you turn on *Share ad diagnostics*: receives the technical ad diagnostics summary (no personal data)
 
-No analytics, tracking or advertising services are used. If, and only if, you enable *Share ad diagnostics*, the technical summary described below is sent to the developer's Google Apps Script endpoint (script.google.com). KickAlert connects to Pusher because that is the real-time infrastructure Kick itself uses; no data about you is sent to it — the extension only listens for public "channel is live" events.
+No analytics, tracking or advertising services are used. If, and only if, you enable *Share ad diagnostics*, the technical summary described below is sent to the developer's Google Apps Script endpoint (script.google.com). KickAlert connects to Pusher because that is the real-time infrastructure Kick itself uses; no data about you is sent to it - the extension only listens for public "channel is live" events.
 
 ## Chat Integration (Optional)
 
 When you enable the optional Chat tab, KickAlert reads chat messages on the Kick.com page you are viewing **locally in your browser** to apply your chosen filters (hiding bots, spam, blocked words/users, etc.) and to highlight keywords, favorite users, mentions of you, and broadcaster messages. Chat content is processed entirely on your device in real time and is **never stored, logged, or transmitted anywhere**. The only persisted chat-related settings are your own filter preferences, blocklists, keywords, and favorite-user list.
+
+The optional **background chat radar** (off by default) reads the public chat messages of up to 5 followed channels you choose, from Kick's real-time service, while those channels are live. Each message is checked in memory against your username and your radar words; a notification is shown on your device when one matches. Messages are not stored, logged or sent anywhere.
 
 ## Viewer Anomaly Detection
 

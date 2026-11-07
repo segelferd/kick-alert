@@ -7,14 +7,14 @@
  * DOM'a doğrudan bir reklam elementi enjekte etmeye başlarsa (örn. "Ad 1 of 1"
  * geri sayım metni, boş reklam kutuları) bu iki katman onu yakalayamaz.
  *
- * Bu dosya bir GÜVENLİK AĞI — sürekli çalışan bir gözlemci DEĞİL. Sadece
+ * Bu dosya bir GÜVENLİK AĞI - sürekli çalışan bir gözlemci DEĞİL. Sadece
  * worker-hook.js/gpt-stub.js'in "bir reklam olayı tespit edildi" sinyalini
  * yaydığı andan sonraki 60 saniye boyunca aktifleşiyor, gerisinde boşta
  * duruyor. Bu, performans maliyetini neredeyse sıfıra indiriyor.
  *
  * Kick'in canlı DOM yapısını taklit etmek yerine (kırılgan olurdu), sadece
  * Kick'in KENDİ test-id kuralına (data-testid="ad-...") ve kısa, sabit
- * kalıplı geri sayım metnine ("Ad 1 of 1" gibi) bakıyoruz — ikisi de Kick'in
+ * kalıplı geri sayım metnine ("Ad 1 of 1" gibi) bakıyoruz - ikisi de Kick'in
  * ürün ekibi değiştirmedikçe stabil kalır.
  *
  * © 2026 Segelferd. All rights reserved.
@@ -29,13 +29,13 @@
   var COUNTDOWN_RE = /^ad\s+\d+\s+of\s+\d+$/i; // "Ad 1 of 1" gibi kısa geri sayım metinleri
 
   // v2.5.21: KRİTİK DÜZELTME. [data-ka-ab-hidden] için gizleme kuralını
-  // v2.5.20'de css/popup.css'e eklemiştik — AMA bu dosya SADECE bizim
+  // v2.5.20'de css/popup.css'e eklemiştik - AMA bu dosya SADECE bizim
   // eklenti popup'ımızın kendi HTML'i için kullanılıyor, manifest.json'daki
   // content_scripts bloklarının HİÇBİRİNDE bir "css" girdisi yok. Yani o
-  // kural Kick.com sayfasına HİÇBİR ZAMAN yüklenmedi — JS tarafı elementleri
+  // kural Kick.com sayfasına HİÇBİR ZAMAN yüklenmedi - JS tarafı elementleri
   // doğru şekilde data-ka-ab-hidden="1" ile işaretliyordu ama karşılığı
   // olan CSS kuralı o sayfada hiç mevcut değildi. Şimdi kuralı DOĞRUDAN
-  // Kick.com sayfasının <head>'ine bir <style> etiketiyle enjekte ediyoruz —
+  // Kick.com sayfasının <head>'ine bir <style> etiketiyle enjekte ediyoruz -
   // manifest'e yeni bir dosya eklemeye gerek kalmadan, güvenilir bir çözüm.
   (function injectHiddenAttrCss() {
     try {
@@ -79,12 +79,12 @@
   }
 
   // v2.5.20: Kick'in bazı reklam elementleri "ad-" ile BAŞLAMIYOR ama
-  // içeriyor (örn. "ima-ad-controls" — Google IMA reklam kontrol çubuğu).
+  // içeriyor (örn. "ima-ad-controls" - Google IMA reklam kontrol çubuğu).
   // Basit bir "içerir" kontrolü (*="ad-") KULLANMIYORUZ çünkü bu, alakasız
   // elementleri de yanlışlıkla yakalardı (örn. "upload-progress",
   // "load-more", "already-following" gibi tire ile ayrılmış id'ler de
   // "ad-" alt dizesini içerir). Bunun yerine testid'i tire ile bölüp "ad"ın
-  // TAM BİR SEGMENT olarak geçip geçmediğini kontrol ediyoruz — güvenli ve kesin.
+  // TAM BİR SEGMENT olarak geçip geçmediğini kontrol ediyoruz - güvenli ve kesin.
   function isAdTestId(testid) {
     if (!testid) return false;
     var segments = testid.toLowerCase().split('-');
@@ -111,9 +111,9 @@
 
   // v2.5.21: KRİTİK DÜZELTME. Bu fonksiyon (ve içindeki "elementin kendisini
   // doğrudan gizle" mantığı) SADECE withinAdWindow() true iken çağrılıyordu
-  // — yani SADECE bizim ağ-seviyesi reklam tespitimiz bir reklam isteği
+  // - yani SADECE bizim ağ-seviyesi reklam tespitimiz bir reklam isteği
   // YAKALADIYSA. Ama reklam engellememiz başarılı olduğunda (isteği kaynakta
-  // engellediğimizde) bu sinyal HİÇ oluşmuyor — Kick'in kendi arayüzü yine de
+  // engellediğimizde) bu sinyal HİÇ oluşmuyor - Kick'in kendi arayüzü yine de
   // "Ad" durumuna geçmiş halde kalabiliyor. Bu yüzden "görünür reklam
   // elementini doğrudan gizleme" kısmını, siyah-slate kontrolü gibi zaman
   // penceresinden TAMAMEN BAĞIMSIZ, HER taramada çalışan ayrı bir fonksiyona
@@ -171,14 +171,14 @@
   // v2.5.8: PureKick v10.22'de bulunan tekniğin kendi tarzımızda uygulaması.
   // Kick, yayın-sonu/reklam-arası geçişte KENDİ statik "siyah slate" videosunu
   // (static.kick.com/ads/black_2s.mp4) sınıfsız/ID'siz bir kapsayıcı içinde
-  // oynatıyor — bizim data-testid="ad-*" tabanlı tespitimiz bunu YAKALAMIYOR,
+  // oynatıyor - bizim data-testid="ad-*" tabanlı tespitimiz bunu YAKALAMIYOR,
   // çünkü bu gerçek bir üçüncü-taraf reklamı değil, Kick'in kendi dahili
   // geçiş mekanizması. Video elementini KENDİ src'sinden buluyoruz, onu
-  // SARAN katmanı (video-player'ın ebeveyni) gizliyoruz — gerçek yayın
+  // SARAN katmanı (video-player'ın ebeveyni) gizliyoruz - gerçek yayın
   // oynatıcısı ayrı bir ağaçta, ona hiç dokunmuyoruz.
   //
   // BİLİNÇLİ TASARIM KARARI: Bu kontrol, diğerlerinin aksine 60 saniyelik
-  // "reklam tespit edildi" penceresine BAĞLI DEĞİL — çünkü bu senaryoda
+  // "reklam tespit edildi" penceresine BAĞLI DEĞİL - çünkü bu senaryoda
   // diğer mekanizmalarımız (manifest değişimi, GPT stub) hiç tetiklenmemiş
   // olabilir, yani o pencere hiç açılmamış olabilir. src eşleşmesi zaten
   // çok kesin/dar kapsamlı olduğu için sürekli çalışması düşük risklidir.
@@ -203,7 +203,7 @@
     if (!enabled) return;
 
     // Siyah slate kontrolü VE görünür reklam elementlerinin doğrudan
-    // gizlenmesi her zaman çalışır (zaman penceresinden bağımsız) — v2.5.21:
+    // gizlenmesi her zaman çalışır (zaman penceresinden bağımsız) - v2.5.21:
     // ikisi de artık bizim ağ-seviyesi tespitimize bağımlı değil.
     var slateHits = hideBlackSlateOverlay(document);
     var directHits = hideDirectAdTestIdElements(document);
@@ -222,11 +222,11 @@
     }
   }
 
-  // v2.5.12: Eskiden requestAnimationFrame kullanıyorduk — bu, HER frame'de
+  // v2.5.12: Eskiden requestAnimationFrame kullanıyorduk - bu, HER frame'de
   // (yaklaşık 16ms'de bir) tetiklenebiliyordu, yoğun bir DOM değişikliği
   // patlaması sırasında (örn. Kick'in kendi React'i yayın geçişinde çok
   // sayıda öğeyi değiştirirken) onlarca kez art arda taranmaya devam
-  // edebiliyordu — tam da bu tür anlarda EKSTRA yük bindirmek istemediğimiz
+  // edebiliyordu - tam da bu tür anlarda EKSTRA yük bindirmek istemediğimiz
   // yer. Artık gerçek bir debounce kullanıyoruz: DOM 250ms boyunca
   // sakinleşene kadar tarama ertelenir, sadece bir kez çalışır.
   var scanDebounceTimer = null;
@@ -241,7 +241,7 @@
   function startObserver() {
     if (observer) return;
     // v2.5.8: Artık HER mutasyonda tarama sıraya alınıyor (sadece "reklam
-    // tespit edildi" penceresindeyken değil) — çünkü siyah slate kontrolü
+    // tespit edildi" penceresindeyken değil) - çünkü siyah slate kontrolü
     // pencereden bağımsız çalışması gerekiyor. scan() fonksiyonunun kendisi
     // hangi alt kontrollerin çalışacağına karar veriyor.
     observer = new MutationObserver(function () {
@@ -264,7 +264,7 @@
       startObserver();
       // v2.5.21: Sadece SONRAKİ DOM değişikliklerine değil, bu an itibarıyla
       // SAYFADA ZATEN VAR OLAN reklam içeriğine karşı da ilk bir tarama
-      // yapalım — örn. Kick'in kendi hydration'ı sırasında "Ad" arayüzü
+      // yapalım - örn. Kick'in kendi hydration'ı sırasında "Ad" arayüzü
       // DAHA BİZ ÇALIŞMAYA BAŞLAMADAN önce render edilmiş olabilir, bu
       // durumda hiçbir mutasyon tetiklenmeyeceği için taramamız hiç çalışmazdı.
       queueScan();
@@ -273,7 +273,7 @@
     }
   }
 
-  // v2.4.11: adblock-worker-hook.js/gpt-stub.js ile AYNI bayrağı paylaşıyor —
+  // v2.4.11: adblock-worker-hook.js/gpt-stub.js ile AYNI bayrağı paylaşıyor -
   // ayrı bir ayar eklemedik, hepsi tek "Ad Blocking" anahtarına bağlı.
   try {
     chrome.storage.local.get('adBlockEnabled', function (res) {

@@ -60,10 +60,14 @@
     "message": "Varovanie"
   },
   "appDescription": {
-    "message": "Dozvieš sa ako prvý, kedy ide Kick.com naživo — okamžité upozornenia, streamy bez reklám, chat bez spamu, žiadne ninja úniky ;)"
+    "message": "Upozornenie, hneď ako tvoji streameri na Kicku začnú vysielať. Automatické otvorenie, blokovanie reklám, filter chatu. Zadarmo."
   },
   "appName": {
-    "message": "KickAlert — Živé upozornenia pre Kick.com"
+    "message": "KickAlert - upozornenia na streamy Kick, automatické spustenie, bez reklám"
+  },
+  "appNameShort": {
+    "message": "KickAlert - upozornenia na streamy Kick",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
     "message": "Automatické spustenie"
@@ -138,10 +142,14 @@
     "message": "Režim filtra"
   },
   "chatFilterModeDesc": {
-    "message": "Skryť odstráni správu. Rozmazať ju stlmí — pre zobrazenie prejdi myšou."
+    "message": "Skryť odstráni správu. Rozmazať ju stlmí - pre zobrazenie prejdi myšou."
   },
   "chatIntegrationDesc": {
     "message": "Po zapnutí sa vyššie zobrazí karta Chat. Po prvej inštalácii obnov všetky otvorené karty Kick."
+  },
+  "chatNotifJump": {
+    "message": "Prejsť na nastavenia oznámení chatu",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "Integrácia chatu"
@@ -300,7 +308,7 @@
     "message": "Používa sa jazyk prehliadača: $1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "Jazyk prehliadača nie je podporovaný — používa sa angličtina"
+    "message": "Jazyk prehliadača nie je podporovaný - používa sa angličtina"
   },
   "langSectionTitle": {
     "message": "Jazyk"
@@ -365,6 +373,98 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Pri reštarte prehliadača obnoviť nastavenia automatického spustenia na Zapnuté"
   },
+  "raidGuardCheckbox": {
+    "message": "Zavrieť automaticky otvorené karty pri presune streamu na iný kanál",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "Len karty, ktoré otvoril KickAlert. Karty, ktoré si otvoril(a) sám (sama) alebo v nich prešiel(a) na iný kanál, zostanú bez zmeny.",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "Názov kanála...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "Pridať",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "Vyčistiť",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "Odstrániť všetky streamy",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "Jeden stream",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "Vedľa seba",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "Tri stĺpce",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "Mriežka 2×2",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "Hlavný stream",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "Pridaj vyššie názvy kanálov a sleduj viac streamov naraz.",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "Poradie zmeníš potiahnutím kariet.",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "Celá obrazovka",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "Odstrániť",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "Počúvať len tento stream",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "Stlmiť tento stream",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "Chat",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "Zobraziť chat",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "Zavrieť chat",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "Otvoriť chat na novej karte",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "Pridaj kanál a uvidíš jeho chat.",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "Nemôžeš tu písať? Otvor chat na novej karte.",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
+  },
   "searchChannels": {
     "message": "Hľadať kanály..."
   },
@@ -390,13 +490,13 @@
     "message": "Zvuky rozšírenia"
   },
   "soundModeExtensionTooltip": {
-    "message": "Nápadné vlastné upozornenia — ťažko ich prehliadnuť"
+    "message": "Nápadné vlastné upozornenia - ťažko ich prehliadnuť"
   },
   "soundModeWindows": {
     "message": "Zvuky Windows"
   },
   "soundModeWindowsTooltip": {
-    "message": "Štandardný systémový zvuk — môže zaniknúť v pozadí"
+    "message": "Štandardný systémový zvuk - môže zaniknúť v pozadí"
   },
   "testSoundVolume": {
     "message": "[Test]"
@@ -417,7 +517,7 @@
     "message": "+$1 ďalších"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — Žiadne živé vysielania"
+    "message": "KickAlert - Žiadne živé vysielania"
   },
   "viewerTrendTitle": {
     "message": "Trend divákov"
@@ -427,6 +527,42 @@
   },
   "chatBroadcasterDesc": {
     "message": "Dostaneš oznámenie, keď strímer napíše do chatu. Max. 1 oznámenie za minútu."
+  },
+  "radarTitle": {
+    "message": "Radar chatu na pozadí",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "Sleduje chat až 5 sledovaných kanálov, keď vysielajú, aj bez otvorenej karty Kick. Dostaneš oznámenie, keď niekto napíše tvoje používateľské meno alebo jedno zo slov nižšie.",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "Pridať kanál...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "Zachytia sa aj správy, ktoré spomínajú $1 (používateľské meno z časti Oznámenie o zmienke).",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "Ak chceš zachytiť aj zmienky, zadaj svoje používateľské meno v časti Oznámenie o zmienke.",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "Zadaj názov kanála.",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 nie je medzi kanálmi, ktoré sleduješ.",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "Môžeš pridať najviac $1 kanálov.",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "„$1“ v chate $2",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
   },
   "chatBroadcasterNotifTitle": {
     "message": "$1 napísal(a) do chatu"
@@ -549,7 +685,7 @@
     "message": "Zdá sa, že si offline. Skontroluj internetové pripojenie a skús to znova."
   },
   "fetchErrorRateLimited": {
-    "message": "Kick dočasne obmedzuje požiadavky. Toto sa vyrieši automaticky — počkaj chvíľu."
+    "message": "Kick dočasne obmedzuje požiadavky. Toto sa vyrieši automaticky - počkaj chvíľu."
   },
   "fetchErrorServerError": {
     "message": "Na serveroch Kick je momentálne problém. Skús to znova o pár minút."
@@ -558,7 +694,7 @@
     "message": "Pri načítaní tvojich kanálov sa niečo pokazilo. Skús to znova."
   },
   "fetchErrorSessionRejected": {
-    "message": "Kick momentálne nerozpoznáva tvoju reláciu, hoci si prihlásený(á). Zvyčajne sa to stáva pri prihlásení cez Google, Apple alebo iný sociálny účet kvôli nezrovnalosti na serveroch Kick — nejde o chybu tohto rozšírenia. Riešenie: odhlás sa z kick.com a znova sa prihlás pomocou e-mailu a hesla. Ak nemáš heslo (lebo si sa zaregistroval(a) cez Google/Apple), použi na prihlasovacej obrazovke \"Zabudnuté heslo?\" a nastav si ho. Ak to nepomôže, zvyčajne sa to samo vyrieši do pár minút."
+    "message": "Kick momentálne nerozpoznáva tvoju reláciu, hoci si prihlásený(á). Zvyčajne sa to stáva pri prihlásení cez Google, Apple alebo iný sociálny účet kvôli nezrovnalosti na serveroch Kick - nejde o chybu tohto rozšírenia. Riešenie: odhlás sa z kick.com a znova sa prihlás pomocou e-mailu a hesla. Ak nemáš heslo (lebo si sa zaregistroval(a) cez Google/Apple), použi na prihlasovacej obrazovke \"Zabudnuté heslo?\" a nastav si ho. Ak to nepomôže, zvyčajne sa to samo vyrieši do pár minút."
   },
   "emailLoginNotice": {
     "message": "Aby KickAlert fungoval spoľahlivo, odporúčame prihlásiť sa na Kick pomocou e-mailu a hesla. Prihlásenie cez \"Google\", \"Apple\" alebo iný sociálny účet môže niekedy zabrániť rozšíreniu načítať tvoje údaje kvôli nezrovnalosti na serveroch Kick."
@@ -567,7 +703,7 @@
     "message": "Blokovanie reklám"
   },
   "adBlockWarning": {
-    "message": "Experimentálna a neoficiálna funkcia — závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať. Zapnutím prijímaš túto zodpovednosť. Ak ju necháš vypnutú, KickAlert bude fungovať ako doteraz, bez zmeny. Aby sa zmena prejavila, treba obnoviť otvorené karty Kick."
+    "message": "Experimentálna a neoficiálna funkcia - závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať. Zapnutím prijímaš túto zodpovednosť. Ak ju necháš vypnutú, KickAlert bude fungovať ako doteraz, bez zmeny. Aby sa zmena prejavila, treba obnoviť otvorené karty Kick."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Práve teraz sa to týka teba:"
@@ -591,7 +727,7 @@
     "message": "Zapnúť blokovanie reklám?"
   },
   "adBlockConfirmBody": {
-    "message": "Ide o experimentálnu a neoficiálnu funkciu — závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať, pričom Kick môže toto správanie odhaliť. Zapnutím preberáš zodpovednosť za tieto riziká."
+    "message": "Ide o experimentálnu a neoficiálnu funkciu - závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať, pričom Kick môže toto správanie odhaliť. Zapnutím preberáš zodpovednosť za tieto riziká."
   },
   "adBlockConfirmAccept": {
     "message": "Rozumiem, zapnúť"
@@ -612,7 +748,7 @@
     "message": "Zatiaľ nikoho nesleduješ. Sleduj kanál na Kick a automaticky sa zobrazí tu."
   },
   "whatsNewBannerText": {
-    "message": "Novinka: skóre botov vo Firefoxe a krátky sprievodca pre povolenia webov vypnuté po aktualizácii."
+    "message": "Táto verzia prináša plynulejšie rozhranie, ikony špeciálnych dní a funkciu Späť, a k tomu pozastavenie, radar chatu na pozadí a vylepšenia Multi-Streamu."
   },
   "optGroupGeneral": {
     "message": "Všeobecné"
@@ -638,23 +774,47 @@
   "close": {
     "message": "Zavrieť"
   },
+  "cardOpenChannel": {
+    "message": "Otvoriť kanál",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "Pridať do Multi-Streamu",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "Pridať do obľúbených",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "Odobrať z obľúbených",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "Otvoriť Multi-Stream",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "Otvoriť Kick.com",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — Skóre botov vo Firefoxe, sprievodca povoleniami"
+    "message": "v2.6.0 - Plynulejšie rozhranie, ikony špeciálnych dní, Späť"
   },
   "releaseHistoryV0Body": {
-    "message": "• Skóre botov teraz funguje aj vo Firefoxe, rovnako ako v Chrome\n• Po aktualizácii krátky sprievodca ukáže vypnuté povolenia pre weby, vysvetlí, na čo sú potrebné, a umožní ich zapnúť\n• Firefox: požiadavky cez otvorenú kartu Kick opäť fungujú"
+    "message": "• Plynulejšie rozhranie: keď kanál začne vysielať, karty sa plynulo presunú na miesto, kanály, ktoré práve začali, dostanú krátky zelený krúžok, zvonček pri zapnutí zazvoní a karty v hornej lište sa prepínajú plynulo\n• Pozastavenie a „Stlmiť na 1 hodinu“ ukazujú zostávajúci čas ako krúžok okolo ikony\n• Prehľadnejšie karty: zvonček a hviezdička sú viditeľné stále, ostatné tlačidlá sa zobrazia keď prejdeš myšou nad kartu\n• Späť: odobratie z obľúbených, vymazanie histórie upozornení, odstránenie skupiny alebo slova v chate môžeš vrátiť späť cez lištu dole\n• Prázdne zoznamy ti teraz povedia, čo ďalej\n• Ikony špeciálnych dní: počas niekoľkých sviatkov v tvojom regióne dostane ikona na paneli nástrojov sviatočný vzhľad (dá sa vypnúť v Nastaveniach)\n• Multi-Stream: stream so zvukom ukazuje malý ekvalizér a dlaždice sa pri zmene rozloženia plynulo presunú\n• Jednotný štýl ikon a lišta zoradenia zostáva pri posúvaní hore\n• Nový web: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — Okamžité upozornenia a raidy opäť fungujú"
+    "message": "v2.5.111 - Pozastavenie, radar chatu, zvuky udalostí, Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• Okamžité upozornenia na živé vysielanie, upozornenia na raidy a bot skóre opäť fungujú: Kick vymenil kľúč svojej služby v reálnom čase a KickAlert teraz získava aktuálny kľúč od Kicku automaticky\n• Ak ho Kick zmení znova, rozšírenie si nový kľúč vezme samo namiesto opakovania chýb\n• Okno už nezobrazuje druhý posuvník ani prázdne miesto na konci Nastavení"
+    "message": "• Pozastav upozornenia na 1 hodinu alebo do rána z hornej lišty; druhé tlačidlo upozornenia v Chrome stlmí daný kanál na 1 hodinu\n• Kontrola „Príde od tohto kanála upozornenie?“ v nastaveniach každého kanála ukáže všetko, čo môže upozornenie zablokovať\n• Radar chatu na pozadí: dostaneš oznámenie, keď niekto napíše tvoje používateľské meno alebo zvolené slová v až 5 kanáloch, aj bez otvorenej karty Kick\n• 10 nových zvukov pre raidy, koniec streamu, presun streamu a zmenu kategórie, s vlastným zvukom pre každú udalosť\n• Multi-Stream: streamy začínajú stlmené, jedným kliknutím počúvaš len jeden stream, chat sa otvorí v bočnom paneli\n• Voliteľné upozornenie, keď streamer presunie stream na iný kanál, a možnosť v takom prípade zavrieť automaticky otvorené karty\n• Kompaktné zobrazenie kariet; nastavenia oznámení chatu zostávajú skryté, kým je integrácia chatu vypnutá\n• Filtre chatu zachytia aj maskovaný zápis (podobné písmená, neviditeľné znaky, písmená oddelené medzerami)\n• Skóre botov od prvej minúty využíva vlastný počet účastníkov chatu od Kicku a zohľadňuje všetky režimy chatu\n• Záložné okamžité pripojenie, ak hlavná služba Kicku prestane posielať dáta\n• Popisy, ktoré zostali v angličtine, sa teraz zobrazujú v tvojom jazyku a texty boli v niekoľkých jazykoch upravené\n• Opravy: nastavenia zmenené v okne rozšírenia sa pri zapnutej cloudovej synchronizácii už nevracajú; prehrávače Multi-Stream fungujú s dodatočným oprávnením kick.com; karta ikony v Chrome ukazuje živé kanály"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — Presnejšie upozornenia kanálov"
+    "message": "v2.5.87 - Skóre botov vo Firefoxe, povolenia, oprava blokovania reklám"
   },
   "releaseHistoryV2Body": {
-    "message": "• Presnejšie upozornenia na zmenu kategórie a názvu: krátkodobo chybná hodnota z Kicku už nespustí upozornenie a zmena počas 5-minútového čakania sa oznámi po jeho skončení\n• Zmeny počas pozastavených upozornení (Nerušiť, stlmený kanál) už neprídu neskôr ako stará správa"
+    "message": "• Skóre botov teraz funguje aj vo Firefoxe, rovnako ako v Chrome\n• Po aktualizácii krátky sprievodca ukáže vypnuté povolenia pre weby, vysvetlí, na čo sú potrebné, a umožní ich zapnúť\n• Firefox: požiadavky cez otvorenú kartu Kick opäť fungujú\n• Blokovanie reklám: blokovanie reklamných serverov teraz naozaj funguje (pri zapnutí KickAlert požiada o prístup k reklamným doménam)\n• Na konci vysielania so zapnutým blokovaním reklám už nezostáva čierna obrazovka\n• Skóre botov od začiatku zohľadňuje pomalý režim a chat len pre odberateľov\n• Nová sekcia „Povolenia rozšírenia“ v Nastaveniach ukazuje, ktoré povolenia sú zapnuté, a vypnuté zapne jedným kliknutím; ak je niektoré vypnuté, nad zoznamom kanálov sa zobrazí upozornenie"
   },
   "settingsBackupTitle": {
     "message": "Zálohovanie a obnovenie"
@@ -681,7 +841,7 @@
     "message": "Importované! Znovu sa načítava..."
   },
   "importSettingsFail": {
-    "message": "Import zlyhal — súbor môže byť poškodený"
+    "message": "Import zlyhal - súbor môže byť poškodený"
   },
   "importConfirmTitle": {
     "message": "Importovať nastavenia?"
@@ -735,7 +895,7 @@
     "message": "$1 ti odpovedal(a)"
   },
   "chatMentionSoundSmart": {
-    "message": "Iba keď aktívne nesleduješ (karta na pozadí, chat odscrollovaný, alebo je skrytý vlastný chatovací panel Kicku) — platí pre zmienky, odpovede a správy strímera."
+    "message": "Iba keď aktívne nesleduješ (karta na pozadí, chat odscrollovaný, alebo je skrytý vlastný chatovací panel Kicku) - platí pre zmienky, odpovede a správy strímera."
   },
   "chatMentionSoundEnabled": {
     "message": "Prehrať aj zvuk"
@@ -754,6 +914,18 @@
   },
   "themeSystem": {
     "message": "Systémová"
+  },
+  "cardDensityLabel": {
+    "message": "Vzhľad kariet",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "Vzdušný",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "Kompaktný",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "Filtre"
@@ -777,6 +949,62 @@
   "chipGuardLabel": {
     "message": "Ochrana",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "Pozastaviť",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "Pozastavené · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "Na chvíľu pozastaviť upozornenia",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "Upozornenia sú pozastavené do $1. Kliknite pre možnosti.",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "Pozastaviť upozornenia",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "Na 1 hodinu",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "Do rána ($1)",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "Obľúbené ďalej upozorňujú",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "Obnoviť upozornenia hneď",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "Upozornenia, zvuky a automatické spustenie sa zastavia. Kanály, ktoré začnú vysielať, sa ďalej ukladajú do histórie oznámení.",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "Stlmiť na 1 hodinu",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "Upozornenia sú pozastavené do $1.",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "Tento kanál bol z upozornenia stlmený na 1 hodinu; znova upozorní o $1.",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "Upozornenia sú pozastavené do $1, ale tento kanál je obľúbený, takže upozorní aj tak.",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "Nastavenia KickAlert",
@@ -809,6 +1037,90 @@
   "chAlertSubtitle": {
     "message": "Ďalšie upozornenia pre tento kanál. Predvolene sú všetky vypnuté.",
     "description": "Subtitle in the per-channel alerts window"
+  },
+  "diagTitle": {
+    "message": "Príde od tohto kanála upozornenie?",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "Áno: keď tento kanál začne vysielať, príde upozornenie.",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "Od tohto kanála upozornenie nepríde:",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "Upozornenia sú v nastaveniach vypnuté.",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "Prehliadač alebo operačný systém blokuje upozornenia KickAlertu.",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "Prístup ku kick.com je vypnutý.",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "Tento kanál je nastavený na „Bez oznámenia“ (zvonček na karte).",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "Pre tento kanál nebol zvolený režim a predvolený je „Bez oznámenia“. Zvoľte ho zvončekom na karte.",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "Tento kanál je nastavený na „Tiché oznámenie“: upozornenie príde bez zvuku.",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "Režim Nerušiť je práve zapnutý ($1 až $2): upozornenia sú stlmené.",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "Režim Nerušiť stlmí upozornenia medzi $1 a $2.",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "Filter: upozornenie príde, len keď stream zodpovedá $1.",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "Aktuálny stream nezodpovedá filtru tohto kanála ($1).",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "Okamžité pripojenie teraz nefunguje: upozornenia prídu s kontrolou sledovaných, s oneskorením 1 až 1,5 minúty.",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "Okamžité sledovanie pre tento kanál ešte nie je nastavené: upozornenie príde s kontrolou sledovaných, s oneskorením 1 až 1,5 minúty.",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "Kick spomaľuje požiadavky: sledované sa znova skontrolujú asi o $1 min.",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "Posledný zaznamenaný stream: $1.",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "Posledný stream ($1) zachytil filter: $2.",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "V histórii nie je žiadny nedávny stream tohto kanála. Streamy, ktoré už bežali pri spustení KickAlertu, sa neoznamujú.",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "kategória nezodpovedala",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "názov neobsahoval slovo",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
   },
   "chAlertChange": {
     "message": "Zmena kategórie alebo názvu",
@@ -882,6 +1194,10 @@
     "message": "Raid od $1 · $2 divákov",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "Diváci poslaní na $1",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "Koniec streamu",
     "description": "Per-channel alert option label"
@@ -898,6 +1214,10 @@
     "message": "s $1 divákmi",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "$1 presunul stream na $2",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "Prichádzajúci raid",
     "description": "Per-channel alert option label"
@@ -905,6 +1225,14 @@
   "chAlertRaidDesc": {
     "message": "Upozorniť, keď iný streamer pošle na tento kanál raid, aj s tým, kto to bol a koľko divákov prišlo.",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "Presun streamu na iný kanál",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "Upozorniť, keď tento streamer pošle svojich divákov na iný kanál. Kliknutím na upozornenie sa otvorí cieľový kanál.",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "Čas sledovania",
@@ -935,8 +1263,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "Pre zmenu kategórie/názvu, koniec streamu a raidy. Vyberte tichší zvuk rozšírenia, zvuk oznámení Windows alebo ticho.",
+    "message": "Pre zmenu kategórie/názvu, koniec streamu, raidy a presun streamu. Vyberte tichší zvuk rozšírenia, zvuk oznámení Windows alebo ticho.",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "Iný zvuk pre každú udalosť",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "Ponechajte „Všeobecný zvuk“, ak chcete použiť zvuk vyššie.",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "Všeobecný zvuk",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "Všeobecné",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "Raid",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "Koniec streamu",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "Stream presunutý",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "Zmena kategórie / názvu",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "Bublina",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "Marimba",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "Fanfára",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "Vírenie bubna",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "Záverečný zvonček",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "Vypnutie",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "Svist",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "Skok",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "Otočenie strany",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "Pípnutie aktualizácie",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "Zvuk",
@@ -1113,5 +1513,184 @@
   },
   "permRemindButton": {
     "message": "Zapnúť"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "Prehliadač vás potom požiada o prístup k reklamným doménam Googlu. KickAlert ho používa len na blokovanie reklamných požiadaviek na kick.com."
+  },
+  "permWizAdsTitle": {
+    "message": "Blokovanie reklamných domén"
+  },
+  "permWizAdsWhy": {
+    "message": "Umožní blokovaniu reklám zastaviť požiadavky na reklamné servery Googlu na kick.com. Žiadne iné weby nečíta."
+  },
+  "permWizAdsOff": {
+    "message": "Blokovanie reklám ďalej funguje cez prehrávač, ale reklamné požiadavky sa nezastavujú na úrovni siete."
+  },
+  "permWizAdsLabel": {
+    "message": "Prístup k reklamným doménam"
+  },
+  "permWizRtTitle": {
+    "message": "Záložné pripojenie pre upozornenia"
+  },
+  "permWizRtWhy": {
+    "message": "Umožňuje pripojenie k novému serveru Kicku pre komunikáciu v reálnom čase (*.kick.com). Ak služba Pusher prestane odpovedať, okamžité upozornenia budú ďalej prichádzať cez toto záložné pripojenie."
+  },
+  "permWizRtOff": {
+    "message": "Keď Pusher neodpovedá, upozornenia prichádzajú s oneskorením 1 až 1,5 minúty a upozornenia na raidy nefungujú."
+  },
+  "permWizRtLabel": {
+    "message": "Prístup k subdoménam Kicku"
+  },
+  "permWinTitle": {
+    "message": "Posledný krok: schválenie vo Firefoxe",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "Povolenia môže udeliť iba Firefox. Kliknite na tlačidlo a schváľte ich v okne Firefoxu, ktoré sa otvorí.",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "Otvoriť okno povolení Firefoxu",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "Povolenie nebolo udelené. Môžete to skúsiť znova alebo okno zatiaľ zavrieť.",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "Vitajte v KickAlerte",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "Dozviete sa ako prví, keď vaši streameri začnú vysielať. KickAlert na to používa tento prístup:",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "Číta váš zoznam sledovaných kanálov a to, či vysielajú. Používa vašu reláciu Kick a nikdy nevidí vaše heslo.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "Okamžité pripojenie",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "Okamžite zistí, že stream začal. Keď je vypnuté, upozornenia chodia s oneskorením 1 až 1,5 minúty a upozornenia na raidy nefungujú.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "Oznámenia a karty",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "Zobrazuje oznámenia na pracovnej ploche a na želanie otvorí stream v novej karte.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "Blokovanie reklám",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "Ak chcete, môžete ho zapnúť v Nastaveniach. Pri zapnutí budete zvlášť požiadaní o povolenie pre reklamné domény.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "Voliteľné",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "Nepozerá sa na iné weby, nečíta históriu prehliadania a nevidí vaše heslo.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "Prehliadač otvorí okno na schválenie",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "Schválenie vo Firefoxe sa otvorí v malom okne",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "Všetko je pripravené!",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "KickAlert vám dá vedieť, keď sledované kanály začnú vysielať. Ktoré kanály posielajú upozornenia, vyberiete zvončekom na ich karte.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "Prejsť na moje kanály",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "Vypnuté povolenia môžete zapnúť tu. Prehliadač požiada o schválenie.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "Zapnuté",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "Vypnuté",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "Zapnúť",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "Povolenie pre reklamné domény je vypnuté, takže reklamné požiadavky sa na úrovni siete neblokujú.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "Stlmené do $1",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "Ikony špeciálnych dní",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "Počas niekoľkých sviatkov v tvojom regióne dostane ikona na paneli nástrojov na ten deň sviatočný vzhľad.",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "Teraz nikto nevysiela",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "Dáme ti vedieť, hneď ako kanál, ktorý sleduješ, začne vysielať.",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "Zobraziť offline kanály",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "Zatiaľ nikoho nesleduješ",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "Sleduj kanály na Kicku a KickAlert si zoznam načíta sám.",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "Späť",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "Kanál $1 odobratý z obľúbených",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "História oznámení vymazaná",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "Skupina „$1“ odstránená",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "„$1“ odstránené",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }

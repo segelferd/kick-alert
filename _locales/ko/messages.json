@@ -64,10 +64,14 @@
     "message": "경고"
   },
   "appDescription": {
-    "message": "Kick.com이 라이브를 시작하면 가장 먼저 알림 받기 — 즉시 알림, 광고 없는 스트림, 스팸 없는 채팅, 닌자 방송도 놓치지 않음 ;)"
+    "message": "팔로우한 Kick 스트리머가 방송을 시작하면 바로 알려 드립니다. 방송 자동 열기, 광고 차단, 채팅 필터, 최대 4개 방송 동시 시청. 무료."
   },
   "appName": {
-    "message": "KickAlert — Kick.com 라이브 알림"
+    "message": "KickAlert - Kick 방송 알림, 자동 열기, 광고 차단"
+  },
+  "appNameShort": {
+    "message": "KickAlert - Kick 방송 알림, 자동 열기, 광고 차단",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
     "message": "자동 열기"
@@ -142,10 +146,14 @@
     "message": "필터 모드"
   },
   "chatFilterModeDesc": {
-    "message": "숨기기는 메시지를 제거합니다. 흐리게는 흐릿하게 처리합니다 — 보려면 마우스를 올려보세요."
+    "message": "숨기기는 메시지를 제거합니다. 흐리게는 흐릿하게 처리합니다 - 보려면 마우스를 올려보세요."
   },
   "chatIntegrationDesc": {
     "message": "켜지면 위에 채팅 탭이 표시됩니다. 최초 설치 후 열린 Kick 탭을 새로고침하세요."
+  },
+  "chatNotifJump": {
+    "message": "채팅 알림 설정으로 이동",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "채팅 통합"
@@ -305,7 +313,7 @@
     "message": "브라우저 언어 사용 중: $1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "브라우저 언어 미지원 — 영어 사용"
+    "message": "브라우저 언어 미지원 - 영어 사용"
   },
   "langSectionTitle": {
     "message": "언어"
@@ -370,6 +378,98 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "브라우저 재시작 시 자동 열기 설정 초기화"
   },
+  "raidGuardCheckbox": {
+    "message": "다른 채널로 방송이 이동하면 자동으로 연 탭 닫기",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "KickAlert가 연 탭만 닫힙니다. 직접 연 탭이나 직접 다른 채널로 이동한 탭은 그대로 둡니다.",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "채널 이름...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "추가",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "비우기",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "모든 방송 제거",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "화면 1개",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "나란히",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "3열",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "2×2 격자",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "포커스",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "위에 채널 이름을 추가하면 여러 방송을 함께 볼 수 있습니다.",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "카드를 끌어서 순서를 바꿀 수 있습니다.",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "전체 화면",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "제거",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "이 방송만 듣기",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "이 방송 음소거",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "채팅",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "채팅 보기",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "채팅 닫기",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "새 탭에서 채팅 열기",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "채널을 추가하면 채팅이 보입니다.",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "여기서 메시지를 보낼 수 없나요? 새 탭에서 채팅을 여세요.",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
+  },
   "searchChannels": {
     "message": "채널 검색..."
   },
@@ -395,13 +495,13 @@
     "message": "확장 프로그램 소리"
   },
   "soundModeExtensionTooltip": {
-    "message": "눈에 띄는 맞춤 알림 — 놓치기 어려움"
+    "message": "눈에 띄는 맞춤 알림 - 놓치기 어려움"
   },
   "soundModeWindows": {
     "message": "Windows 소리"
   },
   "soundModeWindowsTooltip": {
-    "message": "기본 시스템 소리 — 일상에 묻힐 수 있음"
+    "message": "기본 시스템 소리 - 일상에 묻힐 수 있음"
   },
   "testSoundVolume": {
     "message": "[테스트]"
@@ -422,34 +522,70 @@
     "message": "+$1 더"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — 라이브 방송 없음"
+    "message": "KickAlert - 라이브 방송 없음"
   },
   "viewerTrendTitle": {
     "message": "시청자 추세"
   },
   "chatBroadcasterNotif": {
     "message": "스트리머 메시지 알림",
-    "description": "Chat integration — chatBroadcasterNotif"
+    "description": "Chat integration - chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
     "message": "스트리머가 채팅에 글을 쓸 때 알림을 받습니다. 분당 최대 1개의 알림.",
-    "description": "Chat integration — chatBroadcasterDesc"
+    "description": "Chat integration - chatBroadcasterDesc"
+  },
+  "radarTitle": {
+    "message": "백그라운드 채팅 레이더",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "팔로우 중인 채널 최대 5개의 채팅을 방송 중에 Kick 탭이 열려 있지 않아도 지켜봅니다. 사용자 이름이나 아래 단어 중 하나가 채팅에 올라오면 알림을 받습니다.",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "채널 추가...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "$1 님을 언급한 메시지도 잡아냅니다(사용자 이름은 태그 알림에서 가져옴).",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "언급도 잡아내려면 태그 알림에 사용자 이름을 입력하세요.",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "채널 이름을 입력하세요.",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 채널은 팔로우 중인 채널이 아닙니다.",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "최대 $1개 채널까지 추가할 수 있습니다.",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "$2 채팅에 “$1”",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
   },
   "chatBroadcasterNotifTitle": {
     "message": "$1님이 채팅에 글을 썼습니다",
-    "description": "Chat integration — chatBroadcasterNotifTitle"
+    "description": "Chat integration - chatBroadcasterNotifTitle"
   },
   "chatWordFilterDesc": {
     "message": "이러한 단어가 포함된 메시지는 숨겨지거나 흐리게 표시됩니다.",
-    "description": "Chat integration — chatWordFilterDesc"
+    "description": "Chat integration - chatWordFilterDesc"
   },
   "chatUserFilterDesc": {
     "message": "목록에 있는 사용자의 메시지는 숨겨지거나 흐리게 표시됩니다.",
-    "description": "Chat integration — chatUserFilterDesc"
+    "description": "Chat integration - chatUserFilterDesc"
   },
   "chatEmojiSpamDesc": {
     "message": "이모지가 과도한 메시지를 흐리게 표시합니다 (마우스 오버로 표시).",
-    "description": "Chat integration — chatEmojiSpamDesc"
+    "description": "Chat integration - chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
     "message": "방송 시작 $1분 경과",
@@ -461,7 +597,7 @@
   },
   "anomalyWindowLabel": {
     "message": "최근 $1분",
-    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+    "description": "Anomaly notification - window over which the change happened. $1 = minutes."
   },
   "botScoreTooltip": {
     "message": "봇 의심 점수: $1%",
@@ -473,7 +609,7 @@
   },
   "botScoreAlwaysVisibleLabel": {
     "message": "모든 라이브 채널에서 봇 점수 표시",
-    "description": "Toggle label — show bot score badge on all live channels."
+    "description": "Toggle label - show bot score badge on all live channels."
   },
   "botScoreAlwaysVisibleHint": {
     "message": "꺼져 있으면 점수는 급증 시에만 표시됩니다.",
@@ -489,19 +625,19 @@
   },
   "timeAgoDay": {
     "message": "$1일 전",
-    "description": "Relative time — timeAgoDay"
+    "description": "Relative time - timeAgoDay"
   },
   "timeAgoHour": {
     "message": "$1시간 전",
-    "description": "Relative time — timeAgoHour"
+    "description": "Relative time - timeAgoHour"
   },
   "timeAgoMin": {
     "message": "$1분 전",
-    "description": "Relative time — timeAgoMin"
+    "description": "Relative time - timeAgoMin"
   },
   "timeAgoJustNow": {
     "message": "방금 전",
-    "description": "Relative time — timeAgoJustNow"
+    "description": "Relative time - timeAgoJustNow"
   },
   "viewerHistoryNoData": {
     "message": "아직 데이터가 부족합니다",
@@ -584,7 +720,7 @@
     "message": "오프라인 상태인 것 같습니다. 인터넷 연결을 확인하고 다시 시도하세요."
   },
   "fetchErrorRateLimited": {
-    "message": "Kick이 일시적으로 요청을 제한하고 있습니다. 자동으로 해결됩니다 — 잠시만 기다려 주세요."
+    "message": "Kick이 일시적으로 요청을 제한하고 있습니다. 자동으로 해결됩니다 - 잠시만 기다려 주세요."
   },
   "fetchErrorServerError": {
     "message": "Kick 서버에 현재 문제가 있습니다. 몇 분 후에 다시 시도하세요."
@@ -602,7 +738,7 @@
     "message": "광고 차단"
   },
   "adBlockWarning": {
-    "message": "실험적이며 비공식적인 기능입니다 — Kick의 내부 API 구조에 의존하므로 예고 없이 작동하지 않을 수 있습니다. 이 기능을 켜면 그 책임을 사용자가 지게 됩니다. 끄고 두면 KickAlert는 기존과 동일하게 영향 없이 작동합니다. 적용하려면 열려 있는 Kick 탭을 새로고침해야 합니다."
+    "message": "실험적이며 비공식적인 기능입니다 - Kick의 내부 API 구조에 의존하므로 예고 없이 작동하지 않을 수 있습니다. 이 기능을 켜면 그 책임을 사용자가 지게 됩니다. 끄고 두면 KickAlert는 기존과 동일하게 영향 없이 작동합니다. 적용하려면 열려 있는 Kick 탭을 새로고침해야 합니다."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "지금 바로 관련 있음:"
@@ -626,7 +762,7 @@
     "message": "광고 차단을 활성화하시겠습니까?"
   },
   "adBlockConfirmBody": {
-    "message": "이 기능은 실험적이며 비공식입니다 — Kick의 내부 API 구조에 의존하므로 예고 없이 작동을 멈출 수 있으며, Kick이 이 동작을 감지할 수도 있습니다. 활성화하면 이러한 위험을 감수하는 것에 동의하는 것입니다."
+    "message": "이 기능은 실험적이며 비공식입니다 - Kick의 내부 API 구조에 의존하므로 예고 없이 작동을 멈출 수 있으며, Kick이 이 동작을 감지할 수도 있습니다. 활성화하면 이러한 위험을 감수하는 것에 동의하는 것입니다."
   },
   "adBlockConfirmAccept": {
     "message": "이해했습니다, 활성화"
@@ -647,7 +783,7 @@
     "message": "아직 아무도 팔로우하지 않았습니다. Kick에서 채널을 팔로우하면 여기에 자동으로 표시됩니다."
   },
   "whatsNewBannerText": {
-    "message": "새 기능: Firefox 봇 점수와 업데이트 후 꺼져 있는 사이트 권한을 위한 짧은 안내."
+    "message": "이번 버전에는 더 부드러운 화면, 기념일 아이콘, 실행 취소와 함께 일시 정지, 백그라운드 채팅 레이더, Multi-Stream 개선이 담겼어요."
   },
   "optGroupGeneral": {
     "message": "일반"
@@ -673,23 +809,47 @@
   "close": {
     "message": "닫기"
   },
+  "cardOpenChannel": {
+    "message": "채널 열기",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "Multi-Stream에 추가",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "즐겨찾기에 추가",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "즐겨찾기에서 제거",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "Multi-Stream 열기",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "Kick.com 열기",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — Firefox 봇 점수, 권한 안내"
+    "message": "v2.6.0 - 더 부드러운 화면, 기념일 아이콘, 실행 취소"
   },
   "releaseHistoryV0Body": {
-    "message": "• 이제 Chrome과 마찬가지로 Firefox에서도 봇 점수가 작동합니다\n• 업데이트 후 꺼져 있는 사이트 권한을 짧은 안내로 보여 주고, 필요한 이유를 설명하며 바로 켤 수 있습니다\n• Firefox: 열려 있는 Kick 탭을 통한 요청이 다시 작동합니다"
+    "message": "• 더 부드러운 화면: 채널이 방송을 시작하면 카드가 미끄러지듯 자리를 옮기고, 막 방송을 시작한 채널에는 잠깐 초록색 링이 표시돼요. 벨을 켜면 벨이 흔들리고 탭도 부드럽게 전환돼요\n• 일시 정지와 \"1시간 음소거\"는 남은 시간을 아이콘 주위의 링으로 보여줘요\n• 깔끔해진 카드: 벨과 별은 항상 보이고, 다른 버튼은 카드 위에 마우스를 올리면 나타나요\n• 실행 취소: 즐겨찾기 해제, 알림 기록 삭제, 그룹 삭제, 채팅 단어 삭제는 아래 바에서 되돌릴 수 있어요\n• 목록이 비어 있으면 다음에 할 일을 알려줘요\n• 기념일 아이콘: 지역의 몇몇 기념일에는 툴바 아이콘이 그날에 맞는 디자인으로 바뀌어요 (설정에서 끌 수 있어요)\n• Multi-Stream: 소리가 켜진 방송에 작은 이퀄라이저가 표시되고, 레이아웃을 바꾸면 타일이 부드럽게 이동해요\n• 아이콘 스타일을 하나로 통일했고, 정렬 바는 스크롤해도 위에 고정돼요\n• 새 웹사이트: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — 즉시 알림과 레이드 복구"
+    "message": "v2.5.111 - 일시 중지, 채팅 레이더, 이벤트 소리, Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• 방송 시작 즉시 알림, 레이드 알림, 봇 점수가 다시 작동합니다: Kick이 실시간 서비스 키를 바꿨고, KickAlert가 이제 최신 키를 Kick에서 자동으로 가져옵니다\n• Kick이 키를 또 바꾸면 오류를 반복하지 않고 확장 프로그램이 새 키를 스스로 가져옵니다\n• 팝업에 두 번째 스크롤바와 설정 하단의 빈 공간이 더 이상 나타나지 않습니다"
+    "message": "• 상단 바에서 알림을 1시간 또는 아침까지 일시 중지할 수 있습니다. Chrome 알림의 두 번째 버튼은 해당 채널을 1시간 동안 음소거합니다\n• 각 채널 설정의 \"이 채널의 알림을 받게 되나요?\" 확인에서 알림을 막을 수 있는 모든 항목을 볼 수 있습니다\n• 백그라운드 채팅 레이더: 최대 5개 채널에서 사용자 이름이나 지정한 단어가 채팅에 올라오면 Kick 탭이 열려 있지 않아도 알림을 받습니다\n• 레이드, 방송 종료, 방송 이동, 카테고리 변경을 위해 만든 새 소리 10개. 이벤트마다 다른 소리를 고를 수 있습니다\n• Multi-Stream: 방송이 음소거 상태로 시작되고, 한 번 클릭으로 방송 하나만 들을 수 있으며, 채팅은 옆 패널에 열립니다\n• 스트리머가 방송을 다른 채널로 옮길 때의 선택형 알림과, 그때 자동으로 연 탭을 닫는 옵션\n• 촘촘한 카드 보기. 채팅 통합이 꺼져 있는 동안 채팅 알림 설정은 숨겨집니다\n• 채팅 필터가 비슷한 글자, 보이지 않는 문자, 띄어 쓴 글자 같은 위장된 표기도 잡아냅니다\n• 봇 점수는 첫 1분부터 Kick 자체의 채팅 참여자 수를 사용하고 모든 채팅 모드를 반영합니다\n• Kick 기본 서비스가 멈추면 예비 실시간 연결을 사용합니다\n• 영어로 남아 있던 도움말이 이제 선택한 언어로 표시되며, 여러 언어의 문구도 다듬었습니다\n• 수정: 클라우드 동기화가 켜져 있을 때 팝업에서 바꾼 설정이 되돌아가지 않습니다. 추가 kick.com 권한으로 Multi-Stream 플레이어가 작동합니다. Chrome 아이콘 카드에 방송 중인 채널이 표시됩니다"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — 더 정확한 채널 알림"
+    "message": "v2.5.87 - Firefox 봇 점수, 권한, 광고 차단 수정"
   },
   "releaseHistoryV2Body": {
-    "message": "• 카테고리·제목 변경 알림이 더 정확해졌습니다: Kick의 일시적인 잘못된 값으로는 더 이상 알림이 가지 않으며, 5분 대기 중의 변경은 대기가 끝나면 알려 드립니다\n• 알림이 일시 중지된 동안(방해 금지, 음소거된 채널) 일어난 변경이 나중에 지난 소식으로 오지 않습니다"
+    "message": "• 이제 Chrome과 마찬가지로 Firefox에서도 봇 점수가 작동합니다\n• 업데이트 후 꺼져 있는 사이트 권한을 짧은 안내로 보여 주고, 필요한 이유를 설명하며 바로 켤 수 있습니다\n• Firefox: 열려 있는 Kick 탭을 통한 요청이 다시 작동합니다\n• 광고 차단: 이제 광고 서버 차단이 실제로 작동합니다(켤 때 KickAlert가 광고 도메인 접근 권한을 요청합니다)\n• 광고 차단이 켜져 있을 때 방송 종료 시 검은 화면이 더 이상 남지 않습니다\n• 봇 점수가 처음부터 슬로 모드와 구독자 전용 채팅을 반영합니다\n• 설정의 새 \"확장 프로그램 권한\" 섹션에서 어떤 권한이 켜져 있는지 확인하고, 꺼진 권한을 클릭 한 번으로 켤 수 있습니다. 꺼진 권한이 있으면 채널 목록 위에 안내가 표시됩니다"
   },
   "settingsBackupTitle": {
     "message": "백업 및 복원"
@@ -716,7 +876,7 @@
     "message": "가져왔습니다! 새로고침 중..."
   },
   "importSettingsFail": {
-    "message": "가져오기 실패 — 파일이 손상되었을 수 있습니다"
+    "message": "가져오기 실패 - 파일이 손상되었을 수 있습니다"
   },
   "importConfirmTitle": {
     "message": "설정을 가져오시겠습니까?"
@@ -770,7 +930,7 @@
     "message": "$1님이 답장했습니다"
   },
   "chatMentionSoundSmart": {
-    "message": "실제로 보고 있지 않을 때만(탭이 백그라운드, 채팅이 스크롤됨, 또는 Kick 자체 채팅 패널이 숨겨짐) — 태그, 답장, 스트리머 메시지에 적용됩니다."
+    "message": "실제로 보고 있지 않을 때만(탭이 백그라운드, 채팅이 스크롤됨, 또는 Kick 자체 채팅 패널이 숨겨짐) - 태그, 답장, 스트리머 메시지에 적용됩니다."
   },
   "chatMentionSoundEnabled": {
     "message": "소리도 재생"
@@ -789,6 +949,18 @@
   },
   "themeSystem": {
     "message": "시스템"
+  },
+  "cardDensityLabel": {
+    "message": "카드 보기",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "넓게",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "촘촘하게",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "필터"
@@ -812,6 +984,62 @@
   "chipGuardLabel": {
     "message": "가드",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "일시 중지",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "일시 중지 · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "잠시 알림을 일시 중지합니다",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "$1까지 알림이 일시 중지되었습니다. 클릭하면 옵션이 열립니다.",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "알림 일시 중지",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "1시간 동안",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "아침까지($1)",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "즐겨찾기는 계속 알림",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "지금 알림 다시 켜기",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "알림, 소리, 자동 열기가 멈춥니다. 방송을 시작한 채널은 계속 알림 기록에 저장됩니다.",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "1시간 음소거",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "알림이 $1까지 일시 중지되었습니다.",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "이 채널은 알림에서 1시간 음소거되었습니다. $1에 다시 알립니다.",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "알림이 $1까지 일시 중지되었지만 이 채널은 즐겨찾기라서 계속 알립니다.",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "KickAlert 설정",
@@ -844,6 +1072,90 @@
   "chAlertSubtitle": {
     "message": "이 채널의 추가 알림입니다. 기본값은 모두 꺼져 있습니다.",
     "description": "Subtitle in the per-channel alerts window"
+  },
+  "diagTitle": {
+    "message": "이 채널의 알림을 받게 되나요?",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "네: 이 채널이 방송을 시작하면 알림이 옵니다.",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "이 채널의 알림은 오지 않습니다:",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "설정에서 알림이 꺼져 있습니다.",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "브라우저나 운영체제가 KickAlert 알림을 차단하고 있습니다.",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "kick.com 접근 권한이 꺼져 있습니다.",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "이 채널은 '알림 없음'으로 설정되어 있습니다(카드의 종 아이콘).",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "이 채널의 모드가 선택되지 않았고 기본값이 '알림 없음'입니다. 카드의 종 아이콘으로 선택하세요.",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "이 채널은 '무음 알림'으로 설정되어 있습니다: 알림은 소리 없이 옵니다.",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "지금 방해 금지가 켜져 있습니다($1~$2): 알림이 꺼집니다.",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "방해 금지는 $1~$2 사이에 알림을 끕니다.",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "필터: 방송이 $1에 맞을 때만 알립니다.",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "현재 방송이 이 채널의 필터에 맞지 않습니다($1).",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "즉시 연결이 지금 끊겨 있습니다: 알림은 팔로우 목록 확인 때 1~1.5분 늦게 옵니다.",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "이 채널의 즉시 추적이 아직 준비되지 않았습니다: 알림은 팔로우 목록 확인 때 1~1.5분 늦게 옵니다.",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "Kick이 요청을 제한하고 있습니다: 약 $1분 후 팔로우 목록을 다시 확인합니다.",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "마지막으로 기록된 방송: $1.",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "지난 방송($1)은 필터에 걸렸습니다: $2.",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "기록에 이 채널의 최근 방송이 없습니다. KickAlert가 시작될 때 이미 진행 중이던 방송은 알리지 않습니다.",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "카테고리가 맞지 않음",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "제목에 단어가 없음",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
   },
   "chAlertChange": {
     "message": "카테고리 또는 제목 변경",
@@ -917,6 +1229,10 @@
     "message": "$1 님의 레이드 · 시청자 $2명",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "시청자를 $1 채널로 보냄",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "방송 종료",
     "description": "Per-channel alert option label"
@@ -933,6 +1249,10 @@
     "message": "시청자 $1명과 함께",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "$1 님이 방송을 $2 채널로 옮겼습니다",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "레이드 수신",
     "description": "Per-channel alert option label"
@@ -940,6 +1260,14 @@
   "chAlertRaidDesc": {
     "message": "다른 스트리머가 이 채널에 레이드하면 누가, 몇 명과 함께 왔는지 알립니다.",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "다른 채널로 방송 이동",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "이 스트리머가 시청자를 다른 채널로 보내면 알립니다. 알림을 클릭하면 해당 채널이 열립니다.",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "시청 시간",
@@ -970,8 +1298,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "카테고리/제목 변경, 방송 종료, 레이드 알림용입니다. 더 작은 확장 프로그램 소리, Windows 알림음 또는 무음을 고르세요.",
+    "message": "카테고리/제목 변경, 방송 종료, 레이드, 방송 이동 알림용입니다. 더 작은 확장 프로그램 소리, Windows 알림음 또는 무음을 고르세요.",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "이벤트별로 다른 소리",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "'공통 소리'로 두면 위의 소리를 사용합니다.",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "공통 소리",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "일반",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "레이드",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "방송 종료",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "방송 이동",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "카테고리 / 제목 변경",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "팝",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "마림바",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "팡파르",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "드럼 롤",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "마무리 종소리",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "전원 끄기",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "휙",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "점프",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "페이지 넘김",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "업데이트 알림음",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "소리",
@@ -1148,5 +1548,184 @@
   },
   "permRemindButton": {
     "message": "켜기"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "다음으로 브라우저가 Google 광고 도메인에 대한 접근 권한을 요청합니다. KickAlert는 이 권한을 kick.com의 광고 요청을 차단하는 데만 사용합니다."
+  },
+  "permWizAdsTitle": {
+    "message": "광고 도메인 차단"
+  },
+  "permWizAdsWhy": {
+    "message": "광고 차단이 kick.com에서 Google 광고 서버로 가는 요청을 막을 수 있게 합니다. 다른 사이트는 읽지 않습니다."
+  },
+  "permWizAdsOff": {
+    "message": "광고 차단은 플레이어를 통해 계속 작동하지만, 광고 요청이 네트워크 수준에서 차단되지는 않습니다."
+  },
+  "permWizAdsLabel": {
+    "message": "광고 도메인 접근"
+  },
+  "permWizRtTitle": {
+    "message": "알림 백업 연결"
+  },
+  "permWizRtWhy": {
+    "message": "Kick의 새 실시간 서버(*.kick.com)에 연결할 수 있게 합니다. Pusher 서비스가 응답하지 않아도 이 백업 연결로 즉시 알림이 계속 도착합니다."
+  },
+  "permWizRtOff": {
+    "message": "Pusher가 응답하지 않으면 알림이 1~1.5분 늦게 오고, 레이드 알림은 작동하지 않습니다."
+  },
+  "permWizRtLabel": {
+    "message": "Kick 하위 도메인 접근"
+  },
+  "permWinTitle": {
+    "message": "마지막 단계: Firefox 승인",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "권한은 Firefox만 부여할 수 있습니다. 버튼을 누른 뒤 열리는 Firefox 창에서 승인하세요.",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "Firefox 권한 창 열기",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "권한이 부여되지 않았습니다. 다시 시도하거나 지금은 닫을 수 있습니다.",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "KickAlert에 오신 것을 환영합니다",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "팔로우한 스트리머가 방송을 시작하면 가장 먼저 알 수 있습니다. 이를 위해 KickAlert는 다음 접근 권한을 사용합니다:",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "팔로우 목록과 채널의 방송 여부를 읽습니다. Kick 세션을 사용하며 비밀번호는 보지 않습니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "즉시 연결",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "방송이 시작되는 순간 바로 알 수 있습니다. 꺼져 있으면 알림이 1~1.5분 늦게 오고, 레이드 알림은 작동하지 않습니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "알림 및 탭",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "데스크톱 알림을 표시하고, 원하면 방송을 새 탭에서 엽니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "광고 차단",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "원하면 설정에서 켤 수 있습니다. 켤 때 광고 도메인에 대한 권한을 따로 요청합니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "선택 사항",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "다른 사이트를 보지 않고, 방문 기록을 읽지 않으며, 비밀번호를 보지 않습니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "브라우저의 승인 창이 열립니다",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "Firefox 승인은 작은 창에서 열립니다",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "준비 완료!",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "팔로우한 채널이 방송을 시작하면 KickAlert가 알려 드립니다. 알림을 보낼 채널은 카드의 벨 버튼으로 선택할 수 있습니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "내 채널로 이동",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "꺼진 권한은 여기에서 켤 수 있습니다. 브라우저가 승인을 요청합니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "켜짐",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "꺼짐",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "켜기",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "광고 도메인 권한이 꺼져 있어 광고 요청이 네트워크 수준에서 차단되지 않습니다.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "$1까지 음소거됨",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "기념일 아이콘",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "사용자 지역의 몇몇 기념일에는 툴바 아이콘이 그날에 맞는 디자인으로 바뀌어요.",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "지금 방송 중인 채널이 없어요",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "팔로우한 채널이 방송을 시작하면 바로 알려드릴게요.",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "오프라인 채널 표시",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "아직 팔로우한 채널이 없어요",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "Kick에서 채널을 팔로우하면 KickAlert가 목록을 자동으로 가져와요.",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "실행 취소",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "$1 님을 즐겨찾기에서 뺐어요",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "알림 기록을 지웠어요",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "\"$1\" 그룹을 삭제했어요",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "\"$1\" 항목을 삭제했어요",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }

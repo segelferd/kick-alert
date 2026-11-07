@@ -1,8 +1,8 @@
 /**
  * KickAlert - Offscreen Document (v2.3.0)
  * Responsibilities:
- *   1. Audio playback (notification sounds) — existing since v1.x
- *   2. Service worker keep-alive — existing since v2.0
+ *   1. Audio playback (notification sounds) - existing since v1.x
+ *   2. Service worker keep-alive - existing since v2.0
  *   3. Bot tracker chat WebSocket (NEW v2.3.0)
  *      - 1 Pusher connection, multi-channel subscribe
  *      - Sliding 15-min message counter per chatroom
@@ -14,7 +14,7 @@
 
 // v2.3.2: DEBUG-aware log helper. _debugMode storage'da açıksa console'a yazar,
 // kapalıysa sessiz. background.js'teki dbg() ile aynı davranış. console.warn ve
-// console.error'a dokunmaz — gerçek hatalar her zaman görünür.
+// console.error'a dokunmaz - gerçek hatalar her zaman görünür.
 let _OFFSCREEN_DEBUG = false;
 try {
   chrome.storage.local.get('_debugMode', (r) => { _OFFSCREEN_DEBUG = r && r._debugMode === true; });
@@ -24,7 +24,7 @@ try {
 } catch {}
 function dbg(...args) { if (_OFFSCREEN_DEBUG) console.debug(...args); }
 
-// v2.3.20: offscreen.html kendi ayrı DevTools context'inde çalışıyor —
+// v2.3.20: offscreen.html kendi ayrı DevTools context'inde çalışıyor -
 // LiveTracker/BotTracker logları arka plan servisi konsolundan tamamen kopuktu.
 // Bu köprü, önemli olayları (uyarı/hata + kritik durum geçişleri) background.js'e
 // iletir → test panelindeki Aktivite Logu'nda tek yerde görünür.
@@ -35,7 +35,7 @@ function relayLog(level, code, text) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AUDIO (existing — unchanged)
+// AUDIO (existing - unchanged)
 // ═══════════════════════════════════════════════════════════════
 
 const SoundPaths = {
@@ -58,7 +58,7 @@ setInterval(async () => {
 
 
 // ═══════════════════════════════════════════════════════════════
-// v2.3.1 PLAN F — LIVE TRACKER (Pusher WebSocket, offscreen'de yaşar)
+// v2.3.1 PLAN F - LIVE TRACKER (Pusher WebSocket, offscreen'de yaşar)
 // ═══════════════════════════════════════════════════════════════
 //
 // Neden offscreen? MV3 service worker ~30sn sonra uyur → WebSocket kopar →
@@ -83,6 +83,7 @@ const LiveTracker = {
   reconnectTimer: null,
   pingTimer: null,
   connectionTimeoutTimer: null,  // BUG#5 FIX: bağlanma takılmasını yakalar
+  _rt: kaRtHealth(), // v2.5.94
   lastPongAt: 0,
   // channel_id → slug map (StreamerIsLive event channel_id veriyor, slug değil)
   channelIdToSlug: {},
@@ -101,7 +102,7 @@ const LiveTracker = {
     this.isConnecting = true;
     try {
       this.stats.connects++;
-      const ws = new WebSocket(KAPusherCfg.url());
+      const ws = kaOpenRealtimeSocket(); // v2.5.90: Pusher ya da Centrifugo
       this.ws = ws;
 
       // BUG#5 FIX: 10sn'de bağlanamazsa (handshake gelmezse) ws.close() →
@@ -110,8 +111,13 @@ const LiveTracker = {
       this.connectionTimeoutTimer = setTimeout(() => {
         if (ws !== this.ws) return; // v2.5.78: yeniden başlatılmış eski bağlantı
         if (!this.isConnected) {
-          console.warn('[KickAlert][LiveTracker] connection timeout (10sn) — kapatılıp yeniden denenecek');
-          relayLog('warn', 'OFF-01', 'LiveTracker bağlantı zaman aşımı (10sn) — kapatılıp yeniden denenecek');
+          // v2.5.94: kısa kopmalar uyarı değil; 5 dk (internet varken) sürerse uyarı
+          if (this._rt.fail()) {
+            console.warn('[KickAlert][LiveTracker] 5 dakikadır bağlanamıyor (son deneme: 10 sn zaman aşımı)');
+            relayLog('warn', 'OFF-01', 'LiveTracker 5 dakikadır bağlanamıyor (son deneme: 10 sn zaman aşımı)');
+          } else {
+            console.debug('[KickAlert][LiveTracker] bağlantı zaman aşımı (10 sn), yeniden denenecek');
+          }
           try { this.ws?.close(); } catch {}
           // close event gelmezse manuel reset + reconnect garantisi
           this.isConnecting = false;
@@ -158,6 +164,17 @@ const LiveTracker = {
 
   _scheduleReconnect(fixedDelay) {
     if (this.reconnectTimer) return;
+    // v2.5.94: internet yokken deneme yapma; geri gelince hemen bağlan
+    if (!fixedDelay && !kaRtOnline()) {
+      this._onlineFn = this._onlineFn || (() => {
+        if (this.reconnectTimer) { clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
+        this.reconnectDelay = 1000;
+        if (Object.keys(this.channelIdToSlug).length > 0 && !this.isConnected && !this.isConnecting) this.ensureConnection();
+      });
+      kaOnOnlineOnce(this._onlineFn);
+      fixedDelay = KA_RT_OFFLINE_FALLBACK_MS;
+      console.debug('[KickAlert][LiveTracker] İnternet yok, bağlantı bekleniyor');
+    }
     const delay = fixedDelay || (this.reconnectDelay + Math.random() * 1000);
     this.reconnectTimer = setTimeout(() => {
       this.reconnectTimer = null;
@@ -201,7 +218,7 @@ const LiveTracker = {
           '\n  event:', event,
           '\n  data (obje):', rawData,
           '\n  data (metin):\n' + pretty);
-        // Yakalanan event'leri biriktir (son 50) — topluca alınabilsin
+        // Yakalanan event'leri biriktir (son 50) - topluca alınabilsin
         this._snifferCatch = this._snifferCatch || [];
         this._snifferCatch.push({ event: short, channel: msg.channel, data: rawData, at: new Date().toISOString() });
         if (this._snifferCatch.length > 50) this._snifferCatch.shift();
@@ -216,6 +233,7 @@ const LiveTracker = {
       this.lastPongAt = Date.now();
       clearTimeout(this.connectionTimeoutTimer); // BUG#5: başarılı bağlantı, timeout'u iptal et
       console.debug('[KickAlert][LiveTracker] bağlantı kuruldu');
+      { const down = this._rt.ok(); if (down) relayLog('info', 'OFF-06', `LiveTracker bağlantısı ${Math.max(1, Math.round(down / 60000))} dakikalık kesintiden sonra geri geldi`); } // v2.5.94
       // Tüm bilinen kanallara (yeniden) subscribe ol
       this.subscribed.clear();
       for (const channelId of Object.keys(this.channelIdToSlug)) {
@@ -237,19 +255,19 @@ const LiveTracker = {
     if (event === 'pusher:error') {
       // Pusher protokolü: error event'i bir { code, message } taşır.
       // code aralıkları (Pusher Channels Protocol):
-      //   4000-4099: KALICI hata — yeniden bağlanma (örn. geçersiz app key)
+      //   4000-4099: KALICI hata - yeniden bağlanma (örn. geçersiz app key)
       //   4100-4199: backoff ile yeniden bağlan (geçici)
       //   4200-4299: hemen yeniden bağlan (geçici, örn. 4200 kapanma)
-      //   4201: pong gelmedi — SW/sekme arka plandayken ÇOK YAYGIN, zararsız
+      //   4201: pong gelmedi - SW/sekme arka plandayken ÇOK YAYGIN, zararsız
       // Bağlantı close handler'ı + _scheduleReconnect zaten reconnect yapıyor.
-      // Geçici hataları (4100+) sessizce yut — kullanıcıyı endişelendirme.
+      // Geçici hataları (4100+) sessizce yut - kullanıcıyı endişelendirme.
       // Sadece KALICI (4000-4099) hataları warn'la, çünkü bunlar gerçek sorun.
       let d = msg.data;
       try { d = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data; } catch {}
       const code = d && (d.code ?? d.Code);
       const message = (d && (d.message ?? d.Message)) || '';
       if (kaIsPermanentPusherCode(code)) {
-        // Kalıcı hata — gerçek sorun. v2.5.78: aynı anahtar için bir kez uyar
+        // Kalıcı hata - gerçek sorun. v2.5.78: aynı anahtar için bir kez uyar
         // (önceden her yeniden denemede tarayıcının Hatalar listesine düşüyordu)
         if (this._warnedKey !== KAPusherCfg.key) {
           this._warnedKey = KAPusherCfg.key;
@@ -259,8 +277,8 @@ const LiveTracker = {
           dbg(`[KickAlert][LiveTracker] Pusher kalıcı hata (${code}) tekrarı`);
         }
       } else {
-        // Geçici hata (4100+, 4201 pong, vb.) — reconnect zaten devrede, sessiz geç
-        dbg(`[KickAlert][LiveTracker] Pusher geçici hata (${code ?? '?'}): ${message} — reconnect devrede`);
+        // Geçici hata (4100+, 4201 pong, vb.) - reconnect zaten devrede, sessiz geç
+        dbg(`[KickAlert][LiveTracker] Pusher geçici hata (${code ?? '?'}): ${message} - reconnect devrede`);
       }
       return;
     }
@@ -302,6 +320,20 @@ const LiveTracker = {
       } catch (e) { /* sessiz */ }
       return;
     }
+
+    // v2.5.92 (b038): yayıncı izleyicilerini başka kanala taşıdı ("Join host").
+    // data: { hosted: { slug, username, viewers_count, ... } }, kanal adı channel.{id}
+    if (event === 'App\\Events\\ChatMoveToSupportedChannelEvent') {
+      try {
+        const data = typeof msg.data === 'string' ? JSON.parse(msg.data) : msg.data;
+        const m = /^channel\.(\d+)$/.exec(msg.channel || '');
+        const slug = m ? this.channelIdToSlug[m[1]] : null;
+        if (slug && data && data.hosted) {
+          chrome.runtime.sendMessage({ type: 'HOST_MOVE_EVENT', slug, hosted: data.hosted }).catch(() => {});
+        }
+      } catch (e) { /* sessiz */ }
+      return;
+    }
   },
 
   _subscribe(channelId) {
@@ -335,7 +367,7 @@ const LiveTracker = {
     this._snifferMode = true;
     this._snifferChatrooms = chatroomIds || [];
     console.log('%c[SNIFFER] AÇIK', 'color:#1D9E75;font-weight:bold',
-      '— channel.{id} + ' + this._snifferChatrooms.length + ' chatroom dinleniyor. Event bekleniyor...');
+      '- channel.{id} + ' + this._snifferChatrooms.length + ' chatroom dinleniyor. Event bekleniyor...');
     if (this.isConnected) {
       for (const crid of this._snifferChatrooms) this._subscribeChatroom(crid);
     } else {
@@ -362,7 +394,7 @@ const LiveTracker = {
    * @param {Array<{channelId:number, slug:string}>} list
    * @param {boolean} authoritative true ise: listede OLMAYAN kanallar unfollow
    *   sayılıp unsubscribe edilir (tam liste sync). false ise sadece ekleme yapılır
-   *   (tekil kanal harvest — örn. CHANNEL_ID_HARVESTED ile gelen tek kanal).
+   *   (tekil kanal harvest - örn. CHANNEL_ID_HARVESTED ile gelen tek kanal).
    */
   sync(list, authoritative = false) {
     let added = false;
@@ -433,7 +465,7 @@ const LiveTracker = {
 // ═══════════════════════════════════════════════════════════════
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  // PLAY_SOUND — existing audio handler (legacy: messageType, no target tag needed)
+  // PLAY_SOUND - existing audio handler (legacy: messageType, no target tag needed)
   if (msg.messageType === 'PLAY_SOUND') {
     const { sound, volume, customSoundFile } = msg.options;
     const src = customSoundFile || SoundPaths[sound] || SoundPaths.DEFAULT;
@@ -482,6 +514,13 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return true;
   }
 
+  // v2.5.103: sohbet radarı ayarı
+  if (msg.type === 'BOT_SET_RADAR') {
+    try { BotTracker.setRadar(msg.radar || null); } catch (e) {}
+    sendResponse({ success: true, on: !!BotTracker.radar });
+    return false;
+  }
+
   if (msg.type === 'BOT_GET_STATS') {
     sendResponse({ success: true, stats: BotTracker.getStats() });
     return false;
@@ -490,7 +529,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // v2.3.0 Aşama 2: Skor hesabı
   // payload: { viewerMap: { slug: viewerCount, ... } }
   if (msg.type === 'BOT_COMPUTE_SCORES') {
-    sendResponse({ success: true, scores: BotTracker.computeScores(msg.viewerMap || {}) });
+    sendResponse({ success: true, scores: BotTracker.computeScores(msg.viewerMap || {}, msg.kickChatters || {}) });
     return false;
   }
 
@@ -509,6 +548,15 @@ try {
   if (typeof BotTracker !== 'undefined' && BotTracker) {
     BotTracker.onRaid = (d) => {
       try { chrome.runtime.sendMessage({ type: 'RAID_EVENT', slug: d.slug, raider: d.raider, viewers: d.viewers, message: d.message, event: d.event }).catch(() => {}); } catch (e) {}
+    };
+  }
+} catch (e) {}
+
+// v2.5.103: Radar eşleşmelerini arka plana ilet (Chrome)
+try {
+  if (typeof BotTracker !== 'undefined' && BotTracker) {
+    BotTracker.onRadar = (d) => {
+      try { chrome.runtime.sendMessage({ type: 'RADAR_HIT', slug: d.slug, from: d.from, message: d.message, kind: d.kind, word: d.word }).catch(() => {}); } catch (e) {}
     };
   }
 } catch (e) {}

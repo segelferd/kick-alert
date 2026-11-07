@@ -19,7 +19,37 @@
     },
     "condition": {
       "urlFilter": "||kick.com/",
-      "resourceTypes": ["main_frame", "sub_frame", "xmlhttprequest"]
+      "resourceTypes": [
+        "main_frame",
+        "sub_frame",
+        "xmlhttprequest"
+      ],
+      "excludedRequestDomains": [
+        "player.kick.com"
+      ],
+      "excludedInitiatorDomains": [
+        "kick.com"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 2,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        {
+          "header": "origin",
+          "operation": "set",
+          "value": "https://kick.com"
+        }
+      ]
+    },
+    "condition": {
+      "urlFilter": "||platform.kick.com/connection/websocket",
+      "resourceTypes": [
+        "websocket"
+      ]
     }
   }
 ]

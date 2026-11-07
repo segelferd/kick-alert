@@ -1,14 +1,21 @@
 /**
  * KickAlert - Storage Module
  * Handles all chrome.storage.local operations with optional cloud sync.
- * © 2025–2026 Segelferd. All rights reserved.
+ * © 2025-2026 Segelferd. All rights reserved.
  */
+
+// v2.5.107: eklentideki olay sesleri (sounds/event_<ad>.mp3). İlk üçü v2.5.63'ten;
+// diğerleri olay türlerine göre üretilmiş özgün sesler (raid, yayın bitti, taşındı, değişim, genel).
+const EVENT_SOUND_CHOICES = ['soft', 'chime', 'tick', 'pop', 'marimba',
+  'raid_fanfare', 'raid_drums', 'end_goodnight', 'end_powerdown',
+  'host_whoosh', 'host_hop', 'change_flip', 'change_blip'];
 
 const StorageKeys = {
   SHOW_NOTIFICATION: 'showNotification',
   SOUND_VOLUME: 'soundVolume',
   SUSPEND_FROM_DATE: 'suspendFromDate',
   RESET_SUSPEND_ON_RESTART: 'resetSuspendOnRestart',
+  RAID_GUARD_CLOSE: 'raidGuardClose', // v2.5.100
   DUPLICATE_TAB_GUARD: 'duplicateTabGuard',
   AUTO_OPEN_CHANNELS: 'autoOpenChannels',
   AUTO_UNMUTE: 'autoUnmute',
@@ -35,15 +42,18 @@ const StorageKeys = {
   CHANNEL_MODE_BACKUP: '_channelModeBackup',      // "Tümüne uygula" öncesi yedek (Geri al)
   INSTALL_DEFAULT_MODE: '_installDefaultMode',    // kurulum türüne göre sıfırlama varsayılanı
   // v2.5.49: kanal bazlı ek bildirim tercihleri, hepsi varsayılan KAPALI.
-  // { slug: { change: bool, end: bool, raid: bool, cats: [str], words: [str] } }
+  // { slug: { change: bool, end: bool, raid: bool, host: bool, cats: [str], words: [str] } }
   CHANNEL_ALERT_PREFS: 'channelAlertPrefs',
   WATCH_TIME_ENABLED: 'watchTimeEnabled', // v2.5.55: varsayılan açık (undefined = açık)
   // v2.5.63: kanal olayı (değişim / yayın bitti / raid) bildirim sesi ve seviyesi
+  EVENT_SOUND_BY_TYPE: 'eventSoundByType', // v2.5.99: { change|end|raid|host: 'default' | EVENT_SOUND_CHOICES | 'windows' | 'silent' }
   EVENT_SOUND: 'eventSound',               // 'soft' | 'chime' | 'tick' | 'windows' | 'silent' (varsayılan soft)
   EVENT_SOUND_VOLUME: 'eventSoundVolume',  // 0-100 (varsayılan 60)
   FAVORITE_CHANNELS: 'favoriteChannels',
   CLOUD_SYNC_ENABLED: 'cloudSyncEnabled',
   THEME: 'theme', // 'dark' | 'light' | 'system' (v2.5.46)
+  CARD_DENSITY: 'cardDensity', // 'comfortable' | 'compact' (v2.5.95)
+  SPECIAL_DAY_ICONS: 'specialDayIcons', // v2.6.0: özel günlerde ikon değişsin (varsayılan açık)
   CHANNEL_GROUPS: 'channelGroups', // ['Türk yayıncılar', 'FPS', ...]
   CHANNEL_GROUP_MAP: 'channelGroupMap', // { slug: 'groupName' }
   VIEWER_HISTORY: 'viewerHistory',   // { slug: [{v, t}, ...] }
@@ -57,12 +67,12 @@ const StorageKeys = {
   // v2.3.0: Bot tracker
   BOT_TRACKER_ENABLED: 'botTrackerEnabled',  // master toggle
   BOT_TRACKER_NOTIFY: 'botTrackerNotify',    // skor bildirimde göster (default false)
-  BOT_SCORE_ALWAYS_VISIBLE: 'botScoreAlwaysVisible',  // popup'ta her zaman göster (default false — sadece anomaly'de)
-  CHATROOM_ID_CACHE: '_chatroomIdCache',      // { slug: chatroomId, ... } — internal
-  BOT_SCORES: '_botScores',                   // { slug: { score, msgPerMin, ratio, computedAt }, ... } — internal
+  BOT_SCORE_ALWAYS_VISIBLE: 'botScoreAlwaysVisible',  // popup'ta her zaman göster (default false - sadece anomaly'de)
+  CHATROOM_ID_CACHE: '_chatroomIdCache',      // { slug: chatroomId, ... } - internal
+  BOT_SCORES: '_botScores',                   // { slug: { score, msgPerMin, ratio, computedAt }, ... } - internal
   // v2.3.15: Ayarlar sekmesinde bir kez gösterilen "email ile giriş yap" bildirimi
   EMAIL_LOGIN_NOTICE_DISMISSED: 'emailLoginNoticeDismissed', // cihaza özel, senkronize edilmez
-  // v2.3.18: Reklam Engelleme (DENEYSEL) — kapalı başlar, kullanıcı bilerek açar
+  // v2.3.18: Reklam Engelleme (DENEYSEL) - kapalı başlar, kullanıcı bilerek açar
   AD_BLOCK_ENABLED: 'adBlockEnabled',
   // v2.3.26: Kanal önizleme resimleri (thumbnail) - varsayılan kapalı
   CHANNEL_THUMBNAILS_ENABLED: 'channelThumbnailsEnabled',
@@ -86,7 +96,7 @@ const SYNC_EXCLUDE_KEYS = new Set([
   StorageKeys.CUSTOM_SOUND_SUB,        // base64 audio, MB size
   StorageKeys.NOTIFICATION_HISTORY,     // grows large, device-specific
   StorageKeys.SUSPEND_FROM_DATE,        // device-specific runtime state
-  StorageKeys.CLOUD_SYNC_ENABLED,      // meta — each device decides independently
+  StorageKeys.CLOUD_SYNC_ENABLED,      // meta - each device decides independently
   StorageKeys.VIEWER_HISTORY,          // grows very large (60 entries × N channels)
   StorageKeys.ANOMALY_SETTINGS,        // device-specific sensitivity prefs
   StorageKeys.CHATROOM_ID_CACHE,       // v2.3.0: internal API cache
@@ -97,9 +107,11 @@ const SYNC_EXCLUDE_KEYS = new Set([
 ]);
 
 const StorageDefaults = {
+  [StorageKeys.SPECIAL_DAY_ICONS]: true, // v2.6.0
   [StorageKeys.SHOW_NOTIFICATION]: true,
   [StorageKeys.SOUND_VOLUME]: 80,
   [StorageKeys.RESET_SUSPEND_ON_RESTART]: false,
+  [StorageKeys.RAID_GUARD_CLOSE]: false,
   [StorageKeys.DUPLICATE_TAB_GUARD]: true,
   [StorageKeys.AUTO_OPEN_CHANNELS]: {},
   [StorageKeys.AUTO_UNMUTE]: false,
@@ -107,7 +119,7 @@ const StorageDefaults = {
   [StorageKeys.NOTIFICATION_HISTORY]: [],
   [StorageKeys.SHOW_OFFLINE_CHANNELS]: false,
   [StorageKeys.AUTO_REFRESH_POPUP]: false,
-  // v2.3.0: Bot tracker — default açık (Chrome only)
+  // v2.3.0: Bot tracker - default açık (Chrome only)
   [StorageKeys.BOT_TRACKER_ENABLED]: true,
   [StorageKeys.BOT_TRACKER_NOTIFY]: false,
   [StorageKeys.BOT_SCORE_ALWAYS_VISIBLE]: false,
@@ -124,6 +136,28 @@ const StorageDefaults = {
 };
 
 let _syncEnabled = false;
+// v2.5.88: _syncEnabled her sayfa (arka plan, popup, yedek, test) için ayrı bir
+// değişken. Eskiden sadece arka plan initSyncState() ile dolduruyordu; popup'ta
+// hep false kaldığı için popup'tan yapılan ayar değişiklikleri buluta hiç
+// yazılmıyor, güncellemede / tarayıcı açılışında buluttaki eski kopya yereli
+// eziyordu (b042: Chat sekmesi ayarları kayboluyordu). Artık her bağlam bayrağı
+// ilk kullanımda depodan okuyor ve değişikliği canlı izliyor.
+let _syncKnown = false;
+let _syncReady = null;
+function _syncOn() {
+  if (_syncKnown) return Promise.resolve(_syncEnabled);
+  if (!_syncReady) {
+    _syncReady = chrome.storage.local.get('cloudSyncEnabled')
+      .then((r) => { if (!_syncKnown) { _syncEnabled = r.cloudSyncEnabled === true; _syncKnown = true; } return _syncEnabled; })
+      .catch(() => _syncEnabled);
+  }
+  return _syncReady;
+}
+try {
+  chrome.storage.onChanged.addListener((ch, area) => {
+    if (area === 'local' && ch.cloudSyncEnabled) { _syncEnabled = ch.cloudSyncEnabled.newValue === true; _syncKnown = true; }
+  });
+} catch (e) {}
 let _syncListenerAttached = false;
 
 // v2.5.42: chatSettings için yazma kuyruğu. updateChatSetting/setChatSettings
@@ -132,7 +166,7 @@ let _syncListenerAttached = false;
 // Tüm chatSettings yazmalarını tek bir zincirden geçirerek sıralı hale getiriyoruz.
 let _chatSettingsWriteChain = Promise.resolve();
 
-// v2.5.43: Aynı sorun chatSettings dışında da vardı — favoriler, kanal grupları,
+// v2.5.43: Aynı sorun chatSettings dışında da vardı - favoriler, kanal grupları,
 // kanal başına ses modu, auto-open listesi, chatroom/channel_id cache, bot skorları
 // ve bildirim geçmişi de hepsi TEK bir storage anahtarındaki objeyi "oku → değiştir →
 // geri yaz" şeklinde güncelliyor. İki çağrı üst üste binerse (ör. hızlıca iki
@@ -160,8 +194,8 @@ function _withKeyLock(key, task) {
 //   ilk fırsatta tekrar buluta yazılır. Sınırı aşanlar "_syncIssues"a düşer ve
 //   Ayarlar'da uyarı olarak gösterilir.
 const SYNC_ITEM_LIMIT = 8192; // chrome.storage.sync.QUOTA_BYTES_PER_ITEM (anahtar + JSON)
-const SYNC_PENDING_KEY = '_syncPending'; // { key: zaman } — buluta yazılamamış, yerel daha yeni
-const SYNC_ISSUE_KEY = '_syncIssues';    // { key: bayt } — 8 KB sınırını aşanlar
+const SYNC_PENDING_KEY = '_syncPending'; // { key: zaman } - buluta yazılamamış, yerel daha yeni
+const SYNC_ISSUE_KEY = '_syncIssues';    // { key: bayt } - 8 KB sınırını aşanlar
 function _isSyncableKey(key) { return !SYNC_EXCLUDE_KEYS.has(key) && !String(key).startsWith('_'); }
 function _syncItemBytes(key, value) {
   try { return new TextEncoder().encode(key + JSON.stringify(value)).length; } catch (e) { return Infinity; }
@@ -227,17 +261,17 @@ const Storage = {
       await chrome.storage.local.set({ [key]: value });
     } catch (e) {
       console.warn('[KickAlert] Storage write failed:', key, e.message);
-      return; // sync'e de yazma anlamsız — vazgeç
+      return; // sync'e de yazma anlamsız - vazgeç
     }
     // Mirror to sync if enabled and key is syncable (v2.5.66: sınır ve hata takibiyle)
-    if (_syncEnabled && _isSyncableKey(key)) {
+    if (_isSyncableKey(key) && await _syncOn()) {
       await _syncWriteKeys({ [key]: value });
     }
   },
 
   async remove(key) {
     await chrome.storage.local.remove(key);
-    if (_syncEnabled && _isSyncableKey(key)) {
+    if (_isSyncableKey(key) && await _syncOn()) {
       try {
         await chrome.storage.sync.remove(key);
         await _withKeyLock(SYNC_PENDING_KEY, async () => {
@@ -258,11 +292,11 @@ const Storage = {
   },
 
   async setCloudSyncEnabled(enabled) {
-    _syncEnabled = enabled;
+    _syncEnabled = enabled; _syncKnown = true;
     await chrome.storage.local.set({ [StorageKeys.CLOUD_SYNC_ENABLED]: enabled });
     if (enabled) {
       this._listenForSyncChanges();
-      // v2.3.7 FIX: Önceden burada SADECE _pushAllToSync() çağrılıyordu —
+      // v2.3.7 FIX: Önceden burada SADECE _pushAllToSync() çağrılıyordu -
       // bu, yeni/temiz bir cihazda (yerel depolama boş) switch açıldığında,
       // buluttaki GERÇEK ayarları hiç okumadan, boş/varsayılan yerel veriyi
       // buluta yazıp mevcut bulut verisini SİLİYORDU. Şimdi önce buluttan
@@ -275,14 +309,14 @@ const Storage = {
   },
 
   /**
-   * v2.3.7: Manuel "Şimdi Senkronize Et" — kullanıcının popup'tan tetikleyebildiği,
+   * v2.3.7: Manuel "Şimdi Senkronize Et" - kullanıcının popup'tan tetikleyebildiği,
    * açma/kapama switch'inden BAĞIMSIZ bir buton. Aynı güvenli sırayı izler:
    * önce pull (buluttaki başka cihaz değişikliklerini al), sonra push (yerelde
    * olup buluta gitmemiş anahtarları tamamla). Sync kapalıyken çağrılırsa
    * hiçbir şey yapmadan bunu bildirir.
    */
   async syncNow() {
-    if (!_syncEnabled) {
+    if (!(await _syncOn())) {
       return { success: false, reason: 'disabled' };
     }
     try {
@@ -296,7 +330,7 @@ const Storage = {
   },
 
   async initSyncState() {
-    _syncEnabled = await this.getCloudSyncEnabled();
+    _syncEnabled = await this.getCloudSyncEnabled(); _syncKnown = true;
     if (_syncEnabled) {
       this._listenForSyncChanges();
     }
@@ -318,7 +352,7 @@ const Storage = {
 
   /** v2.5.66: Buluta yazılamamış (bekleyen) anahtarları tekrar dene */
   async flushSyncPending() {
-    if (!_syncEnabled) return;
+    if (!(await _syncOn())) return;
     const pend = await _getSyncPending();
     const keys = Object.keys(pend);
     if (!keys.length) return;
@@ -326,14 +360,14 @@ const Storage = {
     await _syncWriteKeys(local);
   },
 
-  /** v2.5.66: Ayarlar'daki uyarı için — 8 KB sınırını aşan anahtarlar { key: bayt } */
+  /** v2.5.66: Ayarlar'daki uyarı için - 8 KB sınırını aşan anahtarlar { key: bayt } */
   async getSyncIssues() {
     try { return (await chrome.storage.local.get(SYNC_ISSUE_KEY))[SYNC_ISSUE_KEY] || {}; } catch (e) { return {}; }
   },
 
   /** Pull all sync data and apply to local (for initial sync on new device) */
   async pullFromSync() {
-    if (!_syncEnabled) return;
+    if (!(await _syncOn())) return;
     try {
       const syncData = await chrome.storage.sync.get(null);
       const pending = await _getSyncPending(); // v2.5.66: bu cihazdaki daha yeni değerler ezilmez
@@ -351,6 +385,16 @@ const Storage = {
         toLocal[StorageKeys.DEFAULT_CHANNEL_MODE] = 'silent';
       }
       if (Object.keys(toLocal).length > 0) {
+        // v2.5.88: buluttan gelen değer yereldekinden farklıysa hangi ayarın
+        // değiştiği loglanır (b042 gibi bir geri dönüşü hemen görmek için)
+        try {
+          const cur = await chrome.storage.local.get(Object.keys(toLocal));
+          const changed = Object.keys(toLocal).filter(k => cur[k] !== undefined && JSON.stringify(cur[k]) !== JSON.stringify(toLocal[k]));
+          if (changed.length) {
+            const msg = `Buluttan gelen değer yerel ayarı değiştirdi: ${changed.join(', ')}`;
+            if (typeof KLog !== 'undefined' && KLog.info) KLog.info('SYNC-01', msg); else console.info('[KickAlert][SYNC-01] ' + msg);
+          }
+        } catch (e) {}
         await chrome.storage.local.set(toLocal);
         console.debug('[KickAlert] Cloud sync: pulled', Object.keys(toLocal).length, 'keys', Object.keys(pending).length ? `(kept local: ${Object.keys(pending).join(',')})` : '');
       }
@@ -365,7 +409,7 @@ const Storage = {
     if (_syncListenerAttached) return;
     _syncListenerAttached = true;
     chrome.storage.onChanged.addListener(async (changes, area) => {
-      if (area !== 'sync' || !_syncEnabled) return;
+      if (area !== 'sync' || !(await _syncOn())) return;
       const pending = await _getSyncPending(); // v2.5.66: buluta yazılamamış yerel değer ezilmez
       const toLocal = {};
       for (const [key, { newValue }] of Object.entries(changes)) {
@@ -391,6 +435,9 @@ const Storage = {
 
   async getResetSuspendOnRestart() { return this.get(StorageKeys.RESET_SUSPEND_ON_RESTART); },
   async setResetSuspendOnRestart(v) { return this.set(StorageKeys.RESET_SUSPEND_ON_RESTART, v); },
+  // v2.5.100: otomatik açılan sekme yayın taşınınca kapatılsın mı (varsayılan kapalı)
+  async getRaidGuardClose() { return (await this.get(StorageKeys.RAID_GUARD_CLOSE)) === true; },
+  async setRaidGuardClose(v) { return this.set(StorageKeys.RAID_GUARD_CLOSE, !!v); },
 
   async isDuplicateTabGuard() { return this.get(StorageKeys.DUPLICATE_TAB_GUARD); },
   async setDuplicateTabGuard(v) { return this.set(StorageKeys.DUPLICATE_TAB_GUARD, v); },
@@ -479,7 +526,7 @@ const Storage = {
     const modes = (await this.get(StorageKeys.CHANNEL_SOUND_MODE)) || {};
     return modes[slug] || (await this.getDefaultChannelMode()); // v2.5.74: varsayılan ayarlanabilir
   },
-  // v2.5.74: { mode, explicit } — explicit=false ise kanal varsayılanı izliyor.
+  // v2.5.74: { mode, explicit } - explicit=false ise kanal varsayılanı izliyor.
   // Varsayılan 'muted' iken kullanıcının kanal için AÇIKÇA seçtiği otomatik
   // açma / kanal olayı bildirimleri engellenmez; sadece kanal zilinden yapılan
   // 'Bildirim yok' seçimi bunları da susturur (eski davranış).
@@ -516,7 +563,7 @@ const Storage = {
       if (!b || typeof b.map !== 'object' || Date.now() - (b.at || 0) > 24 * 3600e3) return { ok: false };
       await this.set(StorageKeys.CHANNEL_SOUND_MODE, b.map);
       if (b.def) await this.set(StorageKeys.DEFAULT_CHANNEL_MODE, b.def);
-      else { await chrome.storage.local.remove(StorageKeys.DEFAULT_CHANNEL_MODE); try { if (_syncEnabled) await chrome.storage.sync.remove(StorageKeys.DEFAULT_CHANNEL_MODE); } catch (e) {} }
+      else { await chrome.storage.local.remove(StorageKeys.DEFAULT_CHANNEL_MODE); try { if (await _syncOn()) await chrome.storage.sync.remove(StorageKeys.DEFAULT_CHANNEL_MODE); } catch (e) {} }
       await chrome.storage.local.remove(StorageKeys.CHANNEL_MODE_BACKUP);
       return { ok: true };
     });
@@ -562,9 +609,23 @@ const Storage = {
 
   async getEventSound() {
     const v = await this.get(StorageKeys.EVENT_SOUND);
-    return ['soft', 'chime', 'tick', 'windows', 'silent'].includes(v) ? v : 'soft';
+    return EVENT_SOUND_CHOICES.concat(['windows', 'silent']).includes(v) ? v : 'soft';
   },
   async setEventSound(v) { return this.set(StorageKeys.EVENT_SOUND, v); },
+  // v2.5.99: olay türüne göre ses ('default' = genel olay sesi)
+  async getEventSoundByType() {
+    const v = (await this.get(StorageKeys.EVENT_SOUND_BY_TYPE)) || {};
+    const ok = ['default'].concat(EVENT_SOUND_CHOICES, ['windows', 'silent']);
+    const out = {};
+    for (const k of ['change', 'end', 'raid', 'host']) out[k] = ok.includes(v[k]) ? v[k] : 'default';
+    return out;
+  },
+  async setEventSoundForType(type, value) {
+    if (!['change', 'end', 'raid', 'host'].includes(type)) return;
+    const cur = await this.getEventSoundByType();
+    cur[type] = value;
+    return this.set(StorageKeys.EVENT_SOUND_BY_TYPE, cur);
+  },
   async getEventSoundVolume() {
     const v = Number(await this.get(StorageKeys.EVENT_SOUND_VOLUME));
     return Number.isFinite(v) && v >= 0 && v <= 100 ? v : 60;
@@ -596,12 +657,14 @@ const Storage = {
 
   async getTheme() { return (await this.get(StorageKeys.THEME)) || 'dark'; },
   async setTheme(v) { return this.set(StorageKeys.THEME, v); },
+  async getCardDensity() { return (await this.get(StorageKeys.CARD_DENSITY)) === 'compact' ? 'compact' : 'comfortable'; },
+  async setCardDensity(v) { return this.set(StorageKeys.CARD_DENSITY, v === 'compact' ? 'compact' : 'comfortable'); },
 
   // ─── Channel Groups ───
   async getChannelGroups() { return (await this.get(StorageKeys.CHANNEL_GROUPS)) || []; },
   async setChannelGroups(groups) { return this.set(StorageKeys.CHANNEL_GROUPS, groups); },
   // v2.5.43: Bu üçü CHANNEL_GROUPS ve/veya CHANNEL_GROUP_MAP'i birlikte
-  // okuyup değiştirdiği için tek bir ortak kilit anahtarı kullanıyoruz —
+  // okuyup değiştirdiği için tek bir ortak kilit anahtarı kullanıyoruz -
   // yoksa örn. bir kanalı gruba atarken aynı anda bir grup silinirse ikisi
   // birbirinin yazdığını eski bir kopyayla ezebilir.
   async addChannelGroup(name) {
@@ -653,7 +716,7 @@ const Storage = {
 
   // v2.3.5: WS → tab açma güvenlik gecikmesi (saniye). İzinli: 3, 5, 7, 9.
   // Default 5 (yeni kullanıcılar için). Mevcut kullanıcının ayarı kaydedildiyse
-  // o ayar korunur — sadece hiç set edilmemişse 5'e düşer.
+  // o ayar korunur - sadece hiç set edilmemişse 5'e düşer.
   async getAutoOpenDelay() {
     const v = await this.get(StorageKeys.AUTO_OPEN_DELAY);
     return [3, 5, 7, 9].includes(v) ? v : 5;
@@ -719,7 +782,7 @@ const Storage = {
   },
 
   async setChatIntegrationEnabled(enabled) {
-    // v2.5.45 FIX: chatSettings ile aynı hata — doğrudan chrome.storage.local.set
+    // v2.5.45 FIX: chatSettings ile aynı hata - doğrudan chrome.storage.local.set
     // kullanıyordu, this.set() üzerinden geçmediği için buluta hiç yansımıyordu.
     return this.set(StorageKeys.CHAT_INTEGRATION_ENABLED, enabled);
   },
@@ -747,11 +810,15 @@ const Storage = {
       tagEnabled: false,
       tagUsername: '',
       broadcasterNotif: false,
+      // v2.5.103: arka plan sohbet radarı
+      radarEnabled: false,
+      radarChannels: [],
+      radarWords: [],
     }, stored || {});
 
     // ─── Migration for existing users (v1.9.10 chat panel upgrade) ───
     // If a user already has list items but no explicit enabled flag stored, auto-enable.
-    // Only runs once — after first save, stored flags win.
+    // Only runs once - after first save, stored flags win.
     if (stored) {
       const migrations = [
         ['wordFilterEnabled', 'wordList'],
@@ -812,11 +879,11 @@ const Storage = {
   // yazıyordu (Storage.set() üzerinden geçmiyordu), bu yüzden chatSettings hiçbir
   // zaman chrome.storage.sync'e yansımıyordu. Buluttaki kopya hep bayat/boş kalıyordu.
   // Her ~1 dakikada bir (alarm ile) service worker uyanıp initialize() → pullFromSync()
-  // çalıştırdığında, bu bayat bulut kopyası yerel depoyu SESSİZCE eziyordu — kullanıcı
+  // çalıştırdığında, bu bayat bulut kopyası yerel depoyu SESSİZCE eziyordu - kullanıcı
   // hiçbir şeye dokunmadan saatler sonra ayarların "sıfırlanmış" görünmesinin sebebi buydu.
   // Artık her chatSettings yazımı buluta da yansıyor, böylece pull hep güncel veriyi geri getiriyor.
   async _mirrorChatSettingsToSync(settings) {
-    if (!_syncEnabled || SYNC_EXCLUDE_KEYS.has(StorageKeys.CHAT_SETTINGS)) return;
+    if (SYNC_EXCLUDE_KEYS.has(StorageKeys.CHAT_SETTINGS) || !(await _syncOn())) return;
     await _syncWriteKeys({ [StorageKeys.CHAT_SETTINGS]: settings });
   },
 
@@ -854,7 +921,7 @@ const Storage = {
   },
   async setChatroomId(slug, chatroomId) {
     // v2.5.43: İki Kick sekmesi aynı anda açılırsa her ikisinin content
-    // script'i bu cache'i eş zamanlı güncelleyebiliyordu — kilitlendi.
+    // script'i bu cache'i eş zamanlı güncelleyebiliyordu - kilitlendi.
     return _withKeyLock(StorageKeys.CHATROOM_ID_CACHE, async () => {
       const cache = await this.getChatroomIdCache();
       cache[slug] = chatroomId;
@@ -862,7 +929,7 @@ const Storage = {
     });
   },
 
-  // v2.3.1 Plan F: channel_id cache (slug → channelId) — Pusher subscribe için.
+  // v2.3.1 Plan F: channel_id cache (slug → channelId) - Pusher subscribe için.
   // Pusher 'channel.{channel_id}' format kullanır; bu chatroomId'den farklı.
   async getChannelIdCache() {
     return (await this.get('channelIdCache')) || {};
@@ -903,7 +970,7 @@ const Storage = {
   },
 };
 
-// v2.5.17: Ayarları Dışa/İçe Aktar — kullanıcı eklentiyi yeniden kurduğunda
+// v2.5.17: Ayarları Dışa/İçe Aktar - kullanıcı eklentiyi yeniden kurduğunda
 // (Bulut Senkronu kullanmıyorsa) tüm tercihlerini bir dosyadan geri
 // yükleyebilsin. BİLİNÇLİ OLARAK HARİÇ TUTULANLAR:
 //   - SUSPEND_FROM_DATE: belirli bir tarihe kadar geçerli, geri yüklenince
@@ -915,21 +982,21 @@ const Storage = {
 //   - WHATSNEW_DISMISSED_VERSION, OPT_GROUP_COLLAPSED_STATE,
 //     PREVIEW_FIRST_USE_STATE: tercih değil, arayüz durumu/onboarding bayrağı
 const EXPORTABLE_SETTINGS_KEYS = [
-  StorageKeys.SHOW_NOTIFICATION, StorageKeys.SOUND_VOLUME, StorageKeys.RESET_SUSPEND_ON_RESTART,
+  StorageKeys.SHOW_NOTIFICATION, StorageKeys.SOUND_VOLUME, StorageKeys.RESET_SUSPEND_ON_RESTART, StorageKeys.RAID_GUARD_CLOSE,
   StorageKeys.DUPLICATE_TAB_GUARD, StorageKeys.AUTO_OPEN_CHANNELS, StorageKeys.AUTO_UNMUTE,
   StorageKeys.CHECK_INTERVAL, StorageKeys.SHOW_OFFLINE_CHANNELS, StorageKeys.AUTO_REFRESH_POPUP,
   StorageKeys.CUSTOM_SOUND_MAIN, StorageKeys.CUSTOM_SOUND_SUB, StorageKeys.USER_LANGUAGE,
   StorageKeys.USE_BROWSER_LANGUAGE, StorageKeys.DND_ENABLED, StorageKeys.DND_START, StorageKeys.DND_END,
   StorageKeys.DND_MUTE_NOTIF, StorageKeys.DND_MUTE_SOUND, StorageKeys.DND_MUTE_AUTOLAUNCH,
   StorageKeys.SOUND_MODE, StorageKeys.CHANNEL_SOUND_MODE, StorageKeys.DEFAULT_CHANNEL_MODE, StorageKeys.FAVORITE_CHANNELS,
-  StorageKeys.CLOUD_SYNC_ENABLED, StorageKeys.THEME, StorageKeys.CHANNEL_GROUPS,
+  StorageKeys.CLOUD_SYNC_ENABLED, StorageKeys.THEME, StorageKeys.CARD_DENSITY, StorageKeys.SPECIAL_DAY_ICONS, StorageKeys.CHANNEL_GROUPS,
   StorageKeys.CHANNEL_GROUP_MAP, StorageKeys.ANOMALY_SETTINGS, StorageKeys.NOTIF_DELAY,
   StorageKeys.AUTO_OPEN_DELAY, StorageKeys.FOLLOW_SORT_BY, StorageKeys.FOLLOW_SORT_DIR,
   StorageKeys.CHAT_INTEGRATION_ENABLED, StorageKeys.CHAT_SETTINGS, StorageKeys.BOT_TRACKER_ENABLED,
   StorageKeys.BOT_TRACKER_NOTIFY, StorageKeys.BOT_SCORE_ALWAYS_VISIBLE, StorageKeys.AD_BLOCK_ENABLED,
   StorageKeys.CHANNEL_THUMBNAILS_ENABLED, StorageKeys.GROUP_FILTER_EXPANDED,
   StorageKeys.CHANNEL_ALERT_PREFS, StorageKeys.WATCH_TIME_ENABLED,
-  StorageKeys.EVENT_SOUND, StorageKeys.EVENT_SOUND_VOLUME,
+  StorageKeys.EVENT_SOUND, StorageKeys.EVENT_SOUND_VOLUME, StorageKeys.EVENT_SOUND_BY_TYPE,
 ];
 
 const SETTINGS_EXPORT_FORMAT_VERSION = 1;
@@ -988,7 +1055,7 @@ async function getLastExportTimestamp() {
 }
 
 // v2.5.19: İçe aktarma ve Sıfırlama gibi YIKICI (mevcut ayarların üzerine
-// yazan) işlemlerden HEMEN ÖNCE çağrılır — sadece DEĞİŞECEK anahtarların
+// yazan) işlemlerden HEMEN ÖNCE çağrılır - sadece DEĞİŞECEK anahtarların
 // MEVCUT değerlerini bir "geri al" yedeği olarak saklar. Sonradan
 // restorePreChangeSnapshot() ile tek tıkla geri alınabilir. Kendisi
 // EXPORTABLE_SETTINGS_KEYS'in dışında (internal), dışa aktarılmaz.
@@ -1005,7 +1072,7 @@ async function hasPreChangeSnapshot() {
 }
 
 // Döndürür: { ok: true } ya da { ok: false, error: 'NO_SNAPSHOT' }
-// Tek seferlik "geri al" — kullanıldıktan sonra yedek temizlenir (üst üste
+// Tek seferlik "geri al" - kullanıldıktan sonra yedek temizlenir (üst üste
 // geri almanın anlamı olmadığı için, established "undo" mantığıyla tutarlı).
 async function restorePreChangeSnapshot() {
   const result = await storageGet(StorageKeys.PRE_IMPORT_SNAPSHOT);
@@ -1025,7 +1092,7 @@ async function importSettingsFromObject(obj) {
   if (typeof obj.exportFormatVersion !== 'number' || obj.exportFormatVersion > SETTINGS_EXPORT_FORMAT_VERSION) {
     return { ok: false, error: 'UNSUPPORTED_VERSION' };
   }
-  // Sadece bilinen, dışa aktarılabilir anahtarları yaz — dosyada başka/zararlı
+  // Sadece bilinen, dışa aktarılabilir anahtarları yaz - dosyada başka/zararlı
   // bir anahtar olsa bile (elle düzenlenmiş olabilir) yoksayılır.
   const toWrite = {};
   let importedCount = 0;
@@ -1044,14 +1111,14 @@ async function importSettingsFromObject(obj) {
     toWrite[StorageKeys.DEFAULT_CHANNEL_MODE] = 'silent';
   }
   // v2.5.19: Üzerine yazmadan HEMEN ÖNCE, sadece değişecek anahtarların
-  // mevcut halini yedekle — kullanıcı yanlış dosyayı seçtiyse tek tıkla geri dönebilsin.
+  // mevcut halini yedekle - kullanıcı yanlış dosyayı seçtiyse tek tıkla geri dönebilsin.
   try {
     await createPreChangeSnapshot(Object.keys(toWrite));
     await storageSet(toWrite);
     await _mirrorBulkToSync(toWrite); // v2.5.66: yoksa bir sonraki açılışta buluttaki eski kopya geri gelirdi
   } catch (e) {
     // v2.5.38: Artık storage yazma hatası (kota aşımı, izin sorunu vb.)
-    // burada YAKALANIYOR ve çağıran tarafa açıkça bildiriliyor — sessizce
+    // burada YAKALANIYOR ve çağıran tarafa açıkça bildiriliyor - sessizce
     // "hiçbir şey olmamış" gibi görünmüyor.
     return { ok: false, error: (e && e.message) || 'STORAGE_WRITE_FAILED' };
   }

@@ -47,7 +47,7 @@ function table(headers, rows) {
 }
 function td(content, cls, title) { return el('td', { class: cls, title }, content); }
 function ago(ts) {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
   if (s < 60) return s + ' sn önce';
   const m = Math.round(s / 60);
@@ -55,13 +55,13 @@ function ago(ts) {
   return Math.floor(m / 60) + ' sa ' + (m % 60) + ' dk önce';
 }
 function dur(ms) {
-  if (!ms || ms < 0) return '—';
+  if (!ms || ms < 0) return '-';
   const m = Math.floor(ms / 60000);
   return m >= 60 ? Math.floor(m / 60) + ' sa ' + (m % 60) + ' dk' : m + ' dk';
 }
 function hhmm(ts) {
   const d = new Date(ts);
-  return isFinite(d) ? d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '—';
+  return isFinite(d) ? d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) : '-';
 }
 function secText(sec) {
   sec = Math.round(sec || 0);
@@ -130,6 +130,12 @@ SCENARIOS.pusher = {
   payload: () => ({ dryRun: true }),
 };
 
+SCENARIOS.kickCompat = {
+  title: 'Kick uyumluluğu',
+  msgType: 'RUN_SCENARIO_KICK_COMPAT',
+  payload: () => ({}),
+};
+
 SCENARIOS.channelEvents = {
   title: 'Kanal olayları uçtan uca',
   msgType: 'RUN_SCENARIO_CHANNEL_EVENTS',
@@ -193,7 +199,7 @@ SCENARIOS.settingsIntegrity = {
     const bad = [];
     for (const [slug, p] of Object.entries(prefs)) {
       if (!p || typeof p !== 'object') { bad.push(slug); continue; }
-      for (const k of ['change', 'end', 'raid']) if (k in p && typeof p[k] !== 'boolean') bad.push(`${slug}.${k}`);
+      for (const k of ['change', 'end', 'raid', 'host']) if (k in p && typeof p[k] !== 'boolean') bad.push(`${slug}.${k}`);
       for (const k of ['cats', 'words']) if (k in p && (!Array.isArray(p[k]) || p[k].some(x => typeof x !== 'string' || !x.trim()))) bad.push(`${slug}.${k}`);
     }
     log('Kanal tercihleri biçimi', bad.length ? 'error' : 'ok',
@@ -427,7 +433,7 @@ async function testFilter() {
   const r = await send({ type: 'TEST_CHANNEL_FILTER', slug, category: document.getElementById('flt-cat').value, title: document.getElementById('flt-title').value });
   if (!r?.success) return out('flt-out', r?.error || 'Başarısız', 'err');
   const p = r.pref || {};
-  const f = `Kategori: ${(p.cats || []).join(', ') || '—'} · Kelime: ${(p.words || []).join(', ') || '—'}`;
+  const f = `Kategori: ${(p.cats || []).join(', ') || '-'} · Kelime: ${(p.words || []).join(', ') || '-'}`;
   if (r.result.pass) {
     out('flt-out', `GEÇER: bildirim gider${r.result.unknownCategory ? ' (kategori bilinmediği için)' : ''} · ${f}`, 'ok');
   } else {
@@ -464,6 +470,49 @@ async function rateRestore() {
   out('rate-out', 'Önceki duruma dönüldü', 'ok');
   dlog('Değerlendirme durumu geri yüklendi', 'ok');
 }
+// ─── v2.6.0: Özel gün simgeleri önizlemesi ───
+const SPD_LIST = [
+  ['tr-national', 'TR: 23 Nisan, 19 Mayıs, 30 Ağustos, 29 Ekim'],
+  ['tr-1110', 'TR: 10 Kasım (siyah beyaz)'],
+  ['halloween', 'Cadılar Bayramı (herkes)'],
+  ['newyear', 'Yılbaşı (herkes)'],
+  ['us-july4', 'ABD: 4 Temmuz'],
+  ['br-independence', 'Brezilya: 7 Eylül'],
+  ['br-carnival', 'Brezilya: Karnaval'],
+  ['jp-kodomo', 'Japonya: 5 Mayıs'],
+  ['mx-independence', 'Meksika: 16 Eylül'],
+];
+async function spdRender() {
+  const grid = document.getElementById('spd-grid');
+  if (!grid) return;
+  const { _specialDayPreview: pv, specialDayIcons } = await lget(['_specialDayPreview', 'specialDayIcons']);
+  const active = pv && pv.until > Date.now() ? pv.id : null;
+  grid.replaceChildren(...SPD_LIST.map(([id, label]) => {
+    const img = el('img', { src: id === 'tr-1110' ? '../icons/icon128.png' : `../icons/special/${id}-128.png`, alt: '' });
+    if (id === 'tr-1110') img.style.filter = 'grayscale(1)';
+    const b = el('button', { class: 'spd-btn' + (active === id ? ' active' : ''), type: 'button' }, img, el('span', { text: label }));
+    b.addEventListener('click', () => spdPreview(id, label));
+    return b;
+  }));
+  const reg = (typeof KASpecialDay !== 'undefined') ? (KASpecialDay.region() || 'tanınmadı') : '?';
+  const tz = (() => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) { return '?'; } })();
+  const parts = [`Saat dilimi: ${tz}, bölge: ${reg}`];
+  if (specialDayIcons === false) parts.push('Ayarlar\'da "Özel gün simgeleri" kapalı; önizleme için aç.');
+  if (active) parts.push(`Önizleme açık: ${active}, bitiş ${hhmm(pv.until)}`);
+  out('spd-out', parts.join(' | '), specialDayIcons === false ? 'warn' : (active ? 'ok' : ''));
+}
+async function spdPreview(id, label) {
+  const min = parseInt(document.getElementById('spd-dur')?.value || '10', 10);
+  await chrome.storage.local.set({ _specialDayPreview: { id, until: Date.now() + min * 60000 } });
+  dlog(`Özel gün önizlemesi: ${label} (${min} dk)`, 'info');
+  setTimeout(spdRender, 300);
+}
+async function spdStop() {
+  await chrome.storage.local.remove('_specialDayPreview');
+  dlog('Özel gün önizlemesi bitirildi', 'ok');
+  setTimeout(spdRender, 300);
+}
+
 async function rateReset() {
   if (!confirm('Değerlendirme durumu silinecek; popup bir sonraki açılışta sıfırdan hesaplar. Devam?')) return;
   await chrome.storage.local.remove(['_ratePrompt', '_ratePromptTestBackup']);
@@ -481,7 +530,7 @@ async function renderStateTables() {
   const chOf = (s) => cached.find(c => c.channelSlug === s);
   const nameOf = (s) => chOf(s)?.userUsername || s;
   const prefs = d.channelAlertPrefs || {};
-  const onOff = (v) => v ? tag('açık', 'ok') : tag('—');
+  const onOff = (v) => v ? tag('açık', 'ok') : tag('-');
 
   // Tercihler
   mount('st-prefs', table(['Kanal', 'Yayında', 'Değişim', 'Bitiş', 'Raid', 'Kategori filtresi', 'Kelime filtresi'],
@@ -497,13 +546,13 @@ async function renderStateTables() {
     Object.entries(meta).sort((a, b) => (a[1].off ? 1 : 0) - (b[1].off ? 1 : 0) || (b[1].at || 0) - (a[1].at || 0)).map(([s, m]) => {
       const start = m.s ? new Date(m.s).getTime() : null;
       return [
-        nameOf(s), m.off ? tag('kapalı') : tag('takipte', 'ok'), m.c || '—',
-        td(m.t || '—', 'trunc', m.t || ''),
+        nameOf(s), m.off ? tag('kapalı') : tag('takipte', 'ok'), m.c || '-',
+        td(m.t || '-', 'trunc', m.t || ''),
         // v2.5.77: kullanıcıya en son bildirilen kategori ve doğrulama bekleyen aday
-        m.pcn ? tag(`${m.nc || '—'} → ${m.pc} (${m.pcn}/2)`, 'warn') : (m.ptn ? tag(`başlık adayı (${m.ptn}/2)`, 'warn') : td(m.nc !== undefined ? (m.nc || '—') : '—', 'trunc', m.nc || '')),
+        m.pcn ? tag(`${m.nc || '-'} → ${m.pc} (${m.pcn}/2)`, 'warn') : (m.ptn ? tag(`başlık adayı (${m.ptn}/2)`, 'warn') : td(m.nc !== undefined ? (m.nc || '-') : '-', 'trunc', m.nc || '')),
         start ? hhmm(start) : tag('bilinmiyor', 'warn'),
-        start && !m.off ? dur(Date.now() - start) : '—',
-        td(ago(m.at), 'mono'), m.n ? ago(m.n) : '—', onOff(prefs[s]?.change),
+        start && !m.off ? dur(Date.now() - start) : '-',
+        td(ago(m.at), 'mono'), m.n ? ago(m.n) : '-', onOff(prefs[s]?.change),
       ];
     })));
 
@@ -558,7 +607,7 @@ async function renderStateTables() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// ARAÇLAR — ek butonlar
+// ARAÇLAR - ek butonlar
 // ═══════════════════════════════════════════════════════════════════════════
 
 function showJson(id, obj) {
@@ -580,7 +629,7 @@ async function pusherReal() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// REKLAM TEŞHİSİ (v2.5.74) — src/ad-diag.js deposu
+// REKLAM TEŞHİSİ (v2.5.74) - src/ad-diag.js deposu
 // ═══════════════════════════════════════════════════════════════════════════
 
 let adDiagLast = null;
@@ -596,14 +645,14 @@ async function renderAdDiag() {
     el('dt', { text: 'Paylaşım' }), el('dd', null, st.share ? tag('açık', 'ok') : tag('kapalı', 'warn')),
     st.firefox ? [el('dt', { text: 'Firefox veri izni' }), el('dd', null, st.consent ? tag('verildi', 'ok') : tag('yok', 'warn'))] : null,
     el('dt', { text: 'Toplayıcı' }), el('dd', { class: 'mono', text: st.endpoint || 'tanımlı değil' }),
-    el('dt', { text: 'Son gönderim' }), el('dd', { text: st.lastSendAt ? ago(st.lastSendAt) + ' · ' + (st.lastSendResult || '') : '—' }),
+    el('dt', { text: 'Son gönderim' }), el('dd', { text: st.lastSendAt ? ago(st.lastSendAt) + ' · ' + (st.lastSendResult || '') : '-' }),
     el('dt', { text: 'Kayıt' }), el('dd', { text: `${ads.length} reklam işareti · ${marks.length} tanımsız işaret · ${unsent} gönderilmemiş olay` })));
   const epBox = document.getElementById('ad-endpoint');
   if (epBox && document.activeElement !== epBox) epBox.value = st.endpoint || '';
   mount('ad-items', table(['Tür', 'İşaret', 'Sayı', 'Gönderilmemiş', 'İlk', 'Son', 'Ort. süre', 'Sürüm', ''],
     items.map(x => [x.kind === 'adbreak' ? tag('reklam', 'ok') : tag('tanımsız', 'warn'), td(x.marker, 'mono trunc', x.marker), String(x.count), String(x.unsent || 0),
       td(new Date(x.firstAt).toLocaleString('tr-TR', { dateStyle: 'short', timeStyle: 'short' }), 'mono'), td(ago(x.lastAt), 'mono'),
-      x.avgDurationSec ? x.avgDurationSec + ' sn' : '—', x.version || '',
+      x.avgDurationSec ? x.avgDurationSec + ' sn' : '-', x.version || '',
       (() => { const b = el('button', { class: 'sm', text: 'Örnek' }); b.addEventListener('click', () => { const pre = document.getElementById('ad-sample'); if (pre) pre.textContent = x.marker + '\n\n' + (x.sample || '(örnek yok)'); }); return b; })()])));
 }
 function adDiagJson() {
@@ -687,6 +736,8 @@ document.addEventListener('DOMContentLoaded', () => {
   on('btn-rate-preview', ratePreview);
   on('btn-rate-restore', rateRestore);
   on('btn-rate-reset', rateReset);
+  on('btn-spd-stop', spdStop);
+  spdRender();
   on('btn-state-refresh', renderStateTables);
   on('btn-ad-refresh', renderAdDiag);
   on('btn-ad-copy', adDiagCopy);

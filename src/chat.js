@@ -1,14 +1,14 @@
 /**
- * KickAlert — Chat Integration
+ * KickAlert - Chat Integration
  * Based on v1.7.0 proven implementation. Selectors verified with KickKit v1.0.0.
  *
  * Kick DOM (2025/2026):
- *   #chatroom-messages                       — chat root
- *   [data-index]                             — message node (virtual scroll, recycled)
- *   button.font-bold       — username (textContent)
- *   span.font-normal                         — message text
- *   .break-words                             — message box
- *   [data-emote-id]                          — emote
+ *   #chatroom-messages                       - chat root
+ *   [data-index]                             - message node (virtual scroll, recycled)
+ *   button.font-bold       - username (textContent)
+ *   span.font-normal                         - message text
+ *   .break-words                             - message box
+ *   [data-emote-id]                          - emote
  *
  * Features (9):
  *   1. Bot / 2. User / 3. Word / 4. Repeat / 5. Emoji filters (with per-category enable flags)
@@ -105,7 +105,7 @@
   // ─── Helpers ───
   const norm = s => (s || '').toLowerCase().replace(/-/g, '_').trim();
 
-  // v2.5.23: Kick'in native "yanıt veriyor" göstergesi — mesajın en üstünde,
+  // v2.5.23: Kick'in native "yanıt veriyor" göstergesi - mesajın en üstünde,
   // eğri ok ikonlu bir buton içinde, kime yanıt verildiğini gösterir. Sabit
   // bir CSS class'ına DEĞİL, semantik ve değişmesi daha düşük ihtimalli olan
   // data-ic-icon="ArrowCurveLeft" özniteliğine dayanıyoruz (kullanıcının
@@ -124,13 +124,17 @@
   }
 
   function msgHash(text, node) {
-    const t = text.toLowerCase().replace(/\s+/g, '').substring(0, 100);
+    const t = (typeof kaFold === 'function' ? kaFold(text) : text.toLowerCase()).replace(/\s+/g, '').substring(0, 100);
     const emotes = [...node.querySelectorAll('[data-emote-id]')]
       .map(e => e.getAttribute('data-emote-id') || '').join(',');
     return t + '|' + emotes;
   }
 
   function matchesWord(text, word) {
+    // v2.5.101: textfold.js (görünmez karakter, benzer harf, aksan, aralıklı harf temizliği)
+    if (typeof kaMatchWord === 'function') {
+      try { return kaMatchWord(text, word); } catch (_) {}
+    }
     const isLetter = c => /[\p{L}\p{N}_]/u.test(c);
     const lt = text.toLowerCase();
     const lw = word.toLowerCase();
@@ -242,11 +246,11 @@
 
   // ─── Process message ───
   // v2.5.26: KRİTİK DÜZELTME. Kick'in sohbeti "virtualized" (DOM node'larını
-  // geri dönüştüren) bir liste kullanıyor — kullanıcı sohbetin EN ALTINDA
+  // geri dönüştüren) bir liste kullanıyor - kullanıcı sohbetin EN ALTINDA
   // (canlı akışı takip ederken, yani "kaydırılmamış" durumda) iken, YENİ bir
   // mesaj genellikle mevcut bir node'un data-index'i değiştirilerek (recycled)
   // gösteriliyor, YENİ bir DOM elementi eklenerek değil. Biz "recycled"
-  // node'ları HER ZAMAN isNew=false sayıyorduk — bu da tag/yanıt/yayıncı
+  // node'ları HER ZAMAN isNew=false sayıyorduk - bu da tag/yanıt/yayıncı
   // bildirimlerinin (hepsi isNew şartına bağlı) TAM DA kullanıcının en çok
   // önemsediği anda (sohbeti canlı takip ederken) hiç tetiklenmemesine yol
   // açıyordu. Node başına SON İŞLENEN İÇERİĞİ saklayıp, recycled bir node
@@ -271,9 +275,9 @@
     if (!username || !text) return;
 
     // v2.5.26: recycled (isNew=false) bir node'un içeriği, o node için EN SON
-    // gördüğümüzden FARKLIYSA, bu aslında yeni bir mesajdır — isNew'ı buna
+    // gördüğümüzden FARKLIYSA, bu aslında yeni bir mesajdır - isNew'ı buna
     // göre düzeltiyoruz. PRIMING modunda (ilk toplu tarama) bu kontrol
-    // ATLANIR — aksi halde lastSeenContent boş olduğu için TÜM mevcut
+    // ATLANIR - aksi halde lastSeenContent boş olduğu için TÜM mevcut
     // (eski) mesajlar yanlışlıkla "yeni" sayılırdı.
     const contentKey = username + '\u0001' + text;
     if (!isPriming && !isNew && lastSeenContent.get(node) !== contentKey) {
@@ -360,10 +364,10 @@
     }
 
     // 8. Tag/mention notification (+ v2.5.23: birine YANIT olarak gelen
-    // mesajlar da aynı şekilde bildiriliyor — Mo'Kick'te de aynı davranış var)
+    // mesajlar da aynı şekilde bildiriliyor - Mo'Kick'te de aynı davranış var)
     if (settings.tagEnabled && settings.tagUsername && isNew) {
       const me = norm(settings.tagUsername);
-      const isTextMention = me && text.toLowerCase().includes(me);
+      const isTextMention = me && (text.toLowerCase().includes(me) || (typeof kaContains === 'function' && kaContains(text, me)));
       const replyTarget = getReplyTargetUsername(node);
       const isReplyToMe = me && replyTarget === me;
       if (isTextMention || isReplyToMe) {
@@ -457,7 +461,7 @@
       attributeFilter: ['data-index'],
     });
 
-    // v2.5.26: İlk toplu tarama, PRIMING modunda (3. parametre) çağrılıyor —
+    // v2.5.26: İlk toplu tarama, PRIMING modunda (3. parametre) çağrılıyor -
     // yoksa lastSeenContent boş olduğu için TÜM mevcut (eski) mesajlar
     // yanlışlıkla "yeni mesaj" sayılıp bildirim yağmuruna yol açardı.
     root.querySelectorAll(MSG_SEL).forEach(n => processMessage(n, false, true));
@@ -535,16 +539,16 @@
     } catch (_) {}
   });
 
-  // v2.5.12: SPA navigasyon tespiti — eskiden document.body'nin TÜM alt
+  // v2.5.12: SPA navigasyon tespiti - eskiden document.body'nin TÜM alt
   // ağacını (subtree:true), sayfa açık olduğu sürece HİÇ DURMADAN izleyen
   // bir MutationObserver kullanıyorduk, sadece URL değişip değişmediğini
   // kontrol etmek için. Bu, Kick'in kendi React uygulamasının YOĞUN DOM
-  // değişikliği yaptığı anlarda (örn. yayın kapanışı — oynatıcı kaldırılıp
-  // "offline" kapağı eklenirken) gereksiz ek yük bindiriyor olabilirdi —
+  // değişikliği yaptığı anlarda (örn. yayın kapanışı - oynatıcı kaldırılıp
+  // "offline" kapağı eklenirken) gereksiz ek yük bindiriyor olabilirdi -
   // tam da kullanıcının "yayın kapanınca oynatıcı takılı kalıyor" raporuyla
   // aynı zamanlamada. Artık History API'sini doğrudan kancalayan, DOM'a hiç
   // dokunmayan bir yönteme geçiyoruz (adblock-worker-hook.js'te zaten
-  // kullandığımız aynı desen) — sıfır sürekli DOM izleme maliyeti.
+  // kullandığımız aynı desen) - sıfır sürekli DOM izleme maliyeti.
   let lastUrl = location.href;
   function checkSpaNavigation() {
     if (location.href === lastUrl) return;

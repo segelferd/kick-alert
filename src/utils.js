@@ -64,7 +64,7 @@ const Utils = {
   },
 
   /**
-   * Custom i18n — reads from loaded locale JSON, falls back to chrome.i18n.
+   * Custom i18n - reads from loaded locale JSON, falls back to chrome.i18n.
    * Supports $1, $2 substitution like Chrome i18n.
    */
   i18n(key, subs) {
@@ -172,33 +172,33 @@ const Utils = {
 
 /**
  * ════════════════════════════════════════════════════════════════════════════
- * KLog — KickAlert Merkezi Logging Sistemi (v2.3.5+)
+ * KLog - KickAlert Merkezi Logging Sistemi (v2.3.5+)
  * ════════════════════════════════════════════════════════════════════════════
  *
  * AMAÇ: Her log satırı 4 bilgi taşır:
- *   1. ZAMAN  — HH:MM:SS.mmm (ms hassasiyetinde)
- *   2. SEVİYE — ERROR/WARN/INFO/DEBUG/TRACE (renkli ikon)
- *   3. ADRES  — KATEGORI-STEPNUM (örn: PUSH-16) → koddaki katman+adım
- *   4. MESAJ  — okunabilir açıklama
+ *   1. ZAMAN  - HH:MM:SS.mmm (ms hassasiyetinde)
+ *   2. SEVİYE - ERROR/WARN/INFO/DEBUG/TRACE (renkli ikon)
+ *   3. ADRES  - KATEGORI-STEPNUM (örn: PUSH-16) → koddaki katman+adım
+ *   4. MESAJ  - okunabilir açıklama
  *
  * SEVİYELER (sırası: severity yüksekten düşüğe):
- *   ERROR (🔴) — exception, kalıcı hata. HER ZAMAN görünür (prod dahil).
- *   WARN  (🟡) — beklenmedik ama kurtarılan durum. HER ZAMAN görünür.
- *   INFO  (🔵) — önemli olay: yayın yakalandı, tab açıldı. HER ZAMAN görünür.
- *   DEBUG (⚪) — detaylı akış: state değişim, ayar okuma. _debugMode açıksa.
- *   TRACE (🔍) — çok ince detay: interval, hesaplama. _traceMode açıksa.
+ *   ERROR (🔴) - exception, kalıcı hata. HER ZAMAN görünür (prod dahil).
+ *   WARN  (🟡) - beklenmedik ama kurtarılan durum. HER ZAMAN görünür.
+ *   INFO  (🔵) - önemli olay: yayın yakalandı, tab açıldı. HER ZAMAN görünür.
+ *   DEBUG (⚪) - detaylı akış: state değişim, ayar okuma. _debugMode açıksa.
+ *   TRACE (🔍) - çok ince detay: interval, hesaplama. _traceMode açıksa.
  *
  * KATEGORİLER (alt sistemler):
- *   BOOT  — service worker başlangıç, importScripts, alarm kurulumu
- *   PUSH  — Pusher WebSocket akışı (handlePusherLiveEvent)
- *   POLL  — Polling akışı (checkChannels)
- *   NOTIF — Bildirim, ses, history
- *   TAB   — Auto-open, sekme açma
- *   API   — Kick API çağrıları (fetchKick, getAllFollowingChannels)
- *   BOT   — Bot tracker
- *   STATE — Persisted state, storage, cache
- *   AUTH  — Session, cookie, OAuth
- *   CHAT  — Chat panel
+ *   BOOT  - service worker başlangıç, importScripts, alarm kurulumu
+ *   PUSH  - Pusher WebSocket akışı (handlePusherLiveEvent)
+ *   POLL  - Polling akışı (checkChannels)
+ *   NOTIF - Bildirim, ses, history
+ *   TAB   - Auto-open, sekme açma
+ *   API   - Kick API çağrıları (fetchKick, getAllFollowingChannels)
+ *   BOT   - Bot tracker
+ *   STATE - Persisted state, storage, cache
+ *   AUTH  - Session, cookie, OAuth
+ *   CHAT  - Chat panel
  *
  * ADRES (STEP-ID) ŞEMASI:
  *   {KATEGORI}-{NUM}  →  örn: PUSH-16  =  Pusher akışının 16. adımı

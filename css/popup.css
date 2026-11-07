@@ -1,4 +1,4 @@
-/* KickAlert - Popup Styles © 2025–2026 Segelferd */
+/* KickAlert - Popup Styles © 2025-2026 Segelferd */
 
 :root {
   --bg-primary: #0e0e10;
@@ -33,7 +33,7 @@ html, body {
   overflow-y: auto;
   /* v2.4.3: Önceden scrollbar-width:none + width:0 ile TAMAMEN gizliydi.
      Bu, .content-container'ın kullandığı ince/minimal scrollbar tasarımıyla
-     tutarsızdı — eğer dış seviyede scroll gerekirse (thumbnail modu gibi
+     tutarsızdı - eğer dış seviyede scroll gerekirse (thumbnail modu gibi
      içerik yüksekliğini artıran durumlarda), kullanıcı görünür bir scrollbar
      olmadan "bir şeyler kayboldu/sığmıyor" hissi yaşıyordu. Artık aynı ince
      scrollbar stilini kullanıyor. */
@@ -135,7 +135,7 @@ body {
 .content-container {
   /* v2.4.3: 520px'den 480px'e düşürüldü. Thumbnail modu kart yüksekliğini
      artırdığı için, .content-container'ın kendi (görünür, ince) scroll'u
-     erken devreye girsin diye — dış/tüm-popup seviyesinde taşmaya
+     erken devreye girsin diye - dış/tüm-popup seviyesinde taşmaya
      (ve Chrome'un popup üst sınırına çarpmaya) daha az fırsat kalsın. */
   max-height: 480px;
   overflow-y: auto;
@@ -184,7 +184,7 @@ body {
 }
 .history-clear-btn:hover { color: var(--red); border-color: var(--red); }
 
-/* Cloud Sync — manual "Sync Now" button (v2.3.7) */
+/* Cloud Sync - manual "Sync Now" button (v2.3.7) */
 .opt-cloud-sync-now-btn {
   display: flex; align-items: center; gap: 4px;
   background: none; border: 1px solid var(--border); color: var(--text-muted);
@@ -201,7 +201,7 @@ body {
 .opt-restore-snapshot-btn { color: var(--accent); border-color: rgba(83,252,24,0.4); }
 
 /* Options tab notice dot (v2.3.15) */
-/* Options button frame — pulses red until the notice is dismissed (v2.3.17) */
+/* Options button frame - pulses red until the notice is dismissed (v2.3.17) */
 .menu-chip.options-notice-border {
   animation: options-border-pulse 1.4s ease-in-out infinite;
 }
@@ -210,7 +210,7 @@ body {
   50% { box-shadow: 0 0 0 1px rgba(255, 77, 79, 0.35); }
 }
 
-/* Options panel — one-time email login notice (v2.3.15) */
+/* Options panel - one-time email login notice (v2.3.15) */
 .opt-email-login-notice {
   display: flex;
   align-items: flex-start;
@@ -237,7 +237,7 @@ body {
 }
 .opt-email-login-notice-close:hover { color: var(--text-primary); }
 
-/* v2.3.23: "Şu an ilgili" etiketi — session-rejected durumunda vurgu */
+/* v2.3.23: "Şu an ilgili" etiketi - session-rejected durumunda vurgu */
 .opt-email-login-notice-urgent {
   display: inline-block;
   font-weight: 600;
@@ -245,7 +245,7 @@ body {
   margin-right: 4px;
 }
 
-/* v2.3.23: Kalıcı, sessiz bilgi satırı — alarm değil, sadece referans.
+/* v2.3.23: Kalıcı, sessiz bilgi satırı - alarm değil, sadece referans.
    Kapatma düğmesi yok, her zaman görünür. */
 .opt-email-login-info {
   display: flex;
@@ -258,7 +258,7 @@ body {
   color: var(--text-muted);
 }
 
-/* Ad Block warning text (v2.3.18) — amber tint, stands out as a caution */
+/* Ad Block warning text (v2.3.18) - amber tint, stands out as a caution */
 .opt-adblock-warning {
   color: #d97706 !important;
 }
@@ -313,13 +313,13 @@ body {
 }
 .marquee-text > .marquee-inner {
   display: inline-block; white-space: nowrap;
-  /* taşmıyorsa normal akış — ellipsis için parent text-overflow yeterli */
+  /* taşmıyorsa normal akış - ellipsis için parent text-overflow yeterli */
 }
 /* Taşan VE hover olunca kay */
-/* v2.4.4: Önceden .channel-card:hover tetikliyordu — thumbnail eklenince
+/* v2.4.4: Önceden .channel-card:hover tetikliyordu - thumbnail eklenince
    kartın hover alanı büyüdü, thumbnail'e fare gelince de başlık kaymaya
    başlıyordu ("görsel kıpırdıyor" hissi). Artık sadece üst bilgi satırına
-   (.card-top) hover gelince tetikleniyor — orijinal niyet buydu zaten. */
+   (.card-top) hover gelince tetikleniyor - orijinal niyet buydu zaten. */
 .card-top:hover .marquee-text.is-overflowing > .marquee-inner {
   animation: ka-marquee 8s linear infinite;
 }
@@ -509,7 +509,7 @@ body {
   opacity: 0.35; pointer-events: none;
 }
 .opt-slider-row { display: flex; align-items: center; gap: 7px; padding: 5px 0; font-size: 13px; }
-/* v2.3.5: compact slider — label esner, slider %50 kadar dar ve sağda */
+/* v2.3.5: compact slider - label esner, slider %50 kadar dar ve sağda */
 .opt-slider-row-compact .opt-slider-label { flex: 1; min-width: 0; }
 .opt-slider-row-compact input[type="range"] { flex: 0 0 50%; }
 .opt-slider-label { color: var(--text-secondary); min-width: 95px; flex-shrink: 0; font-size: 12px; }
@@ -577,7 +577,7 @@ body {
 .opt-dnd-body { padding-left: 4px; }
 .opt-dnd-body.disabled { opacity: 0.35; pointer-events: none; }
 /* v2.5.29: Chat Bildirim Sesi bölümü, Chat sekmesinde hiçbir bildirim açık
-   değilken TAMAMEN (ana toggle dahil) pasifleşiyor — .opt-dnd-body.disabled
+   değilken TAMAMEN (ana toggle dahil) pasifleşiyor - .opt-dnd-body.disabled
    ile AYNI değerler, tutarlılık için. */
 .opt-dnd-section.fully-disabled { opacity: 0.35; pointer-events: none; }
 .opt-dnd-time-row {
@@ -656,7 +656,7 @@ body {
 .group-filter-bar {
   display: flex; gap: 6px; padding: 6px 8px; overflow-x: auto;
   scrollbar-width: none; flex-wrap: wrap;
-  /* v2.4.4: Açılır/kapanır davranış — display:none yerine max-height ile
+  /* v2.4.4: Açılır/kapanır davranış - display:none yerine max-height ile
      yumuşak geçiş. JS bar'ı doldururken 'flex' set etmeye devam ediyor,
      gerçek gizleme/gösterme bu max-height geçişiyle yapılıyor. */
   max-height: 200px; opacity: 1;
@@ -732,7 +732,7 @@ body {
   margin: 0 2px; flex-shrink: 0;
 }
 
-/* Options — Groups Management */
+/* Options - Groups Management */
 .opt-groups-header { display: flex; align-items: center; gap: 6px; margin-bottom: 8px; }
 .opt-groups-header span:first-child { color: var(--text-muted); }
 .opt-groups-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
@@ -768,7 +768,7 @@ body {
 
 /* Stream Thumbnail Preview (v2.3.30: 16:9 sabit oran + LIVE/izleyici overlay)
    v2.3.33: Artık thumbnail tek başına değil, .channel-thumbnail-row içinde
-   sol tarafta dikey buton sütunuyla (.card-actions-col) yan yana duruyor —
+   sol tarafta dikey buton sütunuyla (.card-actions-col) yan yana duruyor -
    böylece thumbnail tam genişlik kaplamıyor, ölçek küçülüyor ve boşluk azalıyor. */
 .channel-thumbnail-row {
   display: flex; align-items: stretch; gap: 6px;
@@ -787,7 +787,7 @@ body {
   overflow: hidden;
   background: var(--bg-hover);
 }
-/* v2.4.5: Resim henüz gelmemişken (async fetch sürüyor) hafif bir pulse —
+/* v2.4.5: Resim henüz gelmemişken (async fetch sürüyor) hafif bir pulse -
    boş/donuk bir kutu yerine "bir şey yükleniyor" hissi versin. */
 .channel-thumbnail-wrap.is-loading {
   animation: ka-thumb-pulse 1.4s ease-in-out infinite;
@@ -800,12 +800,12 @@ body {
   width: 100%; height: 100%;
   object-fit: cover;
   display: block;
-  /* v2.4.6: Yayın görseli hover'dan tamamen bağımsız olmalı — hiçbir zaman
+  /* v2.4.6: Yayın görseli hover'dan tamamen bağımsız olmalı - hiçbir zaman
      opaklığı/keskinliği değişmemeli. Sadece bizim eklediğimiz rozetler
      (LIVE, izleyici, bot skoru) hover'da şeffaftan opağa geçiyor. */
   opacity: 1;
 }
-/* v2.4.3: Üç rozetin (LIVE, izleyici, bot skoru) fontu tutarsız görünüyordu —
+/* v2.4.3: Üç rozetin (LIVE, izleyici, bot skoru) fontu tutarsız görünüyordu -
    font-family ve font-weight'i açıkça eşitliyoruz, tesadüfe bırakmıyoruz. */
 .channel-thumbnail-live,
 .channel-thumbnail-viewers,
@@ -815,7 +815,7 @@ body {
 }
 /* v2.4.4: Rozetler normalde ÇOK şeffaf (thumbnail'i engellemesinler diye),
    fare üzerine gelince NET/opak oluyorlar (rahat okunsun diye). Metin her
-   zaman güçlü bir gölgeyle (text-shadow) okunur kalıyor — arka plan ne kadar
+   zaman güçlü bir gölgeyle (text-shadow) okunur kalıyor - arka plan ne kadar
    şeffaf olursa olsun, bu teknik çoğu video platformunda kullanılıyor. */
 .channel-thumbnail-live,
 .channel-thumbnail-viewers,
@@ -842,13 +842,13 @@ body {
 .channel-thumbnail-wrap:hover .channel-thumbnail-viewers {
   background: rgba(0, 0, 0, 0.85);
 }
-/* v2.3.30: Bot skoru rozeti thumbnail üzerinde — sol altta, izleyici sayısıyla çakışmasın diye sağda değil solda */
+/* v2.3.30: Bot skoru rozeti thumbnail üzerinde - sol altta, izleyici sayısıyla çakışmasın diye sağda değil solda */
 .channel-thumbnail-botscore {
   position: absolute; bottom: 5px; left: 5px;
   line-height: 0;
 }
 /* v2.5.1: Thumbnail bağlamında rozet tek başına duruyor, önünde ayıracağı
-   bir şey yok — kart-içi görünümde kullanılan '·' ayırıcısı (.bot-score::before,
+   bir şey yok - kart-içi görünümde kullanılan '·' ayırıcısı (.bot-score::before,
    aşağıda tanımlı) burada yanlışlıkla "tek başına asılı nokta" olarak
    görünüyordu. Sadece bu bağlamda kaldırıyoruz, diğer kullanımlara dokunmuyoruz. */
 .channel-thumbnail-botscore .bot-score::before {
@@ -858,10 +858,10 @@ body {
   box-shadow: 0 1px 3px rgba(0,0,0,0.35);
   font-size: 10px;
   /* v2.4.4: .bot-score temel sınıfı, kart üzerinde sparkline'ın yanında inline
-     kullanım için margin-left:4px taşıyor — thumbnail'de gereksiz sol boşluk
+     kullanım için margin-left:4px taşıyor - thumbnail'de gereksiz sol boşluk
      bırakıyordu, sıfırlıyoruz. */
   margin-left: 0 !important;
-  /* v2.4.2: Arka plan artık renkli — aynı renk tonundaki metin
+  /* v2.4.2: Arka plan artık renkli - aynı renk tonundaki metin
      (örn. kırmızı zeminde kırmızı yazı) okunmaz olurdu, beyaza çeviriyoruz. */
   color: #fff !important;
 }
@@ -912,7 +912,7 @@ body {
  * Anomaly satırının sonuna eklenir, sade tek satır görünüm.
  * 3 renk tier: 0-30 kırmızı (low), 30-70 sarı (mid), 70-100 yeşil (high).
  * Format: [smart_toy] 28%
- * Anomaly badge'inden seperatör (·) ile ayrılır — ::before ile çizilir.
+ * Anomaly badge'inden seperatör (·) ile ayrılır - ::before ile çizilir.
  * ──────────────────────────────────────────────────────────── */
 .bot-score {
   display: inline-flex;
@@ -947,21 +947,21 @@ body {
   width: 12px;
   height: 12px;
   /* v2.5.0: Thumbnail bağlamında bazen ikon yerine ham "smart_toy" metni
-     (bozuk/garip karakterlerle) görünüyordu — .bot-score üzerindeki genel
+     (bozuk/garip karakterlerle) görünüyordu - .bot-score üzerindeki genel
      font-family kuralı (v2.4.3) muhtemelen bu ligature'ı etkiliyordu.
      Font'u burada açıkça ve kesin olarak sabitliyoruz, hiçbir üst kurala
      bağımlı kalmasın. */
   font-family: 'Material Icons' !important;
 }
 
-/* v2.3.0: Action row'da (sparkline'ın yanında) bot skor — seperatörsüz, sadece boşluk */
+/* v2.3.0: Action row'da (sparkline'ın yanında) bot skor - seperatörsüz, sadece boşluk */
 .bot-score-action-wrap {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  /* margin-left kaldırıldı — card-actions-row gap: 4px tüm boşlukları yönetiyor */
+  /* margin-left kaldırıldı - card-actions-row gap: 4px tüm boşlukları yönetiyor */
 }
-/* Eski seperatör — kullanılmıyor ama referans için */
+/* Eski seperatör - kullanılmıyor ama referans için */
 .bot-score-sep {
   color: var(--text-muted, rgba(255,255,255,0.45));
   font-size: 11px;
@@ -1075,7 +1075,7 @@ body {
   padding: 1px 4px;
   margin-left: 0;
 }
-/* Legend'da seperatör (·) gösterme — flex gap zaten ayırıyor */
+/* Legend'da seperatör (·) gösterme - flex gap zaten ayırıyor */
 .bot-score-tier-legend .bot-score::before {
   content: none;
 }
@@ -1095,7 +1095,7 @@ body {
 
 /* ─── Card Mode: Compact & Detail ─── */
 
-/* DETAIL — 5 satır sabit (default, mevcut stiller üzerine) */
+/* DETAIL - 5 satır sabit (default, mevcut stiller üzerine) */
 .anomaly-row {
   font-size: 10px;
   margin-top: 2px;
@@ -1109,7 +1109,7 @@ body {
 .anomaly-row.drop-warn  { display: block; color: #378ADD; }
 .anomaly-row.drop-alert { display: block; color: #7F77DD; }
 
-/* COMPACT — 3 satır: isim+meta / butonlar */
+/* COMPACT - 3 satır: isim+meta / butonlar */
 
 /* compact modda anomali notu gizli */
 
@@ -1132,7 +1132,7 @@ body {
 }
 .card-mode-btn:not(.active):hover { background: var(--bg-hover); }
 
-/* Anomaly section — compact modda devre dışı */
+/* Anomaly section - compact modda devre dışı */
 #opt-anomaly-section.disabled {
   opacity: 0.4;
   pointer-events: none;
@@ -1177,7 +1177,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* v2.3.6: Bot skoru rozetiyle aynı yükseklik — hizalı görünüm */
+  /* v2.3.6: Bot skoru rozetiyle aynı yükseklik - hizalı görünüm */
   min-height: 18px;
   box-sizing: border-box;
   padding: 0 5px;
@@ -1241,7 +1241,7 @@ body {
 }
 .vh-modal-box::-webkit-scrollbar { width: 0; display: none; }
 
-/* v2.4.8: Reklam Engelleme onay modalı — vh-modal ile aynı temel desen */
+/* v2.4.8: Reklam Engelleme onay modalı - vh-modal ile aynı temel desen */
 .confirm-modal {
   position: fixed; inset: 0; z-index: 10000;
   display: flex; align-items: center; justify-content: center;
@@ -1324,7 +1324,7 @@ body {
   color: var(--text-muted);
 }
 
-/* v2.3.7: B — 4 metrik kutusu (zirve/dip/ortalama/süre) */
+/* v2.3.7: B - 4 metrik kutusu (zirve/dip/ortalama/süre) */
 .vh-metrics {
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 8px; margin-top: 10px;
@@ -1345,7 +1345,7 @@ body {
 }
 .vh-m-value.vh-m-peak { color: #53FC18; }
 .vh-m-value.vh-m-low  { color: #E24B4A; }
-/* Trend rozeti (başlıkta) — eklentinin RESMİ spike/drop renk standardı.
+/* Trend rozeti (başlıkta) - eklentinin RESMİ spike/drop renk standardı.
    Kart-içi viewer-anomaly rozetiyle BİREBİR aynı 4 renk:
    spike-warn (sarı #BA7517), spike-alert (kırmızı #E24B4A),
    drop-warn (mavi #378ADD), drop-alert (mor #7F77DD). */
@@ -1356,7 +1356,7 @@ body {
   border: 1px solid transparent;
   transition: opacity .18s ease, background .18s ease, color .18s ease;
 }
-/* v2.3.3: Dönüşümlü rozet fade — apply() opacity'yi 0→1 yapar */
+/* v2.3.3: Dönüşümlü rozet fade - apply() opacity'yi 0→1 yapar */
 .vh-badge-fade { opacity: 0; }
 .vh-badge-fade.vh-badge-show { opacity: 1; }
 .vh-trend-up   { background: rgba(83,252,24,0.15);  color: #53FC18; border-color: rgba(83,252,24,0.50); }
@@ -1385,8 +1385,8 @@ body {
 .anomaly-seg-btn.active { background: var(--accent); color: #0e0e10; font-weight: 600; }
 .anomaly-seg-btn:hover:not(.active) { background: var(--bg-hover); }
 
-/* Sensitivity bar — 3 noktalı slider */
-/* Sensitivity bar — sabit genişlik, değer yazısı dışarıda */
+/* Sensitivity bar - 3 noktalı slider */
+/* Sensitivity bar - sabit genişlik, değer yazısı dışarıda */
 .sens-row {
   display: flex;
   align-items: center;
@@ -1491,7 +1491,7 @@ body {
 }
 .chat-chip::after { content: '×'; margin-left: 2px; font-size: 13px; }
 
-/* Light theme: boost chip contrast — accent on white is too soft */
+/* Light theme: boost chip contrast - accent on white is too soft */
 [data-theme="light"] .chat-chip {
   background: color-mix(in srgb, var(--accent) 18%, transparent);
   border-color: color-mix(in srgb, var(--accent) 60%, transparent);
@@ -1522,7 +1522,7 @@ body {
   margin: 0;
   pointer-events: none;
 }
-/* v2.4.5: Açıklama satırı da artık kapalıyken gizleniyor — önceden "kullanıcı
+/* v2.4.5: Açıklama satırı da artık kapalıyken gizleniyor - önceden "kullanıcı
    ne olduğunu bilsin diye" hep görünür tutuluyordu, ama 6 filtrenin hepsi
    kapalıyken (yaygın/varsayılan durum) bu 6 satır boşuna yer kaplıyordu.
    Toggle açıldığında yumuşak geçişle geri geliyor. */
@@ -1547,7 +1547,7 @@ body {
 }
 
 /* v2.4.6: Ayarlar sayfasında toggle kapalıyken saf bilgi metinlerini (Chat
-   Integration, Ad Block, Thumbnails, Cloud Sync) gizleyen paylaşılan sınıf —
+   Integration, Ad Block, Thumbnails, Cloud Sync) gizleyen paylaşılan sınıf -
    Chat sekmesindeki filtre açıklamalarıyla aynı desen. Cloud Sync bloğu
    (açıklama + Sync Now butonu) daha uzun olduğu için max-height cömert
    tutuldu, kısa tek satırlık açıklamalarda fazlası zaten görünmüyor. */
@@ -1563,7 +1563,7 @@ body {
 }
 
 /* v2.5.9: Ayarlar sayfası artık 4 kategoriye (Genel, Bildirimler ve İzleme,
-   Ek Özellikler, Hesap) ayrılmış — 11 bölümün tek uzun, kategorisiz bir
+   Ek Özellikler, Hesap) ayrılmış - 11 bölümün tek uzun, kategorisiz bir
    listede olması yeni kullanıcı için taranması zor bir yapı oluşturuyordu.
    Her grup açılır-kapanır; varsayılan olarak hepsi AÇIK (hiçbir ayar
    "kayıp" hissi vermesin), kullanıcı istediğini kapatabilir, tercih
@@ -1596,7 +1596,7 @@ body {
   color: var(--text-muted) !important;
 }
 .opt-group.collapsed .opt-group-chevron { transform: rotate(-90deg); }
-/* v2.5.11: Kapalı gruplarda kaç ayar barındırdığını gösteren küçük sayaç —
+/* v2.5.11: Kapalı gruplarda kaç ayar barındırdığını gösteren küçük sayaç -
    grup açıkken içerik zaten görünür olduğu için gizleniyor. */
 .opt-group-count {
   display: none;
@@ -1606,11 +1606,11 @@ body {
 }
 .opt-group.collapsed .opt-group-count { display: inline-block; }
 .opt-group-body {
-  /* v2.5.10: Eskiden CSS grid (1fr/0fr) tekniği kullanılıyordu — bu teknik
+  /* v2.5.10: Eskiden CSS grid (1fr/0fr) tekniği kullanılıyordu - bu teknik
      SADECE tek bir çocuk elemanla doğru çalışır. .opt-group-body içinde
      BİRDEN FAZLA .opt-section doğrudan çocuk olarak durduğu için, grid
      fazladan çocukları örtük satırlara yerleştiriyor ve onlar toggle'dan
-     etkilenmiyordu — bu da yanlış daralma ve satırlar arası boşluk
+     etkilenmiyordu - bu da yanlış daralma ve satırlar arası boşluk
      sorununa yol açıyordu. Artık JS'in (setupOptGroups) hesapladığı gerçek
      içerik yüksekliğini (scrollHeight) max-height'a atayan, daha sağlam
      ve öngörülebilir bir teknik kullanıyoruz. */
@@ -1622,7 +1622,7 @@ body {
 }
 
 /* v2.5.9: Deneysel özellikler (Reklam Engelleme, Kanal Önizlemeleri) için
-   görsel rozet — sadece parantez içi metin yerine, hızlı taramada fark
+   görsel rozet - sadece parantez içi metin yerine, hızlı taramada fark
    edilecek bir renk/şekil. */
 .opt-experimental-chip {
   display: inline-flex; align-items: center; gap: 3px;
@@ -1634,7 +1634,7 @@ body {
 }
 .opt-experimental-chip .material-icons-outlined { font-size: 13px; }
 
-/* v2.5.9: Ayarlar içi arama kutusu — 11+ bölüm arasında hızlı bulma için. */
+/* v2.5.9: Ayarlar içi arama kutusu - 11+ bölüm arasında hızlı bulma için. */
 .opt-search-wrap {
   position: relative; margin-bottom: 10px;
 }
@@ -2440,3 +2440,258 @@ input[type="range"]:focus-visible, .tab-button:focus-visible {
 .permwiz-done.running .permwiz-progress > div { animation: permwizBar 3s linear forwards; }
 @keyframes permwizBar { from { width: 0; } to { width: 100%; } }
 .permwiz-closes { font-size: 11px; color: var(--text-muted); }
+
+/* v2.5.82: reklam engeli onayında tarayıcı izin notu */
+.confirm-modal-note { margin-top: 8px; font-size: 11.5px; color: var(--text-muted); }
+
+/* v2.5.83: Firefox izin sekmesi (popup.html?permtab=...) sadece sihirbazı gösterir */
+html.ka-permtab, html.ka-permtab body { width: 100%; min-height: 100vh; overflow: hidden; }
+html.ka-permtab .permwiz-backdrop { background: var(--bg-primary); }
+
+/* v2.5.85: Firefox izin penceresi, tek düğme */
+.permwiz-win-hosts { display: flex; flex-wrap: wrap; gap: 6px; }
+.permwiz-win-hosts span { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 11px; color: var(--text-secondary); background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 6px; padding: 3px 7px; }
+.permwiz-win-denied { font-size: 12px; line-height: 1.45; color: #f5a623; background: rgba(245,166,35,0.10); border-radius: 8px; padding: 8px 10px; }
+.permwiz-win-go { width: 100%; min-height: 44px; }
+.permwiz-win-actions { justify-content: center; margin-top: -6px; }
+
+/* v2.5.86: Ayarlar > Eklenti izinleri */
+.opt-perm-hint { font-size: 11px; color: var(--text-muted); line-height: 1.5; padding: 0 0 8px; }
+.opt-perm-list { display: flex; flex-direction: column; gap: 6px; }
+.opt-perm-row { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-secondary); }
+.opt-perm-row > .material-icons-outlined { font-size: 18px; color: var(--text-secondary); flex-shrink: 0; }
+.opt-perm-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.opt-perm-name { font-size: 12.5px; font-weight: 500; }
+.opt-perm-host { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10.5px; color: var(--text-muted); overflow-wrap: anywhere; }
+.opt-perm-state { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; flex-shrink: 0; white-space: nowrap; }
+.opt-perm-state.on { background: rgba(83,252,24,0.12); color: var(--accent); }
+.opt-perm-state.off { background: rgba(245,166,35,0.14); color: #f5a623; }
+.opt-perm-on-btn { flex-shrink: 0; min-height: 30px; padding: 0 12px; border-radius: 8px; border: 0; background: var(--accent); color: #0e0e10; font-family: inherit; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+
+/* v2.5.86: ilk kurulum karşılaması */
+html.ka-welcome-open body { min-height: 600px; }
+.welcome-box { width: 470px; padding: 18px 18px 12px; gap: 12px; }
+.welcome-head { display: flex; gap: 12px; align-items: center; }
+.welcome-logo { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; }
+.welcome-headtext { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.welcome-headtext h2 { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.25; }
+.welcome-headtext p { margin: 0; font-size: 12.5px; line-height: 1.45; color: var(--text-secondary); }
+.welcome-list { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.welcome-row { display: flex; gap: 10px; align-items: flex-start; padding: 9px 12px; border-bottom: 1px solid var(--border); }
+.welcome-row:last-child { border-bottom: 0; }
+.welcome-row-icon { width: 30px; height: 30px; border-radius: 8px; background: rgba(83,252,24,0.12); color: var(--accent); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.welcome-row-icon .material-icons-outlined { font-size: 17px; }
+.welcome-row.optional .welcome-row-icon { background: var(--bg-hover); color: var(--text-secondary); }
+.welcome-row-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1 1 auto; }
+.welcome-row-title { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; font-size: 13px; font-weight: 600; }
+.welcome-row-why { font-size: 11.5px; line-height: 1.45; color: var(--text-secondary); }
+.welcome-row-host { font-family: 'Geist Mono', ui-monospace, monospace; font-size: 10.5px; color: var(--text-muted); }
+.welcome-chip { font-size: 10px; font-weight: 600; padding: 1px 7px; border-radius: 999px; background: rgba(83,252,24,0.12); color: var(--accent); }
+.welcome-chip.req { background: rgba(235,4,0,0.16); color: #ff6b66; }
+.welcome-chip.opt { background: var(--bg-hover); color: var(--text-secondary); }
+.welcome-row-ok { color: var(--accent); font-size: 18px; flex-shrink: 0; align-self: center; }
+.welcome-trust { display: flex; gap: 8px; align-items: flex-start; font-size: 11.5px; line-height: 1.45; color: var(--text-secondary); }
+.welcome-trust .material-icons-outlined { font-size: 16px; color: var(--accent); flex-shrink: 0; }
+.welcome-actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.welcome-go { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; }
+.welcome-hint { font-size: 10.5px; color: var(--text-muted); text-align: end; }
+.welcome-hint:empty { display: none; }
+#welcome-done-btn { margin-top: 4px; }
+
+/* ─── v2.5.95: Kart görünümü: Sıkı ───
+   Rahat (varsayılan) görünüm v2.5.46 tasarımıdır. Sıkı görünüm kart iç
+   boşluğunu, kartlar arası mesafeyi ve alttaki düğme satırının üstündeki
+   ayırıcıyı küçültür; yazıya daha çok yer kalır. */
+.opt-density-btn { height: 28px; padding: 0 12px; border: none; border-radius: 7px; background: transparent; color: var(--text-muted); font-family: inherit; font-size: 12px; font-weight: 500; cursor: pointer; transition: all .15s; }
+.opt-density-btn.active { background: var(--bg-hover); color: var(--text-primary); }
+.opt-density-btn:hover:not(.active) { color: var(--text-primary); }
+.opt-density-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+[data-density="compact"] .channels-container { gap: 4px; padding: 0 8px 8px; }
+[data-density="compact"] .channel-card { padding: 7px 9px; border-radius: var(--r-md); }
+[data-density="compact"] .card-top { gap: 9px; }
+[data-density="compact"] .channel-avatar { width: 34px; height: 34px; }
+[data-density="compact"] .channel-info { gap: 1px; }
+[data-density="compact"] .channel-meta, [data-density="compact"] .channel-meta-inline { margin-top: 2px; }
+[data-density="compact"] .card-actions-row { margin-top: 5px; padding-top: 0; border-top: 0; }
+[data-density="compact"] .card-action-btn { width: 24px; height: 24px; }
+[data-density="compact"] .card-action-btn .material-icons { font-size: 16px; }
+[data-density="compact"] .card-sparkline-wrap, [data-density="compact"] .bot-score { min-height: 18px; }
+
+/* ─── v2.5.96: Chat entegrasyonu altındaki "Chat bildirim ayarları" bağlantısı ─── */
+.opt-jump-row { padding: 6px 0 0 22px; }
+.opt-jump-link { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); background: transparent; color: var(--accent-text, var(--accent)); font: inherit; font-size: 12px; cursor: pointer; }
+.opt-jump-link .material-icons-outlined { font-size: 15px; }
+.opt-jump-link:hover { background: var(--bg-hover); }
+.opt-jump-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+@keyframes kaOptFlash { 0% { box-shadow: 0 0 0 2px var(--accent); } 100% { box-shadow: 0 0 0 2px transparent; } }
+.opt-flash { animation: kaOptFlash 1.6s ease-out; border-radius: var(--r-md); }
+@media (prefers-reduced-motion: reduce) { .opt-flash { animation: none; box-shadow: 0 0 0 2px var(--accent); } }
+
+/* ─── v2.5.97: kanal bildirim teşhisi ─── */
+.ch-alert-diag { margin: 0 0 12px; border: 1px solid var(--border-strong); border-radius: var(--r-md, 10px); background: var(--bg-secondary); padding: 10px 12px; }
+.ch-alert-diag[hidden] { display: none; }
+.ch-diag-title { font-size: var(--fs-xs, 11px); color: var(--text-muted); text-transform: none; margin-bottom: 6px; }
+.ch-diag-head { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 13px; }
+.ch-diag-head .material-icons-outlined { font-size: 18px; }
+.ch-diag-head.ok { color: var(--accent-text, var(--accent)); }
+.ch-diag-head.blocked { color: var(--danger); }
+.ch-diag-list { list-style: none; margin: 6px 0 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.ch-diag-item { display: flex; align-items: flex-start; gap: 8px; font-size: 12px; line-height: 1.45; color: var(--text-secondary); }
+.ch-diag-item .material-icons-outlined { font-size: 15px; margin-top: 1px; flex-shrink: 0; }
+.ch-diag-item.block { color: var(--text-primary); }
+.ch-diag-item.block .material-icons-outlined { color: var(--danger); }
+.ch-diag-item.warn .material-icons-outlined { color: var(--warn); }
+.ch-diag-item.info .material-icons-outlined { color: var(--text-muted); }
+
+/* ─── v2.5.98: Duraklat düğmesi ve menüsü ─── */
+.pause-wrap { position: relative; display: inline-flex; }
+#pause-chip { height: 28px; padding: 0 11px; gap: 6px; border-radius: 999px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text-secondary); font-weight: 500; }
+#pause-chip .material-icons-outlined { font-size: 16px; }
+#pause-chip:hover { border-color: var(--text-muted); color: var(--text-primary); background: var(--bg-secondary); }
+#pause-chip.paused { border-color: var(--danger); color: var(--danger); }
+#pause-chip:focus-visible, .pause-menu-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.pause-menu { position: absolute; top: calc(100% + 6px); left: 0; z-index: 60; width: 260px; padding: 8px; border-radius: var(--r-md, 10px); border: 1px solid var(--border-strong); background: var(--bg-primary); box-shadow: 0 10px 30px rgba(0,0,0,.35); display: flex; flex-direction: column; gap: 2px; }
+.pause-menu[hidden] { display: none; }
+.pause-menu-title { font-size: var(--fs-xs, 11px); color: var(--text-muted); padding: 2px 6px 6px; }
+.pause-menu-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 8px; border: 0; border-radius: 7px; background: transparent; color: var(--text-primary); font: inherit; font-size: 13px; text-align: left; cursor: pointer; }
+.pause-menu-item .material-icons-outlined { font-size: 17px; color: var(--text-muted); }
+.pause-menu-item:hover { background: var(--bg-hover); }
+.pause-menu-item[hidden] { display: none; }
+.pause-resume { color: var(--accent-text, var(--accent)); }
+.pause-menu-check { display: flex; align-items: center; gap: 8px; padding: 8px; font-size: 13px; color: var(--text-secondary); cursor: pointer; }
+.pause-menu-check input { accent-color: var(--accent); }
+.pause-menu-note { font-size: 11px; line-height: 1.45; color: var(--text-muted); padding: 6px 6px 2px; border-top: 1px solid var(--border); margin-top: 4px; }
+
+/* ─── v2.5.99: olay türüne göre ses ─── */
+.opt-evtype { margin: 6px 0 0 22px; }
+.opt-evtype > summary { list-style: none; display: inline-flex; align-items: center; gap: 4px; cursor: pointer; font-size: 12px; color: var(--text-secondary); padding: 4px 0; }
+.opt-evtype > summary::-webkit-details-marker { display: none; }
+.opt-evtype > summary .material-icons-outlined { font-size: 16px; transition: transform .15s; transform: rotate(-90deg); }
+.opt-evtype[open] > summary .material-icons-outlined { transform: rotate(0); }
+.opt-evtype > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; border-radius: 4px; }
+.opt-evtype.has-custom > summary { color: var(--text-primary); }
+.opt-evtype-hint { font-size: 11px; color: var(--text-muted); margin: 2px 0 6px; line-height: 1.45; }
+.opt-evtype-row { display: grid; grid-template-columns: 18px minmax(0, 1fr) 150px 28px; align-items: center; gap: 8px; padding: 4px 0; }
+.opt-evtype-ico { font-size: 16px; color: var(--text-muted); }
+.opt-evtype-label { font-size: 12px; color: var(--text-secondary); min-width: 0; overflow-wrap: anywhere; }
+.opt-evtype-select { width: 150px; }
+.opt-evtype-test { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--border); border-radius: 7px; background: transparent; color: var(--text-muted); cursor: pointer; }
+.opt-evtype-test .material-icons-outlined { font-size: 16px; }
+.opt-evtype-test:hover { color: var(--text-primary); background: var(--bg-hover); }
+.opt-evtype-test:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+/* v2.5.103: sohbet radarı notları (bölüm açıklamasının negatif boşluğunu almasın) */
+.chat-radar-note { font-size: var(--fs-sm); color: var(--text-muted); line-height: 1.45; padding: 2px 0 6px; }
+
+/* ─── v2.6.0: Interface motion ─── */
+/* Newly live since the popup was last opened: one green ring wave on the avatar */
+@keyframes ka-new-live {
+  0%   { box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--accent), 0 0 0 4px color-mix(in srgb, var(--accent) 60%, transparent); }
+  100% { box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 4px var(--accent), 0 0 0 15px color-mix(in srgb, var(--accent) 0%, transparent); }
+}
+.channel-card.live .channel-avatar.ka-new-live { animation: ka-new-live .9s ease-out 2; }
+/* Bell: rings when switched to a sound mode, dips when silenced or muted */
+@keyframes ka-bell-ring {
+  0%, 100% { transform: rotate(0); }
+  15% { transform: rotate(18deg); } 30% { transform: rotate(-15deg); }
+  45% { transform: rotate(10deg); } 60% { transform: rotate(-6deg); } 75% { transform: rotate(3deg); }
+}
+@keyframes ka-bell-dip { 40% { transform: scale(.72); } }
+.material-icons.ka-bell-ring { display: inline-block; transform-origin: 50% 25%; animation: ka-bell-ring .6s ease-in-out; }
+.material-icons.ka-bell-dip { display: inline-block; animation: ka-bell-dip .25s ease-out; }
+/* Refresh: icon spins while the list reloads */
+.material-icons.ka-spin { display: inline-block; animation: spin .6s linear infinite; }
+/* Remaining-time ring (pause chip icon, channel muted for 1 hour) */
+.ka-ring-on { position: relative; }
+.ka-ring-on::after {
+  content: ""; position: absolute; inset: -3px; border-radius: 50%; pointer-events: none;
+  background: conic-gradient(var(--danger) calc(var(--ka-left, 0) * 360deg), color-mix(in srgb, var(--danger) 18%, transparent) 0);
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+          mask: radial-gradient(farthest-side, transparent calc(100% - 2px), #000 calc(100% - 1.5px));
+}
+.bell-btn.ka-ring-on::after { inset: 1px; }
+#pause-icon.ka-ring-on { display: inline-block; }
+/* Sliding tab highlight (segmented tab bar) */
+.tabs-container.ka-has-ind { position: relative; }
+.ka-tab-ind {
+  position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none;
+  border-radius: 8px; background: var(--bg-hover);
+  transition: transform .24s cubic-bezier(.2,.8,.25,1), width .24s cubic-bezier(.2,.8,.25,1), height .24s, opacity .15s;
+}
+.tabs-container.ka-has-ind .tab-button { position: relative; z-index: 1; }
+.tabs-container.ka-has-ind .tab-button.active { background: transparent; }
+/* Dialogs open with a short scale-in */
+@keyframes ka-modal-in { from { opacity: 0; transform: translateY(8px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes ka-fade-in { from { opacity: 0; } to { opacity: 1; } }
+.confirm-modal-box, .vh-modal-box { animation: ka-modal-in .18s cubic-bezier(.2,.8,.25,1); }
+.confirm-modal-backdrop, .vh-modal-backdrop { animation: ka-fade-in .18s ease-out; }
+/* New notification history entry while the popup is open */
+@keyframes ka-hist-in {
+  0% { opacity: 0; transform: translateY(-8px); background: color-mix(in srgb, var(--accent) 22%, transparent); }
+  30% { opacity: 1; transform: none; }
+  100% { background: transparent; }
+}
+.history-item.ka-hist-in { animation: ka-hist-in 1.4s ease-out; }
+/* Chat chips: added */
+@keyframes ka-chip-in { 0% { transform: scale(.4); opacity: 0; } 60% { transform: scale(1.12); opacity: 1; } 100% { transform: scale(1); } }
+.chat-chip.ka-chip-in { animation: ka-chip-in .28s cubic-bezier(.3,1.5,.5,1); }
+/* Sticky list toolbars with a frosted background; scroll-edge shadow under the tabs */
+.follow-sort-bar, #autolaunch-panel > .search-container {
+  position: sticky; top: 0; z-index: 4;
+  background: color-mix(in srgb, var(--bg-primary) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+}
+#autolaunch-panel > .search-container { box-shadow: 0 -10px 0 color-mix(in srgb, var(--bg-primary) 82%, transparent); }
+.tabs-container { transition: box-shadow .2s; }
+body.ka-scrolled .tabs-container { box-shadow: 0 6px 14px -8px rgba(0,0,0,.55); }
+/* Press feedback and springy switches */
+.menu-chip, .card-action-btn, .sort-chip, .tab-button, .opt-text-btn, .group-chip, .confirm-modal-btn, .opt-theme-btn, .opt-density-btn, .chat-add-btn {
+  transition-property: background, color, border-color, transform, box-shadow; transition-duration: .15s;
+}
+.menu-chip:active, .card-action-btn:active, .sort-chip:active, .tab-button:active, .opt-text-btn:active, .group-chip:active,
+.confirm-modal-btn:active, .opt-theme-btn:active, .opt-density-btn:active, .chat-add-btn:active { transform: scale(.94); }
+.toggle-slider::before, .toggle-switch-sm .toggle-slider::before { transition: transform .32s cubic-bezier(.3,1.6,.5,1), width .15s; }
+.toggle-switch input:active + .toggle-slider::before { width: 22px; }
+.toggle-switch input:checked:active + .toggle-slider::before { transform: translateX(14px); }
+.toggle-switch-sm input:active + .toggle-slider::before { width: 18px; }
+.toggle-switch-sm input:checked:active + .toggle-slider::before { transform: translateX(12px); }
+/* Card actions: only the bell, the favorite star and any button that carries a
+   state (custom alerts) stay visible; the rest slide out on hover or focus. */
+.card-actions-row .card-action-btns > .open-btn,
+.card-actions-row .card-action-btns > .multi-btn,
+.card-actions-row .card-action-btns > .group-btn,
+.card-actions-row .card-action-btns > .alerts-btn:not(.is-set) {
+  width: 0; min-width: 0; opacity: 0; overflow: hidden; pointer-events: none;
+  transition: width .22s cubic-bezier(.2,.8,.25,1), opacity .18s, background .15s, color .15s;
+}
+.channel-card:hover .card-actions-row .card-action-btns > .card-action-btn,
+.channel-card:focus-within .card-actions-row .card-action-btns > .card-action-btn {
+  width: 24px; opacity: 1; pointer-events: auto;
+}
+/* Empty lists */
+.ka-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 40px 24px 32px; grid-column: 1 / -1; }
+.ka-empty-ico { position: relative; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.ka-empty-ico::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--accent) 35%, transparent); }
+.ka-empty-ico .material-icons-outlined { font-size: 28px; }
+.ka-empty h3 { font-size: 15px; font-weight: 650; color: var(--text-primary); margin-top: 4px; }
+.ka-empty p { font-size: 12.5px; line-height: 1.5; color: var(--text-muted); max-width: 300px; }
+.ka-empty button { margin-top: 6px; height: 32px; padding: 0 14px; display: inline-flex; align-items: center; gap: 6px; border-radius: 9px; border: 1px solid var(--border-strong); background: var(--bg-secondary); color: var(--text-primary); font: 600 12.5px/1 inherit; font-family: inherit; cursor: pointer; transition: background .15s, transform .15s; }
+.ka-empty button:hover { background: var(--bg-hover); }
+.ka-empty button:active { transform: scale(.95); }
+.ka-empty button .material-icons-outlined { font-size: 16px; }
+/* Bottom message bar with Undo */
+.ka-toast {
+  position: fixed; left: 50%; bottom: 12px; z-index: 9000; max-width: calc(100% - 24px);
+  display: flex; align-items: center; gap: 12px; padding: 9px 10px 9px 14px;
+  border-radius: 10px; background: var(--text-primary); color: var(--bg-primary);
+  font-size: 12.5px; font-weight: 500; box-shadow: 0 10px 28px rgba(0,0,0,.35);
+  transform: translate(-50%, calc(100% + 24px)); opacity: 0; pointer-events: none;
+  transition: transform .28s cubic-bezier(.2,.8,.25,1), opacity .2s;
+}
+.ka-toast.show { transform: translate(-50%, 0); opacity: 1; pointer-events: auto; }
+.ka-toast-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.ka-toast-undo { flex: none; border: 0; background: transparent; color: var(--accent-text, var(--accent)); font: 700 12.5px/1 inherit; font-family: inherit; padding: 6px 8px; border-radius: 6px; cursor: pointer; }
+html[data-theme="dark"] .ka-toast-undo { color: #2d9a0f; }
+.ka-toast-undo:hover { background: color-mix(in srgb, var(--bg-primary) 10%, transparent); }
+/* Theme switch cross-fade */
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .3s; }

@@ -64,10 +64,14 @@
     "message": "تحذير"
   },
   "appDescription": {
-    "message": "كن أول من يعرف عندما يبدأ البث المباشر على Kick.com — تنبيهات فورية، بث بدون إعلانات، دردشة بلا سبام، ولا مزيد من الهروب النينجا ;)"
+    "message": "تنبيه فوري عندما يبدأ صنّاع المحتوى الذين تتابعهم على Kick البث. فتح تلقائي للبث، حظر الإعلانات، تصفية الدردشة. مجانًا."
   },
   "appName": {
-    "message": "KickAlert — تنبيهات مباشرة لـ Kick.com"
+    "message": "KickAlert - تنبيهات بث Kick المباشر والفتح التلقائي وحظر الإعلانات"
+  },
+  "appNameShort": {
+    "message": "KickAlert - تنبيهات بث Kick والفتح التلقائي",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
     "message": "الفتح التلقائي"
@@ -142,10 +146,14 @@
     "message": "وضع التصفية"
   },
   "chatFilterModeDesc": {
-    "message": "الإخفاء يزيل الرسالة. الطمس يخفّفها — مرر للعرض."
+    "message": "الإخفاء يزيل الرسالة. الطمس يخفّفها - مرر للعرض."
   },
   "chatIntegrationDesc": {
     "message": "عند التفعيل يظهر تبويب الدردشة أعلاه. بعد التثبيت الأول، قم بتحديث علامات تبويب Kick المفتوحة."
+  },
+  "chatNotifJump": {
+    "message": "الانتقال إلى إعدادات إشعارات الدردشة",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "دمج الدردشة"
@@ -305,7 +313,7 @@
     "message": "يتم استخدام لغة المتصفح: $1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "لغة المتصفح غير مدعومة — يتم استخدام الإنجليزية"
+    "message": "لغة المتصفح غير مدعومة - يتم استخدام الإنجليزية"
   },
   "langSectionTitle": {
     "message": "اللغة"
@@ -370,6 +378,98 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "إعادة تعيين الفتح التلقائي عند إعادة تشغيل المتصفح"
   },
+  "raidGuardCheckbox": {
+    "message": "إغلاق علامات التبويب المفتوحة تلقائيًا عند نقل البث إلى قناة أخرى",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "فقط علامات التبويب التي فتحها KickAlert. لا تُمسّ علامات التبويب التي فتحتها بنفسك أو انتقلت فيها إلى قناة أخرى بنفسك.",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "اسم القناة...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "إضافة",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "مسح",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "إزالة كل البثوث",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "بث واحد",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "جنبًا إلى جنب",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "ثلاثة أعمدة",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "شبكة 2×2",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "تركيز",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "أضف أسماء القنوات في الأعلى لمشاهدة عدة بثوث معًا.",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "اسحب البطاقات وأفلتها لتغيير الترتيب.",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "ملء الشاشة",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "إزالة",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "الاستماع إلى هذا البث فقط",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "كتم صوت هذا البث",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "الدردشة",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "إظهار الدردشة",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "إغلاق الدردشة",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "فتح الدردشة في علامة تبويب جديدة",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "أضف قناة لرؤية دردشتها.",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "لا يمكنك الكتابة هنا؟ افتح الدردشة في علامة تبويب جديدة.",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
+  },
   "searchChannels": {
     "message": "...البحث عن القنوات"
   },
@@ -395,13 +495,13 @@
     "message": "أصوات الإضافة"
   },
   "soundModeExtensionTooltip": {
-    "message": "تنبيهات مخصصة لافتة — يصعب تفويتها"
+    "message": "تنبيهات مخصصة لافتة - يصعب تفويتها"
   },
   "soundModeWindows": {
     "message": "أصوات ويندوز"
   },
   "soundModeWindowsTooltip": {
-    "message": "صوت النظام العادي — قد يمر دون ملاحظة"
+    "message": "صوت النظام العادي - قد يمر دون ملاحظة"
   },
   "testSoundVolume": {
     "message": "[اختبار]"
@@ -422,34 +522,70 @@
     "message": "+$1 المزيد"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — لا توجد بثوث مباشرة"
+    "message": "KickAlert - لا توجد بثوث مباشرة"
   },
   "viewerTrendTitle": {
     "message": "اتجاه المشاهدين"
   },
   "chatBroadcasterNotif": {
     "message": "إشعار رسالة المذيع",
-    "description": "Chat integration — chatBroadcasterNotif"
+    "description": "Chat integration - chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
     "message": "تلقي إشعار عندما يكتب المذيع في الدردشة. حد أقصى إشعار واحد في الدقيقة.",
-    "description": "Chat integration — chatBroadcasterDesc"
+    "description": "Chat integration - chatBroadcasterDesc"
+  },
+  "radarTitle": {
+    "message": "رادار الدردشة في الخلفية",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "يراقب دردشة ما يصل إلى 5 قنوات تتابعها أثناء البث، حتى دون فتح علامة تبويب Kick. يصلك إشعار عندما يُكتب اسم المستخدم الخاص بك أو إحدى الكلمات أدناه.",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "إضافة قناة...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "تُلتقط أيضًا الرسائل التي تذكر $1 (اسم المستخدم من إشعار الإشارة).",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "لالتقاط الإشارات أيضًا، أدخل اسم المستخدم الخاص بك في إشعار الإشارة.",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "أدخل اسم قناة.",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 ليست من القنوات التي تتابعها.",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "يمكنك إضافة $1 قنوات كحد أقصى.",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "«$1» في دردشة $2",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
   },
   "chatBroadcasterNotifTitle": {
     "message": "كتب $1 في الدردشة",
-    "description": "Chat integration — chatBroadcasterNotifTitle"
+    "description": "Chat integration - chatBroadcasterNotifTitle"
   },
   "chatWordFilterDesc": {
     "message": "يتم إخفاء أو تمويه الرسائل التي تحتوي على هذه الكلمات.",
-    "description": "Chat integration — chatWordFilterDesc"
+    "description": "Chat integration - chatWordFilterDesc"
   },
   "chatUserFilterDesc": {
     "message": "يتم إخفاء أو تمويه رسائل المستخدمين المدرجين.",
-    "description": "Chat integration — chatUserFilterDesc"
+    "description": "Chat integration - chatUserFilterDesc"
   },
   "chatEmojiSpamDesc": {
     "message": "يُعتم الرسائل ذات الرموز التعبيرية المفرطة (حرّك المؤشر للكشف).",
-    "description": "Chat integration — chatEmojiSpamDesc"
+    "description": "Chat integration - chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
     "message": "منذ $1 دقيقة بث مباشر",
@@ -461,7 +597,7 @@
   },
   "anomalyWindowLabel": {
     "message": "آخر $1 دقيقة",
-    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+    "description": "Anomaly notification - window over which the change happened. $1 = minutes."
   },
   "botScoreTooltip": {
     "message": "درجة شكّ البوت: $1٪",
@@ -473,7 +609,7 @@
   },
   "botScoreAlwaysVisibleLabel": {
     "message": "إظهار درجة البوت في كل القنوات المباشرة",
-    "description": "Toggle label — show bot score badge on all live channels."
+    "description": "Toggle label - show bot score badge on all live channels."
   },
   "botScoreAlwaysVisibleHint": {
     "message": "عند الإيقاف، تظهر النتيجة فقط أثناء الارتفاع المفاجئ.",
@@ -489,19 +625,19 @@
   },
   "timeAgoDay": {
     "message": "قبل $1 يوم",
-    "description": "Relative time — timeAgoDay"
+    "description": "Relative time - timeAgoDay"
   },
   "timeAgoHour": {
     "message": "قبل $1 س",
-    "description": "Relative time — timeAgoHour"
+    "description": "Relative time - timeAgoHour"
   },
   "timeAgoMin": {
     "message": "قبل $1 د",
-    "description": "Relative time — timeAgoMin"
+    "description": "Relative time - timeAgoMin"
   },
   "timeAgoJustNow": {
     "message": "الآن",
-    "description": "Relative time — timeAgoJustNow"
+    "description": "Relative time - timeAgoJustNow"
   },
   "viewerHistoryNoData": {
     "message": "لا توجد بيانات كافية بعد",
@@ -584,7 +720,7 @@
     "message": "يبدو أنك غير متصل بالإنترنت. تحقق من اتصالك وحاول مرة أخرى."
   },
   "fetchErrorRateLimited": {
-    "message": "يقوم Kick بتقييد الطلبات مؤقتًا. سيتم حل هذا تلقائيًا — يرجى الانتظار قليلاً."
+    "message": "يقوم Kick بتقييد الطلبات مؤقتًا. سيتم حل هذا تلقائيًا - يرجى الانتظار قليلاً."
   },
   "fetchErrorServerError": {
     "message": "تواجه خوادم Kick مشكلة الآن. حاول مرة أخرى خلال بضع دقائق."
@@ -593,7 +729,7 @@
     "message": "حدث خطأ ما أثناء تحميل قنواتك. حاول مرة أخرى."
   },
   "fetchErrorSessionRejected": {
-    "message": "لا يتعرف Kick على جلستك حاليًا رغم تسجيل دخولك. يحدث هذا عادةً عند تسجيل الدخول عبر Google أو Apple أو حساب اجتماعي آخر، بسبب تضارب في خوادم Kick نفسها — وليس خطأً في هذه الإضافة. الحل: سجّل الخروج من kick.com ثم سجّل الدخول مجددًا باستخدام بريدك الإلكتروني وكلمة المرور. إذا لم يكن لديك كلمة مرور (لأنك سجّلت عبر Google/Apple)، استخدم \"نسيت كلمة المرور؟\" في شاشة تسجيل الدخول لإنشاء واحدة. إذا لم يساعد ذلك، عادةً ما تُحل المشكلة تلقائيًا خلال دقائق قليلة."
+    "message": "لا يتعرف Kick على جلستك حاليًا رغم تسجيل دخولك. يحدث هذا عادةً عند تسجيل الدخول عبر Google أو Apple أو حساب اجتماعي آخر، بسبب تضارب في خوادم Kick نفسها - وليس خطأً في هذه الإضافة. الحل: سجّل الخروج من kick.com ثم سجّل الدخول مجددًا باستخدام بريدك الإلكتروني وكلمة المرور. إذا لم يكن لديك كلمة مرور (لأنك سجّلت عبر Google/Apple)، استخدم \"نسيت كلمة المرور؟\" في شاشة تسجيل الدخول لإنشاء واحدة. إذا لم يساعد ذلك، عادةً ما تُحل المشكلة تلقائيًا خلال دقائق قليلة."
   },
   "emailLoginNotice": {
     "message": "لكي يعمل KickAlert بشكل موثوق، نوصي بتسجيل الدخول إلى Kick باستخدام البريد الإلكتروني وكلمة المرور. قد يؤدي تسجيل الدخول عبر \"Google\" أو \"Apple\" أو أي حساب اجتماعي آخر إلى منع الإضافة أحيانًا من تحميل بياناتك، بسبب تضارب في خوادم Kick نفسها."
@@ -602,7 +738,7 @@
     "message": "حظر الإعلانات"
   },
   "adBlockWarning": {
-    "message": "ميزة تجريبية وغير رسمية — تعتمد على البنية الداخلية لواجهة برمجة تطبيقات Kick وقد تتوقف عن العمل دون سابق إنذار. بتفعيلها، فإنك تتحمل هذه المسؤولية. اتركها معطّلة ليستمر KickAlert بالعمل كالمعتاد دون أي تأثير. يجب تحديث علامات تبويب Kick المفتوحة لكي يصبح هذا ساري المفعول."
+    "message": "ميزة تجريبية وغير رسمية - تعتمد على البنية الداخلية لواجهة برمجة تطبيقات Kick وقد تتوقف عن العمل دون سابق إنذار. بتفعيلها، فإنك تتحمل هذه المسؤولية. اتركها معطّلة ليستمر KickAlert بالعمل كالمعتاد دون أي تأثير. يجب تحديث علامات تبويب Kick المفتوحة لكي يصبح هذا ساري المفعول."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "ذو صلة الآن:"
@@ -626,7 +762,7 @@
     "message": "تفعيل حظر الإعلانات؟"
   },
   "adBlockConfirmBody": {
-    "message": "هذه الميزة تجريبية وغير رسمية — تعتمد على البنية الداخلية لواجهة برمجة تطبيقات Kick وقد تتوقف عن العمل دون سابق إنذار، وقد يكتشف Kick هذا السلوك. بتفعيلها، فإنك تقبل تحمل هذه المخاطر."
+    "message": "هذه الميزة تجريبية وغير رسمية - تعتمد على البنية الداخلية لواجهة برمجة تطبيقات Kick وقد تتوقف عن العمل دون سابق إنذار، وقد يكتشف Kick هذا السلوك. بتفعيلها، فإنك تقبل تحمل هذه المخاطر."
   },
   "adBlockConfirmAccept": {
     "message": "فهمت، فعّل"
@@ -647,7 +783,7 @@
     "message": "أنت لا تتابع أحدًا بعد. تابع قناة على Kick وستظهر هنا تلقائيًا."
   },
   "whatsNewBannerText": {
-    "message": "جديد: درجة البوت في Firefox، ودليل قصير للأذونات المعطّلة للمواقع بعد التحديث."
+    "message": "يقدّم هذا الإصدار واجهة أكثر سلاسة وأيقونات للمناسبات وميزة التراجع، إلى جانب الإيقاف المؤقت ورادار الدردشة في الخلفية وتحسينات Multi-Stream."
   },
   "optGroupGeneral": {
     "message": "عام"
@@ -673,23 +809,47 @@
   "close": {
     "message": "إغلاق"
   },
+  "cardOpenChannel": {
+    "message": "فتح القناة",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "إضافة إلى Multi-Stream",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "إضافة إلى المفضلة",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "إزالة من المفضلة",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "فتح Multi-Stream",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "فتح Kick.com",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — درجة البوت في Firefox، دليل الأذونات"
+    "message": "v2.6.0 - واجهة أكثر سلاسة، أيقونات المناسبات، تراجع"
   },
   "releaseHistoryV0Body": {
-    "message": "• تعمل درجة البوت الآن في Firefox أيضًا، تمامًا كما في Chrome\n• بعد التحديث، يعرض دليل قصير الأذونات المعطّلة للمواقع، ويشرح سبب الحاجة إليها، ويتيح لك تفعيلها\n• Firefox: عادت الطلبات عبر علامة تبويب Kick مفتوحة إلى العمل"
+    "message": "• واجهة أكثر سلاسة: تنزلق البطاقات إلى مكانها عندما تبدأ إحدى القنوات البث، وتظهر حلقة خضراء قصيرة حول القنوات التي بدأت البث للتو، ويهتز الجرس عند تفعيله، وتنتقل علامات التبويب بسلاسة\n• يعرض الإيقاف المؤقت و\"كتم لمدة ساعة\" الوقت المتبقي كحلقة حول الأيقونة\n• بطاقات أبسط: الجرس والنجمة ظاهران دائمًا، وتظهر الأزرار الأخرى عند تمرير المؤشر فوق البطاقة\n• تراجع: يمكن التراجع عن إزالة قناة من المفضلة أو مسح سجل الإشعارات أو حذف مجموعة أو إزالة كلمة من كلمات الدردشة من الشريط السفلي\n• القوائم الفارغة تخبرك الآن بما يمكنك فعله\n• أيقونات المناسبات: في بعض المناسبات في منطقتك يتغير شكل أيقونة شريط الأدوات (يمكن إيقافها من الإعدادات)\n• Multi-Stream: يظهر معادل صوت صغير على البث الذي يعمل صوته، وتنزلق النوافذ عند تغيير التخطيط\n• نمط أيقونات موحد في كل مكان، ويبقى شريط الترتيب في الأعلى أثناء التمرير\n• موقع جديد: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — عودة التنبيهات الفورية والغارات"
+    "message": "v2.5.111 - الإيقاف المؤقت، رادار الدردشة، أصوات الأحداث، Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• عادت تنبيهات البث الفورية وتنبيهات الغارات وتقييم البوتات للعمل: غيّرت Kick مفتاح خدمتها الفورية، وأصبح KickAlert يجلب المفتاح الحالي من Kick تلقائيًا\n• إذا غيّرته Kick مرة أخرى، تجلب الإضافة المفتاح الجديد بنفسها بدل تكرار الأخطاء\n• لم تعد النافذة المنبثقة تعرض شريط تمرير ثانيًا أو مساحة فارغة أسفل الإعدادات"
+    "message": "• أوقف التنبيهات مؤقتًا لمدة ساعة أو حتى الصباح من الشريط العلوي؛ الزر الثاني في إشعار Chrome يكتم تلك القناة لمدة ساعة\n• يعرض فحص «هل ستصلك تنبيهات من هذه القناة؟» في إعدادات كل قناة كل ما قد يمنع التنبيه\n• رادار الدردشة في الخلفية: يصلك إشعار عندما يُكتب اسم المستخدم الخاص بك أو كلمات تختارها في ما يصل إلى 5 قنوات، حتى دون فتح علامة تبويب Kick\n• 10 أصوات جديدة مصممة للغارات وانتهاء البث ونقل البث وتغيير الفئة، مع صوت مستقل لكل حدث\n• Multi-Stream: تبدأ البثوث مكتومة، واستمع إلى بث واحد فقط بنقرة، وتُفتح الدردشة في لوحة جانبية\n• تنبيه اختياري عندما ينقل المذيع بثه إلى قناة أخرى، مع خيار لإغلاق علامات التبويب المفتوحة تلقائيًا عندها\n• عرض مضغوط للبطاقات؛ وتبقى إعدادات إشعارات الدردشة مخفية ما دام دمج الدردشة متوقفًا\n• تلتقط مرشحات الدردشة أيضًا الكتابة المموهة (الحروف المتشابهة، الأحرف غير المرئية، الحروف المتباعدة)\n• تستخدم درجة البوتات منذ الدقيقة الأولى عدد المشاركين في الدردشة الذي يوفره Kick وتأخذ كل أوضاع الدردشة في الحسبان\n• اتصال فوري احتياطي إذا توقفت خدمة Kick الرئيسية عن الإرسال\n• التلميحات التي بقيت بالإنجليزية تظهر الآن بلغتك، وتم تحسين الصياغة في عدة لغات\n• إصلاحات: لم تعد الإعدادات التي تغيّرها في النافذة المنبثقة ترجع مع تفعيل المزامنة السحابية؛ تعمل مشغلات Multi-Stream مع إذن kick.com الإضافي؛ تعرض بطاقة الأيقونة في Chrome القنوات المباشرة"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — تنبيهات قنوات أدق"
+    "message": "v2.5.87 - درجة البوت في Firefox، الأذونات، إصلاح حظر الإعلانات"
   },
   "releaseHistoryV2Body": {
-    "message": "• تنبيهات تغيير الفئة والعنوان أدق: قراءة خاطئة عابرة من Kick لم تعد ترسل تنبيهًا، والتغيير الذي يحدث أثناء فترة الانتظار البالغة 5 دقائق يُرسل عند انتهائها\n• التغييرات التي حدثت أثناء إيقاف التنبيهات مؤقتًا (عدم الإزعاج أو قناة مكتومة) لم تعد تصل لاحقًا كخبر قديم"
+    "message": "• تعمل درجة البوت الآن في Firefox أيضًا، تمامًا كما في Chrome\n• بعد التحديث، يعرض دليل قصير الأذونات المعطّلة للمواقع، ويشرح سبب الحاجة إليها، ويتيح لك تفعيلها\n• Firefox: عادت الطلبات عبر علامة تبويب Kick مفتوحة إلى العمل\n• حظر الإعلانات: أصبح حظر خوادم الإعلانات يعمل فعلًا الآن (عند التفعيل يطلب KickAlert الوصول إلى نطاقات الإعلانات)\n• لم تعد تظهر شاشة سوداء في نهاية البث عند تفعيل حظر الإعلانات\n• تراعي درجة البوت الوضع البطيء ودردشة المشتركين فقط منذ البداية\n• يعرض قسم «أذونات الإضافة» الجديد في الإعدادات الأذونات المفعّلة، ويفعّل المعطّل منها بنقرة واحدة؛ وإذا كان أحدها معطّلًا يظهر تنبيه أعلى قائمة القنوات"
   },
   "settingsBackupTitle": {
     "message": "النسخ الاحتياطي والاستعادة"
@@ -716,7 +876,7 @@
     "message": "تم الاستيراد! جارٍ إعادة التحميل..."
   },
   "importSettingsFail": {
-    "message": "فشل الاستيراد — قد يكون الملف تالفًا"
+    "message": "فشل الاستيراد - قد يكون الملف تالفًا"
   },
   "importConfirmTitle": {
     "message": "استيراد الإعدادات؟"
@@ -770,7 +930,7 @@
     "message": "$1 رد عليك"
   },
   "chatMentionSoundSmart": {
-    "message": "فقط عندما لا تكون تشاهد بنشاط (علامة التبويب في الخلفية، تم تمرير الدردشة، أو لوحة دردشة Kick نفسها مخفية) — ينطبق على الإشارات والردود ورسائل الناشر."
+    "message": "فقط عندما لا تكون تشاهد بنشاط (علامة التبويب في الخلفية، تم تمرير الدردشة، أو لوحة دردشة Kick نفسها مخفية) - ينطبق على الإشارات والردود ورسائل الناشر."
   },
   "chatMentionSoundEnabled": {
     "message": "شغّل صوتًا أيضًا"
@@ -789,6 +949,18 @@
   },
   "themeSystem": {
     "message": "النظام"
+  },
+  "cardDensityLabel": {
+    "message": "عرض البطاقات",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "مريح",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "مضغوط",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "الفلاتر"
@@ -812,6 +984,62 @@
   "chipGuardLabel": {
     "message": "حماية",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "إيقاف مؤقت",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "متوقف · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "إيقاف التنبيهات مؤقتًا لفترة",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "التنبيهات متوقفة حتى $1. انقر لعرض الخيارات.",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "إيقاف التنبيهات مؤقتًا",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "لمدة ساعة",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "حتى الصباح ($1)",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "المفضلة تواصل التنبيه",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "استئناف التنبيهات الآن",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "تتوقف التنبيهات والأصوات والفتح التلقائي. تبقى القنوات التي تبدأ البث محفوظة في سجل الإشعارات.",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "كتم لمدة ساعة",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "التنبيهات متوقفة حتى $1.",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "كُتمت هذه القناة لمدة ساعة من أحد التنبيهات؛ ستعود للتنبيه في $1.",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "التنبيهات متوقفة حتى $1، لكن هذه القناة مفضلة لذا ستنبّهك.",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "إعدادات KickAlert",
@@ -844,6 +1072,90 @@
   "chAlertSubtitle": {
     "message": "تنبيهات إضافية لهذه القناة. جميعها متوقفة افتراضيًا.",
     "description": "Subtitle in the per-channel alerts window"
+  },
+  "diagTitle": {
+    "message": "هل ستصلك تنبيهات من هذه القناة؟",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "نعم: سيصلك تنبيه عندما تبدأ هذه القناة البث.",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "لن تصلك تنبيهات من هذه القناة:",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "التنبيهات متوقفة في الإعدادات.",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "المتصفح أو نظام التشغيل يحظر تنبيهات KickAlert.",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "الوصول إلى kick.com متوقف.",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "هذه القناة مضبوطة على «بدون إشعار» (الجرس في بطاقتها).",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "لم يُختر وضع لهذه القناة والوضع الافتراضي «بدون إشعار». اختر وضعًا من الجرس في بطاقتها.",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "هذه القناة مضبوطة على «إشعار صامت»: يصل التنبيه بدون صوت.",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "وضع عدم الإزعاج مفعّل الآن (من $1 إلى $2): التنبيهات مكتومة.",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "يكتم وضع عدم الإزعاج التنبيهات بين $1 و$2.",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "المرشح: لن يصلك التنبيه إلا إذا طابق البث $1.",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "البث الحالي لا يطابق مرشح هذه القناة ($1).",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "الاتصال الفوري متوقف الآن: تصل التنبيهات مع فحص قائمة المتابَعين متأخرة من دقيقة إلى دقيقة ونصف.",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "لم يُفعَّل التتبع الفوري لهذه القناة بعد: يصل تنبيهها مع فحص قائمة المتابَعين متأخرًا من دقيقة إلى دقيقة ونصف.",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "يبطئ Kick الطلبات: ستُفحص قائمة المتابَعين مجددًا بعد نحو $1 دقيقة.",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "آخر بث مسجّل: $1.",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "آخر بث ($1) تخطّاه المرشح: $2.",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "لا يوجد بث حديث لهذه القناة في السجل. لا يُنبَّه عن البثوث التي كانت جارية عند تشغيل KickAlert.",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "الفئة لم تطابق",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "العنوان لم يتضمن الكلمة",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
   },
   "chAlertChange": {
     "message": "تغيير الفئة أو العنوان",
@@ -917,6 +1229,10 @@
     "message": "غارة من $1 · $2 مشاهد",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "أرسل المشاهدين إلى $1",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "انتهاء البث",
     "description": "Per-channel alert option label"
@@ -933,6 +1249,10 @@
     "message": "مع $1 مشاهد",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "نقل $1 البث إلى $2",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "غارة واردة",
     "description": "Per-channel alert option label"
@@ -940,6 +1260,14 @@
   "chAlertRaidDesc": {
     "message": "نبّهني عندما يشنّ صانع محتوى آخر غارة على هذه القناة، مع اسمه وعدد المشاهدين القادمين.",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "نقل البث إلى قناة أخرى",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "نبّهني عندما يرسل صانع المحتوى هذا مشاهديه إلى قناة أخرى. يؤدي النقر على التنبيه إلى فتح تلك القناة.",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "مدة المشاهدة",
@@ -970,8 +1298,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "لتنبيهات تغيير الفئة/العنوان وانتهاء البث والغارات. اختر صوت إضافة أهدأ أو صوت إشعارات Windows أو الصمت.",
+    "message": "لتنبيهات تغيير الفئة/العنوان وانتهاء البث والغارات ونقل البث. اختر صوت إضافة أهدأ أو صوت إشعارات Windows أو الصمت.",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "صوت مختلف لكل حدث",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "اتركه على «الصوت العام» لاستخدام الصوت أعلاه.",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "الصوت العام",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "عام",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "غارة",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "انتهى البث",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "نُقل البث",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "تغيير الفئة / العنوان",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "فقاعة",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "ماريمبا",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "نفير احتفالي",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "قرع الطبول",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "جرس الختام",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "إيقاف التشغيل",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "حفيف",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "قفزة",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "قلب الصفحة",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "نغمة التحديث",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "الصوت",
@@ -1148,5 +1548,184 @@
   },
   "permRemindButton": {
     "message": "تفعيل"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "بعد ذلك سيطلب متصفحك الوصول إلى نطاقات إعلانات Google. يستخدمه KickAlert فقط لحظر طلبات الإعلانات على kick.com."
+  },
+  "permWizAdsTitle": {
+    "message": "حظر نطاقات الإعلانات"
+  },
+  "permWizAdsWhy": {
+    "message": "يتيح لحظر الإعلانات إيقاف الطلبات المرسلة إلى خوادم إعلانات Google على kick.com. لا يقرأ أي موقع آخر."
+  },
+  "permWizAdsOff": {
+    "message": "يستمر حظر الإعلانات في العمل عبر المشغّل، لكن طلبات الإعلانات لا تُوقف على مستوى الشبكة."
+  },
+  "permWizAdsLabel": {
+    "message": "الوصول إلى نطاقات الإعلانات"
+  },
+  "permWizRtTitle": {
+    "message": "اتصال احتياطي للتنبيهات"
+  },
+  "permWizRtWhy": {
+    "message": "يتيح الاتصال بخادم Kick الفوري الجديد (*.kick.com). إذا توقفت خدمة Pusher عن الاستجابة، تستمر التنبيهات الفورية في الوصول عبر هذا الاتصال الاحتياطي."
+  },
+  "permWizRtOff": {
+    "message": "عندما لا يستجيب Pusher، تصل التنبيهات متأخرة من دقيقة إلى دقيقة ونصف، ولا تعمل تنبيهات الغارات."
+  },
+  "permWizRtLabel": {
+    "message": "الوصول إلى النطاقات الفرعية لـ Kick"
+  },
+  "permWinTitle": {
+    "message": "الخطوة الأخيرة: الموافقة في Firefox",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "لا يمكن منح الأذونات إلا من خلال Firefox. انقر على الزر ثم وافق في نافذة Firefox التي ستظهر.",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "فتح نافذة أذونات Firefox",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "لم يتم منح الإذن. يمكنك المحاولة مرة أخرى أو إغلاق النافذة حاليًا.",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "مرحبًا بك في KickAlert",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "كن أول من يعرف عندما يبدأ البث المباشر للقنوات التي تتابعها. ولتحقيق ذلك يستخدم KickAlert هذه الصلاحيات:",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "يقرأ قائمة القنوات التي تتابعها ويعرف إن كانت تبث مباشرة. يستخدم جلسة Kick الخاصة بك ولا يرى كلمة المرور أبدًا.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "الاتصال الفوري",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "يعرف لحظة بدء البث. إذا كان معطّلًا تصل التنبيهات متأخرة من دقيقة إلى دقيقة ونصف، ولا تعمل تنبيهات الغارات.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "الإشعارات وعلامات التبويب",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "يعرض إشعارات سطح المكتب، ويفتح البث في علامة تبويب جديدة إن أردت.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "حظر الإعلانات",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "يمكنك تفعيله من الإعدادات إن أردت. عند تفعيله يُطلب إذن منفصل لنطاقات الإعلانات.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "اختياري",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "لا يطّلع على المواقع الأخرى، ولا يقرأ سجل التصفح، ولا يرى كلمة المرور.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "يفتح المتصفح نافذة الموافقة",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "تُفتح موافقة Firefox في نافذة صغيرة",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "كل شيء جاهز!",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "يخبرك KickAlert عندما تبدأ القنوات التي تتابعها البث المباشر. اختر القنوات التي ترسل التنبيهات من زر الجرس في بطاقتها.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "الانتقال إلى قنواتي",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "يمكنك تفعيل الأذونات المعطّلة من هنا. سيطلب المتصفح موافقتك.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "مفعّل",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "معطّل",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "تفعيل",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "إذن نطاقات الإعلانات معطّل، لذا لا تُوقف طلبات الإعلانات على مستوى الشبكة.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "مكتوم حتى $1",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "أيقونات المناسبات",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "في بعض المناسبات في منطقتك، يتغير شكل أيقونة شريط الأدوات ليناسب ذلك اليوم.",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "لا أحد يبث الآن",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "سنُعلمك فور بدء بث أي قناة تتابعها.",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "إظهار القنوات غير المتصلة",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "لا تتابع أي قناة بعد",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "تابع القنوات على Kick وسيجلب KickAlert القائمة تلقائيًا.",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "تراجع",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "تمت إزالة $1 من المفضلة",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "تم مسح سجل الإشعارات",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "تم حذف المجموعة \"$1\"",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "تمت إزالة \"$1\"",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }

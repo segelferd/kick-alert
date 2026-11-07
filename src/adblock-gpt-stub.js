@@ -15,7 +15,7 @@
  * devam eder.
  *
  * v2.3.30'daki reklam engelleme kararı ve etik çerçevesi burada da geçerli:
- * ağa hiçbir istek atmıyoruz, hiçbir veri toplamıyoruz — sadece iki global
+ * ağa hiçbir istek atmıyoruz, hiçbir veri toplamıyoruz - sadece iki global
  * nesneyi zararsız kopyalarıyla kilitliyoruz.
  *
  * © 2026 Segelferd. All rights reserved.
@@ -25,10 +25,10 @@
 
   if (window.__kaGptStubbed) return;
 
-  // v2.5.14: TEŞHİS LOGU — enabled kontrolünden ÖNCE, koşulsuz çalışır.
+  // v2.5.14: TEŞHİS LOGU - enabled kontrolünden ÖNCE, koşulsuz çalışır.
   // "Reklam Engelleme'yi açtım, sayfayı yeniledim, hâlâ hiç log yok" sorununu
   // çözmek için: bu script GERÇEKTEN çalışıyor mu, localStorage'da GERÇEKTE
-  // ne okunuyor — bunu kesin olarak görmemiz lazım, tahmin etmek yerine.
+  // ne okunuyor - bunu kesin olarak görmemiz lazım, tahmin etmek yerine.
   try {
     var __diagVal = null;
     try { __diagVal = localStorage.getItem('__ka_ab_video'); } catch (e) { __diagVal = 'OKUMA HATASI: ' + e.message; }
@@ -37,7 +37,7 @@
   } catch (e) {}
 
   // Diğer hook'larla (adblock-worker-hook.js) aynı localStorage bayrağını
-  // kullanıyoruz — ayrı bir ayar/anahtar eklemeye gerek yok, ikisi de aynı
+  // kullanıyoruz - ayrı bir ayar/anahtar eklemeye gerek yok, ikisi de aynı
   // "Ad Blocking" ayarına bağlı olarak açılıp kapanıyor.
   var enabled = false;
   try { enabled = localStorage.getItem('__ka_ab_video') === '1'; } catch (e) {}
@@ -119,7 +119,7 @@
 
   // Kick'in reklam kodu genelde googletag.cmd.push(fn) ile kuyruğa alma
   // deseni kullanır (GPT'nin standart async yükleme kalıbı). cmd dizisine
-  // bir fonksiyon eklendiği anda hemen (zararsızca) çalıştırıp atıyoruz —
+  // bir fonksiyon eklendiği anda hemen (zararsızca) çalıştırıp atıyoruz -
   // içindeki çağrılar yukarıdaki no-op'lara düştüğü için hiçbir reklam
   // isteği oluşmuyor.
   fakeGoogletag.cmd = new Proxy(fakeGoogletag.cmd, {
@@ -143,13 +143,31 @@
 
   /* ---- google.ima (Interactive Media Ads / video reklam SDK'sı) sahtesi ---- */
 
+  // v2.5.82: "Reklam yok" cevabı. Kick yayın bitince (app:trigger-postroll)
+  // siyah reklam katmanını açıyor ve google.ima varsa SDK'yı yüklemeden onu
+  // kullanıyor; katmanı ancak ADS_MANAGER_LOADED ya da AD_ERROR gelince
+  // kapatıyor. Eski sahte requestAds hiçbir şey yapmadığı için katman açık
+  // kalıyordu (CSS ile gizleniyordu). Gerçek IMA dolgu bulamayınca AD_ERROR
+  // (1009 / VAST 303) yayar; biz de eşzamansız olarak aynısını yapıyoruz.
+  // Aynı davranış PureKick 10.24'te de var.
+  function KaAdErrorEvent(msg) {
+    var err = {
+      getErrorCode: returns(1009), getInnerError: returns(null), getMessage: returns(msg),
+      getType: returns('adLoadError'), getVastErrorCode: returns(303), toString: returns(msg)
+    };
+    this.type = 'adError';
+    this.getError = returns(err);
+    this.getUserRequestContext = returns(null);
+  }
+  KaAdErrorEvent.Type = { AD_ERROR: 'adError' };
+
   var fakeIma = {
     AdDisplayContainer: function () {
       this.initialize = noop;
       this.destroy = noop;
     },
     AdError: function () {},
-    AdErrorEvent: { Type: { AD_ERROR: 'adError' } },
+    AdErrorEvent: KaAdErrorEvent,
     AdEvent: {
       Type: {
         AD_BREAK_READY: 'adBreakReady',
@@ -161,9 +179,20 @@
       }
     },
     AdsLoader: function () {
-      this.addEventListener = noop;
-      this.removeEventListener = noop;
-      this.requestAds = noop;
+      var listeners = {};
+      this.addEventListener = function (type, fn) {
+        if (typeof fn === 'function') (listeners[type] = listeners[type] || []).push(fn);
+      };
+      this.removeEventListener = function (type, fn) {
+        var l = listeners[type], i = l ? l.indexOf(fn) : -1;
+        if (i >= 0) l.splice(i, 1);
+      };
+      this.requestAds = function () {
+        setTimeout(function () {
+          var l = (listeners[KaAdErrorEvent.Type.AD_ERROR] || []).slice();
+          for (var i = 0; i < l.length; i++) { try { l[i](new KaAdErrorEvent('No ads')); } catch (e) { /* yut */ } }
+        }, 0);
+      };
       this.destroy = noop;
       this.getSettings = returns({});
       this.contentComplete = noop;
@@ -184,11 +213,13 @@
 
   // v2.5.5: Eskiden window.google'ın TAMAMINI Object.defineProperty ile
   // configurable:false yaparak kilitliyorduk. Ama window.google, SADECE
-  // reklam (IMA) için değil — Kick'in sayfası başka bir amaçla (farklı bir
+  // reklam (IMA) için değil - Kick'in sayfası başka bir amaçla (farklı bir
   // Google entegrasyonu, analytics vb.) da bu isim alanına yazmaya çalışırsa,
   // bizim kilidimiz yüzünden SESSİZCE başarısız olur ya da hata fırlatırdı.
-  // Zaten domain engelleme (DNR kuralları) gerçek IMA script'inin hiç
-  // yüklenmesini engelliyor — bu sıkı kilide gerçek bir ihtiyaç yok. Artık
+  // v2.5.82 not: reklam alan adı engeli (DNR) ancak kullanıcı reklam alan
+  // adlarına izin verirse çalışır (izin yoksa kurallar hiçbir isteğe
+  // uygulanmaz). Gerçek IMA yüklenirse bu sahteyi ezebilir; kilitlemiyoruz
+  // çünkü window.google başka amaçlarla da kullanılabiliyor. Artık
   // sadece normal atama kullanıyoruz, window.google'ın geri kalanına
   // sayfanın kendi kodu istediği gibi dokunabilir.
   try {
@@ -196,5 +227,5 @@
     window.google.ima = fakeIma;
   } catch (e) { /* zaten salt-okunursa (nadir) sessizce geç */ }
 
-  log('GPT/IMA SDK stub kuruldu — reklam isteği kaynağında engellendi');
+  log('GPT/IMA SDK stub kuruldu - reklam isteği kaynağında engellendi');
 })();

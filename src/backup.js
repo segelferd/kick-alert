@@ -1,7 +1,7 @@
-// v2.5.38: Ayarları Dışa/İçe Aktar mantığı — artık popup içinde DEĞİL, kendi
+// v2.5.38: Ayarları Dışa/İçe Aktar mantığı - artık popup içinde DEĞİL, kendi
 // sekmesinde çalışıyor. Neden: Firefox, bir extension popup'ı içinde
 // <input type="file"> veya indirme diyaloğu açıldığında popup'ı otomatik
-// kapatıyor (Mozilla Bugzilla #1658694, #1292701) — bu, "İçe Aktar"a
+// kapatıyor (Mozilla Bugzilla #1658694, #1292701) - bu, "İçe Aktar"a
 // tıklandığında dosya seçilse bile 'change' olayının hiç tetiklenmemesine,
 // yani ayarların sessizce hiç yüklenmemesine yol açıyordu. Bu sayfa
 // chrome.tabs.create ile bir SEKME olarak açıldığı için bu sorunu yaşamaz.
@@ -11,7 +11,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await Utils.initI18n();
   // v2.5.38: applyOptionsI18n() (popup.js'te) sadece #options-panel/#chat-panel
-  // içindeki [data-i18n] elementlerini hedefliyor — bu sayfada o konteynerler
+  // içindeki [data-i18n] elementlerini hedefliyor - bu sayfada o konteynerler
   // yok, o yüzden burada TÜM sayfayı tarayan basit, bağımsız bir sürüm var.
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
@@ -107,7 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('import-confirm-modal').style.display = 'none';
     if (!pendingImportObj) return;
     // v2.5.38: storage.local.set() bir kota/izin hatası fırlatırsa artık
-    // sessizce takılıp kalmıyor — result her durumda dönüyor ve hata
+    // sessizce takılıp kalmıyor - result her durumda dönüyor ve hata
     // burada da açıkça yakalanıp kullanıcıya gösteriliyor.
     let result;
     try {
@@ -118,14 +118,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     pendingImportObj = null;
     if (result.ok) {
       showStatus(Utils.i18n('importSettingsSuccess') || 'Imported! Reloading...', false);
-      // v2.5.39: Metin "Yenileniyor..." diyordu ama kod bunu hiç YAPMIYORDU —
+      // v2.5.39: Metin "Yenileniyor..." diyordu ama kod bunu hiç YAPMIYORDU -
       // kullanıcı mesajı gördükten sonra sayfa sürüp gidiyordu, bu da
       // "yenileniyor" derken hiçbir şey olmuyormuş gibi kafa karıştırıyordu.
-      // Şimdi mesajı okuyacak kadar bekleyip GERÇEKTEN yeniliyoruz — bu da
+      // Şimdi mesajı okuyacak kadar bekleyip GERÇEKTEN yeniliyoruz - bu da
       // "Son yedek" bilgisini ve "Geri Al" butonunun görünürlüğünü tazeler.
       setTimeout(() => location.reload(), 1400);
     } else {
-      showStatus((Utils.i18n('importSettingsFail') || 'Import failed — file may be corrupted') + (result.error ? ` (${result.error})` : ''), true);
+      showStatus((Utils.i18n('importSettingsFail') || 'Import failed - file may be corrupted') + (result.error ? ` (${result.error})` : ''), true);
     }
   });
 

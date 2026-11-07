@@ -64,28 +64,32 @@
     "message": "警告"
   },
   "appDescription": {
-    "message": "Kick.comがライブ配信を始めたら真っ先に通知 — 即時アラート、広告なし配信、スパムなしチャット、忍者配信も見逃さない ;)"
+    "message": "フォロー中のKick配信者が配信を始めた瞬間に通知。自動入場、広告ブロック、チャットフィルター、最大4画面の同時視聴に対応。すべて無料。"
   },
   "appName": {
-    "message": "KickAlert — Kick.comライブ通知"
+    "message": "KickAlert - Kick配信通知・自動入場・広告ブロック"
+  },
+  "appNameShort": {
+    "message": "KickAlert - Kick配信通知・自動入場・広告ブロック",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
-    "message": "自動オープン"
+    "message": "自動入場"
   },
   "autoLaunchButtonTooltip": {
-    "message": "自動オープンの On/Off を切り替えます"
+    "message": "自動入場の On/Off を切り替えます"
   },
   "autoLaunchSettings": {
-    "message": "自動オープン設定"
+    "message": "自動入場設定"
   },
   "autoLaunchTab": {
-    "message": "自動オープン"
+    "message": "自動入場"
   },
   "autoRefreshPopup": {
     "message": "フォロー中タブを自動更新"
   },
   "autoUnmuteCheckbox": {
-    "message": "自動オープン後にミュートを自動解除する<br />(注意: 音量スライダーには表示上は反映されません)"
+    "message": "自動入場後にミュートを自動解除する<br />(注意: 音量スライダーには表示上は反映されません)"
   },
   "bellMain": {
     "message": "メインサウンド"
@@ -142,10 +146,14 @@
     "message": "フィルターモード"
   },
   "chatFilterModeDesc": {
-    "message": "非表示はメッセージを削除。ぼかしは薄める — マウスオーバーで表示。"
+    "message": "非表示はメッセージを削除。ぼかしは薄める - マウスオーバーで表示。"
   },
   "chatIntegrationDesc": {
     "message": "有効にすると上部にチャットタブが表示されます。初回インストール後は開いているKickタブを更新してください。"
+  },
+  "chatNotifJump": {
+    "message": "チャット通知の設定へ",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "チャット統合"
@@ -241,7 +249,7 @@
     "message": "終了"
   },
   "dndMuteAutoLaunch": {
-    "message": "自動オープンを一時停止"
+    "message": "自動入場を一時停止"
   },
   "dndMuteNotifications": {
     "message": "通知をミュート"
@@ -259,7 +267,7 @@
     "message": "重複タブブロック"
   },
   "duplicateTabGuardButtonTooltip": {
-    "message": "自動オープン時の重複タブブロックの On/Off を切り替えます。On の場合、自動オープン対象の配信のタブがすでに開かれているときは、新しくタブを開きません。"
+    "message": "自動入場時の重複タブブロックの On/Off を切り替えます。On の場合、自動入場対象の配信のタブがすでに開かれているときは、新しくタブを開きません。"
   },
   "errorLoadingHistory": {
     "message": "履歴の読み込みエラー。"
@@ -305,7 +313,7 @@
     "message": "ブラウザの言語を使用中: $1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "ブラウザの言語は未対応 — 英語を使用"
+    "message": "ブラウザの言語は未対応 - 英語を使用"
   },
   "langSectionTitle": {
     "message": "言語"
@@ -368,7 +376,99 @@
     "message": "タブの内容を更新します"
   },
   "resetSuspendOnRestartCheckbox": {
-    "message": "ブラウザ再起動時に自動オープン設定を On に戻す"
+    "message": "ブラウザ再起動時に自動入場設定を On に戻す"
+  },
+  "raidGuardCheckbox": {
+    "message": "配信がほかのチャンネルに移ったら、自動入場したタブを閉じる",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "KickAlert が開いたタブだけが対象です。自分で開いたタブや、自分でほかのチャンネルに移動したタブはそのままです。",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "チャンネル名...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "追加",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "クリア",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "すべての配信を削除",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "1 画面",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "横並び",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "3 列",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "2×2 グリッド",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "フォーカス",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "上にチャンネル名を追加すると、複数の配信を同時に視聴できます。",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "カードをドラッグして並べ替えられます。",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "全画面",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "削除",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "この配信だけ聞く",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "この配信をミュート",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "チャット",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "チャットを表示",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "チャットを閉じる",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "チャットを新しいタブで開く",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "チャンネルを追加するとチャットが表示されます。",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "ここで書き込めない場合は、チャットを新しいタブで開いてください。",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
   },
   "searchChannels": {
     "message": "チャンネル検索..."
@@ -395,13 +495,13 @@
     "message": "拡張機能のサウンド"
   },
   "soundModeExtensionTooltip": {
-    "message": "目立つカスタムアラート — 見逃しにくい"
+    "message": "目立つカスタムアラート - 見逃しにくい"
   },
   "soundModeWindows": {
     "message": "Windowsのサウンド"
   },
   "soundModeWindowsTooltip": {
-    "message": "標準システム音 — 日常に紛れやすい"
+    "message": "標準システム音 - 日常に紛れやすい"
   },
   "testSoundVolume": {
     "message": "[テスト]"
@@ -422,34 +522,70 @@
     "message": "他$1件"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — ライブ配信なし"
+    "message": "KickAlert - ライブ配信なし"
   },
   "viewerTrendTitle": {
     "message": "視聴者トレンド"
   },
   "chatBroadcasterNotif": {
     "message": "配信者メッセージ通知",
-    "description": "Chat integration — chatBroadcasterNotif"
+    "description": "Chat integration - chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
     "message": "配信者がチャットに書き込んだときに通知を受け取ります。1分あたり最大1回の通知。",
-    "description": "Chat integration — chatBroadcasterDesc"
+    "description": "Chat integration - chatBroadcasterDesc"
+  },
+  "radarTitle": {
+    "message": "バックグラウンドのチャットレーダー",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "フォロー中の最大5チャンネルのチャットを、配信中は Kick のタブを開いていなくても見守ります。あなたのユーザー名か下の単語が書き込まれると通知します。",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "チャンネルを追加...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "$1 へのメンションも検出します（ユーザー名はメンション通知の欄から）。",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "メンションも検出するには、メンション通知の欄にユーザー名を入力してください。",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "チャンネル名を入力してください。",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 はフォロー中のチャンネルにありません。",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "追加できるのは最大 $1 チャンネルです。",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "$2 のチャットに「$1」",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
   },
   "chatBroadcasterNotifTitle": {
     "message": "$1がチャットに書き込みました",
-    "description": "Chat integration — chatBroadcasterNotifTitle"
+    "description": "Chat integration - chatBroadcasterNotifTitle"
   },
   "chatWordFilterDesc": {
     "message": "これらの単語を含むメッセージは非表示またはぼかし表示されます。",
-    "description": "Chat integration — chatWordFilterDesc"
+    "description": "Chat integration - chatWordFilterDesc"
   },
   "chatUserFilterDesc": {
     "message": "リストに含まれるユーザーのメッセージは非表示またはぼかし表示されます。",
-    "description": "Chat integration — chatUserFilterDesc"
+    "description": "Chat integration - chatUserFilterDesc"
   },
   "chatEmojiSpamDesc": {
     "message": "絵文字が多すぎるメッセージを薄くします（ホバーで表示）。",
-    "description": "Chat integration — chatEmojiSpamDesc"
+    "description": "Chat integration - chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
     "message": "配信中 $1 分経過",
@@ -461,7 +597,7 @@
   },
   "anomalyWindowLabel": {
     "message": "直近 $1 分",
-    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+    "description": "Anomaly notification - window over which the change happened. $1 = minutes."
   },
   "botScoreTooltip": {
     "message": "ボット疑いスコア: $1%",
@@ -473,7 +609,7 @@
   },
   "botScoreAlwaysVisibleLabel": {
     "message": "すべてのライブチャンネルでボットスコアを表示",
-    "description": "Toggle label — show bot score badge on all live channels."
+    "description": "Toggle label - show bot score badge on all live channels."
   },
   "botScoreAlwaysVisibleHint": {
     "message": "オフの場合、スコアはスパイク時のみ表示されます。",
@@ -489,19 +625,19 @@
   },
   "timeAgoDay": {
     "message": "$1日前",
-    "description": "Relative time — timeAgoDay"
+    "description": "Relative time - timeAgoDay"
   },
   "timeAgoHour": {
     "message": "$1時間前",
-    "description": "Relative time — timeAgoHour"
+    "description": "Relative time - timeAgoHour"
   },
   "timeAgoMin": {
     "message": "$1分前",
-    "description": "Relative time — timeAgoMin"
+    "description": "Relative time - timeAgoMin"
   },
   "timeAgoJustNow": {
     "message": "たった今",
-    "description": "Relative time — timeAgoJustNow"
+    "description": "Relative time - timeAgoJustNow"
   },
   "viewerHistoryNoData": {
     "message": "まだデータが不足しています",
@@ -584,7 +720,7 @@
     "message": "オフラインのようです。インターネット接続を確認してもう一度お試しください。"
   },
   "fetchErrorRateLimited": {
-    "message": "Kickが一時的にリクエストを制限しています。自動的に解消されます — 少々お待ちください。"
+    "message": "Kickが一時的にリクエストを制限しています。自動的に解消されます - 少々お待ちください。"
   },
   "fetchErrorServerError": {
     "message": "Kickのサーバーで現在問題が発生しています。数分後にもう一度お試しください。"
@@ -626,7 +762,7 @@
     "message": "広告ブロックを有効にしますか？"
   },
   "adBlockConfirmBody": {
-    "message": "この機能は実験的かつ非公式です — Kickの内部API構造に依存しており、予告なく動作しなくなる可能性があります。また、Kick側でこの挙動が検知される可能性もあります。有効にすることで、これらのリスクを承諾したものとみなされます。"
+    "message": "この機能は実験的かつ非公式です - Kickの内部API構造に依存しており、予告なく動作しなくなる可能性があります。また、Kick側でこの挙動が検知される可能性もあります。有効にすることで、これらのリスクを承諾したものとみなされます。"
   },
   "adBlockConfirmAccept": {
     "message": "理解しました、有効にする"
@@ -647,7 +783,7 @@
     "message": "まだ誰もフォローしていません。Kickでチャンネルをフォローすると、自動的にここに表示されます。"
   },
   "whatsNewBannerText": {
-    "message": "新機能：Firefoxでのボットスコアと、アップデート後にオフになっているサイト権限のための短いガイド。"
+    "message": "このバージョンでは、なめらかな画面、記念日アイコン、元に戻す機能が加わったほか、一時停止、バックグラウンドのチャットレーダー、Multi-Stream の改善も含まれています。"
   },
   "optGroupGeneral": {
     "message": "一般"
@@ -673,23 +809,47 @@
   "close": {
     "message": "閉じる"
   },
+  "cardOpenChannel": {
+    "message": "チャンネルを開く",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "Multi-Stream に追加",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "お気に入りに追加",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "お気に入りから削除",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "Multi-Stream を開く",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "Kick.com を開く",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — Firefoxでボットスコア、権限ガイド"
+    "message": "v2.6.0 - なめらかな画面、記念日アイコン、元に戻す"
   },
   "releaseHistoryV0Body": {
-    "message": "• ボットスコアがChromeと同じくFirefoxでも使えるようになりました\n• アップデート後、オフになっているサイト権限を短いガイドで表示し、必要な理由を説明してオンにできるようにしました\n• Firefox：開いているKickタブ経由のリクエストが再び動作するようになりました"
+    "message": "• なめらかな画面：チャンネルが配信を始めるとカードがすべるように並び替わり、配信を始めたばかりのチャンネルには緑のリングが表示されます。ベルをオンにするとベルが揺れ、タブはすべるように切り替わります\n• 一時停止と「1時間ミュート」は、残り時間をアイコンのまわりのリングで表示します\n• すっきりしたカード：ベルと星は常に表示され、ほかのボタンはカードにカーソルを合わせると表示されます\n• 元に戻す：お気に入りの解除、通知履歴の削除、グループの削除、チャットのワード削除は、下に出るバーから元に戻せます\n• リストが空のときは、次に何をすればよいかを表示します\n• 記念日アイコン：お住まいの地域のいくつかの祝日や記念日に、ツールバーのアイコンが特別なデザインになります（設定でオフにできます）\n• Multi-Stream：音声オンの配信に小さなイコライザーが表示され、レイアウトを変えるとタイルがすべるように移動します\n• アイコンのデザインを統一し、並び替えバーはスクロール中も上に固定されます\n• 新しいウェブサイト：segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — 即時通知とレイドが復活"
+    "message": "v2.5.111 - 一時停止、チャットレーダー、イベント音、Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• 配信開始の即時通知、レイド通知、ボットスコアが再び動作します：Kickがリアルタイムサービスのキーを変更したため、KickAlertは最新のキーをKickから自動で取得するようになりました\n• Kickが再び変更しても、エラーを繰り返さずに拡張機能が新しいキーを自動で取得します\n• ポップアップに2本目のスクロールバーや設定画面下部の空白が表示されなくなりました"
+    "message": "• 上部バーから通知を1時間または朝まで一時停止できます。Chrome の通知の2つ目のボタンはそのチャンネルを1時間ミュートします\n• 各チャンネルの設定にある「このチャンネルの通知は届きますか？」のチェックで、通知を止める可能性のある項目をすべて確認できます\n• バックグラウンドのチャットレーダー：最大5チャンネルで、あなたのユーザー名や指定した単語が書き込まれると、Kick のタブを開いていなくても通知します\n• レイド、配信終了、配信の移動、カテゴリ変更向けに作った新しい音を10種類追加。イベントごとに別の音を選べます\n• Multi-Stream：配信はミュートで始まり、ワンクリックで1つの配信だけを聞けます。チャットは横のパネルに開きます\n• 配信者が配信を別のチャンネルに移したときの通知（任意）と、その際に自動で開いたタブを閉じるオプション\n• カードのコンパクト表示。チャット統合がオフの間はチャット通知の設定を表示しません\n• チャットフィルターが、似た文字、見えない文字、間を空けた文字などでごまかした書き方も検出します\n• ボットスコアは最初の1分から Kick 自身のチャット参加者数を使い、すべてのチャットモードを考慮します\n• Kick のメインサービスが止まったときの予備のリアルタイム接続\n• 英語のままだったツールチップが選択した言語で表示されるようになりました。いくつかの言語で表現も見直しました\n• 修正：クラウド同期がオンのとき、ポップアップで変えた設定が元に戻らなくなりました。追加の kick.com 権限で Multi-Stream のプレーヤーが動作するようになりました。Chrome のアイコンカードに配信中のチャンネルが表示されます"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — チャンネル通知がより正確に"
+    "message": "v2.5.87 - Firefoxのボットスコア、権限、広告ブロックの修正"
   },
   "releaseHistoryV2Body": {
-    "message": "• カテゴリー・タイトル変更の通知がより正確に：Kickから一時的に誤った値が返っても通知されず、5分間の待機中の変更は待機終了後に通知されます\n• 通知を一時停止していた間（おやすみモード、ミュート中のチャンネル）の変更が、後から古い知らせとして届かなくなりました"
+    "message": "• ボットスコアがChromeと同じくFirefoxでも使えるようになりました\n• アップデート後、オフになっているサイト権限を短いガイドで表示し、必要な理由を説明してオンにできるようにしました\n• Firefox：開いているKickタブ経由のリクエストが再び動作するようになりました\n• 広告ブロック：広告サーバーのブロックが実際に機能するようになりました（オンにするとKickAlertが広告ドメインへのアクセスを求めます）\n• 広告ブロックがオンのとき、配信終了時に黒い画面が残らなくなりました\n• ボットスコアが最初からスローモードとサブスクライバー限定チャットを考慮するようになりました\n• 設定の新しい「拡張機能の権限」セクションで各権限のオン/オフを確認でき、オフの権限をワンクリックでオンにできます。オフの権限があるとチャンネルリストの上にお知らせが表示されます"
   },
   "settingsBackupTitle": {
     "message": "バックアップと復元"
@@ -716,7 +876,7 @@
     "message": "インポートしました！再読み込み中..."
   },
   "importSettingsFail": {
-    "message": "インポートに失敗しました — ファイルが破損している可能性があります"
+    "message": "インポートに失敗しました - ファイルが破損している可能性があります"
   },
   "importConfirmTitle": {
     "message": "設定をインポートしますか？"
@@ -770,7 +930,7 @@
     "message": "$1 さんが返信しました"
   },
   "chatMentionSoundSmart": {
-    "message": "アクティブに見ていないとき（タブがバックグラウンド、チャットがスクロールされている、またはKick自体のチャットパネルが非表示）のみ — タグ付け、返信、配信者のメッセージに適用されます。"
+    "message": "アクティブに見ていないとき（タブがバックグラウンド、チャットがスクロールされている、またはKick自体のチャットパネルが非表示）のみ - タグ付け、返信、配信者のメッセージに適用されます。"
   },
   "chatMentionSoundEnabled": {
     "message": "音も再生する"
@@ -789,6 +949,18 @@
   },
   "themeSystem": {
     "message": "システム"
+  },
+  "cardDensityLabel": {
+    "message": "カードの表示",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "ゆったり",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "コンパクト",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "フィルター"
@@ -812,6 +984,62 @@
   "chipGuardLabel": {
     "message": "ガード",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "一時停止",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "停止中 · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "しばらく通知を一時停止します",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "$1 まで通知を停止しています。クリックするとオプションを表示します。",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "通知を一時停止",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "1時間",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "朝まで（$1）",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "お気に入りは通知する",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "今すぐ通知を再開",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "通知、音、自動入場が止まります。配信を始めたチャンネルは引き続き通知履歴に保存されます。",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "1時間ミュート",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "通知は $1 まで一時停止中です。",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "このチャンネルは通知から1時間ミュートされています。$1 に通知を再開します。",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "通知は $1 まで停止中ですが、このチャンネルはお気に入りなので通知します。",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "KickAlert の設定",
@@ -845,6 +1073,90 @@
     "message": "このチャンネルの追加通知です。すべて初期設定ではオフです。",
     "description": "Subtitle in the per-channel alerts window"
   },
+  "diagTitle": {
+    "message": "このチャンネルの通知は届きますか？",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "はい：このチャンネルが配信を始めると通知が届きます。",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "このチャンネルの通知は届きません：",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "設定で通知がオフになっています。",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "ブラウザまたはOSがKickAlertの通知をブロックしています。",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "kick.com へのアクセスがオフになっています。",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "このチャンネルは「通知なし」に設定されています（カードのベル）。",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "このチャンネルのモードが未設定で、既定は「通知なし」です。カードのベルで選んでください。",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "このチャンネルは「サイレント通知」に設定されています：通知は音なしで届きます。",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "おやすみモードが有効です（$1〜$2）：通知はミュートされています。",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "おやすみモードは $1〜$2 の間、通知をミュートします。",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "フィルター：配信が $1 に一致する場合のみ通知します。",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "現在の配信はこのチャンネルのフィルターに一致しません（$1）。",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "即時接続が切れています：通知はフォローリストの確認時に1〜1.5分遅れて届きます。",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "このチャンネルの即時追跡はまだ設定されていません：通知はフォローリストの確認時に1〜1.5分遅れて届きます。",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "Kickがリクエストを制限しています：約$1分後にフォローリストを再確認します。",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "最後に記録された配信：$1。",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "前回の配信（$1）はフィルターで除外されました：$2。",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "履歴にこのチャンネルの最近の配信はありません。KickAlertの起動時にすでに始まっていた配信は通知されません。",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "カテゴリーが一致しませんでした",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "タイトルにキーワードがありませんでした",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
+  },
   "chAlertChange": {
     "message": "カテゴリ・タイトルの変更",
     "description": "Per-channel alert option label"
@@ -858,7 +1170,7 @@
     "description": "Per-channel filter block title"
   },
   "chFilterDesc": {
-    "message": "空欄のままならすべての配信で通知します。通知・サウンド・自動オープンに適用されます。",
+    "message": "空欄のままならすべての配信で通知します。通知・サウンド・自動入場に適用されます。",
     "description": "Per-channel filter block description"
   },
   "chFilterCats": {
@@ -917,6 +1229,10 @@
     "message": "$1 からのレイド · $2 人",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "視聴者を $1 に送りました",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "配信終了",
     "description": "Per-channel alert option label"
@@ -933,6 +1249,10 @@
     "message": "$1 人の視聴者と一緒に",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "$1 が配信を $2 に移しました",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "レイドを受けたとき",
     "description": "Per-channel alert option label"
@@ -940,6 +1260,14 @@
   "chAlertRaidDesc": {
     "message": "ほかの配信者がこのチャンネルにレイドしたとき、誰から何人来たかを通知します。",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "配信がほかのチャンネルに移ったとき",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "この配信者が視聴者をほかのチャンネルに送ったときに通知します。通知をクリックするとそのチャンネルが開きます。",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "視聴時間",
@@ -970,8 +1298,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "カテゴリ・タイトル変更、配信終了、レイドの通知用。控えめな拡張機能の音、Windows の通知音、無音から選べます。",
+    "message": "カテゴリ・タイトル変更、配信終了、レイド、配信の移動の通知用。控えめな拡張機能の音、Windows の通知音、無音から選べます。",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "イベントごとに別の音",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "「共通の音」のままにすると上の音が使われます。",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "共通の音",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "汎用",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "レイド",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "配信終了",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "配信の移動",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "カテゴリ / タイトルの変更",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "ポップ",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "マリンバ",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "ファンファーレ",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "ドラムロール",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "終わりのベル",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "電源オフ",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "シュッ",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "ジャンプ",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "ページめくり",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "更新の合図",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "サウンド",
@@ -1018,7 +1418,7 @@
     "description": "Setting name in the sync warning: favourite channels"
   },
   "syncNameAutoOpen": {
-    "message": "自動オープンのチャンネル",
+    "message": "自動入場のチャンネル",
     "description": "Setting name in the sync warning: auto-open channels"
   },
   "syncNameSoundModes": {
@@ -1148,5 +1548,184 @@
   },
   "permRemindButton": {
     "message": "オンにする"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "続いて、ブラウザがGoogleの広告ドメインへのアクセスを求めます。KickAlertはkick.com上の広告リクエストをブロックするためだけに使用します。"
+  },
+  "permWizAdsTitle": {
+    "message": "広告ドメインのブロック"
+  },
+  "permWizAdsWhy": {
+    "message": "kick.com上でGoogleの広告サーバーへのリクエストを広告ブロックで止められるようにします。他のサイトは読み取りません。"
+  },
+  "permWizAdsOff": {
+    "message": "広告ブロックはプレーヤー経由で引き続き動作しますが、広告リクエストはネットワークレベルではブロックされません。"
+  },
+  "permWizAdsLabel": {
+    "message": "広告ドメインへのアクセス"
+  },
+  "permWizRtTitle": {
+    "message": "通知のバックアップ接続"
+  },
+  "permWizRtWhy": {
+    "message": "Kickの新しいリアルタイムサーバー（*.kick.com）への接続を可能にします。Pusherサービスが応答しなくなっても、このバックアップ接続で即時通知が届き続けます。"
+  },
+  "permWizRtOff": {
+    "message": "Pusherが応答しないときは、通知が1〜1.5分遅れて届き、レイド通知は動作しません。"
+  },
+  "permWizRtLabel": {
+    "message": "Kickのサブドメインへのアクセス"
+  },
+  "permWinTitle": {
+    "message": "最後のステップ：Firefox での承認",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "権限を付与できるのは Firefox だけです。ボタンを押して、開いた Firefox のウィンドウで承認してください。",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "Firefox の権限ウィンドウを開く",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "権限は付与されませんでした。もう一度試すか、今は閉じてください。",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "KickAlert へようこそ",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "フォロー中の配信者が配信を始めたら、いち早くお知らせします。そのために KickAlert は次のアクセスを使います：",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "フォローリストと、各チャンネルが配信中かどうかを読み取ります。Kick のセッションを使い、パスワードは見ません。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "即時接続",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "配信開始をすぐに検知します。オフの場合、通知が1〜1.5分遅れて届き、レイド通知は動作しません。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "通知とタブ",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "デスクトップ通知を表示し、必要に応じて配信を新しいタブで開きます。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "広告ブロック",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "必要なら設定からオンにできます。オンにすると、広告ドメイン用の権限が別途求められます。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "任意",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "ほかのサイトは見ず、閲覧履歴も読まず、パスワードも見ません。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "ブラウザの承認ウィンドウが開きます",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "Firefox の承認は小さなウィンドウで開きます",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "準備完了！",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "フォロー中のチャンネルが配信を始めると KickAlert がお知らせします。通知するチャンネルは、カードのベルボタンで選べます。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "チャンネル一覧へ",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "オフになっている権限はここでオンにできます。ブラウザが承認を求めます。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "オン",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "オフ",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "オンにする",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "広告ドメインの権限がオフのため、広告リクエストはネットワークレベルでブロックされません。",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "$1 までミュート中",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "記念日アイコン",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "お住まいの地域のいくつかの祝日や記念日に、ツールバーのアイコンがその日だけの特別なデザインになります。",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "今は配信中のチャンネルがありません",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "フォロー中のチャンネルが配信を始めたら、すぐにお知らせします。",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "オフラインのチャンネルを表示",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "まだ誰もフォローしていません",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "Kickでチャンネルをフォローすると、KickAlertが自動でリストに追加します。",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "元に戻す",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "$1 をお気に入りから外しました",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "通知履歴を削除しました",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "グループ「$1」を削除しました",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "「$1」を削除しました",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }

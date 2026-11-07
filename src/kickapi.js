@@ -13,26 +13,26 @@ const KickAPI = {
    * additional session cookies (XSRF-TOKEN, etc.) automatically.
    *
    * v2.3.9: Birden fazla session_token cookie'si aynı anda var olabilir
-   * (özellikle giriş yöntemi değiştirildiğinde — Google OAuth ↔ email/şifre —
+   * (özellikle giriş yöntemi değiştirildiğinde - Google OAuth ↔ email/şifre -
    * eski cookie hemen silinmeyebilir). Önceden cookies[0] (Chrome'un keyfi/
    * tanımsız sırası) kullanılıyordu, bu da bazen ESKİ/geçersiz cookie'nin
    * seçilmesine yol açabiliyordu. Şimdi Kick Signal'ın da kullandığı yöntemle
    * (kpjjlpmbcbnbemdadfnkgmhchiibifda) en son geçerlilik tarihine (expirationDate)
-   * sahip olanı seçiyoruz — giriş yöntemi ne olursa olsun her zaman en güncel
+   * sahip olanı seçiyoruz - giriş yöntemi ne olursa olsun her zaman en güncel
    * session kullanılır.
    */
   async getSessionToken() {
     try {
       const cookies = await chrome.cookies.getAll({ domain: 'kick.com', name: 'session_token' });
       if (cookies.length === 0) return null;
-      // v2.4.3: CHIPS (partitionKey) teşhisi — Kick Signal v2.2.0 incelemesinden
+      // v2.4.3: CHIPS (partitionKey) teşhisi - Kick Signal v2.2.0 incelemesinden
       // esinlenildi. Chrome'un bölümlenmiş çerez sistemi, bir çerezi sadece
       // belirli bir üst-seviye bağlamda görünür kılabiliyor. Google/Apple OAuth
       // girişi (yönlendirme/popup içeren bir akış) email/şifreden YAPISAL olarak
-      // farklı bir tarayıcı bağlamı yaratıyor — eğer sonuçtaki session_token
+      // farklı bir tarayıcı bağlamı yaratıyor - eğer sonuçtaki session_token
       // farklı bir partitionKey ile işaretleniyorsa, bu daha önce hiç
       // bakmadığımız bir ayrım noktası olabilir. NOT: Bu, bugüne kadar
-      // kanıtladığımız "Kick sunucu tarafı tutarsızlığı" sonucunu DEĞİŞTİRMEZ —
+      // kanıtladığımız "Kick sunucu tarafı tutarsızlığı" sonucunu DEĞİŞTİRMEZ -
       // sadece Kick'e sunulacak teşhis raporunu zenginleştirir.
       const partitionKeyOf = (c) => {
         try { return c.partitionKey ? JSON.stringify(c.partitionKey) : 'none'; }
@@ -42,11 +42,17 @@ const KickAPI = {
         // v2.3.22: tek cookie olsa bile teşhis için maskeli id'sini logla
         const val = decodeURIComponent(cookies[0].value);
         const userId = val.split('|')[0] || val.split('%7C')[0] || '?';
-        KLog.info('TOK-01', `session_token: tek aday, userId=${userId}, exp=${cookies[0].expirationDate}, partitionKey=${partitionKeyOf(cookies[0])}`);
+        // v2.5.85: her istekte (her kontrolde ~5 kez) aynı satır yazılıyordu;
+        // artık sadece çerez değişince (yeni giriş, yenilenen süre) yazılır.
+        const sig = `${userId}|${cookies[0].expirationDate}|${partitionKeyOf(cookies[0])}`;
+        if (sig !== this._lastTokSig) {
+          this._lastTokSig = sig;
+          KLog.info('TOK-01', `session_token: tek aday, userId=${userId}, exp=${cookies[0].expirationDate}, partitionKey=${partitionKeyOf(cookies[0])}`);
+        }
         return val;
       }
 
-      // v2.3.22: TÜM adayları teşhis için logla — "en yeni expirationDate" seçimi
+      // v2.3.22: TÜM adayları teşhis için logla - "en yeni expirationDate" seçimi
       // YANLIŞ olabilir: eski token daha UZUN ömürlü verilmiş olabilir, yeni
       // token daha KISA ömürlü. Bu durumda "en yeni tarih" aslında ESKİ/bozuk
       // token'ı seçer. Bunu görmeden bilemeyiz.
@@ -78,7 +84,7 @@ const KickAPI = {
    *   - 1 header (sadece Auth) → 200 ✅
    *
    * Sebep: Chrome JavaScript fetch'inde Sec-CH-UA-* header'larını STRİP ediyor
-   * (güvenlik kuralı — browser fingerprint manipüle edilmesin). Plan D/E'de
+   * (güvenlik kuralı - browser fingerprint manipüle edilmesin). Plan D/E'de
    * eklediğimiz Sec-CH-UA-* header'ları aslında ASLA gönderilmedi.
    *
    * Cloudflare bunu bir bot fingerprint olarak yorumladı:
@@ -88,10 +94,10 @@ const KickAPI = {
    * 'legitimate API client' olarak değerlendiriyor, 200 OK dönüyor.
    *
    * NOT: 'via' parametresi geriye dönük uyumluluk için korundu, ama davranışı
-   * değiştirmiyor — her iki yolda da aynı minimal header set.
+   * değiştirmiyor - her iki yolda da aynı minimal header set.
    */
   async makeHeaders(via = 'sw') {
-    // v2.3.12 denemesi (Accept-Language/Cache-Control ekleme) sonuç değiştirmedi —
+    // v2.3.12 denemesi (Accept-Language/Cache-Control ekleme) sonuç değiştirmedi -
     // geri alındı. Minimal header'a dönüldü.
     const headers = {
       'Accept': 'application/json',
@@ -103,16 +109,16 @@ const KickAPI = {
   },
 
   /**
-   * Alternatif endpoint URL'leri — web.kick.com alt domain'i Cloudflare için
+   * Alternatif endpoint URL'leri - web.kick.com alt domain'i Cloudflare için
    * farklı kurallar uygulayabilir.
    */
   ALT_FOLLOWED_URLS: [
-    // Şimdilik kapalı — endpoint formatı tam değil
+    // Şimdilik kapalı - endpoint formatı tam değil
   ],
 
   // Retry config
   _retryDelays: [1000, 2000, 4000, 8000], // exponential backoff
-  _lastBackoffUntil: 0, // timestamp — skip API calls until this time
+  _lastBackoffUntil: 0, // timestamp - skip API calls until this time
   _lastBackoffDuration: 0, // v2.3.0: son backoff süresi (adaptif uzatma için)
   _lastBackoffEndTime: 0,  // v2.3.0: son backoff bitiş zamanı (kısa sürede tekrar 403 ise uzat)
   _backoffLoadedFromStorage: false, // SW restart sonrası tek seferlik yükleme
@@ -122,7 +128,7 @@ const KickAPI = {
   // Diagnostic panel "Son 5dk istatistik" panosu da bu veriyi okur.
   _recentFailures: [],         // timestamp dizisi (401/403 olayları)
   _recentSuccesses: [],        // timestamp dizisi (200 OK olayları)
-  _recentJitters: [],          // {ts, ms} — alarm jitter ölçümleri
+  _recentJitters: [],          // {ts, ms} - alarm jitter ölçümleri
   _FAILURE_WINDOW_MS: 10 * 60 * 1000, // 10 dakikalık pencere
 
   _pruneRecent(arr) {
@@ -154,7 +160,7 @@ const KickAPI = {
     return this._recentFailures.length;
   },
 
-  /** Son 5dk istatistiği — diagnostic panel için */
+  /** Son 5dk istatistiği - diagnostic panel için */
   getRecentApiStats(windowMs = 5 * 60 * 1000) {
     const now = Date.now();
     this._pruneRecent(this._recentFailures);
@@ -179,7 +185,7 @@ const KickAPI = {
     };
   },
 
-  // v2.3.1 PLAN C — Content Script Proxy
+  // v2.3.1 PLAN C - Content Script Proxy
   // ────────────────────────────────────────────────────────────────────────
   // Background SW'in fetch'i Cloudflare için 'şüpheli bot fingerprint' oluyor.
   // Çözüm: kick.com sekmesi açıksa, fetch'i o sekmenin content script'inden
@@ -191,7 +197,7 @@ const KickAPI = {
 
   _proxyTabId: null,           // En son başarılı proxy tab'ın ID'si (cache)
   _proxyTabIdAt: 0,            // Cache zaman damgası
-  _PROXY_TAB_CACHE_MS: 90000,  // v2.3.1 fix: 30 → 90sn — tabs.query MV3'te flaky,
+  _PROXY_TAB_CACHE_MS: 90000,  // v2.3.1 fix: 30 → 90sn - tabs.query MV3'te flaky,
                                 // daha az sıklıkla yeniden sorgu yap, yanlış miss'leri azalt
   _proxyStats: { hits: 0, misses: 0, fails: 0 }, // Diagnostic için
 
@@ -199,7 +205,7 @@ const KickAPI = {
    * Açık kick.com sekmesi var mı? Cache'li.
    * v2.3.1 fix: tabs.query MV3'te ara ara boş döner (race condition / SW uyandırma).
    * Mitigations:
-   *   1) Cache 90sn (eskisi 30sn) — daha az query
+   *   1) Cache 90sn (eskisi 30sn) - daha az query
    *   2) Query boş dönerse: 100ms bekle, 1 retry yap
    *   3) Yine boşsa: son bilinen tab ID hala geçerli mi tabs.get() ile doğrula
    */
@@ -213,12 +219,12 @@ const KickAPI = {
           return this._proxyTabId;
         }
       } catch (_) { /* tab kapanmış */ }
-      // Cache'i invalidate etme — son bilinen ID'yi koru, fresh query'de fallback olarak kullan
+      // Cache'i invalidate etme - son bilinen ID'yi koru, fresh query'de fallback olarak kullan
     }
 
     const lastKnownTabId = this._proxyTabId;
 
-    // Yeni sorgu — gerekirse 1 retry
+    // Yeni sorgu - gerekirse 1 retry
     let tabs = [];
     for (let attempt = 0; attempt < 2; attempt++) {
       try {
@@ -239,7 +245,7 @@ const KickAPI = {
       return best.id;
     }
 
-    // Query 2 kere de boş döndü — son bilinen tab ID hala geçerli mi?
+    // Query 2 kere de boş döndü - son bilinen tab ID hala geçerli mi?
     if (lastKnownTabId) {
       try {
         const tab = await chrome.tabs.get(lastKnownTabId);
@@ -250,7 +256,7 @@ const KickAPI = {
           return lastKnownTabId;
         }
       } catch (_) {
-        // Tab gerçekten kapanmış — cache'i temizle
+        // Tab gerçekten kapanmış - cache'i temizle
         this._proxyTabId = null;
       }
     }
@@ -271,7 +277,7 @@ const KickAPI = {
       // v2.3.1 Plan D: via='proxy' → sec-fetch-site: same-origin (sayfa zaten kick.com'da)
       const proxyHeaders = await this.makeHeaders('proxy');
 
-      // v2.3.1 Plan E fix: sendMessage'ı manuel Promise'e sar — chrome.runtime.lastError'u
+      // v2.3.1 Plan E fix: sendMessage'ı manuel Promise'e sar - chrome.runtime.lastError'u
       // yakalayabilelim. Bu kritik: tab var ama content script listener YOK durumunda
       // sendMessage promise undefined ile resolve oluyor (timeout atmıyor). Önceki
       // sürümde bu 'undefined response' olarak görünüyordu. Şimdi açıkça fail sayıyoruz.
@@ -305,7 +311,7 @@ const KickAPI = {
         return null;
       }
       if (result.__noListener) {
-        // Content script listener yok — auto-inject mekanizmasına bırak
+        // Content script listener yok - auto-inject mekanizmasına bırak
         this._proxyStats.fails++;
         const now = Date.now();
         if (!this._lastProxyFailLogAt || now - this._lastProxyFailLogAt > 60000) {
@@ -315,14 +321,14 @@ const KickAPI = {
         return null;
       }
       if (result.error) {
-        // Content script'te runtime hatası — fallback'e düş
+        // Content script'te runtime hatası - fallback'e düş
         console.debug('[KickAlert] Plan C proxy error:', result.error);
         this._proxyStats.fails++;
         return null;
       }
       // v2.3.1 Plan E fix: result var ama status field eksikse fail say
       if (typeof result.status !== 'number') {
-        console.debug('[KickAlert] Plan C: result.status eksik —', result);
+        console.debug('[KickAlert] Plan C: result.status eksik -', result);
         this._proxyStats.fails++;
         return null;
       }
@@ -333,10 +339,10 @@ const KickAPI = {
       this._proxyStats.fails++;
       const now = Date.now();
       if (!this._lastProxyFailLogAt || now - this._lastProxyFailLogAt > 60000) {
-        console.debug(`[KickAlert] Plan C proxy fail (60sn pencere — Hits: ${this._proxyStats.hits}, Fails: ${this._proxyStats.fails}): ${e.message}`);
+        console.debug(`[KickAlert] Plan C proxy fail (60sn pencere - Hits: ${this._proxyStats.hits}, Fails: ${this._proxyStats.fails}): ${e.message}`);
         this._lastProxyFailLogAt = now;
       }
-      // v2.3.1 fix: Tab cache'i invalidate ETME — tek timeout = tab kapandı demek değil.
+      // v2.3.1 fix: Tab cache'i invalidate ETME - tek timeout = tab kapandı demek değil.
       // Tab muhtemelen hâlâ duruyor (arka plan, yavaş cevap). Bu çağrı SW'ye fallback,
       // bir sonraki çağrıda yine aynı tab'ı denemeye devam et. Eğer gerçekten ölü tab
       // varsa _findKickTab içindeki tabs.get() kontrolü onu yakalar.
@@ -359,12 +365,12 @@ const KickAPI = {
   },
 
   /**
-   * Plan C ana giriş — _doFetch(url, headers)
+   * Plan C ana giriş - _doFetch(url, headers)
    * Strateji c: Sekme varsa her zaman proxy dene; null dönerse SW fetch'e düş.
    * Response benzeri nesne döndürür: { ok, status, json(), text(), via: 'proxy'|'sw' }
    */
   async _doFetch(url) {
-    // v2.3.1 Plan E: İki katmanlı fetch — proxy başarısızsa SW'ye fallback.
+    // v2.3.1 Plan E: İki katmanlı fetch - proxy başarısızsa SW'ye fallback.
     // Önceki sürümde proxy 403 dönse bile responseLike döndürüyor, hiç SW denenmeden
     // backoff'a düşülüyordu. Şu mantıkta:
     //   1. Proxy varsa dene
@@ -381,7 +387,7 @@ const KickAPI = {
       status: p.status,
       via: 'proxy',
       // v2.3.21: content.js zaten cf-ray dahil response header'larını yakalayıp
-      // gönderiyordu (respHeaders), ama burada hiç açılmıyordu — sadece bunu ekledik.
+      // gönderiyordu (respHeaders), ama burada hiç açılmıyordu - sadece bunu ekledik.
       headers: { get: (name) => (p.headers && p.headers[String(name).toLowerCase()]) || null },
       async json() {
         try { return JSON.parse(p.body); }
@@ -396,12 +402,12 @@ const KickAPI = {
       },
     });
 
-    // Proxy başarılı (200) — kullan
+    // Proxy başarılı (200) - kullan
     if (proxied !== null && proxied.status >= 200 && proxied.status < 400) {
       return wrapProxied(proxied);
     }
 
-    // Proxy 401/403 — SW ile ikinci şans (NADIR ama kurtarıcı olabilir)
+    // Proxy 401/403 - SW ile ikinci şans (NADIR ama kurtarıcı olabilir)
     if (proxied !== null && (proxied.status === 401 || proxied.status === 403)) {
       const now = Date.now();
       if (!this._lastProxyAuthLogAt || now - this._lastProxyAuthLogAt > 60000) {
@@ -420,17 +426,17 @@ const KickAPI = {
         }
         return swResp;
       } catch (e) {
-        // SW de patladı — proxy response'unu döndür (en azından gerçek HTTP status alır)
+        // SW de patladı - proxy response'unu döndür (en azından gerçek HTTP status alır)
         return wrapProxied(proxied);
       }
     }
 
-    // Proxy diğer hatalar (4xx/5xx, null değil) — proxy response'unu döndür
+    // Proxy diğer hatalar (4xx/5xx, null değil) - proxy response'unu döndür
     if (proxied !== null) {
       return wrapProxied(proxied);
     }
 
-    // Proxy null (tab yok / listener yok / timeout) — SW fallback
+    // Proxy null (tab yok / listener yok / timeout) - SW fallback
     const swResp = await fetch(url, {
       headers: await this.makeHeaders('sw'),
       credentials: 'include',
@@ -465,7 +471,7 @@ const KickAPI = {
     this._negativeCache.delete(slug);
   },
 
-  // v2.1.0: Backoff state SW restart'ta kayboluyordu — storage'a persist
+  // v2.1.0: Backoff state SW restart'ta kayboluyordu - storage'a persist
   async _loadBackoffFromStorage() {
     if (this._backoffLoadedFromStorage) return;
     this._backoffLoadedFromStorage = true;
@@ -500,7 +506,7 @@ const KickAPI = {
   /**
    * v2.3.1: Cloudflare bot management cookie'lerini (__cf_bm, _cfuvid) yeniler.
    * 403 yakalandığında veya proaktif olarak çağrılır. kick.com ana sayfasına
-   * basit bir GET atar — Cloudflare'in döndürdüğü Set-Cookie header'ları
+   * basit bir GET atar - Cloudflare'in döndürdüğü Set-Cookie header'ları
    * cookie jar'a yazılır (credentials: include sayesinde) ve sonraki API
    * isteği taze cookie'lerle gider.
    *
@@ -511,7 +517,7 @@ const KickAPI = {
   _SESSION_REFRESH_MIN_INTERVAL_MS: 60 * 1000, // 1 dk içinde 2. refresh isteği reddedilir
 
   async refreshKickSession(reason = 'manual') {
-    // Cooldown — peş peşe refresh çağrılarını engelle
+    // Cooldown - peş peşe refresh çağrılarını engelle
     const now = Date.now();
     if (now - this._lastSessionRefreshAt < this._SESSION_REFRESH_MIN_INTERVAL_MS) {
       console.debug(`[KickAlert] Session refresh skipped (cooldown, last ${Math.round((now - this._lastSessionRefreshAt)/1000)}s ago)`);
@@ -520,12 +526,12 @@ const KickAPI = {
     this._lastSessionRefreshAt = now;
 
     try {
-      // kick.com ana sayfasına basit GET — Cloudflare cookie'lerini yeniler
+      // kick.com ana sayfasına basit GET - Cloudflare cookie'lerini yeniler
       const response = await fetch('https://kick.com/', {
         method: 'GET',
         credentials: 'include',
         cache: 'no-store',
-        // mode kullanmıyoruz — host_permissions zaten kick.com içeriyor
+        // mode kullanmıyoruz - host_permissions zaten kick.com içeriyor
         headers: {
           // Gerçek tarayıcı gibi davran (Cloudflare için)
           'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
@@ -536,7 +542,7 @@ const KickAPI = {
 
       // v2.3.1 (B+C kombinasyonu): Refresh 200 sonrası backoff yönetimi:
       //   - Plan C tab varsa: backoff TAM SIFIRLA (proxy zaten Cloudflare-safe)
-      //   - Plan C yok: 5sn'lik kısa cooldown (eskisi 30sn — popup gecikmesini önler)
+      //   - Plan C yok: 5sn'lik kısa cooldown (eskisi 30sn - popup gecikmesini önler)
       // Proactive (alarm tabanlı) ve manuel test refresh'leri bu yola düşer.
       if (response.ok && this._lastBackoffUntil > Date.now() + 5 * 1000) {
         const proxyAvailable = await this._findKickTab() !== null;
@@ -567,10 +573,10 @@ const KickAPI = {
    * AYNI geçerli token'a bazen 200 bazen 401 döndüğü kanıtlandı (bkz. Patron'la
    * paylaşılan network dökümleri). Bu fonksiyon, backoff/hata yönetimini hiç
    * tetiklemeden (erken çıkış yok) N ardışık ham istek atar ve her birinin
-   * durumunu + cf-ray başlığını kaydeder — amaç, hata Cloudflare'ın belirli bir
+   * durumunu + cf-ray başlığını kaydeder - amaç, hata Cloudflare'ın belirli bir
    * veri merkezine/arka uç repliksına mı bağlı, yoksa tamamen rastgele mi
    * olduğunu görmek. _doFetch() zaten Plan C + SW fallback'i kendi içinde
-   * yapıyor, backoff mantığına hiç girmiyor — bu yüzden temiz bir ölçüm.
+   * yapıyor, backoff mantığına hiç girmiyor - bu yüzden temiz bir ölçüm.
    */
   async authConsistencyProbe(n = 10, delayMs = 1500) {
     const results = [];
@@ -602,12 +608,12 @@ const KickAPI = {
 
     // v2.3.1: Backoff aktif ama her 2 dk'da bir session refresh ile recovery dene.
     // Eğer cookie tazelenince HTTP 200 dönerse → backoff'u kısa cooldown'a indir.
-    // KRİTİK: refresh 200 dönse bile inline retry YAPMA — Cloudflare için 'recovery →
+    // KRİTİK: refresh 200 dönse bile inline retry YAPMA - Cloudflare için 'recovery →
     // anında istek' davranışı bot sinyali. Bir sonraki alarm tick'inde (30-90sn)
     // doğal aralıkta denensin.
     if (Date.now() < this._lastBackoffUntil) {
       // v2.3.1 fix (Plan C bypass): Plan C tab varsa backoff'u doğrudan sıfırla,
-      // recovery beklemeden fetch'e geç. Proxy zaten Cloudflare-safe — bir 403 olsa
+      // recovery beklemeden fetch'e geç. Proxy zaten Cloudflare-safe - bir 403 olsa
       // bile Plan C'nin 1dk yumuşatması devreye girer. Mevcut backoff Cloudflare'in
       // birkaç dakika önceki baskısının kalıntısı; şu an Plan C aktifken anlamsız.
       const planCActive = await this._findKickTab() !== null;
@@ -618,10 +624,10 @@ const KickAPI = {
         this._lastBackoffUntil = 0;
         this._lastBackoffDuration = 0;
         this._saveBackoffToStorage(0);
-        // Akış devam — _doFetch'e düş
+        // Akış devam - _doFetch'e düş
       } else {
         KLog.info('BKF-02', `Backoff aktif, Plan C tab bulunamadı (_findKickTab() → null) → recovery/backoff akışına devam`);
-        // Plan C yok — eski güvenli akış (recovery dene, başarısızsa hata fırlat)
+        // Plan C yok - eski güvenli akış (recovery dene, başarısızsa hata fırlat)
         // v2.3.1 fix E: Recovery atışı için cooldown 2dk → 1dk
         const sinceLastRecovery = Date.now() - (this._lastBackoffRecoveryAt || 0);
         const RECOVERY_COOLDOWN = 60 * 1000; // 1 dk (eski 2dk)
@@ -636,18 +642,18 @@ const KickAPI = {
             this._lastBackoffUntil = Date.now() + NEXT_ATTEMPT_DELAY;
             this._lastBackoffDuration = 0;
             this._saveBackoffToStorage(this._lastBackoffUntil);
-            console.debug(`[KickAlert] Session refresh başarılı, ${NEXT_ATTEMPT_DELAY/1000}sn cooldown — şimdiki çağrı ATLANDI`);
-            throw new Error(`API recovery cooldown — retry after ${NEXT_ATTEMPT_DELAY/1000}s`);
+            console.debug(`[KickAlert] Session refresh başarılı, ${NEXT_ATTEMPT_DELAY/1000}sn cooldown - şimdiki çağrı ATLANDI`);
+            throw new Error(`API recovery cooldown - retry after ${NEXT_ATTEMPT_DELAY/1000}s`);
           } else {
-            throw new Error(`API backoff — retry after ${Math.ceil((this._lastBackoffUntil - Date.now()) / 1000)}s`);
+            throw new Error(`API backoff - retry after ${Math.ceil((this._lastBackoffUntil - Date.now()) / 1000)}s`);
           }
         } else {
-          throw new Error(`API backoff — retry after ${Math.ceil((this._lastBackoffUntil - Date.now()) / 1000)}s`);
+          throw new Error(`API backoff - retry after ${Math.ceil((this._lastBackoffUntil - Date.now()) / 1000)}s`);
         }
       }
     }
 
-    // v2.1.0: Erken offline kontrolü — gereksiz retry'lardan kaçın
+    // v2.1.0: Erken offline kontrolü - gereksiz retry'lardan kaçın
     // navigator.onLine bazı Firefox SW context'lerinde undefined olabilir,
     // o yüzden sadece kesin false ise kısa devre yapıyoruz (false-negative kabul).
     if (typeof navigator !== 'undefined' && navigator.onLine === false) {
@@ -661,35 +667,35 @@ const KickAPI = {
         const response = await this._doFetch(url);
 
         if (response.status === 429) {
-          // Rate limited — enter backoff
+          // Rate limited - enter backoff
           const retryAfter = parseInt(response.headers.get('Retry-After') || '30', 10);
           this._lastBackoffUntil = Date.now() + (retryAfter * 1000);
           // v2.1.0: persist (SW restart'ta korunsun)
           this._saveBackoffToStorage(this._lastBackoffUntil);
-          console.warn(`[KickAlert] Rate limited (429) — backing off ${retryAfter}s`);
+          console.warn(`[KickAlert] Rate limited (429) - backing off ${retryAfter}s`);
           throw new Error(`Rate limited: retry after ${retryAfter}s`);
         }
 
         // v2.1.0: 401/403 = auth/session issue
         // v2.3.1 (Plan B/M1): ANINDA inline recovery refresh KALDIRILDI.
         // Konsol verisi (8/8 fail) gösterdi ki "403 alır almaz refresh" Cloudflare için
-        // bot/panic signal — refresh de 403 yiyor, durum kötüleşiyor.
+        // bot/panic signal - refresh de 403 yiyor, durum kötüleşiyor.
         // Recovery sorumluluğu artık iki MEVCUT mekanizmaya devredildi:
-        //   1) `proactive_25min` — 25 dk'da bir cookie tazeleme (alarm tabanlı)
-        //   2) `backoff_recovery` — backoff aktifken 2 dk cooldown'lu refresh denemesi
-        //      (fetchKick'in girişindeki kontrol bloğu — bkz. yukarısı)
+        //   1) `proactive_25min` - 25 dk'da bir cookie tazeleme (alarm tabanlı)
+        //   2) `backoff_recovery` - backoff aktifken 2 dk cooldown'lu refresh denemesi
+        //      (fetchKick'in girişindeki kontrol bloğu - bkz. yukarısı)
         // 403 gelince DOĞRUDAN adaptif backoff'a düşüyoruz, panic loop'u kırıyoruz.
         if (response.status === 401 || response.status === 403) {
           // M4: Failure'ı kayıt et (dinamik yavaşlatma için son 10 dk penceresi)
           this._recordFailure();
 
           const now = Date.now();
-          // v2.3.1 Plan E: via bilgisi de log'a girsin — Cloudflare baskısının
+          // v2.3.1 Plan E: via bilgisi de log'a girsin - Cloudflare baskısının
           // hangi katmandan geldiğini görmek için kritik (proxy vs SW).
           const via = response.via || '?';
 
           // v2.3.11: Kick'in GERÇEKTEN ne söylediğini oku. Şu ana kadar sadece
-          // HTTP status kodunu yakalayıp atıyorduk — response body'de muhtemelen
+          // HTTP status kodunu yakalayıp atıyorduk - response body'de muhtemelen
           // Kick'in kendi hata mesajı var (örn. "Unauthenticated", token formatı
           // hatası, Cloudflare challenge sayfası HTML'i vb.). Bunu görmeden
           // "neden 401 alıyoruz" sorusuna kör tahminle cevap veriyorduk.
@@ -700,22 +706,22 @@ const KickAPI = {
           } catch (bodyErr) {
             bodySnippet = `[body okunamadı: ${bodyErr.message}]`;
           }
-          KLog.warn('AUTH-01', `API ${response.status} (via:${via}) — Kick body: ${bodySnippet}`);
+          KLog.warn('AUTH-01', `API ${response.status} (via:${via}) - Kick body: ${bodySnippet}`);
 
           // v2.3.13: 401 aldığımızda, o an elimizde GERÇEKTEN geçerli bir
           // session_token var mıydı diye kontrol ediyoruz. Aylarca süren
           // araştırma sonunda kanıtladık: bazen token var, geçerli, kick.com'un
-          // kendi sitesi aynı token'la 200 alıyor, ama biz yine de 401 alıyoruz —
+          // kendi sitesi aynı token'la 200 alıyor, ama biz yine de 401 alıyoruz -
           // bu durumda kullanıcıya "giriş yap" demek YANLIŞ ve yanıltıcı, çünkü
           // zaten giriş yapmış. Bu iki durumu ayırt ediyoruz.
           const hadToken = !!(await this.getSessionToken());
           const tokenFlag = hadToken ? 'token:yes' : 'token:no';
 
           if (now - (this._lastAuthWarnAt || 0) > 5 * 60 * 1000) {
-            console.warn(`[KickAlert] API ${response.status} (via:${via}) — adaptif backoff'a geçiliyor. Body: ${bodySnippet}`);
+            console.warn(`[KickAlert] API ${response.status} (via:${via}) - adaptif backoff'a geçiliyor. Body: ${bodySnippet}`);
             this._lastAuthWarnAt = now;
           } else {
-            console.debug(`[KickAlert] API ${response.status} (via:${via}) — auth required, backoff aktive. Body: ${bodySnippet}`);
+            console.debug(`[KickAlert] API ${response.status} (via:${via}) - auth required, backoff aktive. Body: ${bodySnippet}`);
           }
 
           // v2.3.1 fix: Plan C tab varsa 403 backoff'unu yumuşat.
@@ -728,10 +734,10 @@ const KickAPI = {
 
           let backoffMs;
           if (planCActive) {
-            backoffMs = 60 * 1000; // 1 dk — Plan C ile hızlı kurtarma yeterli
-            console.debug(`[KickAlert] Plan C aktif — backoff 1dk'ya yumuşatıldı (response: ${response.status})`);
+            backoffMs = 60 * 1000; // 1 dk - Plan C ile hızlı kurtarma yeterli
+            console.debug(`[KickAlert] Plan C aktif - backoff 1dk'ya yumuşatıldı (response: ${response.status})`);
           } else {
-            // v2.3.0: 403 yağmurunu önle — global ADAPTİF backoff (5→10→20→30 dk).
+            // v2.3.0: 403 yağmurunu önle - global ADAPTİF backoff (5→10→20→30 dk).
             const lastBackoffEnded = this._lastBackoffEndTime || 0;
             const sinceLastBackoff = Date.now() - lastBackoffEnded;
             backoffMs = 5 * 60 * 1000; // default 5 dk
@@ -751,14 +757,14 @@ const KickAPI = {
 
         if (!response.ok) throw new Error(`API error: ${response.status}`);
 
-        // Success — reset backoff
+        // Success - reset backoff
         if (this._lastBackoffUntil !== 0) {
           this._lastBackoffUntil = 0;
-          this._lastBackoffDuration = 0; // adaptif sıfırla — başarılı session yeni başlangıç
+          this._lastBackoffDuration = 0; // adaptif sıfırla - başarılı session yeni başlangıç
           // v2.1.0: storage'tan da temizle
           this._saveBackoffToStorage(0);
         }
-        // v2.1.0: auth recover — bir sonraki 401/403'te tekrar warn versin
+        // v2.1.0: auth recover - bir sonraki 401/403'te tekrar warn versin
         this._lastAuthWarnAt = 0;
         // M4: Başarıyı pencereye kaydet (diagnostic panel + dinamik yavaşlatma için)
         this._recordSuccess();
@@ -772,7 +778,7 @@ const KickAPI = {
         if (attempt < this._retryDelays.length) {
           const delay = this._retryDelays[attempt];
           // v2.1.0: console.warn → console.debug (daha az gürültü)
-          console.debug(`[KickAlert] API attempt ${attempt + 1} failed: ${e.message} — retrying in ${delay}ms`);
+          console.debug(`[KickAlert] API attempt ${attempt + 1} failed: ${e.message} - retrying in ${delay}ms`);
           await new Promise(r => setTimeout(r, delay));
         }
       }
@@ -785,7 +791,7 @@ const KickAPI = {
   // v2.3.0: getAllFollowingChannels resilience cache
   // Followed listesini her check'te API'den fresh alıyoruz (viewer count tazeliği için).
   // Ama 403 yağmuru anında eski veri ile çalışmaya devam etmek için son başarılı response'u
-  // saklıyoruz. Bu cache "bozuk gün sigortası" — normal akışta devreye girmez,
+  // saklıyoruz. Bu cache "bozuk gün sigortası" - normal akışta devreye girmez,
   // sadece API erişilemezken eklentinin tamamen ölmesini engeller.
   _followedFallback: null, // { channels: [...], cachedAt: timestamp }
 
@@ -821,7 +827,7 @@ const KickAPI = {
         page++;
       } while (cursor && page < 20);
 
-      // Başarılı — taze veri, fallback cache'i güncelle
+      // Başarılı - taze veri, fallback cache'i güncelle
       this._followedFallback = { channels: all, cachedAt: Date.now() };
       this._lastFetchWasStale = false; // Risk#2: taze veri
       // v2.3.23: Başarılı çekim → önceki "session reddedildi" uyarısı varsa temizle
@@ -829,7 +835,7 @@ const KickAPI = {
       return all;
     } catch (e) {
       // v2.3.23: token VARDI ama Kick yine de reddettiyse (fetchErrorSessionRejected
-      // durumu) — popup'ın Ayarlar ikonunu yeniden vurgulaması için işaretle.
+      // durumu) - popup'ın Ayarlar ikonunu yeniden vurgulaması için işaretle.
       // token:no (gerçekten giriş yok) durumunda işaretlemiyoruz, çünkü o zaten
       // farklı, klasik bir "giriş yap" mesajı gösteriyor, email/şifre önerisiyle
       // alakası yok.
@@ -838,14 +844,14 @@ const KickAPI = {
         await chrome.storage.local.set({ _authSessionRejected: isSessionRejected });
       } catch (e2) {}
 
-      // 403 / network hatası — son başarılı response varsa kullan
+      // 403 / network hatası - son başarılı response varsa kullan
       if (this._followedFallback) {
         const ageMin = Math.round((Date.now() - this._followedFallback.cachedAt) / 60000);
         console.debug(`[KickAlert] getAllFollowing fetch failed, using fallback cache (${ageMin} dk eski): ${e.message}`);
         this._lastFetchWasStale = true; // Risk#2: eski fallback veri
         return this._followedFallback.channels;
       }
-      // Hiç fallback yok — hatayı yukarı fırlat
+      // Hiç fallback yok - hatayı yukarı fırlat
       this._lastFetchWasStale = true;
       throw e;
     }
@@ -853,7 +859,7 @@ const KickAPI = {
 
   /**
    * Get start time for a specific channel (fallback when followed API doesn't include it)
-   * v2.3.0: Per-slug negative cache — 403 spamını önler.
+   * v2.3.0: Per-slug negative cache - 403 spamını önler.
    */
   async getChannelStartTime(slug) {
     // Negatif cache: bu slug için yakın zamanda başarısız olduysak hiç deneme
@@ -864,11 +870,11 @@ const KickAPI = {
       const data = await response.json();
       const raw = data?.livestream?.created_at ?? null;
       if (!raw) {
-        // API geri geldi ama yayın bilgisi yok — kısa süre tekrar deneme
+        // API geri geldi ama yayın bilgisi yok - kısa süre tekrar deneme
         this._markNegative(slug);
         return null;
       }
-      // Başarılı sonuç — negatif cache'i temizle (eski hata silinsin)
+      // Başarılı sonuç - negatif cache'i temizle (eski hata silinsin)
       this._clearNegative(slug);
       return raw.endsWith('Z') || raw.includes('+') ? raw : raw + 'Z';
     } catch (e) {
@@ -882,14 +888,14 @@ const KickAPI = {
    * v2.3.0: Get chatroom ID for a channel (cache-first).
    * Used by bot tracker to subscribe to Pusher WebSocket chatroom channels.
    *
-   * v2.3.1 Plan F: Aynı response'tan channel_id'yi de cache'liyoruz —
+   * v2.3.1 Plan F: Aynı response'tan channel_id'yi de cache'liyoruz -
    * Pusher 'channel.{channel_id}' subscribe için gerekli, ayrı çağrı yapma.
    *
    * @param {string} slug - channel slug
    * @returns {Promise<number|null>} chatroom ID or null on failure
    */
   async getChatroomId(slug) {
-    // Pozitif cache (Storage) — chatroom_id kanalın ömrü boyunca sabittir
+    // Pozitif cache (Storage) - chatroom_id kanalın ömrü boyunca sabittir
     const cached = await Storage.getChatroomId(slug);
     if (cached) return cached;
 
@@ -905,7 +911,7 @@ const KickAPI = {
         this._markNegative(slug);
         return null;
       }
-      // Başarılı — Storage'a kalıcı yaz, negatif cache'i temizle
+      // Başarılı - Storage'a kalıcı yaz, negatif cache'i temizle
       await Storage.setChatroomId(slug, chatroomId);
       if (channelId) await Storage.setChannelId(slug, channelId);
       this._clearNegative(slug);
@@ -918,6 +924,81 @@ const KickAPI = {
   },
 
   /**
+   * v2.5.82: Sohbet modları (yavaş mod, abone modu) bot skoru için.
+   * /api/v2/channels/{slug} yanıtındaki chatroom alanlarından okunur.
+   * 30 dk önbellek storage.local'da (servis worker uyuyup kalkınca da geçerli);
+   * hata olursa eski değer ya da null döner, skor eski davranışla hesaplanır.
+   */
+  // v2.5.91: web.kick.com herkese açık uçları (sohbet ayarları, aktif sohbetçi).
+  // fetchKick'in Cloudflare geri çekilme mantığına dokunmaz: hata olursa
+  // sadece null döner ve 10 dakika bu uçlar denenmez.
+  _webPublicOffUntil: 0,
+  async fetchWebPublic(url) {
+    if (Date.now() < this._webPublicOffUntil) return null;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 8000);
+    try {
+      const r = await fetch(url, { headers: { accept: 'application/json' }, credentials: 'omit', signal: ctrl.signal });
+      if (r.status === 404) return null;
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return await r.json();
+    } catch (e) {
+      this._webPublicOffUntil = Date.now() + 10 * 60 * 1000;
+      KLog.info('WEB-01', `web.kick.com herkese açık uç yanıt vermedi (${e && e.message}); 10 dk denenmeyecek`);
+      return null;
+    } finally { clearTimeout(timer); }
+  },
+
+  async getChatroomModes(slug) {
+    const KEY = '_chatModes';
+    const TTL = 30 * 60 * 1000;
+    let store = {};
+    try { store = (await chrome.storage.local.get(KEY))[KEY] || {}; } catch (e) {}
+    const c = store[slug];
+    if (c && Date.now() - (c.at || 0) < TTL) return c.modes;
+    if (this._isNegativeCached(slug)) return c ? c.modes : null;
+    try {
+      const response = await this.fetchKick(`https://kick.com/api/v2/channels/${slug}`);
+      const data = await response.json();
+      const cr = data?.chatroom;
+      if (!cr) return c ? c.modes : null;
+      const modes = {
+        slowMode: !!cr.slow_mode,
+        slowModeCooldown: cr.slow_mode ? (Number(cr.message_interval) || 0) : 0,
+        subOnly: !!cr.subscribers_mode,
+        // v2.5.91 (b035): takipçi modu, emote modu (v2 sohbet odası nesnesi)
+        followersOnly: !!cr.followers_mode,
+        followersMinMin: cr.followers_mode ? (Number(cr.following_min_duration) || 0) : 0,
+        emotesOnly: !!cr.emotes_mode,
+        accountAge: false,
+      };
+      // Kick'in kendi sohbet ekranının kullandığı ayar ucu daha güncel ve hesap
+      // yaşı sınırını da veriyor; alınamazsa v2 değerleri kalır.
+      const chId = Number(data?.id) || Number(cr.channel_id) || 0;
+      if (chId) {
+        const st = await this.fetchWebPublic(`https://web.kick.com/api/v1/channels/${chId}/chat/settings`);
+        const d = st && st.data;
+        if (d) {
+          if (d.slow_mode) { modes.slowMode = !!d.slow_mode.enabled; modes.slowModeCooldown = modes.slowMode ? (Number(d.slow_mode.duration_seconds) || 0) : 0; }
+          if (d.subscribers_only_mode) modes.subOnly = !!d.subscribers_only_mode.enabled;
+          if (d.followers_only_mode) { modes.followersOnly = !!d.followers_only_mode.enabled; modes.followersMinMin = modes.followersOnly ? Math.round((Number(d.followers_only_mode.duration_seconds) || 0) / 60) : 0; }
+          if (d.emotes_only_mode) modes.emotesOnly = !!d.emotes_only_mode.enabled;
+          if (d.minimum_account_age) modes.accountAge = !!d.minimum_account_age.enabled;
+        }
+        try { if (!(await Storage.getChannelId(slug))) await Storage.setChannelId(slug, chId); } catch (e) {}
+      }
+      store[slug] = { modes, at: Date.now() };
+      // Eski kayıtları temizle (1 gün)
+      for (const k of Object.keys(store)) { if (Date.now() - (store[k].at || 0) > 86400000) delete store[k]; }
+      try { await chrome.storage.local.set({ [KEY]: store }); } catch (e) {}
+      if (cr.id && !(await Storage.getChatroomId(slug))) await Storage.setChatroomId(slug, cr.id);
+      return modes;
+    } catch (e) {
+      return c ? c.modes : null;
+    }
+  },
+
+  /**
    * Get extra details for a live channel (thumbnail, startTime) in one call
    */
   async getChannelLiveDetails(slug) {
@@ -925,7 +1006,7 @@ const KickAPI = {
       // v2.3.29 DÜZELTME: Yanlış endpoint kullanıyorduk. /api/v2/channels/{slug}
       // (genel kanal bilgisi) thumbnail/source alanlarını artık boş döndürüyor.
       // Kick Signal'ın kod tabanında görüldüğü gibi, doğru/özel endpoint
-      // /api/v2/channels/{slug}/livestream — yanıt yapısı da farklı: veri
+      // /api/v2/channels/{slug}/livestream - yanıt yapısı da farklı: veri
       // data.livestream altında DEĞİL, doğrudan data altında.
       const response = await this.fetchKick(`https://kick.com/api/v2/channels/${slug}/livestream`);
       const data = await response.json();
@@ -948,7 +1029,7 @@ const KickAPI = {
         return '';
       };
 
-      // Strategy 1: thumbnail objesi — stream.kick.com URL'lerini dönüştür
+      // Strategy 1: thumbnail objesi - stream.kick.com URL'lerini dönüştür
       const thumb = ls.thumbnail;
       if (thumb) {
         if (typeof thumb === 'string') {
@@ -968,7 +1049,7 @@ const KickAPI = {
       }
 
       if (!thumbnailUrl) {
-        KLog.warn('THM-02', `${slug}: livestream verisi var ama hiçbir stratejiyle thumbnail çıkarılamadı — thumbnail:${JSON.stringify(ls.thumbnail).slice(0,100)} source:${(ls.source||'').slice(0,60)}`);
+        KLog.warn('THM-02', `${slug}: livestream verisi var ama hiçbir stratejiyle thumbnail çıkarılamadı - thumbnail:${JSON.stringify(ls.thumbnail).slice(0,100)} source:${(ls.source||'').slice(0,60)}`);
       } else {
         KLog.debug('THM-03', `${slug}: thumbnail başarıyla alındı`);
       }
@@ -985,7 +1066,7 @@ const KickAPI = {
         sessionTitle: ls.session_title || '',
       };
     } catch (e) {
-      KLog.warn('THM-04', `${slug}: getChannelLiveDetails hatası — ${e.message}`);
+      KLog.warn('THM-04', `${slug}: getChannelLiveDetails hatası - ${e.message}`);
       return null;
     }
   },
@@ -994,7 +1075,7 @@ const KickAPI = {
    * Map API response to our domain model
    */
   toDomainChannel(ch) {
-    // startedAt UTC normalize — Kick API Z suffix olmadan UTC döndürebilir
+    // startedAt UTC normalize - Kick API Z suffix olmadan UTC döndürebilir
     let rawStart = ch.start_time || ch.started_at || ch.livestream?.start_time || null;
     if (rawStart && typeof rawStart === 'string' && !rawStart.endsWith('Z') && !rawStart.includes('+')) {
       rawStart = rawStart + 'Z';

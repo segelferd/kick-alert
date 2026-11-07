@@ -64,10 +64,14 @@
     "message": "Uyarı"
   },
   "appDescription": {
-    "message": "Kick.com'da canlı yayın başladığında ilk sen öğren — anında bildirim, reklamsız yayın, spamsız sohbet, ninja yayın kaçağı yok ;)"
+    "message": "Takip ettiğin Kick yayıncıları yayına girdiği an bildirim al. Yayınları otomatik aç, reklamları engelle, sohbeti filtrele. Ücretsiz."
   },
   "appName": {
-    "message": "KickAlert — Kick.com Canlı Bildirimleri"
+    "message": "KickAlert - Kick Canlı Yayın Bildirimi, Otomatik Açma ve Reklam Engelleme"
+  },
+  "appNameShort": {
+    "message": "KickAlert - Kick Canlı Yayın Bildirimi",
+    "description": "Store name for Firefox Add-ons and Edge Add-ons, which allow at most 45 characters."
   },
   "autoLaunch": {
     "message": "Otomatik Aç"
@@ -142,10 +146,14 @@
     "message": "Filtre modu"
   },
   "chatFilterModeDesc": {
-    "message": "Gizle mesajı kaldırır. Bulanıklaştır soldurur — görmek için üzerine gel."
+    "message": "Gizle mesajı kaldırır. Bulanıklaştır soldurur - görmek için üzerine gel."
   },
   "chatIntegrationDesc": {
     "message": "Açıkken yukarıda Chat sekmesi görünür. İlk kurulum sonrası Kick sekmelerini yenileyin."
+  },
+  "chatNotifJump": {
+    "message": "Chat bildirim ayarlarına git",
+    "description": "Options > Features > Chat Integration: button that jumps to the Chat notification settings in the Notifications group"
   },
   "chatIntegrationTitle": {
     "message": "Chat Entegrasyonu"
@@ -304,7 +312,7 @@
     "message": "Tarayıcı dili kullanılıyor: $1"
   },
   "langBrowserNoteUnsupported": {
-    "message": "Tarayıcı dili desteklenmiyor — İngilizce kullanılıyor"
+    "message": "Tarayıcı dili desteklenmiyor - İngilizce kullanılıyor"
   },
   "langSectionTitle": {
     "message": "Dil"
@@ -369,6 +377,98 @@
   "resetSuspendOnRestartCheckbox": {
     "message": "Tarayıcı yeniden başlatıldığında otomatik açma ayarlarını sıfırla"
   },
+  "raidGuardCheckbox": {
+    "message": "Yayın başka kanala taşınınca otomatik açılan sekmeyi kapat",
+    "description": "Options > Auto-launch settings: checkbox. When a followed channel moves its stream (raid/host) to another channel, close the tab that KickAlert auto-opened"
+  },
+  "raidGuardHint": {
+    "message": "Sadece KickAlert'in açtığı sekmeler kapanır. Senin açtığın ya da kendin başka kanala geçtiğin sekmelere dokunulmaz.",
+    "description": "Hint under raidGuardCheckbox"
+  },
+  "msChannelPlaceholder": {
+    "message": "Kanal adı...",
+    "description": "Multi-Stream page: channel name input placeholder"
+  },
+  "msAdd": {
+    "message": "Ekle",
+    "description": "Multi-Stream page: add channel button"
+  },
+  "msClear": {
+    "message": "Temizle",
+    "description": "Multi-Stream page: button that removes all streams (short)"
+  },
+  "msClearTitle": {
+    "message": "Tüm yayınları kaldır",
+    "description": "Tooltip of msClear"
+  },
+  "msLayoutSolo": {
+    "message": "Tek yayın",
+    "description": "Layout button tooltip: one stream"
+  },
+  "msLayoutSide": {
+    "message": "Yan yana",
+    "description": "Layout button tooltip: two side by side"
+  },
+  "msLayoutTriple": {
+    "message": "Üç sütun",
+    "description": "Layout button tooltip: three columns"
+  },
+  "msLayoutQuad": {
+    "message": "2×2 ızgara",
+    "description": "Layout button tooltip: 2 by 2 grid"
+  },
+  "msLayoutFocus": {
+    "message": "Odak",
+    "description": "Layout button tooltip: one large stream plus small ones"
+  },
+  "msEmptyText": {
+    "message": "Birden fazla yayını birlikte izlemek için yukarıya kanal adlarını ekle.",
+    "description": "Multi-Stream empty state text"
+  },
+  "msEmptyHint": {
+    "message": "Sırayı değiştirmek için kartları sürükleyip bırak.",
+    "description": "Multi-Stream empty state hint"
+  },
+  "msFullscreen": {
+    "message": "Tam ekran",
+    "description": "Stream card button tooltip"
+  },
+  "msRemove": {
+    "message": "Kaldır",
+    "description": "Stream card button tooltip"
+  },
+  "msListen": {
+    "message": "Sadece bu yayını dinle",
+    "description": "Stream card button tooltip: unmute this stream and mute the one that had sound"
+  },
+  "msListenOff": {
+    "message": "Bu yayının sesini kapat",
+    "description": "Stream card button tooltip when this stream has the sound"
+  },
+  "msChat": {
+    "message": "Chat",
+    "description": "Multi-Stream topbar button that opens the chat drawer (same word as the Chat tab)"
+  },
+  "msChatShow": {
+    "message": "Sohbeti göster",
+    "description": "Tooltip of msChat when the drawer is closed"
+  },
+  "msChatClose": {
+    "message": "Sohbeti kapat",
+    "description": "Tooltip: close the chat drawer"
+  },
+  "msChatOpenTab": {
+    "message": "Sohbeti yeni sekmede aç",
+    "description": "Tooltip: open this channel chat in a new browser tab"
+  },
+  "msChatEmpty": {
+    "message": "Sohbeti görmek için bir kanal ekle.",
+    "description": "Chat drawer text when no stream is added"
+  },
+  "msChatNote": {
+    "message": "Buradan mesaj yazamıyor musun? Sohbeti yeni sekmede aç.",
+    "description": "Small note under the chat drawer: if the user can not write (not logged in inside the frame), open chat in a new tab"
+  },
   "searchChannels": {
     "message": "Kanal ara..."
   },
@@ -394,13 +494,13 @@
     "message": "Eklenti sesleri"
   },
   "soundModeExtensionTooltip": {
-    "message": "Dikkat çekici özel sesler — gözden kaçmaz"
+    "message": "Dikkat çekici özel sesler - gözden kaçmaz"
   },
   "soundModeWindows": {
     "message": "Windows sesleri"
   },
   "soundModeWindowsTooltip": {
-    "message": "Standart sistem sesi — gün içinde gözden kaçabilir"
+    "message": "Standart sistem sesi - gün içinde gözden kaçabilir"
   },
   "testSoundVolume": {
     "message": "[Test]"
@@ -421,33 +521,69 @@
     "message": "+$1 daha"
   },
   "tooltipNoLive": {
-    "message": "KickAlert — Canlı yayın yok"
+    "message": "KickAlert - Canlı yayın yok"
   },
   "viewerTrendTitle": {
     "message": "İzleyici Trendi"
   },
   "chatBroadcasterNotif": {
     "message": "Yayıncı mesaj bildirimi",
-    "description": "Chat integration — chatBroadcasterNotif"
+    "description": "Chat integration - chatBroadcasterNotif"
   },
   "chatBroadcasterDesc": {
     "message": "Yayıncı sohbete yazdığında bildirim al. Dakikada en fazla 1 bildirim."
   },
+  "radarTitle": {
+    "message": "Arka plan sohbet radarı",
+    "description": "Chat tab > Notifications: section title for the background chat radar"
+  },
+  "radarDesc": {
+    "message": "Takip ettiğin en fazla 5 kanalın sohbetini yayındayken, açık Kick sekmesi olmasa da izler. Kullanıcı adın ya da aşağıdaki kelimelerden biri yazılınca bildirim gelir.",
+    "description": "Description under radarTitle"
+  },
+  "radarChannelPlaceholder": {
+    "message": "Kanal ekle...",
+    "description": "Input placeholder: add a followed channel to the radar"
+  },
+  "radarMeNoteSet": {
+    "message": "$1 adının geçtiği mesajlar da yakalanır (kullanıcı adı Tag bildirimi alanından).",
+    "description": "Note under the radar word list when a username is set. $1 = username"
+  },
+  "radarMeNoteEmpty": {
+    "message": "Etiketlemeleri de yakalamak için Tag bildirimi bölümüne kullanıcı adını yaz.",
+    "description": "Note under the radar word list when no username is set"
+  },
+  "radarNoteInvalid": {
+    "message": "Bir kanal adı yaz.",
+    "description": "Radar channel input: the text is not a valid channel name"
+  },
+  "radarNoteNotFollowed": {
+    "message": "$1 takip ettiğin kanallar arasında yok.",
+    "description": "Radar channel input: channel is not followed. $1 = channel name"
+  },
+  "radarNoteMax": {
+    "message": "En fazla $1 kanal eklenebilir.",
+    "description": "Radar channel input: limit reached. $1 = max number"
+  },
+  "radarKeywordNotifTitle": {
+    "message": "$2 sohbetinde “$1”",
+    "description": "Notification title when a radar word is written. $1 = the word, $2 = channel name"
+  },
   "chatBroadcasterNotifTitle": {
     "message": "$1 sohbete yazdı",
-    "description": "Chat integration — chatBroadcasterNotifTitle"
+    "description": "Chat integration - chatBroadcasterNotifTitle"
   },
   "chatWordFilterDesc": {
     "message": "Bu kelimeleri içeren mesajlar gizlenir veya bulanıklaştırılır.",
-    "description": "Chat integration — chatWordFilterDesc"
+    "description": "Chat integration - chatWordFilterDesc"
   },
   "chatUserFilterDesc": {
     "message": "Listedeki kullanıcıların mesajları gizlenir veya bulanıklaştırılır.",
-    "description": "Chat integration — chatUserFilterDesc"
+    "description": "Chat integration - chatUserFilterDesc"
   },
   "chatEmojiSpamDesc": {
     "message": "Aşırı emoji içeren mesajları soldurur (hover ile görünür).",
-    "description": "Chat integration — chatEmojiSpamDesc"
+    "description": "Chat integration - chatEmojiSpamDesc"
   },
   "anomalyAgeLabel": {
     "message": "$1 dk'dır yayında",
@@ -459,7 +595,7 @@
   },
   "anomalyWindowLabel": {
     "message": "son $1 dk",
-    "description": "Anomaly notification — window over which the change happened. $1 = minutes."
+    "description": "Anomaly notification - window over which the change happened. $1 = minutes."
   },
   "botScoreTooltip": {
     "message": "Bot şüphe skoru: %$1",
@@ -471,7 +607,7 @@
   },
   "botScoreAlwaysVisibleLabel": {
     "message": "Bot skorunu tüm canlı kanallarda göster",
-    "description": "Toggle label — show bot score badge on all live channels."
+    "description": "Toggle label - show bot score badge on all live channels."
   },
   "botScoreAlwaysVisibleHint": {
     "message": "Kapalıyken skor yalnızca ani yükselişte görünür.",
@@ -487,19 +623,19 @@
   },
   "timeAgoDay": {
     "message": "$1 gün önce",
-    "description": "Relative time — timeAgoDay"
+    "description": "Relative time - timeAgoDay"
   },
   "timeAgoHour": {
     "message": "$1 saat önce",
-    "description": "Relative time — timeAgoHour"
+    "description": "Relative time - timeAgoHour"
   },
   "timeAgoMin": {
     "message": "$1 dk önce",
-    "description": "Relative time — timeAgoMin"
+    "description": "Relative time - timeAgoMin"
   },
   "timeAgoJustNow": {
     "message": "Şimdi",
-    "description": "Relative time — timeAgoJustNow"
+    "description": "Relative time - timeAgoJustNow"
   },
   "viewerHistoryNoData": {
     "message": "Henüz yeterli veri yok",
@@ -582,7 +718,7 @@
     "message": "İnternet bağlantın yok gibi görünüyor. Bağlantını kontrol edip tekrar dene."
   },
   "fetchErrorRateLimited": {
-    "message": "Kick geçici olarak istekleri sınırlıyor. Bu kendiliğinden düzelir — biraz bekle."
+    "message": "Kick geçici olarak istekleri sınırlıyor. Bu kendiliğinden düzelir - biraz bekle."
   },
   "fetchErrorServerError": {
     "message": "Kick'in sunucularında şu an bir sorun var. Birkaç dakika sonra tekrar dene."
@@ -591,7 +727,7 @@
     "message": "Kanallar yüklenirken bir şeyler ters gitti. Tekrar dene."
   },
   "fetchErrorSessionRejected": {
-    "message": "Giriş yapmış olmana rağmen Kick şu an oturumunu tanımıyor. Bu genellikle Kick'in kendi sunucusundaki bir tutarsızlıktan kaynaklanıyor; Google, Apple ya da başka bir sosyal hesapla giriş yapıldığında sık görülür — eklentinin hatası değil. Çözüm: kick.com'dan çıkış yapıp e-posta adresin ve şifrenle tekrar giriş yapmayı dene. Şifren yoksa (hesabını Google/Apple ile açtıysan), giriş ekranındaki \"Şifremi unuttum\" bağlantısıyla bir tane oluşturabilirsin. İşe yaramazsa, sorun genellikle birkaç dakika içinde kendiliğinden düzeliyor."
+    "message": "Giriş yapmış olmana rağmen Kick şu an oturumunu tanımıyor. Bu genellikle Kick'in kendi sunucusundaki bir tutarsızlıktan kaynaklanıyor; Google, Apple ya da başka bir sosyal hesapla giriş yapıldığında sık görülür - eklentinin hatası değil. Çözüm: kick.com'dan çıkış yapıp e-posta adresin ve şifrenle tekrar giriş yapmayı dene. Şifren yoksa (hesabını Google/Apple ile açtıysan), giriş ekranındaki \"Şifremi unuttum\" bağlantısıyla bir tane oluşturabilirsin. İşe yaramazsa, sorun genellikle birkaç dakika içinde kendiliğinden düzeliyor."
   },
   "emailLoginNotice": {
     "message": "KickAlert'in güvenilir çalışması için Kick'e e-posta ve şifreyle giriş yapmanızı öneririz. \"Google\", \"Apple\" ya da başka bir sosyal hesapla giriş yapmak, Kick'in kendi sunucusundaki bir tutarsızlık yüzünden eklentinin veri çekmesini bazen engelleyebiliyor."
@@ -600,7 +736,7 @@
     "message": "Reklam Engelleme"
   },
   "adBlockWarning": {
-    "message": "Deneysel ve resmi olmayan bir özelliktir — Kick'in iç API yapısına bağımlıdır ve haber vermeden bozulabilir. Bunu açarak bu sorumluluğu kabul etmiş olursun. Kapalı bırakırsan KickAlert öncekiyle aynı, etkilenmeden çalışmaya devam eder. Etkili olması için açık Kick sekmelerini yenilemen gerekir."
+    "message": "Deneysel ve resmi olmayan bir özelliktir - Kick'in iç API yapısına bağımlıdır ve haber vermeden bozulabilir. Bunu açarak bu sorumluluğu kabul etmiş olursun. Kapalı bırakırsan KickAlert öncekiyle aynı, etkilenmeden çalışmaya devam eder. Etkili olması için açık Kick sekmelerini yenilemen gerekir."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Şu an tam olarak bu:"
@@ -612,7 +748,7 @@
     "message": "Kanal Önizleme Resimleri"
   },
   "thumbnailsWarning": {
-    "message": "Her canlı kanalın altında bir önizleme resmi gösterir. Popup her açıldığında canlı kanal başına bir ek istek gönderir — bu da Kick'in bu hareketi bot sanma riskini biraz artırır."
+    "message": "Her canlı kanalın altında bir önizleme resmi gösterir. Popup her açıldığında canlı kanal başına bir ek istek gönderir - bu da Kick'in bu hareketi bot sanma riskini biraz artırır."
   },
   "thumbnailViewersSuffix": {
     "message": "izleyici"
@@ -624,7 +760,7 @@
     "message": "Reklam Engelleme Açılsın mı?"
   },
   "adBlockConfirmBody": {
-    "message": "Bu özellik deneysel ve resmi değildir — Kick'in dahili API yapısına bağlıdır, haber vermeden bozulabilir ve Kick bu davranışı fark edip engelleyebilir. Açarak bu riskleri kabul etmiş olursun."
+    "message": "Bu özellik deneysel ve resmi değildir - Kick'in dahili API yapısına bağlıdır, haber vermeden bozulabilir ve Kick bu davranışı fark edip engelleyebilir. Açarak bu riskleri kabul etmiş olursun."
   },
   "adBlockConfirmAccept": {
     "message": "Anladım, aç"
@@ -645,7 +781,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Yeni: Firefox'ta bot skoru ve güncellemeden sonra kapalı kalan site izinleri için kısa bir rehber."
+    "message": "Bu sürüm daha akıcı bir arayüz, özel gün simgeleri ve Geri al özelliğinin yanında duraklatma, arka plan sohbet radarı ve Multi-Stream iyileştirmelerini getiriyor."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -671,23 +807,47 @@
   "close": {
     "message": "Kapat"
   },
+  "cardOpenChannel": {
+    "message": "Kanalı aç",
+    "description": "Tooltip on a channel card button that opens the channel on kick.com."
+  },
+  "cardAddToMulti": {
+    "message": "Multi-Stream'e ekle",
+    "description": "Tooltip on a live channel card button that adds the stream to the Multi-Stream page."
+  },
+  "favAdd": {
+    "message": "Favorilere ekle",
+    "description": "Tooltip on the star button when the channel is not a favourite."
+  },
+  "favRemove": {
+    "message": "Favorilerden çıkar",
+    "description": "Tooltip on the star button when the channel is a favourite."
+  },
+  "multiStreamOpen": {
+    "message": "Multi-Stream'i aç",
+    "description": "Tooltip on the top bar button that opens the Multi-Stream page."
+  },
+  "openKickSite": {
+    "message": "Kick.com'u aç",
+    "description": "Tooltip on the top-right link that opens kick.com."
+  },
   "releaseHistoryV0Label": {
-    "message": "v2.5.81 — Firefox'ta bot skoru, izin rehberi"
+    "message": "v2.6.0 - Akıcı arayüz, özel gün simgeleri, Geri al"
   },
   "releaseHistoryV0Body": {
-    "message": "• Bot skoru artık Chrome'da olduğu gibi Firefox'ta da çalışıyor\n• Güncellemeden sonra kapalı kalan site izinleri kısa bir rehberle gösteriliyor; neden gerektiği anlatılıyor ve buradan açabiliyorsun\n• Firefox: açık Kick sekmesi üzerinden yapılan istekler yeniden çalışıyor"
+    "message": "• Daha akıcı arayüz: bir kanal yayına girince kartlar yerine kayarak geçer, yeni yayına girenlerin avatarında kısa bir yeşil halka belirir, zili açınca zil sallanır, sekmeler kayarak değişir\n• Duraklatma ve \"1 saat sustur\" kalan süreyi simgenin etrafında bir halka olarak gösterir\n• Daha sade kartlar: zil ve yıldız hep görünür, diğer düğmeler kartın üzerine gelince belirir\n• Geri al: favorilerden çıkarma, bildirim geçmişini temizleme, grup silme ve sohbet kelimesi kaldırma alttaki şeritten geri alınabilir\n• Boş listeler artık ne yapman gerektiğini söylüyor\n• Özel gün simgeleri: bölgendeki bazı özel günlerde araç çubuğu simgesi o güne özel görünür (Ayarlar'dan kapatabilirsin)\n• Multi-Stream: sesi açık yayında küçük bir ekolayzer görünür, düzen değişince karolar kayarak yer değiştirir\n• Her yerde tek simge stili, sıralama çubuğu kaydırırken üstte kalır\n• Yeni web sitesi: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.79 — Anlık bildirimler ve raid yeniden çalışıyor"
+    "message": "v2.5.111 - Duraklatma, sohbet radarı, olay sesleri, Multi-Stream"
   },
   "releaseHistoryV1Body": {
-    "message": "• Anlık canlı yayın bildirimi, raid bildirimi ve bot skoru yeniden çalışıyor: Kick gerçek zamanlı servisinin anahtarını değiştirdi, KickAlert artık güncel anahtarı Kick'ten otomatik alıyor\n• Kick anahtarı yine değiştirirse eklenti hata tekrarlamak yerine yeni anahtarı kendisi alıyor\n• Popup'ta ikinci kaydırma çubuğu ve Ayarlar'ın altındaki boş kayma alanı giderildi"
+    "message": "• Bildirimleri üst bardan 1 saatliğine ya da sabaha kadar duraklat; Chrome bildirimindeki ikinci düğme o kanalı 1 saat susturur\n• Her kanalın ayarlarındaki \"Bu kanaldan bildirim gelir mi?\" kontrolü, bildirimi engelleyebilecek her şeyi listeler\n• Arka plan sohbet radarı: seçtiğin en fazla 5 kanalda kullanıcı adın ya da belirlediğin kelimeler yazılınca, Kick sekmesi açık olmasa da bildirim gelir\n• Raid, yayın bitişi, yayın taşıma ve kategori değişimi için 10 yeni ses; her olaya ayrı ses seçilebilir\n• Multi-Stream: yayınlar sessiz başlar, tek tıkla sadece bir yayını dinlersin, sohbet yan panelde açılır\n• Yayıncı yayınını başka kanala taşıyınca isteğe bağlı bildirim; o durumda otomatik açılan sekmeyi kapatma seçeneği\n• Sıkı kart görünümü; Chat entegrasyonu kapalıyken chat bildirim ayarları gizli kalır\n• Sohbet filtreleri gizlenmiş yazımları da yakalar (benzer harfler, görünmez karakterler, aralıklı harfler)\n• Bot skoru ilk dakikadan Kick'in kendi sohbetçi sayısını kullanır ve tüm sohbet modlarını hesaba katar\n• Kick'in ana servisi sessiz kalırsa yedek anlık bağlantı devreye girer\n• İngilizce kalan açıklama balonları artık seçtiğin dilde, birçok dilde ifadeler de düzeltildi\n• Düzeltmeler: Bulut senkronu açıkken popup'ta değiştirilen ayarlar geri dönmüyor; ek kick.com izniyle Multi-Stream oynatıcıları açılıyor; Chrome'da simge kartı canlı kanalları listeliyor"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.77 — Daha doğru kanal bildirimleri"
+    "message": "v2.5.87 - Firefox'ta bot skoru, izinler, reklam engeli düzeltmesi"
   },
   "releaseHistoryV2Body": {
-    "message": "• Kategori ve başlık bildirimleri daha doğru: Kick'ten gelen anlık hatalı bir okuma artık bildirim göndermiyor, 5 dakikalık bekleme sırasında yapılan değişiklik süre dolunca bildiriliyor\n• Bildirimler duraklatılmışken (Rahatsız Etme, susturulmuş kanal) olan değişiklikler sonradan eski haber olarak gelmiyor"
+    "message": "• Bot skoru artık Chrome'da olduğu gibi Firefox'ta da çalışıyor\n• Güncellemeden sonra kapalı kalan site izinleri kısa bir rehberle gösteriliyor; neden gerektiği anlatılıyor ve buradan açabiliyorsun\n• Firefox: açık Kick sekmesi üzerinden yapılan istekler yeniden çalışıyor\n• Reklam engeli: reklam sunucularının engellenmesi artık gerçekten çalışıyor (açarken KickAlert reklam alan adlarına erişim izni ister)\n• Reklam engeli açıkken yayın sonunda siyah ekran kalmıyor\n• Bot skoru yavaş modu ve aboneye özel sohbeti en baştan hesaba katıyor\n• Ayarlar'daki yeni \"Eklenti izinleri\" bölümü hangi izinlerin açık olduğunu gösteriyor ve kapalı olanı tek tıkla açıyor; kapalı izin varsa kanal listesinin üstünde uyarı çıkıyor"
   },
   "settingsBackupTitle": {
     "message": "Yedekleme ve Geri Yükleme"
@@ -714,7 +874,7 @@
     "message": "İçe aktarıldı! Yenileniyor..."
   },
   "importSettingsFail": {
-    "message": "İçe aktarma başarısız — dosya bozuk olabilir"
+    "message": "İçe aktarma başarısız - dosya bozuk olabilir"
   },
   "importConfirmTitle": {
     "message": "Ayarlar İçe Aktarılsın mı?"
@@ -768,7 +928,7 @@
     "message": "$1 sana yanıt verdi"
   },
   "chatMentionSoundSmart": {
-    "message": "Sadece aktif olarak izlemiyorken (sekme arka planda, sohbet kaydırılmış, ya da Kick'in kendi sohbet paneli kapalıyken) — etiketleme, yanıt, ve yayıncı mesajları için geçerli."
+    "message": "Sadece aktif olarak izlemiyorken (sekme arka planda, sohbet kaydırılmış, ya da Kick'in kendi sohbet paneli kapalıyken) - etiketleme, yanıt, ve yayıncı mesajları için geçerli."
   },
   "chatMentionSoundEnabled": {
     "message": "Ses de çalsın"
@@ -787,6 +947,18 @@
   },
   "themeSystem": {
     "message": "Sistem"
+  },
+  "cardDensityLabel": {
+    "message": "Kart görünümü",
+    "description": "Options > General: label for the channel card layout choice (Comfortable / Compact)"
+  },
+  "cardDensityComfortable": {
+    "message": "Rahat",
+    "description": "Card layout option: spacious cards (default)"
+  },
+  "cardDensityCompact": {
+    "message": "Sıkı",
+    "description": "Card layout option: denser cards with less spacing"
   },
   "chatGroupFilters": {
     "message": "Filtreler"
@@ -810,6 +982,62 @@
   "chipGuardLabel": {
     "message": "Koruma",
     "description": "Header status pill: duplicate-tab guard (keep very short)"
+  },
+  "chipPauseLabel": {
+    "message": "Duraklat",
+    "description": "Header pill: opens the menu to pause notifications for a while"
+  },
+  "chipPausedUntil": {
+    "message": "Duraklatıldı · $1",
+    "description": "Header pill while notifications are paused. $1 = end time (HH:MM)"
+  },
+  "pauseChipTooltip": {
+    "message": "Bildirimleri bir süre duraklat",
+    "description": "Tooltip of the pause pill"
+  },
+  "pauseChipTooltipOn": {
+    "message": "Bildirimler duraklatıldı, $1 saatinde yeniden açılır. Seçenekler için tıkla.",
+    "description": "Tooltip while paused. $1 = end time (HH:MM)"
+  },
+  "pauseMenuTitle": {
+    "message": "Bildirimleri duraklat",
+    "description": "Pause menu title"
+  },
+  "pause1h": {
+    "message": "1 saat",
+    "description": "Pause menu option: pause for one hour"
+  },
+  "pauseMorning": {
+    "message": "Sabaha kadar ($1)",
+    "description": "Pause menu option: pause until next morning. $1 = time (08:00)"
+  },
+  "pauseFavsAllowed": {
+    "message": "Favoriler yine bildirsin",
+    "description": "Pause menu checkbox: favourite channels still notify while paused"
+  },
+  "pauseResume": {
+    "message": "Bildirimleri şimdi aç",
+    "description": "Pause menu: end the pause now"
+  },
+  "pauseNote": {
+    "message": "Bildirimler, sesler ve otomatik açma durur. Yayına girenler yine Bildirim Geçmişi'ne yazılır.",
+    "description": "Pause menu footnote explaining what pausing does"
+  },
+  "notifButtonSnooze": {
+    "message": "1 saat sustur",
+    "description": "Chrome notification button: mute this channel for one hour (replaces the old permanent Mute)"
+  },
+  "diagPaused": {
+    "message": "Bildirimler duraklatıldı, $1 saatinde yeniden açılır.",
+    "description": "Diagnosis: notifications are paused globally. $1 = end time (HH:MM)"
+  },
+  "diagSnoozed": {
+    "message": "Bu kanal bir bildirimden 1 saatliğine susturuldu; $1 saatinde yeniden bildirim gelir.",
+    "description": "Diagnosis: this channel was muted for 1 hour from a notification. $1 = end time"
+  },
+  "diagPausedFavExempt": {
+    "message": "Bildirimler $1 saatine kadar duraklatıldı ama bu kanal favori olduğu için bildirim gelir.",
+    "description": "Diagnosis info: notifications are paused, but favourites are allowed and this channel is a favourite. $1 = end time"
   },
   "optionsTitle": {
     "message": "KickAlert Ayarları",
@@ -842,6 +1070,90 @@
   "chAlertSubtitle": {
     "message": "Bu kanal için ek bildirimler. Hepsi varsayılan olarak kapalı.",
     "description": "Subtitle in the per-channel alerts window"
+  },
+  "diagTitle": {
+    "message": "Bu kanaldan bildirim gelir mi?",
+    "description": "Channel settings window: title of the \"will this channel notify you\" check"
+  },
+  "diagAllOk": {
+    "message": "Evet: bu kanal yayına girince bildirim gelir.",
+    "description": "Diagnosis result: nothing blocks the live notification"
+  },
+  "diagBlocked": {
+    "message": "Bu kanaldan bildirim gelmez:",
+    "description": "Diagnosis result header: something blocks the live notification; reasons follow"
+  },
+  "diagNotifOff": {
+    "message": "Bildirimler Ayarlar'da kapalı.",
+    "description": "Diagnosis: global notifications switch is off"
+  },
+  "diagPermDenied": {
+    "message": "Tarayıcı ya da işletim sistemi KickAlert bildirimlerini engelliyor.",
+    "description": "Diagnosis: browser or OS blocks the extension notifications"
+  },
+  "diagNoKickPerm": {
+    "message": "kick.com erişim izni kapalı.",
+    "description": "Diagnosis: the kick.com host permission is not granted"
+  },
+  "diagChMuted": {
+    "message": "Bu kanal \"Bildirim yok\" modunda (kartındaki zil).",
+    "description": "Diagnosis: the user set this channel to the \"No notification\" mode (bellMuted)"
+  },
+  "diagChMutedDefault": {
+    "message": "Bu kanal için mod seçilmemiş, varsayılan mod \"Bildirim yok\". Kartındaki zilden bir mod seç.",
+    "description": "Diagnosis: no mode chosen for this channel and the default mode is \"No notification\""
+  },
+  "diagChSilent": {
+    "message": "Bu kanal \"Sessiz bildirim\" modunda: bildirim gelir ama ses çalmaz.",
+    "description": "Diagnosis: channel is in \"Silent notification\" mode (bellSilent); notification comes without sound"
+  },
+  "diagDndNow": {
+    "message": "Rahatsız Etme şu an açık ($1 - $2): bildirimler susturuluyor.",
+    "description": "Diagnosis: Do Not Disturb is active now and mutes notifications. $1 = start time, $2 = end time (HH:MM)"
+  },
+  "diagDndSchedule": {
+    "message": "Rahatsız Etme $1 - $2 arasında bildirimleri susturur.",
+    "description": "Diagnosis info: Do Not Disturb schedule. $1 = start, $2 = end (HH:MM)"
+  },
+  "diagFilterSet": {
+    "message": "Filtre: bildirim yalnızca yayın $1 ile eşleşirse gelir.",
+    "description": "Diagnosis info: channel filter defined. $1 = list of categories and/or \"words\""
+  },
+  "diagFilterBlocksNow": {
+    "message": "Şu anki yayın bu kanalın filtresine uymuyor ($1).",
+    "description": "Diagnosis: the stream that is live now does not match the channel filter. $1 = filter description"
+  },
+  "diagRealtimeOff": {
+    "message": "Anlık bağlantı şu an yok: bildirim takip listesi kontrolüyle 1 ile 1,5 dakika gecikmeli gelir.",
+    "description": "Diagnosis warning: the real-time connection is down; notifications come with the periodic follow-list check"
+  },
+  "diagNoRealtimeChannel": {
+    "message": "Bu kanal için anlık takip henüz kurulmadı: bildirimi takip listesi kontrolüyle 1 ile 1,5 dakika gecikmeli gelir.",
+    "description": "Diagnosis warning: real-time tracking is not set up for this specific channel yet"
+  },
+  "diagBackoff": {
+    "message": "Kick istekleri yavaşlatıyor: takip listesi yaklaşık $1 dakika sonra yeniden kontrol edilecek.",
+    "description": "Diagnosis warning: Kick is rate-limiting; next follow-list check in about $1 minutes"
+  },
+  "diagLastSeen": {
+    "message": "Son yayın kaydı: $1.",
+    "description": "Diagnosis info: when the last live stream of this channel was recorded in history. $1 = relative time like \"2h ago\""
+  },
+  "diagLastFiltered": {
+    "message": "Son yayın ($1) filtreye takıldı: $2.",
+    "description": "Diagnosis info: last stream was skipped by the channel filter. $1 = relative time, $2 = reason (diagReasonCategory / diagReasonKeyword)"
+  },
+  "diagLastNone": {
+    "message": "Bildirim Geçmişi'nde bu kanalın yakın tarihli bir yayını yok. KickAlert açılmadan önce başlamış yayınlar bildirilmez.",
+    "description": "Diagnosis info: no recent stream of this channel in history; streams already running when KickAlert started are not notified"
+  },
+  "diagReasonCategory": {
+    "message": "kategori uymadı",
+    "description": "Reason used in diagLastFiltered: the category did not match"
+  },
+  "diagReasonKeyword": {
+    "message": "başlıkta aranan kelime yoktu",
+    "description": "Reason used in diagLastFiltered: the title did not contain the keyword"
   },
   "chAlertChange": {
     "message": "Kategori veya başlık değişince",
@@ -915,6 +1227,10 @@
     "message": "$1 raid attı · $2 izleyici",
     "description": "History row label for an incoming raid. $1 = raiding channel, $2 = viewer count"
   },
+  "historyHost": {
+    "message": "İzleyicileri $1 kanalına yönlendirdi",
+    "description": "History row label for a stream move. $1 = target channel"
+  },
   "chAlertEnd": {
     "message": "Yayın bitince",
     "description": "Per-channel alert option label"
@@ -931,6 +1247,10 @@
     "message": "$1 izleyiciyle",
     "description": "Notification message: raid size. $1 = viewer count"
   },
+  "notifHostTitle": {
+    "message": "$1, yayını $2 kanalına taşıdı",
+    "description": "Notification title: followed streamer moved their stream/viewers to another channel. $1 = followed channel, $2 = target channel"
+  },
   "chAlertRaid": {
     "message": "Raid gelince",
     "description": "Per-channel alert option label"
@@ -938,6 +1258,14 @@
   "chAlertRaidDesc": {
     "message": "Başka bir yayıncı bu kanala raid atınca, kimin attığını ve kaç izleyiciyle geldiğini bildir.",
     "description": "Per-channel alert option description"
+  },
+  "chAlertHost": {
+    "message": "Yayın başka kanala taşınınca",
+    "description": "Per-channel alert option label: the streamer sends their viewers to another channel (Kick host / stream move)"
+  },
+  "chAlertHostDesc": {
+    "message": "Bu yayıncı izleyicilerini başka bir kanala yönlendirince bildir. Bildirime tıklayınca o kanal açılır.",
+    "description": "Per-channel alert option description for chAlertHost"
   },
   "watchTimeTitle": {
     "message": "İzleme süresi",
@@ -968,8 +1296,80 @@
     "description": "Options section title: sound for per-channel event alerts"
   },
   "eventSoundDesc": {
-    "message": "Kategori/başlık değişimi, yayın bitti ve raid bildirimleri için. Daha kısık bir eklenti sesi, Windows bildirim sesi veya sessiz seçebilirsin.",
+    "message": "Kategori/başlık değişimi, yayın bitişi, raid ve yayın taşıma bildirimleri için. Daha kısık bir eklenti sesi, Windows bildirim sesi ya da sessizlik seçebilirsin.",
     "description": "Options section description for event alert sound"
+  },
+  "eventSoundPerType": {
+    "message": "Olay türüne göre farklı ses",
+    "description": "Options > Notifications > Channel event sounds: expandable section to pick a different sound per event type"
+  },
+  "eventSoundPerTypeHint": {
+    "message": "\"Genel ses\" olarak bırakırsan yukarıdaki ses kullanılır.",
+    "description": "Hint under eventSoundPerType"
+  },
+  "eventSoundUseGeneral": {
+    "message": "Genel ses",
+    "description": "Per-event sound option: use the general channel event sound"
+  },
+  "eventSoundGroupGeneral": {
+    "message": "Genel",
+    "description": "Sound list group label: sounds for any event"
+  },
+  "eventSoundGroupRaid": {
+    "message": "Raid",
+    "description": "Sound list group label: sounds made for incoming raids"
+  },
+  "eventSoundGroupEnd": {
+    "message": "Yayın bitti",
+    "description": "Sound list group label: sounds made for stream ended"
+  },
+  "eventSoundGroupHost": {
+    "message": "Yayın taşındı",
+    "description": "Sound list group label: sounds made for stream moved to another channel"
+  },
+  "eventSoundGroupChange": {
+    "message": "Kategori / başlık değişimi",
+    "description": "Sound list group label: sounds made for category or title change"
+  },
+  "eventSoundPop": {
+    "message": "Baloncuk",
+    "description": "Sound name: short bubble pop"
+  },
+  "eventSoundMarimba": {
+    "message": "Marimba",
+    "description": "Sound name: three marimba notes"
+  },
+  "eventSoundRaidFanfare": {
+    "message": "Fanfar",
+    "description": "Sound name: short rising brass fanfare (raid)"
+  },
+  "eventSoundRaidDrums": {
+    "message": "Trampet ve zil",
+    "description": "Sound name: snare drum roll ending with a cymbal hit (raid)"
+  },
+  "eventSoundEndGoodnight": {
+    "message": "Kapanış zili",
+    "description": "Sound name: three soft descending bells (stream ended)"
+  },
+  "eventSoundEndPowerdown": {
+    "message": "Kapanma",
+    "description": "Sound name: falling tone like a device switching off (stream ended)"
+  },
+  "eventSoundHostWhoosh": {
+    "message": "Hızlı geçiş",
+    "description": "Sound name: whoosh moving left to right plus two notes (stream moved)"
+  },
+  "eventSoundHostHop": {
+    "message": "Sıçrama",
+    "description": "Sound name: upward jump of notes (stream moved)"
+  },
+  "eventSoundChangeFlip": {
+    "message": "Sayfa çevirme",
+    "description": "Sound name: page flip followed by a pluck (category/title change)"
+  },
+  "eventSoundChangeBlip": {
+    "message": "Güncelleme bipi",
+    "description": "Sound name: two quick rising beeps (category/title change)"
   },
   "eventSoundLabel": {
     "message": "Ses",
@@ -1146,5 +1546,184 @@
   },
   "permRemindButton": {
     "message": "İzinleri aç"
+  },
+  "adBlockConfirmPermNote": {
+    "message": "Ardından tarayıcın Google reklam alan adlarına erişim izni isteyecek. KickAlert bu izni yalnızca kick.com'daki reklam isteklerini engellemek için kullanır."
+  },
+  "permWizAdsTitle": {
+    "message": "Reklam alan adı engeli"
+  },
+  "permWizAdsWhy": {
+    "message": "Reklam engelinin kick.com'da Google reklam sunucularına giden istekleri durdurmasını sağlar. Başka hiçbir siteyi okumaz."
+  },
+  "permWizAdsOff": {
+    "message": "Reklam engeli oynatıcı üzerinden çalışmaya devam eder, ama reklam istekleri ağ seviyesinde durdurulmaz."
+  },
+  "permWizAdsLabel": {
+    "message": "Reklam alan adlarına erişim"
+  },
+  "permWizRtTitle": {
+    "message": "Yedek anlık bildirim bağlantısı"
+  },
+  "permWizRtWhy": {
+    "message": "Kick'in yeni gerçek zamanlı sunucusuna (*.kick.com) bağlanmayı sağlar. Pusher servisi yanıt vermezse anlık bildirimler bu yedek bağlantıyla gelmeye devam eder."
+  },
+  "permWizRtOff": {
+    "message": "Pusher yanıt vermediğinde bildirimler 1 ile 1,5 dakika gecikmeli gelir, raid bildirimi çalışmaz."
+  },
+  "permWizRtLabel": {
+    "message": "Kick alt alan adlarına erişim"
+  },
+  "permWinTitle": {
+    "message": "Son adım: Firefox onayı",
+    "description": "Firefox permission window: title"
+  },
+  "permWinBody": {
+    "message": "İzinleri yalnızca Firefox verebilir. Düğmeye tıkla ve açılan Firefox penceresinde izinleri onayla.",
+    "description": "Firefox permission window: explanation"
+  },
+  "permWinButton": {
+    "message": "Firefox izin penceresini aç",
+    "description": "Firefox permission window: button that opens the Firefox prompt"
+  },
+  "permWinDenied": {
+    "message": "İzin verilmedi. Yeniden deneyebilir ya da şimdilik kapatabilirsin.",
+    "description": "Firefox permission window: shown after the user declines"
+  },
+  "welTitle": {
+    "message": "KickAlert'e hoş geldin",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welSub": {
+    "message": "Takip ettiğin yayıncılar yayına girdiğinde ilk sen öğren. KickAlert bunun için şu erişimleri kullanır:",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welKickWhy": {
+    "message": "Takip listeni ve kanalların canlı olup olmadığını okur. Kick oturumunu kullanır, şifreni görmez.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveTitle": {
+    "message": "Anlık bağlantı",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welLiveWhy": {
+    "message": "Yayın başladığı an haber alır. Kapalıyken bildirimler 1 ile 1,5 dakika gecikir, raid bildirimi çalışmaz.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifTitle": {
+    "message": "Bildirimler ve sekmeler",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welNotifWhy": {
+    "message": "Masaüstü bildirimi gösterir ve istersen yayını yeni sekmede açar.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsTitle": {
+    "message": "Reklam engelleme",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welAdsWhy": {
+    "message": "İstersen Ayarlar'dan açabilirsin. Açarken reklam alan adları için ayrıca izin istenir.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welOptional": {
+    "message": "İsteğe bağlı",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welTrust": {
+    "message": "Başka sitelere bakmaz, tarama geçmişini okumaz, şifreni görmez.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintChrome": {
+    "message": "Tarayıcın onay penceresini açar",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welHintFirefox": {
+    "message": "Firefox onayı küçük bir pencerede açılır",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneTitle": {
+    "message": "Hazırsın!",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBody": {
+    "message": "Takip ettiğin kanallar yayına girince KickAlert haber verir. Bildirim gönderecek kanalları kartlarındaki zil düğmesiyle seçebilirsin.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "welDoneBtn": {
+    "message": "Kanallarıma git",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permSetHint": {
+    "message": "Kapalı izinleri buradan açabilirsin. Tarayıcın onay ister.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOn": {
+    "message": "Açık",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permStateOff": {
+    "message": "Kapalı",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permTurnOn": {
+    "message": "Aç",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "permRemindAdsText": {
+    "message": "Reklam alan adı izni kapalı, bu yüzden reklam istekleri ağ seviyesinde durdurulmuyor.",
+    "description": "v2.5.86 welcome / permissions"
+  },
+  "bellSnoozedUntil": {
+    "message": "$1 saatine kadar sessizde",
+    "description": "Tooltip of a channel bell while the channel is muted with \"Mute for 1 hour\". $1 = end time (HH:MM)"
+  },
+  "specialDayIconsLabel": {
+    "message": "Özel gün simgeleri",
+    "description": "Settings checkbox (v2.6.0): themed toolbar icon on special days"
+  },
+  "specialDayIconsDesc": {
+    "message": "Bölgendeki bazı özel günlerde araç çubuğu simgesi o güne özel bir görünüme bürünür.",
+    "description": "Help text under the special-day icons checkbox"
+  },
+  "emptyLiveTitle": {
+    "message": "Şu an canlı yayın yok",
+    "description": "Empty Following list: title when channels exist but none is live"
+  },
+  "emptyLiveDesc": {
+    "message": "Takip ettiğin kanallardan biri yayına girdiği an sana haber vereceğiz.",
+    "description": "Empty Following list: one sentence under the title"
+  },
+  "emptyShowOffline": {
+    "message": "Çevrimdışı kanalları göster",
+    "description": "Button in the empty Following list: turns on showing offline channels"
+  },
+  "emptyFollowTitle": {
+    "message": "Henüz kimseyi takip etmiyorsun",
+    "description": "Empty list for a new user who follows no channel: title"
+  },
+  "emptyFollowDesc": {
+    "message": "Kick'te kanalları takip et, KickAlert listeyi kendiliğinden alır.",
+    "description": "Empty list for a new user: one sentence under the title (button opens kick.com)"
+  },
+  "undo": {
+    "message": "Geri al",
+    "description": "Button in the bottom message bar that reverses the last action"
+  },
+  "toastFavRemoved": {
+    "message": "$1 favorilerden çıkarıldı",
+    "description": "Bottom message after removing a favorite. $1 = channel name"
+  },
+  "toastHistoryCleared": {
+    "message": "Bildirim geçmişi temizlendi",
+    "description": "Bottom message after clearing the notification history"
+  },
+  "toastGroupRemoved": {
+    "message": "\"$1\" grubu silindi",
+    "description": "Bottom message after deleting a channel group. $1 = group name"
+  },
+  "toastChipRemoved": {
+    "message": "\"$1\" kaldırıldı",
+    "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
   }
 }
