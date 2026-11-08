@@ -834,7 +834,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Flüssigere Oberfläche, Symbole an besonderen Tagen, Rückgängig"
+    "message": "v2.6.1 - Flüssigere Oberfläche, Symbole an besonderen Tagen, Rückgängig"
   },
   "releaseHistoryV0Body": {
     "message": "• Flüssigere Oberfläche: Karten gleiten an ihren Platz, wenn ein Kanal live geht, neu gestartete Kanäle bekommen kurz einen grünen Ring, die Glocke klingelt beim Einschalten und die Tabs gleiten\n• Pause und \"1 Stunde stumm\" zeigen die Restzeit als Ring um das Symbol\n• Aufgeräumtere Karten: Glocke und Stern sind immer sichtbar, die anderen Schaltflächen erscheinen, wenn du auf eine Karte zeigst\n• Rückgängig: Wenn du einen Favoriten entfernst, den Benachrichtigungsverlauf löschst, eine Gruppe löschst oder ein Chat-Wort entfernst, kannst du das über die Leiste unten rückgängig machen\n• Leere Listen sagen dir jetzt, was du als Nächstes tun kannst\n• Symbole an besonderen Tagen: An einigen Feiertagen in deiner Region bekommt das Symbol in der Symbolleiste ein passendes Aussehen (in den Einstellungen abschaltbar)\n• Multi-Stream: Der Stream mit Ton zeigt einen kleinen Equalizer, und die Kacheln gleiten beim Wechsel des Layouts\n• Ein einheitlicher Symbolstil, und die Sortierleiste bleibt beim Scrollen oben\n• Neue Website: segelferd.github.io/kick-alert"

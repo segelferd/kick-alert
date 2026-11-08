@@ -832,7 +832,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Interfaz más fluida, iconos de días especiales, Deshacer"
+    "message": "v2.6.1 - Interfaz más fluida, iconos de días especiales, Deshacer"
   },
   "releaseHistoryV0Body": {
     "message": "• Interfaz más fluida: las tarjetas se deslizan a su sitio cuando un canal empieza un directo, los canales que acaban de entrar en directo muestran un breve anillo verde, la campana suena al activarla y las pestañas se deslizan\n• La pausa y \"Silenciar 1 hora\" muestran el tiempo restante como un anillo alrededor del icono\n• Tarjetas más limpias: la campana y la estrella siempre están visibles, los demás botones aparecen al pasar el ratón por la tarjeta\n• Deshacer: quitar un favorito, borrar el historial de notificaciones, eliminar un grupo o quitar una palabra del chat se puede deshacer desde la barra inferior\n• Las listas vacías ahora te dicen qué hacer\n• Iconos de días especiales: en algunos días festivos de tu región, el icono de la barra de herramientas cambia de aspecto (se puede desactivar en Ajustes)\n• Multi-Stream: el directo con sonido muestra un pequeño ecualizador y los recuadros se deslizan al cambiar la distribución\n• Un único estilo de iconos y la barra de ordenación se queda arriba al desplazarte\n• Nueva web: segelferd.github.io/kick-alert"

@@ -832,7 +832,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Interface plus fluide, icônes des jours spéciaux, Annuler"
+    "message": "v2.6.1 - Interface plus fluide, icônes des jours spéciaux, Annuler"
   },
   "releaseHistoryV0Body": {
     "message": "• Interface plus fluide : les cartes glissent à leur place quand une chaîne lance un live, les chaînes qui viennent de passer en live ont un bref anneau vert, la cloche sonne quand tu l’actives et les onglets glissent\n• La pause et « Couper pendant 1 h » affichent le temps restant sous forme d’anneau autour de l’icône\n• Cartes plus épurées : la cloche et l’étoile restent visibles, les autres boutons apparaissent quand tu survoles une carte\n• Annuler : retirer un favori, effacer l’historique des notifications, supprimer un groupe ou retirer un mot du chat peut être annulé depuis la barre en bas\n• Les listes vides t’indiquent maintenant quoi faire\n• Icônes des jours spéciaux : lors de certains jours fériés de ta région, l’icône de la barre d’outils prend un style adapté (désactivable dans les Paramètres)\n• Multi-Stream : le live dont le son est activé affiche un petit égaliseur, et les tuiles glissent quand tu changes la disposition\n• Un seul style d’icônes partout, et la barre de tri reste en haut pendant le défilement\n• Nouveau site : segelferd.github.io/kick-alert"

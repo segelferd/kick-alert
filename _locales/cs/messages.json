@@ -834,7 +834,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Plynulejší rozhraní, ikony zvláštních dnů, Zpět"
+    "message": "v2.6.1 - Plynulejší rozhraní, ikony zvláštních dnů, Zpět"
   },
   "releaseHistoryV0Body": {
     "message": "• Plynulejší rozhraní: když kanál začne vysílat, karty se plynule přesunou na místo, kanály, které právě začaly, dostanou krátký zelený kroužek, zvonek při zapnutí zazvoní a karty v horní liště se přepínají plynule\n• Pozastavení a „Ztlumit na 1 hodinu“ ukazují zbývající čas jako kroužek kolem ikony\n• Přehlednější karty: zvonek a hvězdička jsou vidět vždy, ostatní tlačítka se objeví po najetí na kartu\n• Zpět: odebrání z oblíbených, vymazání historie oznámení, smazání skupiny nebo odebrání slova v chatu lze vrátit zpět na liště dole\n• Prázdné seznamy teď radí, co dál\n• Ikony zvláštních dnů: o několika svátcích ve vašem regionu dostane ikona na panelu nástrojů sváteční vzhled (lze vypnout v Nastavení)\n• Multi-Stream: stream se zvukem ukazuje malý ekvalizér a dlaždice se při změně rozložení plynule přesunou\n• Jednotný styl ikon a lišta řazení zůstává při posouvání nahoře\n• Nový web: segelferd.github.io/kick-alert"

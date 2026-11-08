@@ -832,7 +832,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Interface mais fluida, ícones de datas especiais, Desfazer"
+    "message": "v2.6.1 - Interface mais fluida, ícones de datas especiais, Desfazer"
   },
   "releaseHistoryV0Body": {
     "message": "• Interface mais fluida: os cards deslizam para o lugar quando um canal entra ao vivo, os canais que acabaram de entrar ao vivo ganham um breve anel verde, o sino toca quando você o ativa e as abas deslizam\n• A pausa e \"Silenciar por 1 hora\" mostram o tempo restante como um anel em volta do ícone\n• Cards mais limpos: o sino e a estrela ficam sempre visíveis, os outros botões aparecem quando você passa o mouse sobre o card\n• Desfazer: remover um favorito, limpar o histórico de notificações, excluir um grupo ou remover uma palavra do chat pode ser desfeito pela barra na parte de baixo\n• Listas vazias agora mostram o que fazer em seguida\n• Ícones de datas especiais: em algumas datas comemorativas da sua região, o ícone na barra de ferramentas ganha um visual temático (dá para desligar nas Configurações)\n• Multi-Stream: a live com som mostra um pequeno equalizador, e os quadros deslizam quando você muda o layout\n• Um só estilo de ícones em todo lugar, e a barra de ordenação fica no topo enquanto você rola\n• Novo site: segelferd.github.io/kick-alert"

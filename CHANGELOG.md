@@ -5,6 +5,10 @@ meaningful milestone rather than every internal build - small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.6.1 (2026-11-09)
+
+- Chrome Web Store package re-released: the 2.6.0 upload carried an earlier build whose What's New list, French wording and homepage link were out of date. No code changes from 2.6.0.
+
 ## v2.6.0 - Smoother interface, special-day icons, Undo
 
 Store release (Chrome, Firefox, and for the first time Microsoft Edge and Opera). It also carries everything from v2.5.111, which never reached the stores.

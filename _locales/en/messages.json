@@ -834,7 +834,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Smoother interface, special-day icons, Undo"
+    "message": "v2.6.1 - Smoother interface, special-day icons, Undo"
   },
   "releaseHistoryV0Body": {
     "message": "• Smoother interface: cards glide into place when a channel goes live, newly live channels get a short green ring, the bell rings when you turn it on and tabs slide\n• Pause and \"Mute for 1 hour\" show the time left as a ring around the icon\n• Cleaner cards: the bell and the star are always visible, the other buttons appear when you point at a card\n• Undo: removing a favorite, clearing the notification history, deleting a group or removing a chat word can be undone from the bar at the bottom\n• Empty lists now tell you what to do next\n• Special-day icons: on a few holidays in your region the toolbar icon gets a themed look (you can turn this off in Settings)\n• Multi-Stream: the stream with sound shows a small equalizer, and tiles slide when you change the layout\n• One icon style everywhere, and the sort bar stays on top while you scroll\n• New website: segelferd.github.io/kick-alert"

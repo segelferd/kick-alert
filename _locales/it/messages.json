@@ -832,7 +832,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Interfaccia più fluida, icone dei giorni speciali, Annulla"
+    "message": "v2.6.1 - Interfaccia più fluida, icone dei giorni speciali, Annulla"
   },
   "releaseHistoryV0Body": {
     "message": "• Interfaccia più fluida: le card scivolano al loro posto quando un canale va in live, i canali appena andati in live mostrano un breve anello verde, la campanella suona quando la attivi e le schede scorrono\n• La pausa e \"Silenzia per 1 ora\" mostrano il tempo rimasto come un anello intorno all’icona\n• Card più pulite: campanella e stella sono sempre visibili, gli altri pulsanti compaiono quando passi il mouse sulla card\n• Annulla: rimuovere un preferito, cancellare la cronologia notifiche, eliminare un gruppo o rimuovere una parola della chat si può annullare dalla barra in basso\n• Le liste vuote ora ti dicono cosa fare\n• Icone dei giorni speciali: in alcune festività della tua zona, l’icona nella barra degli strumenti assume un aspetto a tema (puoi disattivarla nelle Impostazioni)\n• Multi-Stream: la live con l’audio mostra un piccolo equalizzatore e i riquadri scorrono quando cambi layout\n• Un solo stile di icone ovunque, e la barra di ordinamento resta in alto mentre scorri\n• Nuovo sito: segelferd.github.io/kick-alert"

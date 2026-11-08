@@ -832,7 +832,7 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.0 - Akıcı arayüz, özel gün simgeleri, Geri al"
+    "message": "v2.6.1 - Akıcı arayüz, özel gün simgeleri, Geri al"
   },
   "releaseHistoryV0Body": {
     "message": "• Daha akıcı arayüz: bir kanal yayına girince kartlar yerine kayarak geçer, yeni yayına girenlerin avatarında kısa bir yeşil halka belirir, zili açınca zil sallanır, sekmeler kayarak değişir\n• Duraklatma ve \"1 saat sustur\" kalan süreyi simgenin etrafında bir halka olarak gösterir\n• Daha sade kartlar: zil ve yıldız hep görünür, diğer düğmeler kartın üzerine gelince belirir\n• Geri al: favorilerden çıkarma, bildirim geçmişini temizleme, grup silme ve sohbet kelimesi kaldırma alttaki şeritten geri alınabilir\n• Boş listeler artık ne yapman gerektiğini söylüyor\n• Özel gün simgeleri: bölgendeki bazı özel günlerde araç çubuğu simgesi o güne özel görünür (Ayarlar'dan kapatabilirsin)\n• Multi-Stream: sesi açık yayında küçük bir ekolayzer görünür, düzen değişince karolar kayarak yer değiştirir\n• Her yerde tek simge stili, sıralama çubuğu kaydırırken üstte kalır\n• Yeni web sitesi: segelferd.github.io/kick-alert"
