@@ -736,7 +736,7 @@
     "message": "Reklam Engelleme"
   },
   "adBlockWarning": {
-    "message": "Deneysel ve resmi olmayan bir özelliktir - Kick'in iç API yapısına bağımlıdır ve haber vermeden bozulabilir. Bunu açarak bu sorumluluğu kabul etmiş olursun. Kapalı bırakırsan KickAlert öncekiyle aynı, etkilenmeden çalışmaya devam eder. Etkili olması için açık Kick sekmelerini yenilemen gerekir."
+    "message": "Deneysel ve resmi değil. Kick reklam engellemeyi Hizmet Şartları'nın ihlali sayabilir; ayrıca haber vermeden bozulabilir. Açarak bu sorumluluğu kabul etmiş olursun. KickAlert'i eskisi gibi, etkilenmeden kullanmak için kapalı bırak. Etkili olması için açık Kick sekmeleri yenilenmeli."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Şu an tam olarak bu:"
@@ -760,7 +760,7 @@
     "message": "Reklam Engelleme Açılsın mı?"
   },
   "adBlockConfirmBody": {
-    "message": "Bu özellik deneysel ve resmi değildir - Kick'in dahili API yapısına bağlıdır, haber vermeden bozulabilir ve Kick bu davranışı fark edip engelleyebilir. Açarak bu riskleri kabul etmiş olursun."
+    "message": "Reklam engelleme deneysel ve resmi değil. Kick bunu Hizmet Şartları'nın ihlali sayabilir ve bu davranışı işaretleyebilir. Kick'in iç oynatıcı yapısına bağlıdır, haber vermeden bozulabilir. Açarak bu riskleri kabul etmiş olursun."
   },
   "adBlockConfirmAccept": {
     "message": "Anladım, aç"
@@ -781,7 +781,7 @@
     "message": "Henüz kimseyi takip etmiyorsun. Kick'te bir kanalı takip et, burada otomatik görünecek."
   },
   "whatsNewBannerText": {
-    "message": "Bu sürüm daha akıcı bir arayüz, özel gün simgeleri ve Geri al özelliğinin yanında duraklatma, arka plan sohbet radarı ve Multi-Stream iyileştirmelerini getiriyor."
+    "message": "Bu sürüm kanal filtrelerine izleyici eşiği ve sonradan eşleşme, kaçırılan yayınların özetini ve ses seviyesi hafızasını getiriyor."
   },
   "optGroupGeneral": {
     "message": "Genel"
@@ -832,22 +832,22 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.1 - Akıcı arayüz, özel gün simgeleri, Geri al"
+    "message": "v2.6.2 - Akıllı filtreler, kaçırılanlar özeti, ses seviyesi"
   },
   "releaseHistoryV0Body": {
-    "message": "• Daha akıcı arayüz: bir kanal yayına girince kartlar yerine kayarak geçer, yeni yayına girenlerin avatarında kısa bir yeşil halka belirir, zili açınca zil sallanır, sekmeler kayarak değişir\n• Duraklatma ve \"1 saat sustur\" kalan süreyi simgenin etrafında bir halka olarak gösterir\n• Daha sade kartlar: zil ve yıldız hep görünür, diğer düğmeler kartın üzerine gelince belirir\n• Geri al: favorilerden çıkarma, bildirim geçmişini temizleme, grup silme ve sohbet kelimesi kaldırma alttaki şeritten geri alınabilir\n• Boş listeler artık ne yapman gerektiğini söylüyor\n• Özel gün simgeleri: bölgendeki bazı özel günlerde araç çubuğu simgesi o güne özel görünür (Ayarlar'dan kapatabilirsin)\n• Multi-Stream: sesi açık yayında küçük bir ekolayzer görünür, düzen değişince karolar kayarak yer değiştirir\n• Her yerde tek simge stili, sıralama çubuğu kaydırırken üstte kalır\n• Yeni web sitesi: segelferd.github.io/kick-alert"
+    "message": "• Kanal filtresi: en az izleyici sayısı belirle; yayın sonradan uyarsa (örneğin kategorine geçerse) bildirim al\n• Filtre, şu anki yayının geçip geçmeyeceğini gösterir; şu anki kategoriyi tek tıkla ekleyebilirsin\n• Duraklatma veya Rahatsız Etme saatleri bitince, bu arada yayına girenler tek bildirimde listelenir\n• Chrome, Edge ve Opera: bildirimler sen kapatana kadar ekranda kalabilir\n• Otomatik ses açma artık %100 yerine son ses seviyeni kullanır\n• Reklam engelleme: yayın ve sayfa reklamları ayrı ayrı açılabilir; uyarı artık Kick'in Hizmet Şartları'nı açıkça anıyor\n• Karta sığmayan başlık ve kategoriler üzerine gelince yeniden kayıyor"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.111 - Duraklatma, sohbet radarı, olay sesleri, Multi-Stream"
+    "message": "v2.6.1 - Akıcı arayüz, özel gün simgeleri, Geri al"
   },
   "releaseHistoryV1Body": {
-    "message": "• Bildirimleri üst bardan 1 saatliğine ya da sabaha kadar duraklat; Chrome bildirimindeki ikinci düğme o kanalı 1 saat susturur\n• Her kanalın ayarlarındaki \"Bu kanaldan bildirim gelir mi?\" kontrolü, bildirimi engelleyebilecek her şeyi listeler\n• Arka plan sohbet radarı: seçtiğin en fazla 5 kanalda kullanıcı adın ya da belirlediğin kelimeler yazılınca, Kick sekmesi açık olmasa da bildirim gelir\n• Raid, yayın bitişi, yayın taşıma ve kategori değişimi için 10 yeni ses; her olaya ayrı ses seçilebilir\n• Multi-Stream: yayınlar sessiz başlar, tek tıkla sadece bir yayını dinlersin, sohbet yan panelde açılır\n• Yayıncı yayınını başka kanala taşıyınca isteğe bağlı bildirim; o durumda otomatik açılan sekmeyi kapatma seçeneği\n• Sıkı kart görünümü; Chat entegrasyonu kapalıyken chat bildirim ayarları gizli kalır\n• Sohbet filtreleri gizlenmiş yazımları da yakalar (benzer harfler, görünmez karakterler, aralıklı harfler)\n• Bot skoru ilk dakikadan Kick'in kendi sohbetçi sayısını kullanır ve tüm sohbet modlarını hesaba katar\n• Kick'in ana servisi sessiz kalırsa yedek anlık bağlantı devreye girer\n• İngilizce kalan açıklama balonları artık seçtiğin dilde, birçok dilde ifadeler de düzeltildi\n• Düzeltmeler: Bulut senkronu açıkken popup'ta değiştirilen ayarlar geri dönmüyor; ek kick.com izniyle Multi-Stream oynatıcıları açılıyor; Chrome'da simge kartı canlı kanalları listeliyor"
+    "message": "• Daha akıcı arayüz: bir kanal yayına girince kartlar yerine kayarak geçer, yeni yayına girenlerin avatarında kısa bir yeşil halka belirir, zili açınca zil sallanır, sekmeler kayarak değişir\n• Duraklatma ve \"1 saat sustur\" kalan süreyi simgenin etrafında bir halka olarak gösterir\n• Daha sade kartlar: zil ve yıldız hep görünür, diğer düğmeler kartın üzerine gelince belirir\n• Geri al: favorilerden çıkarma, bildirim geçmişini temizleme, grup silme ve sohbet kelimesi kaldırma alttaki şeritten geri alınabilir\n• Boş listeler artık ne yapman gerektiğini söylüyor\n• Özel gün simgeleri: bölgendeki bazı özel günlerde araç çubuğu simgesi o güne özel görünür (Ayarlar'dan kapatabilirsin)\n• Multi-Stream: sesi açık yayında küçük bir ekolayzer görünür, düzen değişince karolar kayarak yer değiştirir\n• Her yerde tek simge stili, sıralama çubuğu kaydırırken üstte kalır\n• Yeni web sitesi: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.87 - Firefox'ta bot skoru, izinler, reklam engeli düzeltmesi"
+    "message": "v2.5.111 - Duraklatma, sohbet radarı, olay sesleri, Multi-Stream"
   },
   "releaseHistoryV2Body": {
-    "message": "• Bot skoru artık Chrome'da olduğu gibi Firefox'ta da çalışıyor\n• Güncellemeden sonra kapalı kalan site izinleri kısa bir rehberle gösteriliyor; neden gerektiği anlatılıyor ve buradan açabiliyorsun\n• Firefox: açık Kick sekmesi üzerinden yapılan istekler yeniden çalışıyor\n• Reklam engeli: reklam sunucularının engellenmesi artık gerçekten çalışıyor (açarken KickAlert reklam alan adlarına erişim izni ister)\n• Reklam engeli açıkken yayın sonunda siyah ekran kalmıyor\n• Bot skoru yavaş modu ve aboneye özel sohbeti en baştan hesaba katıyor\n• Ayarlar'daki yeni \"Eklenti izinleri\" bölümü hangi izinlerin açık olduğunu gösteriyor ve kapalı olanı tek tıkla açıyor; kapalı izin varsa kanal listesinin üstünde uyarı çıkıyor"
+    "message": "• Bildirimleri üst bardan 1 saatliğine ya da sabaha kadar duraklat; Chrome bildirimindeki ikinci düğme o kanalı 1 saat susturur\n• Her kanalın ayarlarındaki \"Bu kanaldan bildirim gelir mi?\" kontrolü, bildirimi engelleyebilecek her şeyi listeler\n• Arka plan sohbet radarı: seçtiğin en fazla 5 kanalda kullanıcı adın ya da belirlediğin kelimeler yazılınca, Kick sekmesi açık olmasa da bildirim gelir\n• Raid, yayın bitişi, yayın taşıma ve kategori değişimi için 10 yeni ses; her olaya ayrı ses seçilebilir\n• Multi-Stream: yayınlar sessiz başlar, tek tıkla sadece bir yayını dinlersin, sohbet yan panelde açılır\n• Yayıncı yayınını başka kanala taşıyınca isteğe bağlı bildirim; o durumda otomatik açılan sekmeyi kapatma seçeneği\n• Sıkı kart görünümü; Chat entegrasyonu kapalıyken chat bildirim ayarları gizli kalır\n• Sohbet filtreleri gizlenmiş yazımları da yakalar (benzer harfler, görünmez karakterler, aralıklı harfler)\n• Bot skoru ilk dakikadan Kick'in kendi sohbetçi sayısını kullanır ve tüm sohbet modlarını hesaba katar\n• Kick'in ana servisi sessiz kalırsa yedek anlık bağlantı devreye girer\n• İngilizce kalan açıklama balonları artık seçtiğin dilde, birçok dilde ifadeler de düzeltildi\n• Düzeltmeler: Bulut senkronu açıkken popup'ta değiştirilen ayarlar geri dönmüyor; ek kick.com izniyle Multi-Stream oynatıcıları açılıyor; Chrome'da simge kartı canlı kanalları listeliyor"
   },
   "settingsBackupTitle": {
     "message": "Yedekleme ve Geri Yükleme"
@@ -1725,5 +1725,69 @@
   "toastChipRemoved": {
     "message": "\"$1\" kaldırıldı",
     "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
+  },
+  "notifLateMatch": {
+    "message": "$1 artık filtrene uyuyor",
+    "description": "Notification title when a stream that was held back by the channel filter starts matching it later. $1 = streamer name"
+  },
+  "notifMissedTitle": {
+    "message": "Bildirimler kapalıyken yayına girenler ($1)",
+    "description": "Notification title after a pause or quiet hours end. $1 = number of channels that went live meanwhile; the message lists their names"
+  },
+  "notifStayOpenCheckbox": {
+    "message": "Bildirimler ben kapatana kadar ekranda kalsın",
+    "description": "Settings > Notifications option (Chrome, Edge, Opera only)"
+  },
+  "missedSummaryCheckbox": {
+    "message": "Duraklatma veya Rahatsız Etme saatleri bitince kimlerin yayına girdiğini göster",
+    "description": "Settings > Notifications option"
+  },
+  "rememberVolumeCheckbox": {
+    "message": "Sesi açarken son ses seviyemi kullan",
+    "description": "Settings > Auto-Launch, sub-option of auto-unmute"
+  },
+  "adBlockStreamLabel": {
+    "message": "Yayın reklamları (yayından önce ve yayın sırasında)",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockPageLabel": {
+    "message": "Sayfa reklamları (kick.com'daki afişler)",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockSplitHint": {
+    "message": "İkisi de açıkken reklam adresleri ağ seviyesinde de engellenir. Sadece biri açıkken sayfa içinde çalışır. Değişiklikten sonra açık Kick sekmelerini yenile.",
+    "description": "Hint under the two ad blocking sub-options"
+  },
+  "chFilterMinViewers": {
+    "message": "En az izleyici",
+    "description": "Channel filter field label: minimum viewer count"
+  },
+  "chFilterLate": {
+    "message": "Yayın sonradan uyarsa bana bildir",
+    "description": "Channel filter checkbox, on by default"
+  },
+  "chFilterPreviewPass": {
+    "message": "Şu anki yayın bu filtreden geçiyor.",
+    "description": "Channel filter live preview: the stream live now passes"
+  },
+  "chFilterPreviewBlock": {
+    "message": "Şu anki yayın bekletiliyor: $1.",
+    "description": "Channel filter live preview: the stream live now is held back. $1 = reason (diagReasonCategory / diagReasonKeyword / diagReasonViewers)"
+  },
+  "chFilterAddCurrentCat": {
+    "message": "Şu anki kategoriyi ekle: $1",
+    "description": "Button: add the category of the stream live now to the filter. $1 = category name"
+  },
+  "diagReasonViewers": {
+    "message": "izleyici sayısı eşiğin altındaydı",
+    "description": "Reason used in diagLastFiltered and the filter preview: viewer count was below the threshold"
+  },
+  "diagViewersSet": {
+    "message": "İzleyici eşiği: yayın en az $1 izleyiciye ulaşınca bildirim gelir.",
+    "description": "Diagnosis info: viewer threshold set. $1 = threshold"
+  },
+  "diagViewersBelow": {
+    "message": "Şu an izleyici eşiğinin altında ($2 / $1). Eşiğe ulaşınca bildirim gelir.",
+    "description": "Diagnosis warning: the stream live now is below the threshold. $1 = threshold, $2 = current viewers"
   }
 }

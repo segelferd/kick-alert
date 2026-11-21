@@ -276,12 +276,19 @@
   // v2.4.11: adblock-worker-hook.js/gpt-stub.js ile AYNI bayrağı paylaşıyor -
   // ayrı bir ayar eklemedik, hepsi tek "Ad Blocking" anahtarına bağlı.
   try {
-    chrome.storage.local.get('adBlockEnabled', function (res) {
-      applyEnabled(res && res.adBlockEnabled === true);
+    // v2.6.2: oynatıcı odaklı temizlik, "Yayın reklamları" alt ayarına bağlı
+    var st = { m: false, s: true };
+    var apply = function () { applyEnabled(st.m && st.s); };
+    chrome.storage.local.get(['adBlockEnabled', 'adBlockStream'], function (res) {
+      st.m = !!(res && res.adBlockEnabled === true);
+      st.s = !(res && res.adBlockStream === false);
+      apply();
     });
     chrome.storage.onChanged.addListener(function (changes, area) {
-      if (area !== 'local' || !changes.adBlockEnabled) return;
-      applyEnabled(changes.adBlockEnabled.newValue === true);
+      if (area !== 'local' || (!changes.adBlockEnabled && !changes.adBlockStream)) return;
+      if (changes.adBlockEnabled) st.m = changes.adBlockEnabled.newValue === true;
+      if (changes.adBlockStream) st.s = changes.adBlockStream.newValue !== false;
+      apply();
     });
   } catch (e) {}
 })();

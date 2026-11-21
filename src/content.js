@@ -26,13 +26,49 @@ function kaSend(msg) {
 
 // ─── 1) Auto-unmute (mevcut) ───
 (async function () {
-  const result = await chrome.storage.local.get('autoUnmute');
+  const result = await chrome.storage.local.get(['autoUnmute', 'rememberVolume', '_lastVolume']);
   if (!result.autoUnmute) return;
 
+  // v2.6.2: Ses seviyesini hatırla. Kick yeni sekmede sesi her zaman %100
+  // açıyor; kullanıcının son elle ayarladığı seviye saklanıp sesi açarken uygulanır.
+  // Sadece kullanıcı girdisinden (tık, tuş, tekerlek) hemen sonraki değişiklikler
+  // kaydedilir, böylece Kick'in ya da bizim yaptığımız değişiklikler karışmaz.
+  const rememberVol = result.rememberVolume !== false;
+  const savedVol = Number(result._lastVolume);
+  const hasSavedVol = rememberVol && savedVol > 0 && savedVol <= 1;
+  let lastInput = 0;
+  if (rememberVol) {
+    let saveTimer = null;
+    const markInput = () => { lastInput = Date.now(); };
+    ['pointerdown', 'keydown', 'wheel'].forEach(t => document.addEventListener(t, markInput, { capture: true, passive: true }));
+    document.addEventListener('volumechange', (e) => {
+      const v = e.target;
+      if (!(v instanceof HTMLMediaElement) || v.muted || !(v.volume > 0)) return;
+      if (Date.now() - lastInput > 1500) return;
+      clearTimeout(saveTimer);
+      saveTimer = setTimeout(() => {
+        if (!kaContextAlive()) return;
+        try { chrome.storage.local.set({ _lastVolume: Math.round(v.volume * 100) / 100 }); } catch (err) {}
+      }, 400);
+    }, true);
+  }
+
+  let volApplied = false;
+  const applySavedVol = (video) => {
+    if (!hasSavedVol || volApplied) return;
+    volApplied = true;
+    try { video.volume = savedVol; } catch (e) {}
+    // Kick oynatıcısı yüklenirken sesi kendi değerine çekebiliyor; bir kez daha uygula
+    setTimeout(() => { try { if (!video.muted && Math.abs(video.volume - savedVol) > 0.01 && Date.now() - lastInput > 1500) video.volume = savedVol; } catch (e) {} }, 1500);
+  };
   const observer = new MutationObserver(() => {
     const video = document.querySelector('video');
+    // v2.6.2: oynatıcı sesli başladıysa (site izni) da son seviyeyi uygula; sessiz
+    // başlama yolu aşağıda eskisi gibi çalışır.
+    if (video && !video.muted && video.readyState > 0) applySavedVol(video);
     if (video && video.muted) {
       video.muted = false;
+      applySavedVol(video);
       observer.disconnect();
       // v2.3.27: Tarayıcının otomatik oynatma politikası, kullanıcı etkileşimi
       // olmayan sekmelerde (örn. "Otomatik Aç" ile arka planda açılan sekmeler)
@@ -167,13 +203,21 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 // içindeki mantıkla birebir aynı doğrulama).
 (async function adBlockConfigBridge() {
   try {
-    const result = await chrome.storage.local.get('adBlockEnabled');
+    const result = await chrome.storage.local.get(['adBlockEnabled', 'adBlockStream', 'adBlockPage']);
     const enabled = result.adBlockEnabled === true;
+    // v2.6.2: alt ayarlar (varsayılan açık; eski kullanıcıda davranış aynı)
+    const abState = { m: enabled, s: result.adBlockStream !== false, p: result.adBlockPage !== false };
+    const writeAbFlags = () => {
+      const v = abState.m && abState.s, pg = abState.m && abState.p;
+      try { localStorage.setItem('__ka_ab_video', v ? '1' : '0'); } catch (e) {}
+      try { localStorage.setItem('__ka_ab_vod', v ? '1' : '0'); } catch (e) {}
+      try { localStorage.setItem('__ka_ab_page', pg ? '1' : '0'); } catch (e) {}
+      return v;
+    };
     // localStorage bayrakları - worker sarmalama kararı document_start'ta,
     // storage.local'ı bekleyemeden ÖNCE alınıyor, bu yüzden senkron okunabilir
     // bir yere de yazmamız lazım.
-    try { localStorage.setItem('__ka_ab_video', enabled ? '1' : '0'); } catch (e) {}
-    try { localStorage.setItem('__ka_ab_vod', enabled ? '1' : '0'); } catch (e) {}
+    const videoOn = writeAbFlags();
 
     // v2.5.14: TEŞHİS LOGU - chrome.storage.local'dan GERÇEKTE ne okunduğunu
     // ve localStorage'a ne yazıldığını görmemiz için.
@@ -188,19 +232,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     window.postMessage({
       source: 'ka-ab-cfg',
       n: nonce,
-      settings: { enabled, blockVideoAds: enabled, blockVodAds: enabled },
+      settings: { enabled: videoOn, blockVideoAds: videoOn, blockVodAds: videoOn },
     }, '*');
 
     // Ayar popup'tan değişirse (sayfa yeniden yüklenmeden), canlı güncelle
     chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== 'local' || !changes.adBlockEnabled) return;
-      const newEnabled = changes.adBlockEnabled.newValue === true;
-      try { localStorage.setItem('__ka_ab_video', newEnabled ? '1' : '0'); } catch (e) {}
-      try { localStorage.setItem('__ka_ab_vod', newEnabled ? '1' : '0'); } catch (e) {}
+      if (area !== 'local' || (!changes.adBlockEnabled && !changes.adBlockStream && !changes.adBlockPage)) return;
+      if (changes.adBlockEnabled) abState.m = changes.adBlockEnabled.newValue === true;
+      if (changes.adBlockStream) abState.s = changes.adBlockStream.newValue !== false;
+      if (changes.adBlockPage) abState.p = changes.adBlockPage.newValue !== false;
+      const newVideo = writeAbFlags();
       window.postMessage({
         source: 'ka-ab-cfg',
         n: nonce,
-        settings: { enabled: newEnabled, blockVideoAds: newEnabled, blockVodAds: newEnabled },
+        settings: { enabled: newVideo, blockVideoAds: newVideo, blockVodAds: newVideo },
       }, '*');
     });
   } catch (e) {

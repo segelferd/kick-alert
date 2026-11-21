@@ -39,9 +39,13 @@
   // Diğer hook'larla (adblock-worker-hook.js) aynı localStorage bayrağını
   // kullanıyoruz - ayrı bir ayar/anahtar eklemeye gerek yok, ikisi de aynı
   // "Ad Blocking" ayarına bağlı olarak açılıp kapanıyor.
-  var enabled = false;
-  try { enabled = localStorage.getItem('__ka_ab_video') === '1'; } catch (e) {}
-  if (!enabled) return;
+  // v2.6.2: Yayın reklamları (IMA) ve sayfa reklamları (GPT) ayrı ayarlanabiliyor.
+  // __ka_ab_video = ana anahtar && yayın reklamları; __ka_ab_page = ana anahtar &&
+  // sayfa reklamları. __ka_ab_page hiç yazılmamışsa (eski köprü) eski davranış.
+  var videoOn = false, pageOn = false;
+  try { videoOn = localStorage.getItem('__ka_ab_video') === '1'; } catch (e) {}
+  try { var pg = localStorage.getItem('__ka_ab_page'); pageOn = pg === null ? videoOn : pg === '1'; } catch (e) { pageOn = videoOn; }
+  if (!videoOn && !pageOn) return;
 
   window.__kaGptStubbed = true;
 
@@ -133,7 +137,7 @@
     }
   });
 
-  try {
+  if (pageOn) try {
     Object.defineProperty(window, 'googletag', {
       value: fakeGoogletag,
       writable: false,
@@ -222,10 +226,10 @@
   // çünkü window.google başka amaçlarla da kullanılabiliyor. Artık
   // sadece normal atama kullanıyoruz, window.google'ın geri kalanına
   // sayfanın kendi kodu istediği gibi dokunabilir.
-  try {
+  if (videoOn) try {
     window.google = window.google || {};
     window.google.ima = fakeIma;
   } catch (e) { /* zaten salt-okunursa (nadir) sessizce geç */ }
 
-  log('GPT/IMA SDK stub kuruldu - reklam isteği kaynağında engellendi');
+  log((pageOn && videoOn ? 'GPT/IMA' : pageOn ? 'GPT (sayfa)' : 'IMA (yayın)') + ' SDK stub kuruldu - reklam isteği kaynağında engellendi');
 })();

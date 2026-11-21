@@ -5,6 +5,20 @@ meaningful milestone rather than every internal build - small consecutive
 patch versions with no user-facing change are folded into the entry that
 follows them.
 
+## v2.6.2 - Smarter filters, missed-stream summary, volume
+
+- **Viewer threshold in the channel filter:** new "Viewers at least" field in each channel's settings. Below the threshold the alert waits; it comes once the stream reaches it (checked on every background check). Stored per channel as `minViewers`
+- **Late match:** when a stream is held back by the channel filter at the start (category, title word or viewer threshold), KickAlert keeps checking it while it is live and sends the alert once it matches, with the title "<name> now matches your filter". Runs once per stream, at most 12 hours, and follows pause, per-channel mute, quiet hours, sound and Auto-Launch exactly like a normal alert. The history entry is updated instead of added twice. Per-channel checkbox "Notify me if the stream starts matching later" (on by default; the viewer threshold always waits)
+- **Live preview in the filter:** if the channel is live, the filter shows whether the current stream passes (using the real filter logic) and offers "Add current category"
+- **Missed-stream summary:** when a pause or notification-muting quiet hours end, one notification lists the channels that went live meanwhile (channels set to "No notification" and filtered streams are left out). Settings > Notifications, on by default
+- **Keep notifications on screen** until closed (Chrome, Edge, Opera; Firefox does not support it, so the option is hidden there). Off by default
+- **Volume memory:** auto-unmute now uses the last volume you set in a Kick player instead of 100%. Only changes right after your own click, key or wheel input are saved. Sub-option under auto-unmute, on by default. Stream quality is not included: Kick picks quality itself and ignores a preset value (tested)
+- **Ad blocking split:** "Stream ads" and "Page ads" can be turned on separately (both on by default, so nothing changes for existing users). The network-level ad rules block addresses used by both kinds, so they are active only when both are on; with one on, blocking works inside the page. The consent text and warning now say Kick may consider ad blocking a breach of its Terms of Service (14 languages)
+- **Card marquee restored:** channel titles and categories that do not fit scroll again on hover (broken since 2.6.0, where cards were measured before being added to the page)
+- New strings (14 languages): `notifLateMatch`, `notifMissedTitle`, `notifStayOpenCheckbox`, `missedSummaryCheckbox`, `rememberVolumeCheckbox`, `adBlockStreamLabel`, `adBlockPageLabel`, `adBlockSplitHint`, `chFilterMinViewers`, `chFilterLate`, `chFilterPreviewPass`, `chFilterPreviewBlock`, `chFilterAddCurrentCat`, `diagReasonViewers`, `diagViewersSet`, `diagViewersBelow`; changed: `adBlockConfirmBody`, `adBlockWarning`
+- What's New (14 languages): new V0 entry and banner; v2.6.1 and v2.5.111 kept
+- No new permissions. No remote code.
+
 ## v2.6.1 (2026-11-09)
 
 - Chrome Web Store package re-released: the 2.6.0 upload carried an earlier build whose What's New list, French wording and homepage link were out of date. No code changes from 2.6.0.

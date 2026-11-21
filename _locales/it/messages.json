@@ -736,7 +736,7 @@
     "message": "Blocco pubblicità"
   },
   "adBlockWarning": {
-    "message": "Funzione sperimentale e non ufficiale - dipende dalla struttura interna dell'API di Kick e potrebbe smettere di funzionare senza preavviso. Attivandola, ti assumi questa responsabilità. Lasciala disattivata per continuare a usare KickAlert come prima, senza modifiche. Le schede Kick aperte devono essere aggiornate affinché ciò abbia effetto."
+    "message": "Sperimentale e non ufficiale. Kick può considerare il blocco pubblicità una violazione dei suoi Termini di servizio, e può smettere di funzionare senza preavviso. Attivandolo, ne accetti la responsabilità. Lascialo disattivato per continuare a usare KickAlert come prima, senza cambiamenti. Le schede Kick aperte vanno ricaricate perché abbia effetto."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Rilevante proprio ora:"
@@ -760,7 +760,7 @@
     "message": "Attivare il blocco annunci?"
   },
   "adBlockConfirmBody": {
-    "message": "Questa funzione è sperimentale e non ufficiale - dipende dalla struttura interna dell'API di Kick e potrebbe smettere di funzionare senza preavviso, e Kick potrebbe rilevare questo comportamento. Attivandola, accetti questi rischi."
+    "message": "Il blocco pubblicità è sperimentale e non ufficiale. Kick può considerarlo una violazione dei suoi Termini di servizio e segnalare questo comportamento. Dipende dalla struttura interna del player di Kick e può smettere di funzionare senza preavviso. Attivandolo, accetti questi rischi."
   },
   "adBlockConfirmAccept": {
     "message": "Ho capito, attiva"
@@ -781,7 +781,7 @@
     "message": "Non segui ancora nessuno. Segui un canale su Kick e apparirà qui automaticamente."
   },
   "whatsNewBannerText": {
-    "message": "Questa versione porta un’interfaccia più fluida, le icone dei giorni speciali e Annulla, insieme alla pausa, al radar della chat in background e ai miglioramenti di Multi-Stream."
+    "message": "Questa versione aggiunge soglia spettatori e corrispondenza tardiva ai filtri dei canali, un riepilogo delle dirette perse e la memoria del volume."
   },
   "optGroupGeneral": {
     "message": "Generale"
@@ -832,22 +832,22 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.1 - Interfaccia più fluida, icone dei giorni speciali, Annulla"
+    "message": "v2.6.2 - Filtri più intelligenti, riepilogo dirette perse, volume"
   },
   "releaseHistoryV0Body": {
-    "message": "• Interfaccia più fluida: le card scivolano al loro posto quando un canale va in live, i canali appena andati in live mostrano un breve anello verde, la campanella suona quando la attivi e le schede scorrono\n• La pausa e \"Silenzia per 1 ora\" mostrano il tempo rimasto come un anello intorno all’icona\n• Card più pulite: campanella e stella sono sempre visibili, gli altri pulsanti compaiono quando passi il mouse sulla card\n• Annulla: rimuovere un preferito, cancellare la cronologia notifiche, eliminare un gruppo o rimuovere una parola della chat si può annullare dalla barra in basso\n• Le liste vuote ora ti dicono cosa fare\n• Icone dei giorni speciali: in alcune festività della tua zona, l’icona nella barra degli strumenti assume un aspetto a tema (puoi disattivarla nelle Impostazioni)\n• Multi-Stream: la live con l’audio mostra un piccolo equalizzatore e i riquadri scorrono quando cambi layout\n• Un solo stile di icone ovunque, e la barra di ordinamento resta in alto mentre scorri\n• Nuovo sito: segelferd.github.io/kick-alert"
+    "message": "• Filtro canale: imposta un minimo di spettatori e ricevi un avviso se una diretta corrisponde più tardi (per esempio quando passa alla tua categoria)\n• Il filtro mostra se la diretta attuale passerebbe, con un pulsante per aggiungerne la categoria attuale\n• Alla fine di una pausa o del Non disturbare, una sola notifica elenca chi è andato in diretta nel frattempo\n• Chrome, Edge e Opera: le notifiche possono restare sullo schermo finché non le chiudi\n• La riattivazione automatica dell’audio usa il tuo ultimo volume invece del 100%\n• Blocco pubblicità: pubblicità della diretta e della pagina si attivano separatamente; l’avviso ora cita i Termini di servizio di Kick\n• Titoli e categorie troppo lunghi scorrono di nuovo al passaggio del mouse"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.111 - Pausa, radar della chat, suoni degli eventi, Multi-Stream"
+    "message": "v2.6.1 - Interfaccia più fluida, icone dei giorni speciali, Annulla"
   },
   "releaseHistoryV1Body": {
-    "message": "• Metti in pausa le notifiche per 1 ora o fino al mattino dalla barra in alto; il secondo pulsante di una notifica di Chrome silenzia quel canale per 1 ora\n• Il controllo \"Riceverai notifiche da questo canale?\" nelle impostazioni di ogni canale elenca tutto ciò che può bloccare un avviso\n• Radar della chat in background: ricevi una notifica quando il tuo nome utente o le parole scelte vengono scritti in un massimo di 5 canali, anche senza schede di Kick aperte\n• 10 nuovi suoni creati per raid, fine della diretta, diretta spostata e cambi di categoria, con un suono diverso per ogni evento\n• Multi-Stream: le dirette partono senza audio, ascolta una sola diretta con un clic e apri la chat in un pannello laterale\n• Avviso facoltativo quando uno streamer sposta la diretta su un altro canale e opzione per chiudere in quel caso le schede aperte automaticamente\n• Vista compatta delle card; le impostazioni delle notifiche della chat restano nascoste finché l'integrazione chat è disattivata\n• I filtri della chat riconoscono anche le scritture camuffate (lettere simili, caratteri invisibili, lettere separate)\n• Il punteggio bot usa dal primo minuto il conteggio dei partecipanti alla chat fornito da Kick e tiene conto di tutte le modalità della chat\n• Connessione istantanea di riserva se il servizio principale di Kick smette di inviare dati\n• I suggerimenti rimasti in inglese ora seguono la tua lingua, e i testi sono stati rivisti in diverse lingue\n• Correzioni: le impostazioni cambiate nel popup non tornano più indietro con la sincronizzazione cloud attiva; i player di Multi-Stream funzionano con il permesso kick.com aggiuntivo; la card dell'icona in Chrome elenca i canali in diretta"
+    "message": "• Interfaccia più fluida: le card scivolano al loro posto quando un canale va in live, i canali appena andati in live mostrano un breve anello verde, la campanella suona quando la attivi e le schede scorrono\n• La pausa e \"Silenzia per 1 ora\" mostrano il tempo rimasto come un anello intorno all’icona\n• Card più pulite: campanella e stella sono sempre visibili, gli altri pulsanti compaiono quando passi il mouse sulla card\n• Annulla: rimuovere un preferito, cancellare la cronologia notifiche, eliminare un gruppo o rimuovere una parola della chat si può annullare dalla barra in basso\n• Le liste vuote ora ti dicono cosa fare\n• Icone dei giorni speciali: in alcune festività della tua zona, l’icona nella barra degli strumenti assume un aspetto a tema (puoi disattivarla nelle Impostazioni)\n• Multi-Stream: la live con l’audio mostra un piccolo equalizzatore e i riquadri scorrono quando cambi layout\n• Un solo stile di icone ovunque, e la barra di ordinamento resta in alto mentre scorri\n• Nuovo sito: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.87 - Punteggio bot su Firefox, autorizzazioni, correzione del blocco pubblicità"
+    "message": "v2.5.111 - Pausa, radar della chat, suoni degli eventi, Multi-Stream"
   },
   "releaseHistoryV2Body": {
-    "message": "• Il punteggio bot ora funziona anche su Firefox, come su Chrome\n• Dopo un aggiornamento, una breve guida mostra le autorizzazioni dei siti disattivate, spiega a cosa servono e ti permette di attivarle\n• Firefox: le richieste tramite una scheda di Kick aperta funzionano di nuovo\n• Blocco pubblicità: il blocco dei server pubblicitari ora funziona davvero (all'attivazione KickAlert chiede l'accesso ai domini pubblicitari)\n• Niente più schermo nero alla fine di una diretta con il blocco pubblicità attivo\n• Il punteggio bot tiene conto della modalità lenta e della chat solo abbonati fin dall'inizio\n• La nuova sezione \"Autorizzazioni dell'estensione\" nelle Impostazioni mostra quali autorizzazioni sono attive e attiva con un clic quelle disattivate; se una è disattivata, sopra l'elenco dei canali compare un avviso"
+    "message": "• Metti in pausa le notifiche per 1 ora o fino al mattino dalla barra in alto; il secondo pulsante di una notifica di Chrome silenzia quel canale per 1 ora\n• Il controllo \"Riceverai notifiche da questo canale?\" nelle impostazioni di ogni canale elenca tutto ciò che può bloccare un avviso\n• Radar della chat in background: ricevi una notifica quando il tuo nome utente o le parole scelte vengono scritti in un massimo di 5 canali, anche senza schede di Kick aperte\n• 10 nuovi suoni creati per raid, fine della diretta, diretta spostata e cambi di categoria, con un suono diverso per ogni evento\n• Multi-Stream: le dirette partono senza audio, ascolta una sola diretta con un clic e apri la chat in un pannello laterale\n• Avviso facoltativo quando uno streamer sposta la diretta su un altro canale e opzione per chiudere in quel caso le schede aperte automaticamente\n• Vista compatta delle card; le impostazioni delle notifiche della chat restano nascoste finché l'integrazione chat è disattivata\n• I filtri della chat riconoscono anche le scritture camuffate (lettere simili, caratteri invisibili, lettere separate)\n• Il punteggio bot usa dal primo minuto il conteggio dei partecipanti alla chat fornito da Kick e tiene conto di tutte le modalità della chat\n• Connessione istantanea di riserva se il servizio principale di Kick smette di inviare dati\n• I suggerimenti rimasti in inglese ora seguono la tua lingua, e i testi sono stati rivisti in diverse lingue\n• Correzioni: le impostazioni cambiate nel popup non tornano più indietro con la sincronizzazione cloud attiva; i player di Multi-Stream funzionano con il permesso kick.com aggiuntivo; la card dell'icona in Chrome elenca i canali in diretta"
   },
   "settingsBackupTitle": {
     "message": "Backup e ripristino"
@@ -1725,5 +1725,69 @@
   "toastChipRemoved": {
     "message": "Hai rimosso «$1»",
     "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
+  },
+  "notifLateMatch": {
+    "message": "$1 ora corrisponde al tuo filtro",
+    "description": "Notification title when a stream that was held back by the channel filter starts matching it later. $1 = streamer name"
+  },
+  "notifMissedTitle": {
+    "message": "In diretta mentre le notifiche erano disattivate ($1)",
+    "description": "Notification title after a pause or quiet hours end. $1 = number of channels that went live meanwhile; the message lists their names"
+  },
+  "notifStayOpenCheckbox": {
+    "message": "Tieni le notifiche sullo schermo finché non le chiudo",
+    "description": "Settings > Notifications option (Chrome, Edge, Opera only)"
+  },
+  "missedSummaryCheckbox": {
+    "message": "Alla fine di una pausa o del Non disturbare, mostra chi è andato in diretta",
+    "description": "Settings > Notifications option"
+  },
+  "rememberVolumeCheckbox": {
+    "message": "Usa il mio ultimo volume quando riattivo l’audio",
+    "description": "Settings > Auto-Launch, sub-option of auto-unmute"
+  },
+  "adBlockStreamLabel": {
+    "message": "Pubblicità della diretta (prima e durante la diretta)",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockPageLabel": {
+    "message": "Pubblicità della pagina (banner su kick.com)",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockSplitHint": {
+    "message": "Con entrambe attive, gli indirizzi pubblicitari vengono bloccati anche a livello di rete. Con una sola attiva, funziona all’interno della pagina. Ricarica le schede Kick aperte dopo una modifica.",
+    "description": "Hint under the two ad blocking sub-options"
+  },
+  "chFilterMinViewers": {
+    "message": "Minimo spettatori",
+    "description": "Channel filter field label: minimum viewer count"
+  },
+  "chFilterLate": {
+    "message": "Avvisami se la diretta corrisponde più tardi",
+    "description": "Channel filter checkbox, on by default"
+  },
+  "chFilterPreviewPass": {
+    "message": "La diretta attuale supera questo filtro.",
+    "description": "Channel filter live preview: the stream live now passes"
+  },
+  "chFilterPreviewBlock": {
+    "message": "La diretta attuale è in sospeso: $1.",
+    "description": "Channel filter live preview: the stream live now is held back. $1 = reason (diagReasonCategory / diagReasonKeyword / diagReasonViewers)"
+  },
+  "chFilterAddCurrentCat": {
+    "message": "Aggiungi la categoria attuale: $1",
+    "description": "Button: add the category of the stream live now to the filter. $1 = category name"
+  },
+  "diagReasonViewers": {
+    "message": "gli spettatori erano sotto la soglia",
+    "description": "Reason used in diagLastFiltered and the filter preview: viewer count was below the threshold"
+  },
+  "diagViewersSet": {
+    "message": "Soglia spettatori: l’avviso arriva quando la diretta ha almeno $1 spettatori.",
+    "description": "Diagnosis info: viewer threshold set. $1 = threshold"
+  },
+  "diagViewersBelow": {
+    "message": "Al momento sotto la soglia ($2 su $1). L’avviso arriverà quando verrà raggiunta.",
+    "description": "Diagnosis warning: the stream live now is below the threshold. $1 = threshold, $2 = current viewers"
   }
 }

@@ -4,7 +4,7 @@
 
 Your favorite streamer goes live at 3 AM. You're asleep. You miss it. KickAlert makes sure that never happens again - catching every surprise broadcast the instant it starts.
 
-🌐 **Website:** [segelferd.github.io/kick-alert](https://segelferd.github.io/kick-alert/) · **Current version:** 2.6.0 · [Changelog](CHANGELOG.md)
+🌐 **Website:** [segelferd.github.io/kick-alert](https://segelferd.github.io/kick-alert/) · **Current version:** 2.6.2 · [Changelog](CHANGELOG.md)
 
 ## Features
 
@@ -13,6 +13,9 @@ Your favorite streamer goes live at 3 AM. You're asleep. You miss it. KickAlert 
 - **Desktop notifications** with the streamer's avatar; click to open the stream
 - **Channel event alerts** - raids, stream end, category or title change, and stream moved to another channel, each per channel and each with its own sound
 - **Per-channel sound control** - 4-state bell: main / secondary / silent / muted
+- **Channel filter** - only notify for chosen categories, title words or a minimum viewer count; if a stream starts matching later (for example it switches to your category), the alert still comes. The filter shows whether the stream that is live now would pass
+- **Missed-stream summary** - when a pause or quiet hours end, one notification lists who went live meanwhile
+- **Stay on screen** (Chrome, Edge, Opera) - notifications can stay until you close them
 - **Pause notifications** - for 1 hour or until morning, optionally letting favorites through; "Mute for 1 hour" on a single channel
 - **"Will this channel notify you?"** - the channel settings window checks every setting that decides whether an alert will come, and says why not
 - **Notification history** with watch-time statistics
@@ -67,12 +70,14 @@ A dedicated **Chat** tab with configurable filters - take back control of any ch
 - Automatically open streams in a new tab - per-channel toggle
 - **Duplicate tab guard** - won't open a tab if the stream is already open
 - **Suspend mode** - pause auto-launch temporarily
-- **Auto-unmute** - unmutes the player after launch; falls back to muted playback if the browser's autoplay policy blocks it
+- **Auto-unmute** - unmutes the player after launch at your last volume level; falls back to muted playback if the browser's autoplay policy blocks it
 - **Stream-moved guard** (optional) - closes a tab KickAlert opened when a raid sends it to another channel
 
 ### 🚫 Ad Blocking (experimental, optional)
 - Skips pre-roll and mid-roll ads on Kick streams and blocks known ad domains on kick.com
+- Stream ads and page ads can be turned on separately
 - Off by default - one toggle in Settings to enable
+- Kick may consider ad blocking a breach of its Terms of Service; the consent dialog says so before it is turned on
 - Experimental: depends on Kick's internal player structure and may break without notice
 
 ### ✨ Interface
@@ -98,8 +103,11 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/kic
 ### Firefox Add-ons
 Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickalert/).
 
-### Microsoft Edge and Opera
-Coming soon to Edge Add-ons and Opera Add-ons. Until then, Edge and Opera can install the Chrome Web Store version.
+### Microsoft Edge
+Install from [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/search/kickalert).
+
+### Opera
+Coming soon to Opera Add-ons. Until then, Opera can install the Chrome Web Store version.
 
 ### Manual Install (Developer Mode)
 1. Download or clone this repository

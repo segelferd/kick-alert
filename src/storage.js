@@ -54,6 +54,11 @@ const StorageKeys = {
   THEME: 'theme', // 'dark' | 'light' | 'system' (v2.5.46)
   CARD_DENSITY: 'cardDensity', // 'comfortable' | 'compact' (v2.5.95)
   SPECIAL_DAY_ICONS: 'specialDayIcons', // v2.6.0: özel günlerde ikon değişsin (varsayılan açık)
+  NOTIF_STAY_OPEN: 'notifStayOpen', // v2.6.2: canlı bildirimi kullanıcı kapatana kadar ekranda tut (Chrome, varsayılan kapalı)
+  MISSED_SUMMARY: 'missedSummary', // v2.6.2: duraklatma / sessiz saat bitince kaçırılanların özeti (varsayılan açık)
+  AD_BLOCK_STREAM: 'adBlockStream', // v2.6.2: reklam engeli açıkken yayın içi reklamlar (varsayılan açık)
+  AD_BLOCK_PAGE: 'adBlockPage', // v2.6.2: reklam engeli açıkken sayfa reklamları (varsayılan açık)
+  REMEMBER_VOLUME: 'rememberVolume', // v2.6.2: otomatik sesi açmada son ses seviyesi (varsayılan açık)
   CHANNEL_GROUPS: 'channelGroups', // ['Türk yayıncılar', 'FPS', ...]
   CHANNEL_GROUP_MAP: 'channelGroupMap', // { slug: 'groupName' }
   VIEWER_HISTORY: 'viewerHistory',   // { slug: [{v, t}, ...] }
@@ -108,6 +113,11 @@ const SYNC_EXCLUDE_KEYS = new Set([
 
 const StorageDefaults = {
   [StorageKeys.SPECIAL_DAY_ICONS]: true, // v2.6.0
+  [StorageKeys.NOTIF_STAY_OPEN]: false, // v2.6.2
+  [StorageKeys.MISSED_SUMMARY]: true, // v2.6.2
+  [StorageKeys.AD_BLOCK_STREAM]: true, // v2.6.2
+  [StorageKeys.AD_BLOCK_PAGE]: true, // v2.6.2
+  [StorageKeys.REMEMBER_VOLUME]: true, // v2.6.2
   [StorageKeys.SHOW_NOTIFICATION]: true,
   [StorageKeys.SOUND_VOLUME]: 80,
   [StorageKeys.RESET_SUSPEND_ON_RESTART]: false,
@@ -997,6 +1007,7 @@ const EXPORTABLE_SETTINGS_KEYS = [
   StorageKeys.CHANNEL_THUMBNAILS_ENABLED, StorageKeys.GROUP_FILTER_EXPANDED,
   StorageKeys.CHANNEL_ALERT_PREFS, StorageKeys.WATCH_TIME_ENABLED,
   StorageKeys.EVENT_SOUND, StorageKeys.EVENT_SOUND_VOLUME, StorageKeys.EVENT_SOUND_BY_TYPE,
+  StorageKeys.NOTIF_STAY_OPEN, StorageKeys.MISSED_SUMMARY, StorageKeys.AD_BLOCK_STREAM, StorageKeys.AD_BLOCK_PAGE, StorageKeys.REMEMBER_VOLUME, // v2.6.2
 ];
 
 const SETTINGS_EXPORT_FORMAT_VERSION = 1;

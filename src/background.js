@@ -202,8 +202,7 @@ async function initialize(isFreshSession = false) {
     // v2.3.18: AdBlock DNR ruleset'ini kullanıcı ayarıyla senkronize et - SW
     // yeniden başladığında ya da ilk kurulumda tutarlı olsun diye.
     try {
-      const adBlockEnabled = await Storage.get(StorageKeys.AD_BLOCK_ENABLED);
-      await syncAdBlockRuleset(adBlockEnabled === true);
+      await syncAdBlockRuleset(await adBlockNetworkOn()); // v2.6.2
     } catch (e) {
       console.warn('[KickAlert] AdBlock init senkronizasyonu başarısız:', e.message);
     }
@@ -791,8 +790,11 @@ async function handlePusherLiveEvent(slug, livestreamData) {
       if (det?.sessionTitle && !ch.sessionTitle) ch.sessionTitle = det.sessionTitle;
     } catch {}
   }
-  const pusherFilter = matchChannelFilter(pusherPref, ch.categoryName, ch.sessionTitle);
-  if (!pusherFilter.pass) KLog.info('FLT-20', `${slug} → filtreye takıldı (${pusherFilter.reason}), bildirim/ses/sekme atlanacak`);
+  const pusherFilter = matchChannelFilter(pusherPref, ch.categoryName, ch.sessionTitle, Number(ch.viewerCount) || 0);
+  if (!pusherFilter.pass) {
+    KLog.info('FLT-20', `${slug} → filtreye takıldı (${pusherFilter.reason}), bildirim/ses/sekme atlanacak`);
+    await markFilterPending(slug, pusherFilter.reason, pusherPref); // v2.6.2: sonradan uyarsa bildir
+  }
   const pusherSup = await alertSuppressedFor(slug); // v2.5.98
   if (pusherSup && pusherFilter.pass) KLog.info('PAU-10', `${slug} → bildirimler ${pusherSup === 'snooze' ? 'bu kanal için 1 saat susturulmuş' : 'duraklatılmış'}; bildirim/ses/sekme atlanacak, geçmişe yazılıyor`);
 
@@ -806,6 +808,7 @@ async function handlePusherLiveEvent(slug, livestreamData) {
     timestamp: new Date().toISOString(),
     ...(pusherFilter.pass ? {} : { filtered: pusherFilter.reason }),
     ...(pusherFilter.pass && pusherSup ? { paused: pusherSup } : {}),
+    ...(pusherFilter.pass && !pusherSup && dndMuteNotif ? { quiet: 'dnd' } : {}), // v2.6.2: kaçırılanlar özeti
   });
   KLog.debug('NOTIF-52', `${slug} history'ye eklendi`);
 
@@ -1187,6 +1190,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     await Utils.ensureI18n();
     await cleanupNotifiedLives(); // BUG 15 FIX
     await checkSafe();
+    await checkQuietTransition(); // v2.6.2
 
     // M4: Bu tick sonrası failure penceresini değerlendir, gerekirse alarm aralığını ayarla
     try {
@@ -1199,6 +1203,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
     try { const p = (await chrome.storage.local.get(PAUSE_KEY))[PAUSE_KEY]; if (p && !(p.until > Date.now())) await chrome.storage.local.remove(PAUSE_KEY); } catch (e) {}
     await updateBadgeColor();
     KLog.info('PAU-02', 'Bildirim duraklatması sona erdi');
+    await checkQuietTransition(); // v2.6.2
   } else if (alarm.name === SPECIAL_DAY_ALARM || alarm.name === SPECIAL_DAY_ALARM + '-pv') {
     await applySpecialDayIcon(alarm.name !== SPECIAL_DAY_ALARM); // v2.6.0
   } else if (alarm.name === SESSION_REFRESH_ALARM) {
@@ -1212,7 +1217,7 @@ chrome.alarms.onAlarm.addListener(async (alarm) => {
 chrome.storage.onChanged.addListener(async (changes, area) => {
   if (area !== 'local') return;
   // Skip internal keys
-  const internalKeys = ['_liveSlugs', '_notifiedLives', '_lastCheckDone', '_adDiag']; // v2.5.74: teşhis deposu
+  const internalKeys = ['_liveSlugs', '_notifiedLives', '_lastCheckDone', '_adDiag', '_filterPending', '_quietSince']; // v2.5.74: teşhis deposu
   const changedKeys = Object.keys(changes);
   if (changedKeys.every(k => internalKeys.includes(k))) return;
 
@@ -1223,6 +1228,10 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
   if (changes[StorageKeys.DND_ENABLED] || changes[StorageKeys.DND_START] ||
       changes[StorageKeys.DND_END] || changes[StorageKeys.SUSPEND_FROM_DATE]) {
     await updateBadgeColor();
+  }
+  if (changes[PAUSE_KEY] || changes[StorageKeys.DND_ENABLED] || changes[StorageKeys.DND_START] ||
+      changes[StorageKeys.DND_END] || changes[StorageKeys.DND_MUTE_NOTIF]) {
+    await checkQuietTransition(); // v2.6.2
   }
   if (changes[StorageKeys.SPECIAL_DAY_ICONS]) applySpecialDayIcon(true); // v2.6.0
   if (changes._specialDayPreview) { // v2.6.0: test paneli önizlemesi; süresi dolunca normale dön
@@ -1251,10 +1260,21 @@ chrome.storage.onChanged.addListener(async (changes, area) => {
       console.warn('[KickAlert] Language reload failed:', e);
     }
   }
-  if (changes[StorageKeys.AD_BLOCK_ENABLED]) {
-    await syncAdBlockRuleset(changes[StorageKeys.AD_BLOCK_ENABLED].newValue === true);
+  if (changes[StorageKeys.AD_BLOCK_ENABLED] || changes[StorageKeys.AD_BLOCK_STREAM] || changes[StorageKeys.AD_BLOCK_PAGE]) {
+    await syncAdBlockRuleset(await adBlockNetworkOn()); // v2.6.2
   }
 });
+
+// v2.6.2: Ağ seviyesi kurallar (DNR) yayın ve sayfa reklamlarında ortak alan
+// adlarını (doubleclick, 2mdn, imasdk) engelliyor; bu yüzden ikisi ayrı ayrı
+// açılamaz. Sadece iki alt ayar da açıkken (varsayılan, eski davranış) etkin.
+// Biri kapatılınca diğeri sayfa içi katmanlarla (sahte SDK + akış değişimi) çalışır.
+async function adBlockNetworkOn() {
+  try {
+    const r = await chrome.storage.local.get([StorageKeys.AD_BLOCK_ENABLED, StorageKeys.AD_BLOCK_STREAM, StorageKeys.AD_BLOCK_PAGE]);
+    return r[StorageKeys.AD_BLOCK_ENABLED] === true && r[StorageKeys.AD_BLOCK_STREAM] !== false && r[StorageKeys.AD_BLOCK_PAGE] !== false;
+  } catch (e) { return false; }
+}
 
 /**
  * v2.3.18: Reklam Engelleme (DENEYSEL) DNR ruleset'ini kullanıcı ayarına göre
@@ -1958,7 +1978,8 @@ async function _checkChannelsInner() {
     dbg(`[KickAlert] New live: ${ch.userUsername} (${ch.channelSlug})`);
 
     // v2.5.50: kanal filtresi (kategori / anahtar kelime)
-    const pollFilter = matchChannelFilter(await Storage.getChannelAlertPref(ch.channelSlug), ch.categoryName, ch.sessionTitle);
+    const pollPref = await Storage.getChannelAlertPref(ch.channelSlug);
+    const pollFilter = matchChannelFilter(pollPref, ch.categoryName, ch.sessionTitle, Number(ch.viewerCount) || 0);
     const pollSup = pollFilter.pass ? await alertSuppressedFor(ch.channelSlug) : null; // v2.5.98
 
     // Always log to history
@@ -1971,6 +1992,7 @@ async function _checkChannelsInner() {
       timestamp: new Date().toISOString(),
       ...(pollFilter.pass ? {} : { filtered: pollFilter.reason }),
       ...(pollSup ? { paused: pollSup } : {}),
+      ...(pollFilter.pass && !pollSup && dndMuteNotif ? { quiet: 'dnd' } : {}), // v2.6.2
     });
 
     if (pollSup) {
@@ -1980,6 +2002,7 @@ async function _checkChannelsInner() {
 
     if (!pollFilter.pass) {
       KLog.info('FLT-10', `${ch.channelSlug} → filtreye takıldı (${pollFilter.reason}), bildirim/ses/sekme atlandı`);
+      await markFilterPending(ch.channelSlug, pollFilter.reason, pollPref); // v2.6.2
       continue;
     }
 
@@ -2039,6 +2062,17 @@ async function _checkChannelsInner() {
     });
   } catch (e) {
     KLog.warn('CHG-99', 'Değişim kontrolü hatası', e);
+  }
+
+  // v2.6.2: Yayın başında filtreye takılan kanal sonradan uyarsa bildir
+  if (!isStale) {
+    try {
+      await checkFilterLateMatches(channels, notifiedLives, {
+        showNotif, suspended, dndMuteNotif, dndMuteSound, dndMuteAutolaunch, soundMode,
+      });
+    } catch (e) {
+      KLog.warn('FLT-99', 'Geç eşleşme kontrolü hatası', e);
+    }
   }
 
   // v2.5.53: Yayın bitti bildirimi (kanal bazlı, varsayılan kapalı)
@@ -2466,10 +2500,10 @@ async function updateDynamicTooltip(channels) {
 // BUG 13 FIX: No longer writes to history (handled in checkChannels)
 // Windows notification sound fix: silent: true - our own sound plays via offscreen
 
-async function sendNotification(ch, notifiedLives, isSilent) {
+async function sendNotification(ch, notifiedLives, isSilent, titleOverride) {
   await Utils.ensureI18n();
   const id = `kickalert-${ch.channelSlug}-${Date.now()}`;
-  const title = Utils.i18n('notifStartedStreaming', [ch.userUsername])
+  const title = titleOverride || Utils.i18n('notifStartedStreaming', [ch.userUsername])
     || `${ch.userUsername} started streaming`;
   const iconUrl = await getAvatarDataUrl(ch);
 
@@ -2490,6 +2524,8 @@ async function sendNotification(ch, notifiedLives, isSilent) {
       { title: btnOpen },
       { title: btnMute },
     ];
+    // v2.6.2: kullanıcı kapatana kadar ekranda kalsın (Firefox desteklemiyor)
+    try { if ((await Storage.get(StorageKeys.NOTIF_STAY_OPEN)) === true) notifOptions.requireInteraction = true; } catch (e) {}
   }
 
   chrome.notifications.create(id, notifOptions);
@@ -2548,6 +2584,12 @@ async function diagChannelNotif(slug) {
       else add('info', 'diagFilterSet', [desc]);
     } else add('info', 'diagFilterSet', [desc]);
   }
+  // v2.6.2: izleyici eşiği
+  const minV = Math.max(0, Math.floor(Number(pref.minViewers) || 0));
+  if (minV) {
+    if (ch && ch.isLive && !(Number(ch.viewerCount) >= minV)) add('warn', 'diagViewersBelow', [String(minV), String(Number(ch.viewerCount) || 0)]);
+    else add('info', 'diagViewersSet', [String(minV)]);
+  }
   // Anlık bağlantı: kanal kimliği biliniyor mu ve bağlantı açık mı
   let rtOk = null;
   try {
@@ -2574,7 +2616,7 @@ async function diagChannelNotif(slug) {
     if (!last) add('info', 'diagLastNone');
     else {
       const at = new Date(last.timestamp).getTime();
-      if (last.filtered) add('info', 'diagLastFiltered', [String(at), last.filtered === 'category' ? 'category' : 'keyword']);
+      if (last.filtered) add('info', 'diagLastFiltered', [String(at), last.filtered === 'category' ? 'category' : last.filtered === 'viewers' ? 'viewers' : 'keyword']);
       else add('info', 'diagLastSeen', [String(at)]);
     }
   } catch (e) {}
@@ -2587,15 +2629,19 @@ async function diagChannelNotif(slug) {
 // eşleşmesi: "Counter" → "Counter-Strike 2"). Kelime listesi doluysa başlıkta
 // kelimelerden biri geçmeli. İkisi de doluysa ikisi de sağlanmalı.
 // Kategori bilinmiyorsa (veri gelmediyse) bildirim engellenmez.
-function matchChannelFilter(pref, category, title) {
+// v2.6.2: minViewers (izleyici eşiği). viewers verilmediyse (undefined) eşik
+// kontrol edilmez; canlı bildirim yolları izleyici sayısını her zaman verir.
+function matchChannelFilter(pref, category, title, viewers) {
   const cats = (pref && pref.cats) || [];
   const words = (pref && pref.words) || [];
-  if (!cats.length && !words.length) return { pass: true };
+  const minV = Math.max(0, Math.floor(Number(pref && pref.minViewers) || 0));
+  if (!cats.length && !words.length && !minV) return { pass: true };
   // Büyük/küçük harf ve aksan duyarsız: "İSTANBUL" ≈ "istanbul", "ı" ≈ "i", "é" ≈ "e"
   const lc = (x) => String(x || '').toLocaleLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
   const c = lc(category), t = lc(title);
   if (cats.length && c && !cats.some(x => c.includes(lc(x)))) return { pass: false, reason: 'category' };
   if (words.length && !words.some(w => t.includes(lc(w)))) return { pass: false, reason: 'keyword' };
+  if (minV && viewers !== undefined && !(Number(viewers) >= minV)) return { pass: false, reason: 'viewers' };
   return { pass: true, unknownCategory: cats.length > 0 && !c };
 }
 
@@ -2626,6 +2672,166 @@ function _sameSession(a, b) {
   const ta = new Date(a).getTime(), tb = new Date(b).getTime();
   if (!isFinite(ta) || !isFinite(tb)) return a === b;
   return Math.abs(ta - tb) < 90 * 1000;
+}
+
+// ─── v2.6.2: Geç eşleşme (filtre yayın ortasında uyarsa bildir) ───
+// Yayın başında kanal filtresine takılan kanallar _filterPending'e yazılır.
+// Her polling turunda (taze veriyle) filtre yeniden denenir; uyarsa normal canlı
+// bildirim akışı (duraklatma, kanal modu, sessiz saat, ses, otomatik açma) uygulanır.
+// Kayıt; kanal çevrimdışı olunca, filtre kaldırılınca, 12 saat dolunca ya da
+// bildirim bir kez gönderilince silinir. Aynı yayında bir kez çalışır.
+const FILTER_PENDING_KEY = '_filterPending';
+const FILTER_PENDING_MAX_MS = 12 * 60 * 60 * 1000;
+
+async function markFilterPending(slug, reason, pref) {
+  try {
+    // İzleyici eşiği doğası gereği "eşiğe ulaşınca haber ver" demek; diğerleri ayara bağlı.
+    if (reason !== 'viewers' && pref && pref.lateOff) return;
+    await _withKeyLock(FILTER_PENDING_KEY, async () => {
+      const cur = (await chrome.storage.local.get(FILTER_PENDING_KEY))[FILTER_PENDING_KEY] || {};
+      if (!cur[slug]) cur[slug] = { at: Date.now(), reason };
+      await chrome.storage.local.set({ [FILTER_PENDING_KEY]: cur });
+    });
+  } catch (e) {}
+}
+
+async function checkFilterLateMatches(channels, notifiedLives, ctx) {
+  const pending = (await chrome.storage.local.get(FILTER_PENDING_KEY))[FILTER_PENDING_KEY];
+  if (!pending || !Object.keys(pending).length) return;
+  const bySlug = new Map(channels.map(c => [c.channelSlug, c]));
+  const now = Date.now();
+  const done = [];
+  for (const slug of Object.keys(pending)) {
+    const rec = pending[slug] || {};
+    const ch = bySlug.get(slug);
+    if (!ch || !ch.isLive || !(now - (rec.at || 0) < FILTER_PENDING_MAX_MS)) { done.push(slug); continue; }
+    const pref = await Storage.getChannelAlertPref(slug);
+    const hasFilter = (pref.cats || []).length || (pref.words || []).length || Number(pref.minViewers) > 0;
+    if (!hasFilter) { done.push(slug); continue; }
+    if (pref.lateOff && rec.reason !== 'viewers') { done.push(slug); continue; }
+    const f = matchChannelFilter(pref, ch.categoryName, ch.sessionTitle, Number(ch.viewerCount) || 0);
+    if (!f.pass) continue;
+    done.push(slug);
+    KLog.info('FLT-30', `${slug} → filtre artık uyuyor (${rec.reason} → geçti), geç bildirim akışı`);
+
+    const sup = await alertSuppressedFor(slug);
+    await markLateHistory(ch, rec.at, sup, !sup && ctx.dndMuteNotif);
+    if (sup) continue;
+
+    const modeInfo = await Storage.getChannelSoundModeInfo(slug);
+    if (modeInfo.mode === 'muted') {
+      if (!modeInfo.explicit && !ctx.suspended && !ctx.dndMuteAutolaunch && await shouldAutoOpen(ch)) {
+        const tab = await chrome.tabs.create({ url: `https://kick.com/${slug}`, active: !_autoLaunchTabOpened });
+        registerAutoTab(tab.id, slug);
+        _autoLaunchTabOpened = true;
+      }
+      continue;
+    }
+    if (ctx.showNotif && !ctx.dndMuteNotif) {
+      await Utils.ensureI18n();
+      const lateTitle = Utils.i18n('notifLateMatch', [ch.userUsername]) || `${ch.userUsername} now matches your filter`;
+      await sendNotification(ch, notifiedLives, ctx.soundMode === 'extension' || modeInfo.mode === 'silent', lateTitle);
+    }
+    if (!ctx.dndMuteSound && modeInfo.mode !== 'silent') {
+      await playSound(modeInfo.mode === 'main' ? 'NEW_LIVE_MAIN' : 'NEW_LIVE_SUB');
+    }
+    if (!ctx.suspended && !ctx.dndMuteAutolaunch && await shouldAutoOpen(ch)) {
+      const tab = await chrome.tabs.create({ url: `https://kick.com/${slug}`, active: !_autoLaunchTabOpened });
+      registerAutoTab(tab.id, slug);
+      _autoLaunchTabOpened = true;
+    }
+  }
+  if (done.length) {
+    await _withKeyLock(FILTER_PENDING_KEY, async () => {
+      const cur = (await chrome.storage.local.get(FILTER_PENDING_KEY))[FILTER_PENDING_KEY] || {};
+      for (const sl of done) delete cur[sl];
+      await chrome.storage.local.set({ [FILTER_PENDING_KEY]: cur });
+    });
+    try { await setPersistedNotifiedLives(notifiedLives); } catch (e) {}
+  }
+}
+
+// Filtreye takıldığı için 'filtered' işaretlenen geçmiş kaydını günceller
+// (yeni satır eklemez; izleme istatistiği iki kez saymasın).
+async function markLateHistory(ch, since, sup, quiet) {
+  try {
+    await _withKeyLock(StorageKeys.NOTIFICATION_HISTORY, async () => {
+      const h = (await Storage.getNotificationHistory()) || [];
+      const from = (since || 0) - 60 * 1000;
+      const e = h.find(x => x.channelSlug === ch.channelSlug && x.filtered && !x.kind && new Date(x.timestamp).getTime() >= from);
+      if (!e) return;
+      delete e.filtered;
+      e.late = true;
+      if (sup) e.paused = sup;
+      if (quiet) e.quiet = 'dnd';
+      if (ch.categoryName) e.category = ch.categoryName;
+      if (ch.sessionTitle) e.title = ch.sessionTitle;
+      await Storage.set(StorageKeys.NOTIFICATION_HISTORY, h);
+    });
+  } catch (e) {}
+}
+
+// ─── v2.6.2: Kaçırılanlar özeti (duraklatma ya da sessiz saat bitince) ───
+// _quietSince: duraklatma ya da bildirimleri susturan sessiz saat başladığı an.
+// Sessizlik bitince o andan beri geçmişe 'paused: pause' ya da 'quiet: dnd'
+// olarak yazılan canlı yayınlar tek bir bildirimde özetlenir.
+const QUIET_SINCE_KEY = '_quietSince';
+
+async function isQuietNow() {
+  try {
+    const p = (await chrome.storage.local.get(PAUSE_KEY))[PAUSE_KEY];
+    if (p && p.until > Date.now()) return true;
+    if (await Storage.isDndActive() && await Storage.getDndMuteNotif()) return true;
+  } catch (e) {}
+  return false;
+}
+
+async function checkQuietTransition() {
+  try {
+    // Duraklatma bitişinde alarm ve storage değişimi aynı anda çağırabilir: kilitle,
+    // _quietSince'i sadece bir çağrı alsın (çift özet gitmesin).
+    let since = null;
+    await _withKeyLock(QUIET_SINCE_KEY, async () => {
+      const quiet = await isQuietNow();
+      const cur = (await chrome.storage.local.get(QUIET_SINCE_KEY))[QUIET_SINCE_KEY];
+      if (quiet) { if (!cur) await chrome.storage.local.set({ [QUIET_SINCE_KEY]: Date.now() }); return; }
+      if (!cur) return;
+      await chrome.storage.local.remove(QUIET_SINCE_KEY);
+      since = cur;
+    });
+    if (!since) return;
+    if ((await Storage.get(StorageKeys.MISSED_SUMMARY)) === false) return;
+    if (!(await Storage.getShowNotification())) return;
+    const h = (await Storage.getNotificationHistory()) || [];
+    const seen = new Set();
+    const names = [];
+    for (const e of h) {
+      if (!e || e.kind || e.filtered) continue;
+      if (new Date(e.timestamp).getTime() < since - 60 * 1000) continue;
+      if (!(e.paused === 'pause' || e.quiet === 'dnd')) continue;
+      if (seen.has(e.channelSlug)) continue;
+      seen.add(e.channelSlug);
+      const mi = await Storage.getChannelSoundModeInfo(e.channelSlug);
+      if (mi.mode === 'muted') continue;
+      names.push(e.username || e.channelSlug);
+    }
+    if (!names.length) { KLog.info('MIS-01', 'Sessizlik bitti, kaçırılan yayın yok'); return; }
+    await Utils.ensureI18n();
+    const shown = names.slice(0, 3).join(', ') + (names.length > 3 ? ` +${names.length - 3}` : '');
+    const title = Utils.i18n('notifMissedTitle', [String(names.length)]) || `${names.length} channels went live while you were away`;
+    const opts = {
+      type: 'basic',
+      iconUrl: chrome.runtime.getURL('icons/icon128.png'),
+      title,
+      message: shown,
+      priority: 1,
+    };
+    if (!IS_FIREFOX) opts.silent = true;
+    chrome.notifications.create(`kickalert-missed-${Date.now()}`, opts);
+    KLog.info('MIS-02', `Kaçırılanlar özeti gönderildi: ${names.length} kanal`);
+  } catch (e) {
+    KLog.warn('MIS-99', 'Kaçırılanlar özeti hatası', e);
+  }
 }
 
 async function checkChannelMetaChanges(channels, notifiedLives, ctx) {
@@ -3342,6 +3548,7 @@ function markRateGoodMoment() {
 
 chrome.notifications.onClicked.addListener(async (id) => {
   if (!id.startsWith('kickalert-')) return;
+  if (id.startsWith('kickalert-missed-')) { chrome.notifications.clear(id); return; } // v2.6.2: özet bildirimi
   dbg(`[KickAlert] Notification body clicked: ${id}`);
   const state = await getPersistedState();
   const entry = state.notifiedLives[id];
@@ -4890,9 +5097,13 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
           [{ words: ['turnuva'] }, 'x', 'sohbet', false, 'kelime yok'],
           [{ cats: ['Slots'], words: ['bonus'] }, 'Slots', 'bonus hunt', true, 'ikisi birden'],
           [{ cats: ['Slots'] }, '', 'x', true, 'kategori bilinmiyor → geçer'],
+          [{ minViewers: 100 }, 'x', 'x', false, 'izleyici eşiğin altında', 40], // v2.6.2
+          [{ minViewers: 100 }, 'x', 'x', true, 'izleyici eşiğe ulaştı', 100],
+          [{ minViewers: 100 }, 'x', 'x', true, 'izleyici bilinmiyor → geçer', undefined],
+          [{ cats: ['Slots'], minViewers: 50 }, 'GTA V', 'x', false, 'kategori + eşik', 500],
         ];
-        const bad = cases.filter(([pref, c, t, exp]) => matchChannelFilter(pref, c, t).pass !== exp).map(x => x[4]);
-        log('Filtre mantığı', bad.length ? 'error' : 'ok', bad.length ? `Hatalı: ${bad.join(', ')}` : `${cases.length}/${cases.length} durum doğru (harf, Türkçe İ, aksan, boş kategori)`);
+        const bad = cases.filter(([pref, c, t, exp, , v]) => matchChannelFilter(pref, c, t, v).pass !== exp).map(x => x[4]);
+        log('Filtre mantığı', bad.length ? 'error' : 'ok', bad.length ? `Hatalı: ${bad.join(', ')}` : `${cases.length}/${cases.length} durum doğru (harf, Türkçe İ, aksan, boş kategori, izleyici eşiği)`);
 
         // 3) Kategori / başlık değişimi (gerçek checkChannelMetaChanges)
         const s0 = new Date(Date.now() - 3600e3).toISOString();
@@ -5021,7 +5232,7 @@ chrome.runtime.onMessage.addListener((msg, sender, respond) => {
 
   if (msg.type === 'TEST_CHANNEL_FILTER') {
     Storage.getChannelAlertPref(msg.slug || '').then(pref => {
-      respond({ success: true, pref, result: matchChannelFilter(pref, msg.category, msg.title) });
+      respond({ success: true, pref, result: matchChannelFilter(pref, msg.category, msg.title, msg.viewers) });
     }).catch(e => respond({ success: false, error: e.message }));
     return true;
   }

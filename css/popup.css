@@ -2313,6 +2313,16 @@ input[type="range"]:focus-visible, .tab-button:focus-visible {
 .ch-filter-label { font-size: var(--fs-sm, 11px); font-weight: 600; color: var(--text-secondary); }
 .ch-filter-field .chat-input-row { margin-bottom: 0; }
 .ch-filter-field .chat-chips:empty { display: none; }
+/* v2.6.2 */
+.ch-filter-field input[type=number].chat-input { max-width: 120px; }
+.ch-filter-check { cursor: pointer; }
+.ch-filter-check-row { display: flex; align-items: flex-start; gap: 6px; font-size: var(--fs-sm, 11px); color: var(--text-secondary); line-height: 1.4; }
+.ch-filter-check-row input { margin: 1px 0 0; flex: none; accent-color: var(--accent); }
+.ch-filter-preview { display: flex; align-items: flex-start; gap: 6px; margin-left: 28px; padding: 6px 8px; border-radius: 6px; font-size: var(--fs-sm, 11px); line-height: 1.4; background: var(--bg-tertiary, rgba(127,127,127,.08)); color: var(--text-secondary); }
+.ch-filter-preview .material-icons-outlined { font-size: 15px; flex: none; }
+.ch-filter-preview.pass { color: var(--success, #53fc18); }
+.ch-filter-preview.block { color: var(--warn, #f5a524); }
+.ch-filter-preview.pass #ch-filter-preview-text, .ch-filter-preview.block #ch-filter-preview-text { color: var(--text-secondary); }
 .history-filtered { font-size: 10px; font-weight: 600; padding: 1px 6px; border-radius: 6px; background: var(--bg-hover); color: var(--text-muted); white-space: nowrap; }
 
 /* v2.5.52: Değerlendirme isteği bandı */

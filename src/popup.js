@@ -749,6 +749,7 @@ async function renderFollowing(categoryFilter) {
   el.appendChild(frag);
   KAMotion.flip(el, flipBefore);
   KAMotion.rollChanged(el, '.viewer-count, .channel-thumbnail-viewers', viewersBefore);
+  requestAnimationFrame(() => kaMeasureMarquees(el)); // v2.6.2
 
   if (thumbnailsEnabled) {
     const liveChannels = list.filter(ch => ch.isLive);
@@ -1122,7 +1123,7 @@ async function channelCard(ch, cardMode, batch) {
       <span class="rec-indicator"><span class="rec-dot"></span></span>
       <span class="stream-duration" data-slug="${esc(ch.channelSlug)}">${esc(dur)}</span>
       ${hasThumbnail ? '' : `<span class="meta-separator">·</span><span class="viewer-count">${esc(viewers)}</span>`}
-      ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name marquee-text" title="${esc(ch.categoryName)}"><span class="marquee-inner">${esc(ch.categoryName)}</span></span>` : ''}
+      ${ch.categoryName ? `<span class="meta-separator">·</span><span class="category-name marquee-text"><span class="marquee-inner">${esc(ch.categoryName)}</span></span>` : ''}
     </div>${anomalyNote}`;
   }
 
@@ -1131,7 +1132,7 @@ async function channelCard(ch, cardMode, batch) {
       <img class="channel-avatar" src="${esc(pic)}" alt="" />
       <div class="channel-info">
         <div class="channel-name" title="${esc(ch.userUsername)}">${esc(ch.userUsername)}${groupBadge}</div>
-        ${ch.isLive ? `<div class="channel-title marquee-text" title="${esc(ch.sessionTitle || '-')}"><span class="marquee-inner">${esc(ch.sessionTitle || '-')}</span></div>` : (lastSeenLabel ? `<div class="offline-last-seen">${Utils.i18n('lastStream') || 'Last stream'}: ${esc(lastSeenLabel)}</div>` : '')}
+        ${ch.isLive ? `<div class="channel-title marquee-text"><span class="marquee-inner">${esc(ch.sessionTitle || '-')}</span></div>` : (lastSeenLabel ? `<div class="offline-last-seen">${Utils.i18n('lastStream') || 'Last stream'}: ${esc(lastSeenLabel)}</div>` : '')}
         ${meta}
       </div>
     </div>
@@ -1360,26 +1361,37 @@ async function channelCard(ch, cardMode, batch) {
   }
 
   // v2.3.5: Taşan metinleri ölç, sadece gerçekten taşanları kayan yap.
-  // DOM'a eklendikten SONRA ölçülmeli (scrollWidth aksi halde 0), o yüzden rAF.
-  requestAnimationFrame(() => {
-    card.querySelectorAll('.marquee-text').forEach(box => {
-      const inner = box.querySelector('.marquee-inner');
-      if (!inner) return;
-      // Taşma var mı? (içerik kutudan genişse)
-      const overflow = inner.scrollWidth - box.clientWidth;
-      if (overflow > 2) {
-        box.classList.add('is-overflowing');
-        // Kayma mesafesi: tam metin görünene kadar (+ küçük tampon)
-        box.style.setProperty('--marquee-shift', `-${overflow + 6}px`);
-      } else {
-        box.classList.remove('is-overflowing');
-        box.style.removeProperty('--marquee-shift');
-      }
-    });
-  });
+  // v2.6.2: Kart artık önce bellekte (DocumentFragment) kuruluyor; rAF anında
+  // kart henüz sayfada olmayabilir. Ölçüm kart sayfadaysa burada, değilse liste
+  // yerleşince (kaMeasureMarquees(el)) ve fare satıra gelince yapılıyor.
+  requestAnimationFrame(() => { if (card.isConnected) kaMeasureMarquees(card); });
 
   return card;
 }
+
+// v2.6.2: Taşan başlık / kategori satırlarını ölçer; taşanlara kayan yazı
+// sınıfı ve kayma mesafesini verir. Görünmeyen (genişliği 0) kutuya dokunmaz.
+function kaMeasureMarquees(root) {
+  if (!root) return;
+  root.querySelectorAll('.marquee-text').forEach(box => {
+    const inner = box.querySelector('.marquee-inner');
+    if (!inner || box.clientWidth === 0) return;
+    const overflow = inner.scrollWidth - box.clientWidth;
+    if (overflow > 2) {
+      box.classList.add('is-overflowing');
+      box.style.setProperty('--marquee-shift', `-${overflow + 6}px`);
+    } else {
+      box.classList.remove('is-overflowing');
+      box.style.removeProperty('--marquee-shift');
+    }
+  });
+}
+// Fare kartın üst satırına gelince yeniden ölç (sekme gizliyken kurulan
+// kartlar ve sonradan değişen genişlik için).
+document.addEventListener('mouseover', e => {
+  const top = e.target && e.target.closest ? e.target.closest('.card-top') : null;
+  if (top && !top.contains(e.relatedTarget)) kaMeasureMarquees(top);
+});
 
 // ─── Auto Launch Card ───
 
@@ -2398,7 +2410,7 @@ async function renderChannelDiag(slug) {
   const param = (it) => {
     if (it.key === 'diagLastSeen') return [Utils.formatTimestamp(new Date(+it.p[0]).toISOString())];
     if (it.key === 'diagPaused' || it.key === 'diagSnoozed' || it.key === 'diagPausedFavExempt') return [kaClock(+it.p[0])];
-    if (it.key === 'diagLastFiltered') return [Utils.formatTimestamp(new Date(+it.p[0]).toISOString()), t(it.p[1] === 'category' ? 'diagReasonCategory' : 'diagReasonKeyword')];
+    if (it.key === 'diagLastFiltered') return [Utils.formatTimestamp(new Date(+it.p[0]).toISOString()), t(it.p[1] === 'category' ? 'diagReasonCategory' : it.p[1] === 'viewers' ? 'diagReasonViewers' : 'diagReasonKeyword')];
     return it.p;
   };
   const order = { block: 0, warn: 1, info: 2, ok: 3 };
@@ -2462,6 +2474,12 @@ function renderChannelFilterUI(pref) {
   };
   draw('ch-filter-cat-chips', 'cats', pref.cats);
   draw('ch-filter-word-chips', 'words', pref.words);
+  // v2.6.2
+  const mv = document.getElementById('ch-filter-min-viewers');
+  if (mv && document.activeElement !== mv) mv.value = Number(pref.minViewers) > 0 ? String(pref.minViewers) : '';
+  const late = document.getElementById('ch-filter-late');
+  if (late) late.checked = !pref.lateOff;
+  renderChannelFilterPreview(pref);
   const ci = document.getElementById('ch-filter-cat-input');
   const wi = document.getElementById('ch-filter-word-input');
   if (ci) ci.placeholder = Utils.i18n('chFilterCatPlaceholder') || 'e.g. Just Chatting';
@@ -2497,6 +2515,86 @@ function setupChannelFilterInputs() {
   };
   bind('ch-filter-cat-input', 'ch-filter-cat-add', 'cats');
   bind('ch-filter-word-input', 'ch-filter-word-add', 'words');
+
+  // v2.6.2: izleyici eşiği
+  const mv = document.getElementById('ch-filter-min-viewers');
+  if (mv) {
+    const saveMv = async () => {
+      if (!_chAlertSlug) return;
+      const slug = _chAlertSlug;
+      const n = Math.max(0, Math.min(1000000, Math.floor(Number(mv.value) || 0)));
+      mv.value = n ? String(n) : '';
+      const next = await Storage.updateChannelAlertPref(slug, { minViewers: n || null });
+      renderChannelFilterUI(next);
+      refreshChannelAlertButtons(slug, next);
+    };
+    mv.addEventListener('change', saveMv);
+    mv.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); mv.blur(); } });
+  }
+  // v2.6.2: geç eşleşme (varsayılan açık; kapatılınca lateOff saklanır)
+  const late = document.getElementById('ch-filter-late');
+  late?.addEventListener('change', async () => {
+    if (!_chAlertSlug) return;
+    const slug = _chAlertSlug;
+    const next = await Storage.updateChannelAlertPref(slug, { lateOff: late.checked ? null : true });
+    renderChannelFilterUI(next);
+    refreshChannelAlertButtons(slug, next);
+  });
+  // v2.6.2: şu anki kategoriyi ekle
+  document.getElementById('ch-filter-addcat')?.addEventListener('click', async () => {
+    if (!_chAlertSlug) return;
+    const slug = _chAlertSlug;
+    const ch = kaFindChannel(slug);
+    const cat = (ch && ch.isLive && ch.categoryName || '').trim().slice(0, 40);
+    if (!cat) return;
+    const cur = await Storage.getChannelAlertPref(slug);
+    const list = cur.cats || [];
+    if (list.some(x => x.toLocaleLowerCase() === cat.toLocaleLowerCase()) || list.length >= CH_FILTER_MAX) return;
+    const next = await Storage.updateChannelAlertPref(slug, { cats: [...list, cat] });
+    renderChannelFilterUI(next);
+    refreshChannelAlertButtons(slug, next);
+  });
+}
+
+// v2.6.2: Kanal ayarları penceresi için takip listesindeki güncel kanal kaydı
+function kaFindChannel(slug) {
+  try { return (typeof allChannels !== 'undefined' && Array.isArray(allChannels) ? allChannels : []).find(c => c.channelSlug === slug) || null; } catch (e) { return null; }
+}
+
+// v2.6.2: Canlı önizleme. Kanal şu an yayındaysa filtrenin bu yayını geçirip
+// geçirmediğini gerçek filtre fonksiyonuyla (arka plan) gösterir.
+let _chPreviewSeq = 0;
+async function renderChannelFilterPreview(pref) {
+  const box = document.getElementById('ch-filter-preview');
+  const addRow = document.getElementById('ch-filter-addcat-row');
+  if (!box) return;
+  const slug = _chAlertSlug;
+  const ch = slug ? kaFindChannel(slug) : null;
+  const live = !!(ch && ch.isLive);
+  const cat = live ? (ch.categoryName || '') : '';
+  const cats = (pref && pref.cats) || [];
+  if (addRow) {
+    const has = cat && cats.some(x => x.toLocaleLowerCase() === cat.toLocaleLowerCase());
+    addRow.hidden = !(live && cat && !has && cats.length < CH_FILTER_MAX);
+    const tx = document.getElementById('ch-filter-addcat-text');
+    if (tx) tx.textContent = Utils.i18n('chFilterAddCurrentCat', [cat]) || `Add current category: ${cat}`;
+  }
+  const hasFilter = cats.length || ((pref && pref.words) || []).length || Number(pref && pref.minViewers) > 0;
+  if (!live || !hasFilter) { box.hidden = true; return; }
+  const seq = ++_chPreviewSeq;
+  let res = null;
+  try { res = await chrome.runtime.sendMessage({ type: 'TEST_CHANNEL_FILTER', slug, category: ch.categoryName || '', title: ch.sessionTitle || '', viewers: Number(ch.viewerCount) || 0 }); } catch (e) {}
+  if (seq !== _chPreviewSeq || slug !== _chAlertSlug) return;
+  if (!res || !res.success || !res.result) { box.hidden = true; return; }
+  const pass = !!res.result.pass;
+  const reasonKey = { category: 'diagReasonCategory', keyword: 'diagReasonKeyword', viewers: 'diagReasonViewers' }[res.result.reason] || 'diagReasonKeyword';
+  box.classList.toggle('pass', pass);
+  box.classList.toggle('block', !pass);
+  document.getElementById('ch-filter-preview-ico').textContent = pass ? 'check_circle' : 'block';
+  document.getElementById('ch-filter-preview-text').textContent = pass
+    ? (Utils.i18n('chFilterPreviewPass') || 'The stream that is live now passes this filter.')
+    : (Utils.i18n('chFilterPreviewBlock', [Utils.i18n(reasonKey) || res.result.reason]) || `The stream that is live now is held back: ${res.result.reason}.`);
+  box.hidden = false;
 }
 
 // v2.5.58: Değişim takibinin gerçekten çalıştığını kullanıcı görebilsin diye
@@ -2610,6 +2708,12 @@ async function loadOptionsSettings() {
   optEl('opt-special-day-icons').checked = (await Storage.get(StorageKeys.SPECIAL_DAY_ICONS)) !== false; // v2.6.0
   if (optEl('opt-watch-time')) optEl('opt-watch-time').checked = await Storage.getWatchTimeEnabled(); // v2.5.55
   optEl('opt-show-notification').checked = await Storage.getShowNotification();
+  // v2.6.2
+  if (optEl('opt-notif-stay-open')) optEl('opt-notif-stay-open').checked = (await Storage.get(StorageKeys.NOTIF_STAY_OPEN)) === true;
+  if (optEl('opt-notif-stay-open-row') && KA_IS_FIREFOX) optEl('opt-notif-stay-open-row').style.display = 'none';
+  if (optEl('opt-missed-summary')) optEl('opt-missed-summary').checked = (await Storage.get(StorageKeys.MISSED_SUMMARY)) !== false;
+  if (optEl('opt-remember-volume')) optEl('opt-remember-volume').checked = (await Storage.get(StorageKeys.REMEMBER_VOLUME)) !== false;
+  optSyncRememberVolume();
   optEl('opt-auto-refresh').checked = await Storage.getAutoRefreshPopup();
   // v2.3.0: Bot skorunu her zaman göster (default false)
   optEl('opt-bot-score-always-visible').checked = await Storage.getBotScoreAlwaysVisible();
@@ -2928,11 +3032,23 @@ function setupMutedBanner() {
 
 // ─── v2.5.74: Reklam teşhisi paylaşımı (isteğe bağlı, varsayılan kapalı) ───
 const KA_IS_FIREFOX = typeof browser !== 'undefined' && !!browser.runtime && typeof browser.runtime.getBrowserInfo === 'function';
+// v2.6.2: "Son ses seviyesi" sadece otomatik ses açma açıkken anlamlı
+function optSyncRememberVolume() {
+  const row = optEl('opt-remember-volume-row');
+  if (!row) return;
+  row.style.display = optEl('opt-auto-unmute')?.checked ? '' : 'none';
+  try { refreshAllOptGroupHeights?.(); } catch (e) {}
+}
 async function optSyncAdDiagBox() {
   const box = optEl('opt-ad-diag-box');
   if (!box) return;
   const adOn = optEl('opt-ad-block')?.checked === true;
   box.style.display = adOn ? '' : 'none';
+  try { // v2.6.2: alt ayarlar (varsayılan açık)
+    const sp = await chrome.storage.local.get([StorageKeys.AD_BLOCK_STREAM, StorageKeys.AD_BLOCK_PAGE]);
+    if (optEl('opt-ad-block-stream')) optEl('opt-ad-block-stream').checked = sp[StorageKeys.AD_BLOCK_STREAM] !== false;
+    if (optEl('opt-ad-block-page')) optEl('opt-ad-block-page').checked = sp[StorageKeys.AD_BLOCK_PAGE] !== false;
+  } catch (e) {}
   const share = (await chrome.storage.local.get('adDiagShareEnabled')).adDiagShareEnabled === true;
   let ok = share;
   if (share && KA_IS_FIREFOX) {
@@ -3075,7 +3191,12 @@ function setupOptionsListeners() {
   if (optListenersAttached) return;
   optListenersAttached = true;
 
-  optBind('opt-auto-unmute', v => Storage.setAutoUnmute(v));
+  optBind('opt-auto-unmute', async v => { await Storage.setAutoUnmute(v); optSyncRememberVolume(); });
+  if (optEl('opt-remember-volume')) optBind('opt-remember-volume', v => Storage.set(StorageKeys.REMEMBER_VOLUME, !!v)); // v2.6.2
+  if (optEl('opt-notif-stay-open')) optBind('opt-notif-stay-open', v => Storage.set(StorageKeys.NOTIF_STAY_OPEN, !!v)); // v2.6.2
+  if (optEl('opt-missed-summary')) optBind('opt-missed-summary', v => Storage.set(StorageKeys.MISSED_SUMMARY, !!v)); // v2.6.2
+  if (optEl('opt-ad-block-stream')) optBind('opt-ad-block-stream', v => Storage.set(StorageKeys.AD_BLOCK_STREAM, !!v)); // v2.6.2
+  if (optEl('opt-ad-block-page')) optBind('opt-ad-block-page', v => Storage.set(StorageKeys.AD_BLOCK_PAGE, !!v)); // v2.6.2
   optBind('opt-reset-suspend', v => Storage.setResetSuspendOnRestart(v));
   optBind('opt-raid-guard', v => Storage.setRaidGuardClose(v));
   optBind('opt-show-offline', v => Storage.setShowOfflineChannels(v));

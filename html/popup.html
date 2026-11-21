@@ -420,6 +420,11 @@
           <input type="checkbox" id="opt-auto-unmute" />
           <span data-i18n-html="autoUnmuteCheckbox"></span>
         </label>
+        <!-- v2.6.2 -->
+        <label class="opt-row" id="opt-remember-volume-row" style="padding-left:22px;">
+          <input type="checkbox" id="opt-remember-volume" />
+          <span data-i18n="rememberVolumeCheckbox">Use my last volume level when unmuting</span>
+        </label>
         <label class="opt-row">
           <input type="checkbox" id="opt-reset-suspend" />
           <span data-i18n="resetSuspendOnRestartCheckbox">Reset auto-launch settings to On when browser restarts</span>
@@ -519,6 +524,15 @@
         <label class="opt-row">
           <input type="checkbox" id="opt-show-notification" />
           <span data-i18n="showNotificationCheckbox">Show desktop notifications</span>
+        </label>
+        <!-- v2.6.2 -->
+        <label class="opt-row" id="opt-notif-stay-open-row">
+          <input type="checkbox" id="opt-notif-stay-open" />
+          <span data-i18n="notifStayOpenCheckbox">Keep notifications on screen until I close them</span>
+        </label>
+        <label class="opt-row">
+          <input type="checkbox" id="opt-missed-summary" />
+          <span data-i18n="missedSummaryCheckbox">When a pause or quiet hours end, show who went live</span>
         </label>
         <!-- v2.5.74: kendi zil ayarı olmayan ve yeni takip edilen kanallar için varsayılan + tümüne uygula -->
         <div class="opt-slider-row opt-slider-row-compact">
@@ -961,6 +975,16 @@
         <div id="ad-block-desc" class="opt-adblock-warning opt-collapsible-desc" style="font-size:11px;color:var(--text-muted);padding:6px 0 0 22px;line-height:1.5;" data-i18n="adBlockWarning">Experimental and unofficial - depends on Kick's internal API structure and may break without notice. By enabling this, you accept that responsibility. Leave it off to keep using KickAlert as before, unaffected.</div>
         <!-- v2.5.74: isteğe bağlı reklam teşhisi paylaşımı (varsayılan kapalı, sadece reklam engeli açıkken görünür) -->
         <div id="opt-ad-diag-box" style="display:none;padding:8px 0 0 22px;">
+          <!-- v2.6.2: yayın / sayfa reklamları ayrı -->
+          <label class="opt-row" style="padding:0 0 4px 0;">
+            <input type="checkbox" id="opt-ad-block-stream" />
+            <span data-i18n="adBlockStreamLabel">Stream ads (before and during the stream)</span>
+          </label>
+          <label class="opt-row" style="padding:0 0 4px 0;">
+            <input type="checkbox" id="opt-ad-block-page" />
+            <span data-i18n="adBlockPageLabel">Page ads (banners on kick.com)</span>
+          </label>
+          <div style="font-size:11px;color:var(--text-muted);padding:0 0 8px 0;line-height:1.5;" data-i18n="adBlockSplitHint">With both on, ad addresses are also blocked at the network level. With only one on, it works inside the page. Reload open Kick tabs after a change.</div>
           <div class="opt-row" style="justify-content:space-between;padding:0;">
             <span style="font-size:12px;color:var(--text-secondary);flex:1;" data-i18n="adDiagShareTitle">Share ad diagnostics</span>
             <label class="toggle-switch toggle-switch-sm">
@@ -1246,6 +1270,23 @@
               <button id="ch-filter-word-add" class="chat-add-btn" type="button">+</button>
             </div>
             <div id="ch-filter-word-chips" class="chat-chips"></div>
+          </div>
+          <!-- v2.6.2: izleyici eşiği, geç eşleşme, canlı önizleme -->
+          <div class="ch-filter-field">
+            <span class="ch-filter-label" data-i18n="chFilterMinViewers">Viewers at least</span>
+            <div class="chat-input-row">
+              <input type="number" id="ch-filter-min-viewers" class="chat-input" min="0" max="1000000" step="1" inputmode="numeric" placeholder="0" />
+            </div>
+          </div>
+          <label class="ch-filter-field ch-filter-check">
+            <span class="ch-filter-check-row"><input type="checkbox" id="ch-filter-late" /><span data-i18n="chFilterLate">Notify me if the stream starts matching later</span></span>
+          </label>
+          <div id="ch-filter-preview" class="ch-filter-preview" hidden>
+            <span class="material-icons-outlined" id="ch-filter-preview-ico">visibility</span>
+            <span id="ch-filter-preview-text"></span>
+          </div>
+          <div class="ch-filter-field" id="ch-filter-addcat-row" hidden>
+            <button type="button" id="ch-filter-addcat" class="opt-jump-link"><span class="material-icons-outlined">add</span><span id="ch-filter-addcat-text"></span></button>
           </div>
         </div>
       </div>

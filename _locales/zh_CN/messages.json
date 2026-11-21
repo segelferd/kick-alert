@@ -737,7 +737,7 @@
     "message": "广告拦截"
   },
   "adBlockWarning": {
-    "message": "这是一项实验性且非官方的功能--依赖 Kick 的内部 API 结构，可能会在没有通知的情况下失效。启用即表示你接受这一风险。保持关闭则 KickAlert 将和以前一样正常运行，不受影响。 需要刷新已打开的 Kick 标签页才能生效。"
+    "message": "实验性的非官方功能。Kick 可能将广告拦截视为违反其服务条款，它也可能在没有通知的情况下失效。开启即表示你承担此责任。保持关闭即可像以前一样使用 KickAlert，不受影响。已打开的 Kick 标签页需要刷新才能生效。"
   },
   "emailLoginNoticeUrgentTag": {
     "message": "当前适用："
@@ -761,7 +761,7 @@
     "message": "要开启广告拦截吗？"
   },
   "adBlockConfirmBody": {
-    "message": "此功能为实验性且非官方功能--依赖于 Kick 的内部 API 结构，可能在没有通知的情况下失效，Kick 也可能检测到此行为。开启即表示你接受这些风险。"
+    "message": "广告拦截是实验性的非官方功能。Kick 可能将其视为违反其服务条款，并可能标记此行为。它依赖 Kick 播放器的内部结构，可能会在没有通知的情况下失效。开启即表示你接受这些风险。"
   },
   "adBlockConfirmAccept": {
     "message": "我了解，开启"
@@ -782,7 +782,7 @@
     "message": "你还没有关注任何人。在 Kick 上关注一个频道，它就会自动显示在这里。"
   },
   "whatsNewBannerText": {
-    "message": "此版本带来更流畅的界面、节日图标和撤销功能，以及暂停、后台聊天雷达和 Multi-Stream 改进。"
+    "message": "此版本为频道筛选加入观众门槛和延后匹配，并新增错过直播汇总和音量记忆。"
   },
   "optGroupGeneral": {
     "message": "常规"
@@ -833,22 +833,22 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.1 - 更流畅的界面、节日图标、撤销"
+    "message": "v2.6.2 - 更聪明的筛选、错过的直播汇总、音量"
   },
   "releaseHistoryV0Body": {
-    "message": "• 更流畅的界面：频道开播时卡片会平滑移动到位，刚开播的频道会短暂显示绿色光环，开启铃铛时铃铛会摇动，标签页切换也更平滑\n• 暂停和“静音 1 小时”会以图标周围的圆环显示剩余时间\n• 更简洁的卡片：铃铛和星标始终显示，其他按钮在鼠标指向卡片时出现\n• 撤销：取消收藏、清空通知历史、删除分组或移除聊天词语后，可在底部提示条中撤销\n• 列表为空时会提示你下一步该做什么\n• 节日图标：在你所在地区的部分节日，工具栏图标会换上应景的样式（可在设置中关闭）\n• Multi-Stream：有声音的直播会显示小均衡器，切换布局时画面会平滑移动\n• 所有图标风格统一，滚动时排序栏固定在顶部\n• 新网站：segelferd.github.io/kick-alert"
+    "message": "• 频道筛选：可设置最低观众数；直播之后符合条件时（例如切换到你的分类）也会提醒\n• 筛选会显示当前直播能否通过，并提供添加当前分类的按钮\n• 暂停或免打扰时段结束后，一条通知列出这期间开播的频道\n• Chrome、Edge 和 Opera：通知可以一直显示，直到你关闭\n• 自动取消静音改用你上次的音量，而不是 100%\n• 广告拦截：直播广告和页面广告可分别开启；提示中现在明确提到 Kick 的服务条款\n• 卡片上放不下的标题和分类，鼠标悬停时会再次滚动显示"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.111 - 暂停、聊天雷达、事件声音、Multi-Stream"
+    "message": "v2.6.1 - 更流畅的界面、节日图标、撤销"
   },
   "releaseHistoryV1Body": {
-    "message": "• 可从顶部栏将通知暂停 1 小时或到早上；Chrome 通知中的第二个按钮会将该频道静音 1 小时\n• 每个频道设置中的“会收到这个频道的通知吗？”检查会列出所有可能阻止提醒的因素\n• 后台聊天雷达：在最多 5 个频道中，有人写到你的用户名或你选择的词时会通知你，即使没有打开 Kick 标签页\n• 为突袭、直播结束、直播转移和分类变更制作的 10 个新声音，每个事件可单独选择声音\n• Multi-Stream：直播默认静音开始，一键只听一个直播，聊天在侧边面板中打开\n• 主播把直播转到其他频道时的可选提醒，以及届时关闭自动打开的标签页的选项\n• 卡片紧凑布局；聊天集成关闭时，聊天通知设置保持隐藏\n• 聊天过滤器也能识别伪装写法（相似字母、不可见字符、分隔开的字母）\n• 机器人评分从第一分钟起使用 Kick 自己的聊天人数，并考虑所有聊天模式\n• Kick 主服务停止发送时启用备用实时连接\n• 之前仍为英文的提示文字现在会显示为你选择的语言，并优化了多种语言的措辞\n• 修复：开启云同步时，在弹窗中更改的设置不再被还原；有额外的 kick.com 权限时 Multi-Stream 播放器可以正常使用；Chrome 图标卡片会列出正在直播的频道"
+    "message": "• 更流畅的界面：频道开播时卡片会平滑移动到位，刚开播的频道会短暂显示绿色光环，开启铃铛时铃铛会摇动，标签页切换也更平滑\n• 暂停和“静音 1 小时”会以图标周围的圆环显示剩余时间\n• 更简洁的卡片：铃铛和星标始终显示，其他按钮在鼠标指向卡片时出现\n• 撤销：取消收藏、清空通知历史、删除分组或移除聊天词语后，可在底部提示条中撤销\n• 列表为空时会提示你下一步该做什么\n• 节日图标：在你所在地区的部分节日，工具栏图标会换上应景的样式（可在设置中关闭）\n• Multi-Stream：有声音的直播会显示小均衡器，切换布局时画面会平滑移动\n• 所有图标风格统一，滚动时排序栏固定在顶部\n• 新网站：segelferd.github.io/kick-alert"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.87 - Firefox 机器人评分、权限、广告拦截修复"
+    "message": "v2.5.111 - 暂停、聊天雷达、事件声音、Multi-Stream"
   },
   "releaseHistoryV2Body": {
-    "message": "• 机器人评分现在也可在 Firefox 中使用，与 Chrome 相同\n• 更新后，简短的引导会列出未开启的网站权限，说明其用途，并可直接开启\n• Firefox：通过已打开的 Kick 标签页发出的请求恢复正常\n• 广告拦截：拦截广告服务器现在真正生效（开启时 KickAlert 会请求访问广告域名）\n• 开启广告拦截时，直播结束后不再出现黑屏\n• 机器人评分从一开始就会考虑慢速模式和仅限订阅者聊天\n• 设置中新增“扩展权限”部分，可查看哪些权限已开启，并一键开启已关闭的权限；如有权限关闭，频道列表上方会显示提示"
+    "message": "• 可从顶部栏将通知暂停 1 小时或到早上；Chrome 通知中的第二个按钮会将该频道静音 1 小时\n• 每个频道设置中的“会收到这个频道的通知吗？”检查会列出所有可能阻止提醒的因素\n• 后台聊天雷达：在最多 5 个频道中，有人写到你的用户名或你选择的词时会通知你，即使没有打开 Kick 标签页\n• 为突袭、直播结束、直播转移和分类变更制作的 10 个新声音，每个事件可单独选择声音\n• Multi-Stream：直播默认静音开始，一键只听一个直播，聊天在侧边面板中打开\n• 主播把直播转到其他频道时的可选提醒，以及届时关闭自动打开的标签页的选项\n• 卡片紧凑布局；聊天集成关闭时，聊天通知设置保持隐藏\n• 聊天过滤器也能识别伪装写法（相似字母、不可见字符、分隔开的字母）\n• 机器人评分从第一分钟起使用 Kick 自己的聊天人数，并考虑所有聊天模式\n• Kick 主服务停止发送时启用备用实时连接\n• 之前仍为英文的提示文字现在会显示为你选择的语言，并优化了多种语言的措辞\n• 修复：开启云同步时，在弹窗中更改的设置不再被还原；有额外的 kick.com 权限时 Multi-Stream 播放器可以正常使用；Chrome 图标卡片会列出正在直播的频道"
   },
   "settingsBackupTitle": {
     "message": "备份与恢复"
@@ -1726,5 +1726,69 @@
   "toastChipRemoved": {
     "message": "已删除“$1”",
     "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
+  },
+  "notifLateMatch": {
+    "message": "$1 现在符合你的筛选条件",
+    "description": "Notification title when a stream that was held back by the channel filter starts matching it later. $1 = streamer name"
+  },
+  "notifMissedTitle": {
+    "message": "通知关闭期间开播的频道（$1）",
+    "description": "Notification title after a pause or quiet hours end. $1 = number of channels that went live meanwhile; the message lists their names"
+  },
+  "notifStayOpenCheckbox": {
+    "message": "通知保持显示，直到我关闭",
+    "description": "Settings > Notifications option (Chrome, Edge, Opera only)"
+  },
+  "missedSummaryCheckbox": {
+    "message": "暂停或免打扰时段结束后，显示谁开播了",
+    "description": "Settings > Notifications option"
+  },
+  "rememberVolumeCheckbox": {
+    "message": "取消静音时使用我上次的音量",
+    "description": "Settings > Auto-Launch, sub-option of auto-unmute"
+  },
+  "adBlockStreamLabel": {
+    "message": "直播广告（开播前和直播中）",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockPageLabel": {
+    "message": "页面广告（kick.com 上的横幅）",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockSplitHint": {
+    "message": "两项都开启时，广告地址也会在网络层面被拦截。只开启一项时，拦截在页面内进行。更改后请刷新已打开的 Kick 标签页。",
+    "description": "Hint under the two ad blocking sub-options"
+  },
+  "chFilterMinViewers": {
+    "message": "最低观众数",
+    "description": "Channel filter field label: minimum viewer count"
+  },
+  "chFilterLate": {
+    "message": "直播之后符合条件时也提醒我",
+    "description": "Channel filter checkbox, on by default"
+  },
+  "chFilterPreviewPass": {
+    "message": "当前直播能通过此筛选。",
+    "description": "Channel filter live preview: the stream live now passes"
+  },
+  "chFilterPreviewBlock": {
+    "message": "当前直播被暂缓：$1。",
+    "description": "Channel filter live preview: the stream live now is held back. $1 = reason (diagReasonCategory / diagReasonKeyword / diagReasonViewers)"
+  },
+  "chFilterAddCurrentCat": {
+    "message": "添加当前分类：$1",
+    "description": "Button: add the category of the stream live now to the filter. $1 = category name"
+  },
+  "diagReasonViewers": {
+    "message": "观众人数低于门槛",
+    "description": "Reason used in diagLastFiltered and the filter preview: viewer count was below the threshold"
+  },
+  "diagViewersSet": {
+    "message": "观众门槛：直播观众达到 $1 人后才提醒。",
+    "description": "Diagnosis info: viewer threshold set. $1 = threshold"
+  },
+  "diagViewersBelow": {
+    "message": "当前低于观众门槛（$2 / $1）。达到后会提醒。",
+    "description": "Diagnosis warning: the stream live now is below the threshold. $1 = threshold, $2 = current viewers"
   }
 }

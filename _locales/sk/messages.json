@@ -703,7 +703,7 @@
     "message": "Blokovanie reklám"
   },
   "adBlockWarning": {
-    "message": "Experimentálna a neoficiálna funkcia - závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať. Zapnutím prijímaš túto zodpovednosť. Ak ju necháš vypnutú, KickAlert bude fungovať ako doteraz, bez zmeny. Aby sa zmena prejavila, treba obnoviť otvorené karty Kick."
+    "message": "Experimentálne a neoficiálne. Kick môže blokovanie reklám považovať za porušenie svojich Podmienok služby a môže bez upozornenia prestať fungovať. Zapnutím preberáš túto zodpovednosť. Nechaj vypnuté, ak chceš KickAlert používať ako doteraz, bez akéhokoľvek dopadu. Aby sa zmena prejavila, treba obnoviť otvorené karty Kick."
   },
   "emailLoginNoticeUrgentTag": {
     "message": "Práve teraz sa to týka teba:"
@@ -727,7 +727,7 @@
     "message": "Zapnúť blokovanie reklám?"
   },
   "adBlockConfirmBody": {
-    "message": "Ide o experimentálnu a neoficiálnu funkciu - závisí od internej štruktúry API Kick a môže bez upozornenia prestať fungovať, pričom Kick môže toto správanie odhaliť. Zapnutím preberáš zodpovednosť za tieto riziká."
+    "message": "Blokovanie reklám je experimentálne a neoficiálne. Kick ho môže považovať za porušenie svojich Podmienok služby a toto správanie označiť. Závisí od vnútornej štruktúry prehrávača Kick a môže bez upozornenia prestať fungovať. Zapnutím tieto riziká prijímaš."
   },
   "adBlockConfirmAccept": {
     "message": "Rozumiem, zapnúť"
@@ -748,7 +748,7 @@
     "message": "Zatiaľ nikoho nesleduješ. Sleduj kanál na Kick a automaticky sa zobrazí tu."
   },
   "whatsNewBannerText": {
-    "message": "Táto verzia prináša plynulejšie rozhranie, ikony špeciálnych dní a funkciu Späť, a k tomu pozastavenie, radar chatu na pozadí a vylepšenia Multi-Streamu."
+    "message": "Táto verzia pridáva do filtrov kanálov limit divákov a neskoršiu zhodu, súhrn zmeškaných streamov a pamäť hlasitosti."
   },
   "optGroupGeneral": {
     "message": "Všeobecné"
@@ -799,22 +799,22 @@
     "description": "Tooltip on the top-right link that opens kick.com."
   },
   "releaseHistoryV0Label": {
-    "message": "v2.6.1 - Plynulejšie rozhranie, ikony špeciálnych dní, Späť"
+    "message": "v2.6.2 - Múdrejšie filtre, súhrn zmeškaných streamov, hlasitosť"
   },
   "releaseHistoryV0Body": {
-    "message": "• Plynulejšie rozhranie: keď kanál začne vysielať, karty sa plynulo presunú na miesto, kanály, ktoré práve začali, dostanú krátky zelený krúžok, zvonček pri zapnutí zazvoní a karty v hornej lište sa prepínajú plynulo\n• Pozastavenie a „Stlmiť na 1 hodinu“ ukazujú zostávajúci čas ako krúžok okolo ikony\n• Prehľadnejšie karty: zvonček a hviezdička sú viditeľné stále, ostatné tlačidlá sa zobrazia keď prejdeš myšou nad kartu\n• Späť: odobratie z obľúbených, vymazanie histórie upozornení, odstránenie skupiny alebo slova v chate môžeš vrátiť späť cez lištu dole\n• Prázdne zoznamy ti teraz povedia, čo ďalej\n• Ikony špeciálnych dní: počas niekoľkých sviatkov v tvojom regióne dostane ikona na paneli nástrojov sviatočný vzhľad (dá sa vypnúť v Nastaveniach)\n• Multi-Stream: stream so zvukom ukazuje malý ekvalizér a dlaždice sa pri zmene rozloženia plynulo presunú\n• Jednotný štýl ikon a lišta zoradenia zostáva pri posúvaní hore\n• Nový web: segelferd.github.io/kick-alert"
+    "message": "• Filter kanála: nastav minimálny počet divákov a dostaneš upozornenie, ak stream začne zodpovedať neskôr (napríklad keď prejde do tvojej kategórie)\n• Filter ukazuje, či by aktuálny stream prešiel, a ponúka tlačidlo na pridanie jeho aktuálnej kategórie\n• Po skončení pozastavenia alebo režimu Nerušiť jedno oznámenie vypíše, kto medzitým začal streamovať\n• Chrome, Edge a Opera: oznámenia môžu zostať na obrazovke, kým ich nezavrieš\n• Automatické zapnutie zvuku používa tvoju poslednú hlasitosť namiesto 100 %\n• Blokovanie reklám: reklamy v streame a na stránke možno zapnúť zvlášť; upozornenie teraz výslovne spomína Podmienky služby Kick\n• Názvy a kategórie, ktoré sa na kartu nezmestia, sa pri prejdení myšou opäť posúvajú"
   },
   "releaseHistoryV1Label": {
-    "message": "v2.5.111 - Pozastavenie, radar chatu, zvuky udalostí, Multi-Stream"
+    "message": "v2.6.1 - Plynulejšie rozhranie, ikony špeciálnych dní, Späť"
   },
   "releaseHistoryV1Body": {
-    "message": "• Pozastav upozornenia na 1 hodinu alebo do rána z hornej lišty; druhé tlačidlo upozornenia v Chrome stlmí daný kanál na 1 hodinu\n• Kontrola „Príde od tohto kanála upozornenie?“ v nastaveniach každého kanála ukáže všetko, čo môže upozornenie zablokovať\n• Radar chatu na pozadí: dostaneš oznámenie, keď niekto napíše tvoje používateľské meno alebo zvolené slová v až 5 kanáloch, aj bez otvorenej karty Kick\n• 10 nových zvukov pre raidy, koniec streamu, presun streamu a zmenu kategórie, s vlastným zvukom pre každú udalosť\n• Multi-Stream: streamy začínajú stlmené, jedným kliknutím počúvaš len jeden stream, chat sa otvorí v bočnom paneli\n• Voliteľné upozornenie, keď streamer presunie stream na iný kanál, a možnosť v takom prípade zavrieť automaticky otvorené karty\n• Kompaktné zobrazenie kariet; nastavenia oznámení chatu zostávajú skryté, kým je integrácia chatu vypnutá\n• Filtre chatu zachytia aj maskovaný zápis (podobné písmená, neviditeľné znaky, písmená oddelené medzerami)\n• Skóre botov od prvej minúty využíva vlastný počet účastníkov chatu od Kicku a zohľadňuje všetky režimy chatu\n• Záložné okamžité pripojenie, ak hlavná služba Kicku prestane posielať dáta\n• Popisy, ktoré zostali v angličtine, sa teraz zobrazujú v tvojom jazyku a texty boli v niekoľkých jazykoch upravené\n• Opravy: nastavenia zmenené v okne rozšírenia sa pri zapnutej cloudovej synchronizácii už nevracajú; prehrávače Multi-Stream fungujú s dodatočným oprávnením kick.com; karta ikony v Chrome ukazuje živé kanály"
+    "message": "• Plynulejšie rozhranie: keď kanál začne vysielať, karty sa plynulo presunú na miesto, kanály, ktoré práve začali, dostanú krátky zelený krúžok, zvonček pri zapnutí zazvoní a karty v hornej lište sa prepínajú plynulo\n• Pozastavenie a „Stlmiť na 1 hodinu“ ukazujú zostávajúci čas ako krúžok okolo ikony\n• Prehľadnejšie karty: zvonček a hviezdička sú viditeľné stále, ostatné tlačidlá sa zobrazia keď prejdeš myšou nad kartu\n• Späť: odobratie z obľúbených, vymazanie histórie upozornení, odstránenie skupiny alebo slova v chate môžeš vrátiť späť cez lištu dole\n• Prázdne zoznamy ti teraz povedia, čo ďalej\n• Ikony špeciálnych dní: počas niekoľkých sviatkov v tvojom regióne dostane ikona na paneli nástrojov sviatočný vzhľad (dá sa vypnúť v Nastaveniach)\n• Multi-Stream: stream so zvukom ukazuje malý ekvalizér a dlaždice sa pri zmene rozloženia plynulo presunú\n• Jednotný štýl ikon a lišta zoradenia zostáva pri posúvaní hore\n• Nový web: segelferd.github.io/kick-alert"
   },
   "releaseHistoryV2Label": {
-    "message": "v2.5.87 - Skóre botov vo Firefoxe, povolenia, oprava blokovania reklám"
+    "message": "v2.5.111 - Pozastavenie, radar chatu, zvuky udalostí, Multi-Stream"
   },
   "releaseHistoryV2Body": {
-    "message": "• Skóre botov teraz funguje aj vo Firefoxe, rovnako ako v Chrome\n• Po aktualizácii krátky sprievodca ukáže vypnuté povolenia pre weby, vysvetlí, na čo sú potrebné, a umožní ich zapnúť\n• Firefox: požiadavky cez otvorenú kartu Kick opäť fungujú\n• Blokovanie reklám: blokovanie reklamných serverov teraz naozaj funguje (pri zapnutí KickAlert požiada o prístup k reklamným doménam)\n• Na konci vysielania so zapnutým blokovaním reklám už nezostáva čierna obrazovka\n• Skóre botov od začiatku zohľadňuje pomalý režim a chat len pre odberateľov\n• Nová sekcia „Povolenia rozšírenia“ v Nastaveniach ukazuje, ktoré povolenia sú zapnuté, a vypnuté zapne jedným kliknutím; ak je niektoré vypnuté, nad zoznamom kanálov sa zobrazí upozornenie"
+    "message": "• Pozastav upozornenia na 1 hodinu alebo do rána z hornej lišty; druhé tlačidlo upozornenia v Chrome stlmí daný kanál na 1 hodinu\n• Kontrola „Príde od tohto kanála upozornenie?“ v nastaveniach každého kanála ukáže všetko, čo môže upozornenie zablokovať\n• Radar chatu na pozadí: dostaneš oznámenie, keď niekto napíše tvoje používateľské meno alebo zvolené slová v až 5 kanáloch, aj bez otvorenej karty Kick\n• 10 nových zvukov pre raidy, koniec streamu, presun streamu a zmenu kategórie, s vlastným zvukom pre každú udalosť\n• Multi-Stream: streamy začínajú stlmené, jedným kliknutím počúvaš len jeden stream, chat sa otvorí v bočnom paneli\n• Voliteľné upozornenie, keď streamer presunie stream na iný kanál, a možnosť v takom prípade zavrieť automaticky otvorené karty\n• Kompaktné zobrazenie kariet; nastavenia oznámení chatu zostávajú skryté, kým je integrácia chatu vypnutá\n• Filtre chatu zachytia aj maskovaný zápis (podobné písmená, neviditeľné znaky, písmená oddelené medzerami)\n• Skóre botov od prvej minúty využíva vlastný počet účastníkov chatu od Kicku a zohľadňuje všetky režimy chatu\n• Záložné okamžité pripojenie, ak hlavná služba Kicku prestane posielať dáta\n• Popisy, ktoré zostali v angličtine, sa teraz zobrazujú v tvojom jazyku a texty boli v niekoľkých jazykoch upravené\n• Opravy: nastavenia zmenené v okne rozšírenia sa pri zapnutej cloudovej synchronizácii už nevracajú; prehrávače Multi-Stream fungujú s dodatočným oprávnením kick.com; karta ikony v Chrome ukazuje živé kanály"
   },
   "settingsBackupTitle": {
     "message": "Zálohovanie a obnovenie"
@@ -1692,5 +1692,69 @@
   "toastChipRemoved": {
     "message": "„$1“ odstránené",
     "description": "Bottom message after removing a word/channel chip in Chat settings. $1 = the removed text"
+  },
+  "notifLateMatch": {
+    "message": "$1 teraz zodpovedá tvojmu filtru",
+    "description": "Notification title when a stream that was held back by the channel filter starts matching it later. $1 = streamer name"
+  },
+  "notifMissedTitle": {
+    "message": "Začali streamovať, keď boli oznámenia vypnuté ($1)",
+    "description": "Notification title after a pause or quiet hours end. $1 = number of channels that went live meanwhile; the message lists their names"
+  },
+  "notifStayOpenCheckbox": {
+    "message": "Nechať oznámenia na obrazovke, kým ich nezavriem",
+    "description": "Settings > Notifications option (Chrome, Edge, Opera only)"
+  },
+  "missedSummaryCheckbox": {
+    "message": "Po skončení pozastavenia alebo režimu Nerušiť ukázať, kto začal streamovať",
+    "description": "Settings > Notifications option"
+  },
+  "rememberVolumeCheckbox": {
+    "message": "Pri zapnutí zvuku použiť moju poslednú hlasitosť",
+    "description": "Settings > Auto-Launch, sub-option of auto-unmute"
+  },
+  "adBlockStreamLabel": {
+    "message": "Reklamy v streame (pred streamom a počas neho)",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockPageLabel": {
+    "message": "Reklamy na stránke (bannery na kick.com)",
+    "description": "Ad blocking sub-option"
+  },
+  "adBlockSplitHint": {
+    "message": "Keď sú zapnuté obe, reklamné adresy sa blokujú aj na úrovni siete. Keď je zapnutá len jedna, funguje vnútri stránky. Po zmene obnov otvorené karty Kick.",
+    "description": "Hint under the two ad blocking sub-options"
+  },
+  "chFilterMinViewers": {
+    "message": "Divákov aspoň",
+    "description": "Channel filter field label: minimum viewer count"
+  },
+  "chFilterLate": {
+    "message": "Upozorniť ma, ak stream začne zodpovedať neskôr",
+    "description": "Channel filter checkbox, on by default"
+  },
+  "chFilterPreviewPass": {
+    "message": "Aktuálny stream týmto filtrom prejde.",
+    "description": "Channel filter live preview: the stream live now passes"
+  },
+  "chFilterPreviewBlock": {
+    "message": "Aktuálny stream je pozdržaný: $1.",
+    "description": "Channel filter live preview: the stream live now is held back. $1 = reason (diagReasonCategory / diagReasonKeyword / diagReasonViewers)"
+  },
+  "chFilterAddCurrentCat": {
+    "message": "Pridať aktuálnu kategóriu: $1",
+    "description": "Button: add the category of the stream live now to the filter. $1 = category name"
+  },
+  "diagReasonViewers": {
+    "message": "počet divákov bol pod limitom",
+    "description": "Reason used in diagLastFiltered and the filter preview: viewer count was below the threshold"
+  },
+  "diagViewersSet": {
+    "message": "Limit divákov: upozornenie príde, keď bude mať stream aspoň $1 divákov.",
+    "description": "Diagnosis info: viewer threshold set. $1 = threshold"
+  },
+  "diagViewersBelow": {
+    "message": "Práve teraz pod limitom divákov ($2 z $1). Upozornenie príde, keď bude dosiahnutý.",
+    "description": "Diagnosis warning: the stream live now is below the threshold. $1 = threshold, $2 = current viewers"
   }
 }
