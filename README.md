@@ -104,7 +104,7 @@ Install from the [Chrome Web Store](https://chromewebstore.google.com/detail/kic
 Install from [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/kickalert/).
 
 ### Microsoft Edge
-Install from [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/search/kickalert).
+Install from [Microsoft Edge Add-ons](https://microsoftedge.microsoft.com/addons/detail/eojjllomnackghkodhhfnpncdmfdhica).
 
 ### Opera
 Coming soon to Opera Add-ons. Until then, Opera can install the Chrome Web Store version.
